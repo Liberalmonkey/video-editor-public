@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Bant çerçeve: köşeleri bantlı fotoğraf</title>
+<!-- Proje yapımı saydam çerçeve (ADR 0036). İçi boş: altındaki videonun bir bölümünü çevreler. 0.4 sn giriş, bekleme, 0.3 sn çıkış. -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:1080px;height:1080px}
+svg{position:absolute;inset:0;width:1080px;height:1080px}
+svg *{transform-box:view-box}
+.cik{transform-origin:540px 540px;animation:cik .3s cubic-bezier(.5,0,.75,0) 2.7s both}
+@keyframes cik{to{opacity:0;transform:scale(.97)}}
+.kenar{fill:none;stroke:var(--yazi);stroke-width:18;animation:fade .25s ease-out both}
+.bant{fill:var(--ikincil);opacity:.85;transform-origin:0 0;animation:yap .3s cubic-bezier(.2,.9,.3,1) both}
+.b1{animation-delay:.04s}.b2{animation-delay:.08s}.b3{animation-delay:.12s}
+@keyframes fade{from{opacity:0}}
+@keyframes yap{from{transform:scale(1.5);opacity:0}to{transform:scale(1);opacity:.85}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g class="cik"><rect class="kenar" x="180" y="180" width="720" height="720"/><g transform="translate(180 180) rotate(-45)"><polygon class="bant b0" points="122,-40 119,-27 128,-13 117,0 126,13 123,27 117,40 -125,40 -133,27 -126,13 -133,0 -132,-13 -126,-27 -119,-40"/></g><g transform="translate(900 180) rotate(45)"><polygon class="bant b1" points="120,-40 133,-27 118,-13 129,0 118,13 120,27 134,40 -130,40 -122,27 -126,13 -126,0 -125,-13 -131,-27 -119,-40"/></g><g transform="translate(900 900) rotate(-45)"><polygon class="bant b2" points="124,-40 123,-27 118,-13 132,0 116,13 125,27 132,40 -133,40 -124,27 -123,13 -133,0 -127,-13 -121,-27 -126,-40"/></g><g transform="translate(180 900) rotate(45)"><polygon class="bant b3" points="126,-40 124,-27 126,-13 120,0 131,13 131,27 128,40 -131,40 -125,27 -128,13 -130,0 -117,-13 -116,-27 -133,-40"/></g></g></svg>
+</body></html>

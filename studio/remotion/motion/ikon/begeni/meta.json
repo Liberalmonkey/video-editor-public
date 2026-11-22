@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/begeni",
+  "tur": "ikon",
+  "etiketler": ["beğeni", "like", "harika", "onay", "destek"],
+  "ne_zaman": "Konuşmacı bir sonucu övdüğünde ya da izleyiciden beğeni istediğinde (\"beğen\", \"harika\", \"çok iyi\", \"işe yaradı\").",
+  "sure": { "min": 1.0, "varsayilan": 1.3, "max": 1.6 },
+  "giris_sn": 0.36,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["sag", "ust", "sol", "alt"],
+  "boyut": { "w": 0.26, "h": 0.26 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide thumbs-up", "url": "https://lucide.dev/icons/thumbs-up", "lisans": "ISC" }
+}

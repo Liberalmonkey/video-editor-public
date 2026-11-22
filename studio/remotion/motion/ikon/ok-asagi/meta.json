@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/ok-asagi",
+  "tur": "ikon",
+  "etiketler": ["ok", "aşağı", "düşüş", "açıklama", "yorum"],
+  "ne_zaman": "Konuşmacı aşağıdaki açıklamaya, bağlantıya ya da düşüş yönüne işaret ettiğinde (\"aşağıda\", \"açıklamada\", \"düştü\", \"alt satır\").",
+  "sure": { "min": 1.0, "varsayilan": 1.25, "max": 1.6 },
+  "giris_sn": 0.34,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["alt", "ust", "sag", "sol"],
+  "boyut": { "w": 0.3, "h": 0.3 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide arrow-down", "url": "https://lucide.dev/icons/arrow-down", "lisans": "ISC" }
+}

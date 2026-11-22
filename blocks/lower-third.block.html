@@ -1,0 +1,28 @@
+<!--meta
+{"name": "lower-third", "description": "İsim + unvan bandı (sol alt). Vurgu çizgisi büyür, satırlar maskeyle girer. Konuşmacıyı tanıtmak için.",
+ "props": {"name": "string*", "role": "string"},
+ "default_dur": 4.0, "sfx": {"in": "swoosh"}, "tags": ["footage", "intro", "ugc"]}
+-->
+<style>
+.blk-lower-third { inset: auto auto calc(var(--safe-b) + var(--u) * 10) calc(var(--safe-l) + var(--u) * 5);
+  display: grid; grid-template-columns: calc(var(--u) * 0.9) auto; column-gap: calc(var(--u) * 2); align-items: stretch; }
+.blk-lower-third .lt-bar { grid-row: 1 / span 2; background: var(--c-accent); border-radius: calc(var(--u) * 0.5); transform-origin: 50% 100%; }
+.blk-lower-third .lt-name { font-size: calc(var(--u) * 5); }
+.blk-lower-third .lt-role { font-size: calc(var(--u) * 3); color: var(--c-muted); margin-top: calc(var(--u) * 0.6); }
+.blk-lower-third .lt-name > span, .blk-lower-third .lt-role > span { text-shadow: 0 calc(var(--u)*0.4) calc(var(--u)*1.4) rgba(0,0,0,.5); }
+</style>
+<markup>
+<div class="blk blk-lower-third">
+  <div class="lt-bar"></div>
+  <div class="lt-name t-display mask"><span>{{name}}</span></div>
+  <div class="lt-role t-body mask"><span>{{role}}</span></div>
+</div>
+</markup>
+<script>
+HF_BLOCKS["lower-third"] = function (tl, el, P, T, S) {
+  tl.fromTo(el.querySelector(".lt-bar"), { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: S.ease.ui }, T.start);
+  HF.maskIn(tl, [el.querySelector(".lt-name > span"), el.querySelector(".lt-role > span")], T.start + 0.12, S, { stagger: 0.1 });
+  if (!P.role) el.querySelector(".lt-role").style.display = "none";
+  HF.exit(tl, el, T, S, { y: 0 });
+};
+</script>

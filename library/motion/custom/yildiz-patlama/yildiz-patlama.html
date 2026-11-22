@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Yıldız patlama rozeti</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur yildiz-patlama -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+g{transform-origin:540px 540px}
+.p{stroke:var(--vurgu);stroke-width:14;stroke-linejoin:round}
+.a{animation:gir 1.6s both}
+.b{animation:don 1.6s linear both}
+@keyframes gir{0%{transform:scale(0) rotate(-35deg);animation-timing-function:cubic-bezier(.2,.8,.4,1)}16%{transform:scale(1.12) rotate(4deg);animation-timing-function:ease-in-out}23%{transform:scale(.96)}29%,70%{transform:scale(1);opacity:1;animation-timing-function:cubic-bezier(.5,0,.9,.4)}88%,100%{transform:scale(0) rotate(25deg);opacity:0}}
+@keyframes don{to{transform:rotate(12deg)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g class="a"><g class="b">
+<polygon class="d p" points="540.0,183.0 593.0,308.0 687.1,234.6 688.4,353.9 812.1,323.0 754.4,436.7 896.8,458.6 778.0,540.0 861.7,613.4 754.4,643.3 812.1,757.0 688.4,726.1 687.1,845.4 593.0,772.0 540.0,888.0 487.0,772.0 381.2,869.8 391.6,726.1 282.0,745.8 325.6,643.3 200.7,617.4 302.0,540.0 209.5,464.6 325.6,436.7 267.9,323.0 391.6,353.9 381.2,210.2 487.0,308.0"/>
+</g></g></svg>
+</body></html>

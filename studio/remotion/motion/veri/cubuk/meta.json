@@ -1,0 +1,15 @@
+{
+  "ad": "veri/cubuk",
+  "tur": "veri",
+  "etiketler": ["çubuk", "grafik", "sütun", "sıralama", "karşılaştırma", "veri"],
+  "ne_zaman": "Konuşmacı iki ila beş kategoriyi ya da seçeneği büyüklüklerine göre kıyaslayıp en yüksek olanı öne çıkarırken (\"en çok hangisi\", \"fark burada\", \"kanal dağılımı\").",
+  "sure": { "min": 1.5, "varsayilan": 2.8, "max": 4.0 },
+  "giris_sn": 0.44,
+  "cikis_sn": 0.25,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.84, "h": 0.36 },
+  "en_kucuk_px": 340,
+  "kaynak": null
+}

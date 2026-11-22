@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Kenar Işıltısı</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur kenar-isiltisi -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh;font-family:var(--font)}
+.sahne{position:absolute;inset:0;width:1080px;height:1080px;display:flex;align-items:center;justify-content:center;
+  animation:sahne-gir .45s cubic-bezier(.16,1,.3,1) .05s both,sahne-cik .45s cubic-bezier(.7,0,.84,0) 3.95s both}
+
+.kart{position:relative;width:760px;min-height:380px;background:var(--zemin);border-radius:var(--kose,24px);
+  padding:50px 48px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;box-shadow:var(--golge);transform-origin:center center;
+  animation:kart-gir .5s cubic-bezier(.16,1,.3,1) .08s both}
+
+/* SVG Işık Huzmesi */
+.cerceve-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.cerceve-taban{fill:none;stroke:color-mix(in srgb,var(--yazi) 8%,transparent);stroke-width:2px}
+.cerceve-isik{fill:none;stroke:url(#kenarGrad);stroke-width:5px;stroke-linecap:round;
+  filter:drop-shadow(0 0 5px var(--vurgu));
+  stroke-dasharray:220 2200;stroke-dashoffset:0;
+  animation:dolaş 3.2s linear 0.5s both}
+
+.rozet{display:inline-block;padding:6px 16px;border-radius:99px;background:color-mix(in srgb,var(--vurgu) 15%,transparent);
+  border:1px solid var(--vurgu);color:var(--vurgu);font-size:30px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.baslik{font-size:48px;font-weight:var(--agirlik,800);line-height:1.2;color:var(--yazi);
+  max-width:660px;word-break:break-word}
+.cizgi{width:48px;height:4px;background:var(--vurgu);border-radius:99px;margin:20px 0 16px}
+.alt{font-size:32px;font-weight:500;line-height:1.35;color:var(--soluk);
+  max-width:660px;word-break:break-word}
+
+@keyframes sahne-gir{from{opacity:0}to{opacity:1}}
+@keyframes sahne-cik{to{opacity:0;transform:scale(.95)}}
+@keyframes kart-gir{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+@keyframes dolaş{
+  0%{stroke-dashoffset:0}
+  100%{stroke-dashoffset:-4400}
+}
+</style></head><body>
+<div class="sahne">
+  <div class="kart" id="kart">
+    <svg class="cerceve-svg" id="svg" viewBox="0 0 760 380">
+      <defs>
+        <linearGradient id="kenarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:var(--vurgu)" stop-opacity="0"/>
+          <stop offset="50%" style="stop-color:var(--vurgu)" stop-opacity="0.8"/>
+          <stop offset="85%" style="stop-color:var(--ikincil)" stop-opacity="1"/>
+          <stop offset="100%" style="stop-color:var(--yazi)" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+      <rect class="cerceve-taban" id="tabanRect" x="1.5" y="1.5" width="757" height="377" rx="24"/>
+      <rect class="cerceve-isik" id="isikRect" x="1.5" y="1.5" width="757" height="377" rx="24"/>
+    </svg>
+    <div class="rozet">Öne Çıkan</div>
+    <div class="baslik" id="baslik"></div>
+    <div class="cizgi"></div>
+    <div class="alt" id="alt"></div>
+  </div>
+</div>
+<script>
+const P = Object.assign({ baslik: "Öne Çıkan Başlık", alt: "Detaylı açıklama ve alt bilgi metni" }, window.PARAM);
+const baslikEl = document.getElementById("baslik"), altEl = document.getElementById("alt");
+baslikEl.textContent = P.baslik; altEl.textContent = P.alt;
+
+function sigdir(el, taban, alt, maxPx) {
+  el.style.whiteSpace = "nowrap"; let f = taban; el.style.fontSize = f + "px";
+  while (el.getBoundingClientRect().width > maxPx && f > alt) { f -= 1; el.style.fontSize = f + "px"; }
+  if (el.getBoundingClientRect().width > maxPx) { el.style.whiteSpace = "normal"; }
+}
+function kur() {
+  sigdir(baslikEl, 48, 30, 660);
+  sigdir(altEl, 28, 20, 660);
+  // Kartın dinamik yüksekliğine göre SVG rect'leri ayarla
+  const k = document.getElementById("kart");
+  const w = k.offsetWidth, h = k.offsetHeight;
+  const svg = document.getElementById("svg");
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  const taban = document.getElementById("tabanRect");
+  const isik = document.getElementById("isikRect");
+  taban.setAttribute("width", w - 3); taban.setAttribute("height", h - 3);
+  isik.setAttribute("width", w - 3); isik.setAttribute("height", h - 3);
+  const cevre = 2 * (w + h);
+  isik.style.strokeDasharray = `220 ${cevre}`;
+}
+kur();
+let hazir = false;
+window.seek = () => { if (!hazir) { hazir = true; kur(); } };
+</script>
+</body></html>

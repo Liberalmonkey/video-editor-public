@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Vurgu patlaması</title>
+<!-- Proje yapımı saydam motion (ADR 0031). Kelime ya da nesne çevresinde kısa ışın. Render: vedit pano <bu dosya> --sure 0.65 --w 1080 --h 1080 -o vurgu-patlama.webm -->
+<style>
+html,body{margin:0;background:transparent}
+svg{position:absolute;inset:0;width:1080px;height:1080px}
+line{stroke:var(--vurgu);stroke-width:18;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:isin .6s var(--ease) both}
+@keyframes isin{0%{stroke-dashoffset:1}45%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:-1;opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080" id="s"></svg>
+<script>
+// 12 ışın, sabit açılar: her render aynı kare
+const s = document.getElementById("s");
+for (let i = 0; i < 12; i++) {
+  const a = (i / 12) * Math.PI * 2 + 0.13, r0 = 250 + (i % 2) * 30, r1 = r0 + 120 - (i % 3) * 25;
+  const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  l.setAttribute("x1", 540 + Math.cos(a) * r0); l.setAttribute("y1", 540 + Math.sin(a) * r0);
+  l.setAttribute("x2", 540 + Math.cos(a) * r1); l.setAttribute("y2", 540 + Math.sin(a) * r1);
+  l.setAttribute("pathLength", "1"); l.style.animationDelay = (i % 3) * 0.04 + "s";
+  s.appendChild(l);
+}
+</script>
+</body></html>

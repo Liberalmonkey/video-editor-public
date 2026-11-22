@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/kalp",
+  "tur": "ikon",
+  "etiketler": ["kalp", "sevgi", "favori", "beğen", "tutku"],
+  "ne_zaman": "Konuşmacı bir şeyi çok sevdiğini, favorisi olduğunu ya da izleyiciye kalp bırakmasını söylediğinde (\"bayıldım\", \"favorim\", \"sevdiysen\").",
+  "sure": { "min": 1.0, "varsayilan": 1.35, "max": 1.6 },
+  "giris_sn": 0.35,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["sag", "ust", "sol", "alt"],
+  "boyut": { "w": 0.26, "h": 0.26 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide heart", "url": "https://lucide.dev/icons/heart", "lisans": "ISC" }
+}

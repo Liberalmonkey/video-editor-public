@@ -1,0 +1,32 @@
+<!--meta
+{"name": "chapter-card", "description": "Bölüm geçiş kartı: büyük bölüm numarası + başlık; ince çizgi soldan çizilir. Uzun YouTube videolarında bölüm başı (pattern interrupt).",
+ "props": {"index": "string*", "title": "string*", "kicker": "string"},
+ "default_dur": 2.6, "sfx": {"in": "whoosh", "extra": [{"at": 0.35, "type": "impact", "intensity": "soft"}]}, "tags": ["animation", "youtube", "chapter"]}
+-->
+<style>
+.blk-chapter-card { display: flex; flex-direction: column; justify-content: center; padding-left: calc(var(--safe-l) + var(--u) * 12); gap: calc(var(--u) * 1.6); }
+.blk-chapter-card .cc-bg { position: absolute; inset: 0; background: var(--c-bg); }
+.blk-chapter-card .cc-kicker { position: relative; font: 700 calc(var(--u) * 2.6) / 1 var(--f-mono); color: var(--c-accent); letter-spacing: .14em; text-transform: uppercase; }
+.blk-chapter-card .cc-row { position: relative; display: flex; align-items: baseline; gap: calc(var(--u) * 3.4); }
+.blk-chapter-card .cc-idx { font: 900 calc(var(--u) * 16) / .9 var(--f-display); color: var(--c-accent); font-variant-numeric: tabular-nums; }
+.blk-chapter-card .cc-title { font-size: calc(var(--u) * 8); max-width: 14ch; }
+.blk-chapter-card .cc-line { position: relative; height: calc(var(--u) * 0.4); width: 46%; background: var(--c-fg); opacity: .25; transform-origin: 0 50%; }
+</style>
+<markup>
+<div class="blk blk-chapter-card">
+  <div class="cc-bg"></div>
+  <div class="cc-kicker mask"><span>{{kicker}}</span></div>
+  <div class="cc-row"><div class="cc-idx mask"><span>{{index}}</span></div><div class="cc-title t-display">{{title}}</div></div>
+  <div class="cc-line"></div>
+</div>
+</markup>
+<script>
+HF_BLOCKS["chapter-card"] = function (tl, el, P, T, S) {
+  tl.fromTo(el.querySelector(".cc-bg"), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "none" }, T.start);
+  HF.maskIn(tl, el.querySelector(".cc-idx > span"), T.start + 0.1, S, { ease: S.ease.logo, dur: 0.6 });
+  HF.maskIn(tl, HF.splitWords(el.querySelector(".cc-title")), T.start + 0.25, S);
+  if (P.kicker) HF.maskIn(tl, el.querySelector(".cc-kicker > span"), T.start + 0.05, S);
+  tl.fromTo(el.querySelector(".cc-line"), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: S.ease.camera }, T.start + 0.3);
+  HF.exit(tl, el, T, S, { y: 0 });
+};
+</script>

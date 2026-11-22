@@ -1,0 +1,16 @@
+{
+ "title": "Daire iris geçişi 16:9; ortası (0,40 sn) kesime gelir",
+ "kind": "transition",
+ "tags": [
+  "gecis",
+  "iris",
+  "daire",
+  "klasik",
+  "yatay"
+ ],
+ "ne_zaman": "16:9 videoda bir bölümü kapatıp yenisini açarken ya da zaman atlaması (önce/sonra, ertesi gün) gösterirken; dikkat merkezdeki öğeye toplanır; kesimi klibin ortasına (0,40 sn) koy.",
+ "sure": 0.8,
+ "w": 1920,
+ "h": 1080,
+ "loop": false
+}

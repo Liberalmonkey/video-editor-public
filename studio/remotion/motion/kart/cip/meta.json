@@ -1,0 +1,15 @@
+{
+  "ad": "kart/cip",
+  "tur": "kart",
+  "etiketler": ["çip", "etiket", "damga", "vurgu", "kategori"],
+  "ne_zaman": "Konuşmacı tek kelimelik keskin bir etiket ya da yargı söylediğinde (\"klişe\", \"dikkat\", \"ipucu\", \"hata\").",
+  "sure": { "min": 0.8, "varsayilan": 1.8, "max": 3.0 },
+  "giris_sn": 0.34,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "orta"],
+  "boyut": { "w": 0.46, "h": 0.11 },
+  "en_kucuk_px": 220,
+  "kaynak": null
+}

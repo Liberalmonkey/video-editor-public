@@ -1,0 +1,34 @@
+<!--meta
+{"name": "title-card", "description": "Büyük başlık + opsiyonel alt başlık; kelimeler maskenin altından kademeli kayarak girer. Açılış, bölüm ya da büyük vaat anı.",
+ "props": {"title": "string*", "subtitle": "string", "highlight": "string", "align": "enum(center|left)", "backdrop": "enum(none|dim|solid)"},
+ "default_dur": 3.0, "sfx": {"in": "whoosh"}, "tags": ["intro", "hook", "chapter", "animation", "footage"]}
+-->
+<style>
+.blk-title-card { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: calc(var(--u) * 2.4);
+  padding: calc(var(--safe-t) + var(--u) * 6) calc(var(--safe-r) + var(--u) * 8) calc(var(--safe-b) + var(--u) * 6) calc(var(--safe-l) + var(--u) * 8); text-align: center; }
+.blk-title-card.align-left { align-items: flex-start; text-align: left; }
+.blk-title-card .tc-bd { position: absolute; inset: 0; }
+.blk-title-card.bd-dim .tc-bd { background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.6)); }
+.blk-title-card.bd-solid .tc-bd { background: var(--c-bg); }
+.blk-title-card .tc-title { position: relative; font-size: calc(var(--u) * 10); max-width: 16ch; }
+.blk-title-card .tc-sub { position: relative; font-size: calc(var(--u) * 3.6); color: var(--c-muted); max-width: 36ch; }
+</style>
+<markup>
+<div class="blk blk-title-card align-{{align}} bd-{{backdrop}}">
+  <div class="tc-bd"></div>
+  <div class="tc-title t-display">{{title}}</div>
+  <div class="tc-sub t-body"><span class="mask"><span>{{subtitle}}</span></span></div>
+</div>
+</markup>
+<script>
+HF_BLOCKS["title-card"] = function (tl, el, P, T, S) {
+  const words = HF.splitWords(el.querySelector(".tc-title"), P.highlight);
+  const bd = el.querySelector(".tc-bd");
+  if (P.backdrop && P.backdrop !== "none") tl.fromTo(bd, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "none" }, T.start);
+  HF.maskIn(tl, words, T.start + 0.05, S);
+  const sub = el.querySelector(".tc-sub .mask > span");
+  if (P.subtitle) HF.maskIn(tl, sub, T.start + 0.25 + words.length * S.durations.stagger, S);
+  else el.querySelector(".tc-sub").style.display = "none";
+  HF.exit(tl, el, T, S);
+};
+</script>

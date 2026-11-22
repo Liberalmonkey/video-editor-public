@@ -1,0 +1,17 @@
+{
+ "title": "Nokta ızgara zemin: yavaş kayan düzenli noktalar",
+ "kind": "background",
+ "tags": [
+  "zemin",
+  "dongu",
+  "nokta",
+  "izgara",
+  "sade"
+ ],
+ "ne_zaman": "Grafik, liste ya da karşılaştırma sahnesinin arkasına dikkat çekmeyen düzenli bir zemin gerektiğinde.",
+ "sure": 6.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": true
+}

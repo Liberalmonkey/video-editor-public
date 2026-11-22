@@ -1,0 +1,13 @@
+{
+  "enabledPlugins": {
+    "lemo-opuscar@lemolab": true,
+    "gsap-skills@gsap-skills": true,
+    "impeccable@impeccable": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+  },
+  "env": {
+    "HYPERFRAMES_NO_TELEMETRY": "1",
+    "DO_NOT_TRACK": "1",
+    "HYPERFRAMES_SKIP_SKILLS": "1"
+  }
+}

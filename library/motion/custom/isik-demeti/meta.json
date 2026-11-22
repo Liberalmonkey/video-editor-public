@@ -1,0 +1,14 @@
+{
+ "title": "Işık demeti: iki kart arasında kavisli akan enerji çizgisi",
+ "kind": "overlay",
+ "tags": ["isik", "demet", "baglanti", "kart", "enerji", "veri"],
+ "ne_zaman": "İki kavram, servis veya girdi-çıktı arasındaki bağlantıyı, veri akışını veya entegrasyonu göstermek için.",
+ "sure": 4.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "sol": {"vars": "Kaynak", "max": 18},
+  "sag": {"vars": "Hedef", "max": 18}
+ }
+}

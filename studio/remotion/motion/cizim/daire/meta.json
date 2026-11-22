@@ -1,0 +1,15 @@
+{
+  "ad": "cizim/daire",
+  "tur": "cizim",
+  "etiketler": ["daire", "çember", "oval", "vurgu", "işaretle", "el çizimi"],
+  "ne_zaman": "Konuşmacı ekrandaki önemli bir kelimeyi, sayıyı ya da nesneyi çember içine alıp dikkat çektiğinde (\"şuraya bak\", \"asıl mesele bu\", \"tam burası\").",
+  "sure": { "min": 0.8, "varsayilan": 1.6, "max": 2.5 },
+  "giris_sn": 0.44,
+  "cikis_sn": 0.24,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["hedef", "orta"],
+  "boyut": { "w": 0.44, "h": 0.26 },
+  "en_kucuk_px": 180,
+  "kaynak": null
+}

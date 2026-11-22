@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Komut Paleti</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur komut-paleti -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh;font-family:var(--font)}
+.sahne{position:absolute;inset:0;width:1080px;height:1080px;display:flex;align-items:center;justify-content:center;
+  animation:sahne-gir .4s cubic-bezier(.16,1,.3,1) .05s both,sahne-cik .45s cubic-bezier(.7,0,.84,0) 4.3s both}
+
+.palet{width:800px;background:var(--zemin);border-radius:var(--kose,20px);
+  border:2px solid color-mix(in srgb,var(--yazi) 12%,transparent);box-shadow:var(--golge);overflow:hidden;
+  animation:palet-gir .45s cubic-bezier(.16,1,.3,1) .05s both}
+
+/* Üst Arama Çubuğu */
+.arama-bari{display:flex;align-items:center;padding:24px 28px;gap:18px;border-bottom:1px solid color-mix(in srgb,var(--yazi) 10%,transparent)}
+.ara-etiket{background:color-mix(in srgb,var(--yazi) 10%,transparent);color:var(--yazi);font-size:30px;font-weight:700;
+  padding:6px 16px;border-radius:8px;letter-spacing:0.5px}
+.arama-girdi{font-size:32px;font-weight:600;color:var(--yazi);display:flex;align-items:center;flex:1;
+  white-space:nowrap;overflow:hidden}
+.imlec{display:inline-block;width:3px;height:32px;background:var(--vurgu);margin-left:4px;vertical-align:middle;
+  animation:yanip-son .6s steps(2,start) infinite}
+
+/* Sonuç Listesi */
+.liste{padding:14px 16px 20px;display:flex;flex-direction:column;gap:10px}
+.satir{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-radius:12px;
+  background:color-mix(in srgb,var(--yazi) 3%,transparent);color:var(--yazi);font-size:30px;font-weight:600;
+  border:1px solid transparent;transition:all .25s ease}
+
+.satir-metin{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.satir-rozet{font-size:30px;font-weight:700;padding:4px 12px;border-radius:6px;background:color-mix(in srgb,var(--yazi) 8%,transparent);color:var(--soluk)}
+
+/* Süzülme ve Aktifleşme Durumları */
+.satir-1{animation:satir-1-onay .5s cubic-bezier(.16,1,.3,1) 2.4s both}
+.satir-2{animation:suz-2 .4s ease-out 1.8s both}
+.satir-3{animation:suz-3 .4s ease-out 1.9s both}
+
+@keyframes sahne-gir{from{opacity:0}to{opacity:1}}
+@keyframes sahne-cik{to{opacity:0;transform:translateY(-30px) scale(.96)}}
+@keyframes palet-gir{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes yanip-son{0%,100%{opacity:1}50%{opacity:0}}
+
+@keyframes suz-2{to{opacity:.4;transform:scale(.98)}}
+@keyframes suz-3{to{opacity:.35;transform:scale(.98)}}
+@keyframes satir-1-onay{
+  to{
+    background:var(--vurgu);
+    color:var(--zemin);
+    border-color:var(--vurgu);
+    transform:scale(1.02);
+    box-shadow:0 8px 24px color-mix(in srgb,var(--vurgu) 35%,transparent);
+  }
+}
+</style></head><body>
+<div class="sahne">
+  <div class="palet">
+    <div class="arama-bari">
+      <div class="ara-etiket">Ara</div>
+      <div class="arama-girdi">
+        <span id="aramaMetin"></span><span class="imlec" id="imlec"></span>
+      </div>
+    </div>
+    <div class="liste">
+      <div class="satir satir-1" id="s1">
+        <span class="satir-metin" id="sonuc1"></span>
+        <span class="satir-rozet" id="r1">Çalıştır</span>
+      </div>
+      <div class="satir satir-2" id="s2">
+        <span class="satir-metin" id="sonuc2"></span>
+        <span class="satir-rozet">Seç</span>
+      </div>
+      <div class="satir satir-3" id="s3">
+        <span class="satir-metin" id="sonuc3"></span>
+        <span class="satir-rozet">Seç</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const P = Object.assign({
+  arama: "video dışa aktar",
+  sonuc1: "4K MP4 Yüksek Kalite",
+  sonuc2: "Hızlı Önizleme Taslağı",
+  sonuc3: "Ses ve Altyazı Dışa Aktar"
+}, window.PARAM);
+
+const aramaEl = document.getElementById("aramaMetin");
+const s1El = document.getElementById("sonuc1"), s2El = document.getElementById("sonuc2"), s3El = document.getElementById("sonuc3");
+const r1El = document.getElementById("r1");
+s1El.textContent = P.sonuc1; s2El.textContent = P.sonuc2; s3El.textContent = P.sonuc3;
+
+// Daktilo yazım fonksiyonu
+function guncelle(t) {
+  // 0.4s - 1.7s arasında harfler yazılır
+  const bas = 0.4, bit = 1.7;
+  const metin = P.arama;
+  if (t < bas) {
+    aramaEl.textContent = "";
+  } else if (t >= bit) {
+    aramaEl.textContent = metin;
+  } else {
+    const oran = (t - bas) / (bit - bas);
+    const harfSayisi = Math.max(1, Math.floor(oran * metin.length));
+    aramaEl.textContent = metin.slice(0, harfSayisi);
+  }
+  // 2.4s sonrasında onay rozeti yazısı güncellensin
+  if (t >= 2.4) {
+    r1El.textContent = "Onaylandı";
+    r1El.style.background = "var(--zemin)";
+    r1El.style.color = "var(--yazi)";
+  } else {
+    r1El.textContent = "Çalıştır";
+    r1El.style.background = "";
+    r1El.style.color = "";
+  }
+}
+
+// Başlangıçta tam metin
+aramaEl.textContent = P.arama;
+
+let hazir = false;
+window.seek = (t) => {
+  if (!hazir) { hazir = true; }
+  guncelle(t);
+};
+</script>
+</body></html>

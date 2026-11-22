@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Blueprint zemin</title>
+<!-- Proje yapımı arka plan döngüsü (ADR 0036). 6 sn'de bir ana hücre kayar, döngü dikişsiz. Üret: vedit motion kur zemin-blueprint -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.zemin{position:absolute;inset:0;background:var(--zemin);overflow:hidden;
+  --ana:color-mix(in srgb,var(--vurgu) 42%,transparent);--ara:color-mix(in srgb,var(--vurgu) 16%,transparent)}
+.izgara{position:absolute;inset:-20vw;animation:kay 6s linear infinite;
+  background-image:linear-gradient(var(--ana) .2vw,transparent .2vw),linear-gradient(90deg,var(--ana) .2vw,transparent .2vw),
+    linear-gradient(var(--ara) 1px,transparent 1px),linear-gradient(90deg,var(--ara) 1px,transparent 1px);
+  background-size:20vw 20vw,20vw 20vw,4vw 4vw,4vw 4vw}
+@keyframes kay{to{transform:translate(20vw,20vw)}}
+.cerceve{position:absolute;inset:4vw;border:.2vw solid var(--ana)}
+.cerceve i{position:absolute;width:4vw;height:4vw;border:solid var(--vurgu);opacity:.7}
+.cerceve i:nth-child(1){left:-.2vw;top:-.2vw;border-width:.4vw 0 0 .4vw}
+.cerceve i:nth-child(2){right:-.2vw;top:-.2vw;border-width:.4vw .4vw 0 0}
+.cerceve i:nth-child(3){left:-.2vw;bottom:-.2vw;border-width:0 0 .4vw .4vw}
+.cerceve i:nth-child(4){right:-.2vw;bottom:-.2vw;border-width:0 .4vw .4vw 0}
+</style></head><body>
+<div class="zemin"><div class="izgara"></div><div class="cerceve"><i></i><i></i><i></i><i></i></div></div>
+</body></html>

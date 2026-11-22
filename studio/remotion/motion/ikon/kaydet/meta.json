@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/kaydet",
+  "tur": "ikon",
+  "etiketler": ["kaydet", "yer-imi", "sakla", "hatırla", "koleksiyon"],
+  "ne_zaman": "Konuşmacı içeriği kaydetmeyi, not almayı ya da sonraya saklamayı önerdiğinde (\"kaydet\", \"lazım olur\", \"sakla\", \"not al\").",
+  "sure": { "min": 1.0, "varsayilan": 1.3, "max": 1.6 },
+  "giris_sn": 0.35,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["sag", "ust", "sol", "alt"],
+  "boyut": { "w": 0.25, "h": 0.25 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide bookmark", "url": "https://lucide.dev/icons/bookmark", "lisans": "ISC" }
+}

@@ -1,0 +1,26 @@
+{
+ "title": "Kontrol listesi: maddeler sırayla gelir, tiklenir",
+ "kind": "lower-third",
+ "tags": [
+  "liste",
+  "adim",
+  "kontrol",
+  "ozet"
+ ],
+ "ne_zaman": "Konuşmacı 2-4 adımı, şartı ya da özeti sıraladığında; her madde söylendikçe tiklenir.",
+ "sure": 4.5,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "baslik": {
+   "vars": "Bugünün planı",
+   "max": 28
+  },
+  "maddeler": {
+   "vars": "İlk adım|İkinci adım|Üçüncü adım",
+   "max": 90
+  }
+ }
+}

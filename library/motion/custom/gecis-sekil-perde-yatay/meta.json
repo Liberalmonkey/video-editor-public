@@ -1,0 +1,16 @@
+{
+ "title": "Altıgen karo perde geçişi 16:9; ortası (0,45 sn) kesime gelir",
+ "kind": "transition",
+ "tags": [
+  "gecis",
+  "altigen",
+  "karo",
+  "geometrik",
+  "yatay"
+ ],
+ "ne_zaman": "16:9 videoda bilim, veri, teknoloji ya da sistem anlatan videoda bir bölümden ötekine geçerken; karolar köşeden köşeye yayılarak kapatır; kesimi klibin ortasına (0,45 sn) koy.",
+ "sure": 0.9,
+ "w": 1920,
+ "h": 1080,
+ "loop": false
+}

@@ -1,0 +1,85 @@
+<!--meta
+{"name": "glass-card", "description": "Büyük buzlu cam kart (~520px), konuşmacı kartının solunda/sağında dikey ortalı. kind=stat: büyük sayı 0→value sayar (+suffix), altında title + vurgulu sub. kind=list: başlık + numaralı satırlar (01 02 03) sırayla, her satır sonunda onay rozeti pop.",
+ "props": {"kind": "enum(stat|list)*", "title": "string*", "value": "number", "suffix": "string", "sub": "string", "items": "list", "side": "enum(right|left)"},
+ "default_dur": 4.0, "sfx": {"in": "pop", "per_item": "ding", "extra": [{"at": 0.1, "type": "ticking", "intensity": "soft", "if": "stat"}]}, "tags": ["glass", "ornek-marka", "footage"]}
+-->
+<style>
+.blk-glass-card .gc-col { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; }
+.blk-glass-card.side-left .gc-col { right: calc(var(--W) / 2 + var(--card-half) + var(--u) * 3); }
+.blk-glass-card.side-right .gc-col { left: calc(var(--W) / 2 + var(--card-half) + var(--u) * 3); }
+.blk-glass-card .gc { width: min(calc(var(--u) * 37), calc(var(--W) / 2 - var(--card-half) - var(--u) * 3 - var(--safe-l))); padding: calc(var(--u) * 2.4) calc(var(--u) * 2.6);
+  background: var(--c-glass); border: 1px solid var(--c-glass-border); border-radius: calc(var(--u) * 2.4);
+  -webkit-backdrop-filter: blur(calc(var(--u) * 1.45)) saturate(1.15); backdrop-filter: blur(calc(var(--u) * 1.45)) saturate(1.15);
+  box-shadow: 0 calc(var(--u) * 1.2) calc(var(--u) * 4) rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10); }
+/* stat */
+.blk-glass-card .gc-numrow { display: flex; align-items: baseline; gap: calc(var(--u) * 0.6); color: var(--c-fg); }
+.blk-glass-card .gc-num { font: 600 calc(var(--u) * 10) / 0.95 var(--f-display); letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+  transform-origin: 0% 100%; }
+.blk-glass-card .gc-suf { font: 600 calc(var(--u) * 4.4) / 1 var(--f-display); letter-spacing: -0.02em; opacity: .9; }
+.blk-glass-card .gc-title { font: 600 calc(var(--u) * 2.6) / 1.15 var(--f-display); letter-spacing: -0.015em; color: var(--c-fg);
+  text-shadow: 0 1px calc(var(--u) * 0.6) rgba(0,0,0,.2); }
+.blk-glass-card.kind-stat .gc-title { margin-top: calc(var(--u) * 1.6); }
+.blk-glass-card .gc-sub { margin-top: calc(var(--u) * 0.5); font: 600 calc(var(--u) * 2) / 1.25 var(--f-body); color: var(--c-accent); }
+.blk-glass-card.kind-list .gc-stat, .blk-glass-card.kind-stat .gc-list { display: none; }
+/* list */
+.blk-glass-card .gc-list { margin-top: calc(var(--u) * 1.4); }
+.blk-glass-card .gc-row { display: flex; align-items: center; gap: calc(var(--u) * 1.6); padding: calc(var(--u) * 1.15) 0;
+  border-top: 1px solid rgba(255,255,255,.12); }
+.blk-glass-card .gc-n { flex: none; font: 500 calc(var(--u) * 1.6) / 1 var(--f-mono); letter-spacing: .12em; color: var(--c-fg); opacity: .6; }
+.blk-glass-card .gc-lbl { flex: 1; font: 600 calc(var(--u) * 2.3) / 1.2 var(--f-body); color: var(--c-fg); }
+.blk-glass-card .gc-ok { flex: none; width: calc(var(--u) * 3); height: calc(var(--u) * 3); border-radius: 50%; background: var(--c-fg);
+  color: var(--c-bg); display: grid; place-items: center; box-shadow: 0 calc(var(--u) * 0.3) calc(var(--u) * 1) rgba(0,0,0,.25); }
+.blk-glass-card .gc-ok svg { width: 58%; height: 58%; }
+</style>
+<markup>
+<div class="blk blk-glass-card kind-{{kind}} side-{{side}}">
+  <div class="gc-col"><div class="gc">
+    <div class="gc-stat">
+      <div class="gc-numrow"><span class="gc-num">0</span><span class="gc-suf">{{suffix}}</span></div>
+    </div>
+    <div class="gc-title">{{title}}</div>
+    <div class="gc-sub gc-stat">{{sub}}</div>
+    <div class="gc-list"></div>
+  </div></div>
+</div>
+</markup>
+<script>
+window.GLASS_U = window.GLASS_U || function () {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--u")) || 14;
+};
+HF_BLOCKS["glass-card"] = function (tl, el, P, T, S) {
+  const gc = el.querySelector(".gc"), u = GLASS_U();
+  const dir = P.side === "left" ? -1 : 1;
+  const tin = Math.min(0.5, T.dur * 0.3);
+  tl.fromTo(gc, { opacity: 0, x: dir * u * 2.85, filter: "blur(12px)" },
+    { opacity: 1, x: 0, filter: "blur(0px)", duration: tin, ease: S.ease.ui }, T.start);
+  tl.set(gc, { filter: "none" }, T.start + tin);
+  if (P.kind === "list") {
+    const list = el.querySelector(".gc-list");
+    const items = Array.isArray(P.items) ? P.items : [];
+    const tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    const gap = Math.max(0.2, Math.min(0.4, (T.dur - 1.4) / Math.max(1, items.length)));
+    items.forEach(function (txt, i) {
+      const row = document.createElement("div"); row.className = "gc-row";
+      const n = document.createElement("span"); n.className = "gc-n"; n.textContent = String(i + 1).padStart(2, "0");
+      const l = document.createElement("span"); l.className = "gc-lbl"; l.textContent = txt;
+      const ok = document.createElement("span"); ok.className = "gc-ok"; ok.innerHTML = tick;
+      row.appendChild(n); row.appendChild(l); row.appendChild(ok); list.appendChild(row);
+      const t = T.start + 0.3 + i * gap;
+      tl.fromTo(row, { opacity: 0, x: dir * u * 1.2 }, { opacity: 1, x: 0, duration: 0.4, ease: S.ease.ui }, t);
+      tl.fromTo(ok, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.36, ease: S.ease.overshoot }, t + 0.22);
+    });
+  } else {
+    const num = el.querySelector(".gc-num");
+    if (!P.suffix) el.querySelector(".gc-suf").style.display = "none";
+    if (!P.sub) el.querySelector(".gc-sub").style.display = "none";
+    HF.count(tl, num, T.start + 0.1, 0.8, { value: P.value || 0 }, S);
+    tl.fromTo(num, { scale: 0.92 }, { scale: 1, duration: 0.8, ease: S.ease.ui }, T.start + 0.1);
+    HF.fadeUp(tl, [el.querySelector(".gc-title"), el.querySelector(".gc-sub")], T.start + 0.45, S, { y: u * 0.8, dur: 0.4, stagger: 0.1 });
+  }
+  if (!T.isLast) {
+    const d = S.durations.out;
+    tl.to(gc, { opacity: 0, x: dir * u * 0.6, duration: d, ease: S.ease.exit }, Math.max(T.start + tin, T.start + T.dur - d));
+  }
+};
+</script>

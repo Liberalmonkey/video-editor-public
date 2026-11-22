@@ -1,0 +1,11 @@
+{
+  "name": "ai-video-editor",
+  "private": true,
+  "description": "Renderer bağımlılıkları (HyperFrames sabit sürüm). Python tarafı: pyproject.toml",
+  "scripts": {
+    "hf": "hyperframes"
+  },
+  "devDependencies": {
+    "hyperframes": "0.9.80"
+  }
+}

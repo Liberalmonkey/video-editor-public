@@ -1,0 +1,15 @@
+{
+ "title": "Yorum: balonda üç nokta belirir",
+ "kind": "icon",
+ "tags": [
+  "yorum",
+  "soru",
+  "konusma",
+  "etkilesim"
+ ],
+ "ne_zaman": "Konuşmacı 'yorumlara yazın' dediğinde ya da izleyiciye soru sorduğunda.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

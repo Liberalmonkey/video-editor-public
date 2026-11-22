@@ -1,0 +1,14 @@
+{
+ "title": "Titreşim çizgileri: dikkat, bu titriyor",
+ "kind": "overlay",
+ "tags": [
+  "dikkat",
+  "titresim",
+  "el-cizimi"
+ ],
+ "ne_zaman": "Ortadaki bir öğe (telefon, bildirim, ürün) titreşirken ya da 'işte bu!' diye dikkat çekilirken.",
+ "sure": 1.2,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

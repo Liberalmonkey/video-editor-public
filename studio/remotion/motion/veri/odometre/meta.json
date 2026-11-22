@@ -1,0 +1,15 @@
+{
+  "ad": "veri/odometre",
+  "tur": "veri",
+  "etiketler": ["odometre", "sayaç", "hane", "rakam", "gelir", "takipçi", "rekor"],
+  "ne_zaman": "Konuşmacı hızla yükselen büyük bir sayı, gelir, takipçi ya da dönüm noktası rakamını mekanik şerit dönüşüyle vurgularken (\"on iki bin\", \"rekor kırıldı\", \"satış arttı\").",
+  "sure": { "min": 1.5, "varsayilan": 2.6, "max": 4.0 },
+  "giris_sn": 0.42,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.82, "h": 0.28 },
+  "en_kucuk_px": 320,
+  "kaynak": null
+}

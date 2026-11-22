@@ -1,0 +1,77 @@
+{
+ "_note": "Müzik kayıtları. Kullanıcı dosyayı library/music/<site>/<id>.mp3 olarak koyar, ajan bu listeye kaydeder. Alanlar: id, file, title, artist, site, mood, genre, bpm, energy, vocals, duration_s, license, source_url, attribution (atıf zorunluysa parça sayfasındaki metin birebir; vedit export credits.txt'e yazar). Lisans alanı boş parça kullanılmaz. Dosyalar git'e girmez.",
+ "entries": [
+  {
+   "id": "M1-tech-upbeat",
+   "file": "library/music/pixabay/M1-tech-upbeat.mp3",
+   "title": "(Pixabay — kullanıcı indirdi)",
+   "artist": "",
+   "site": "pixabay",
+   "mood": [
+    "kendinden emin",
+    "temiz",
+    "ileri giden"
+   ],
+   "genre": "kurumsal elektronik / tech",
+   "bpm": 117.5,
+   "energy": "orta-yüksek",
+   "vocals": false,
+   "duration_s": 139.4,
+   "structure": "intro 0–8 sakin · 9 tam · 16 kısa break · 68–75 break · 76 drop",
+   "license": "Pixabay Content License",
+   "source_url": "https://pixabay.com/music/",
+   "attribution": null,
+   "used_in": [
+    "ugc/2026-10-21-ornek-marka-tanitim (in 48.7 → drop 27.3)"
+   ]
+  },
+  {
+   "id": "M2-ad",
+   "file": "pixabay/M2-ad.mp3",
+   "title": "(Pixabay — kullanıcı indirdi)",
+   "artist": "",
+   "site": "pixabay",
+   "mood": [
+    "koyu",
+    "gergin",
+    "temiz"
+   ],
+   "genre": "tech / ambient",
+   "bpm": null,
+   "energy": "orta",
+   "vocals": false,
+   "duration_s": 133.8,
+   "structure": "0–4 yumuşak giriş · 16'dan itibaren sabit yoğunluk · 128 sonrası bitiş",
+   "license": "Pixabay Content License",
+   "source_url": "https://pixabay.com/music/",
+   "attribution": null,
+   "used_in": [
+    "instagram/2026-10-27-php2shell-reels (başlangıç 0 sn, ses 0.4)"
+   ]
+  },
+  {
+   "id": "M3-funk",
+   "file": "library/music/pixabay/funk.mp3",
+   "title": "(Pixabay — kullanıcı indirdi)",
+   "artist": "",
+   "site": "pixabay",
+   "mood": [
+    "enerjik",
+    "sabit",
+    "ileri giden"
+   ],
+   "genre": "funk",
+   "bpm": null,
+   "energy": "orta-yüksek",
+   "vocals": false,
+   "duration_s": 136.0,
+   "structure": "0 sn dolu giriş, ilk 42 sn içinde seviye değişimi 1,2 dB",
+   "license": "Pixabay Content License",
+   "source_url": "https://pixabay.com/music/",
+   "attribution": null,
+   "used_in": [
+    "instagram/instagram-reels-video v4 (gain -12 dB, duck)"
+   ]
+  }
+ ]
+}

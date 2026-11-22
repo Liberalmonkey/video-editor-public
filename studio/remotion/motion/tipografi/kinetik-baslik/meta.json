@@ -1,0 +1,15 @@
+{
+  "ad": "tipografi/kinetik-baslik",
+  "tur": "tipografi",
+  "etiketler": ["başlık", "hook", "kinetik", "tipografi", "vurgu", "açılış"],
+  "ne_zaman": "Videonun ilk 3 saniyesindeki kancada ya da ana tezi vurgulayan güçlü başlık anlarında.",
+  "sure": { "min": 1.4, "varsayilan": 2.6, "max": 4.5 },
+  "giris_sn": 0.42,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "orta"],
+  "boyut": { "w": 0.88, "h": 0.24 },
+  "en_kucuk_px": 260,
+  "kaynak": null
+}

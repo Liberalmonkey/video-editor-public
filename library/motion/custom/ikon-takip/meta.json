@@ -1,0 +1,15 @@
+{
+ "title": "Takip: artı onaya döner",
+ "kind": "icon",
+ "tags": [
+  "takip",
+  "abone",
+  "kisi",
+  "katil"
+ ],
+ "ne_zaman": "Konuşmacı 'takip et' ya da 'abone ol' dediğinde, çağrı cümlesinin sonunda.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

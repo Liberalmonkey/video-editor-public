@@ -1,0 +1,15 @@
+{
+  "ad": "veri/sayac",
+  "tur": "veri",
+  "etiketler": ["sayaç", "sayı", "rakam", "istatistik", "yüzde", "tutar", "metrik"],
+  "ne_zaman": "Konuşmacı büyüyen ya da dikkat çekici tek bir sayı, tutar veya istatistiği vurgularken (\"yüzde seksen\", \"bin beş yüz kişi\", \"üç kat\").",
+  "sure": { "min": 1.5, "varsayilan": 2.2, "max": 4.0 },
+  "giris_sn": 0.36,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.72, "h": 0.26 },
+  "en_kucuk_px": 300,
+  "kaynak": null
+}

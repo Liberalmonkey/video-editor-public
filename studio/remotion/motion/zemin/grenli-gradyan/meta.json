@@ -1,0 +1,15 @@
+{
+  "ad": "zemin/grenli-gradyan",
+  "tur": "zemin",
+  "etiketler": ["zemin", "gradyan", "gren", "arka-plan", "atmosfer"],
+  "ne_zaman": "Başlık kartı, alıntı ya da hikâye geçişi arkasında sinematik ve düşük kontrastlı akan renk bulutları ile film greni gerektiğinde.",
+  "sure": { "min": 2.0, "varsayilan": 5.5, "max": 12.0 },
+  "giris_sn": 0.45,
+  "cikis_sn": 0.28,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["tam"],
+  "boyut": { "w": 1, "h": 1 },
+  "en_kucuk_px": 360,
+  "kaynak": null
+}

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Düz ok</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur ok-duz -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.c{stroke-width:24}
+.g1{animation:ciz .35s cubic-bezier(.3,0,.2,1) .05s both}
+.g2{animation:ciz .16s ease-out .36s both}
+g{animation:cik .25s ease-in .95s both}
+@keyframes cik{to{opacity:0;transform:translateX(40px)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g>
+<path class="c ciz g1" pathLength="1" d="M240 552 Q 520 530 800 540"/>
+<path class="c ciz g2" pathLength="1" d="M705 448 L 808 540 L 702 630"/>
+</g></svg>
+</body></html>

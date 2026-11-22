@@ -1,0 +1,15 @@
+{
+  "ad": "veri/halka",
+  "tur": "veri",
+  "etiketler": ["halka", "yüzde", "oran", "ilerleme", "tamamlanma", "skor", "pay"],
+  "ne_zaman": "Konuşmacı tek bir yüzde oranını, tamamlanma düzeyini ya da başarı skorunu görsel olarak vurgularken (\"yüzde yetmiş sekiz\", \"dörtte üçü\", \"tutma oranı\").",
+  "sure": { "min": 1.5, "varsayilan": 2.4, "max": 4.0 },
+  "giris_sn": 0.38,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.74, "h": 0.32 },
+  "en_kucuk_px": 300,
+  "kaynak": null
+}

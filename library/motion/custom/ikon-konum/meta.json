@@ -1,0 +1,15 @@
+{
+ "title": "Konum: iğne düşer, halka yayar",
+ "kind": "icon",
+ "tags": [
+  "konum",
+  "harita",
+  "yer",
+  "adres"
+ ],
+ "ne_zaman": "Bir şehir, mekân ya da adres söylendiğinde.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

@@ -1,0 +1,15 @@
+{
+  "ad": "parcacik/yildiz-patlama",
+  "tur": "parcacik",
+  "etiketler": ["patlama", "ışın", "vurgu", "parçacık", "enerji"],
+  "ne_zaman": "Konuşmacı çarpıcı bir fikir, ani bir buluş ya da yüksek enerjili geçiş kelimesi söylerken (\"işte o fikir\", \"fark burada\", \"dikkat\").",
+  "sure": { "min": 0.8, "varsayilan": 1.1, "max": 2.0 },
+  "giris_sn": 0.32,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.58, "h": 0.58 },
+  "en_kucuk_px": 220,
+  "kaynak": null
+}

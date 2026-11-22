@@ -1,0 +1,43 @@
+{
+  "name": "video-studyo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config web/vite.config.ts",
+    "build": "vite build --config web/vite.config.ts && vite-node hf/paketle-cli.ts -- web/dist/hf --onizleme",
+    "test": "vitest run --config web/vite.config.ts",
+    "tip": "tsc --noEmit",
+    "sema": "vite-node --config web/vite.config.ts remotion/motion/sema-calistir.ts"
+  },
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "0.19.0",
+    "@react-three/fiber": "8.18.0",
+    "@react-three/postprocessing": "2.19.1",
+    "@remotion/cli": "4.0.484",
+    "@remotion/lottie": "4.0.484",
+    "@remotion/player": "4.0.484",
+    "@remotion/three": "4.0.484",
+    "@remotion/transitions": "4.0.484",
+    "dockview-react": "8.8.3",
+    "immer": "10.1.1",
+    "lottie-web": "5.13.0",
+    "lucide-react": "0.469.0",
+    "postprocessing": "6.39.6",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.484",
+    "three": "0.172.0",
+    "zod": "4.3.6",
+    "zustand": "5.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@types/three": "0.172.0",
+    "@vitejs/plugin-react": "4.3.4",
+    "typescript": "5.7.2",
+    "vite": "6.0.7",
+    "vitest": "3.2.4"
+  }
+}

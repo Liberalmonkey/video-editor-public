@@ -1,0 +1,15 @@
+{
+  "ad": "cerceve/kagit",
+  "tur": "cerceve",
+  "etiketler": ["kağıt", "paspartu", "pano", "çerçeve", "doku"],
+  "ne_zaman": "Konuşmacı bir belgeden, grafikten ya da editöryal alıntıdan söz ederken görüntüyü kağıt dokulu paspartu içine alırken (\"raporda böyle geçiyor\", \"notlara bakalım\").",
+  "sure": { "min": 1.5, "varsayilan": 3.2, "max": 8.0 },
+  "giris_sn": 0.42,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta"],
+  "boyut": { "w": 0.76, "h": 0.64 },
+  "en_kucuk_px": 340,
+  "kaynak": null
+}

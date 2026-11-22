@@ -1,0 +1,15 @@
+{
+  "ad": "veri/cizgi",
+  "tur": "veri",
+  "etiketler": ["çizgi", "grafik", "trend", "ivme", "artış", "düşüş", "zaman"],
+  "ne_zaman": "Konuşmacı zaman içindeki bir artışı, düşüşü, ivmeyi ya da kırılma noktasını anlatırken (\"son altı ayda\", \"bir anda fırladı\", \"trend yükselişte\").",
+  "sure": { "min": 1.5, "varsayilan": 2.8, "max": 4.0 },
+  "giris_sn": 0.42,
+  "cikis_sn": 0.25,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.84, "h": 0.36 },
+  "en_kucuk_px": 340,
+  "kaynak": null
+}

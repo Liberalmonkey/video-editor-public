@@ -1,0 +1,897 @@
+{
+ "surum": 1,
+ "kurallar": [
+  {
+   "id": "K0001",
+   "metin": "YAP: stil seçilmemişse okunan kelime turuncu `#FF7A00`, diğer kelimeler beyaz, siyah kontur, Montserrat 800. Her motorda.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "altyazi",
+   "onem": "P0",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-03",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0002",
+   "metin": "YAP: stil seçiliyse altyazı stilin token'ını alır (font, okunan kelime rengi, kontur); kontrast ölçülür.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "altyazi",
+   "onem": "P0",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olcut": "`tema_token.altyazi_tokeni`, `Kurgu.tsx temaAltyazisi`",
+   "olusturma": "2026-11-19",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0003",
+   "metin": "YAPMA: stil açıkça istemedikçe altyazıya kutu, pop, gölge ya da solgun kelime koyma.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "altyazi",
+   "onem": "P0",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-03",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0004",
+   "metin": "YAP: konuşmacı kadrajdaysa kamera alanını boş bırak; okunur hiçbir şey oraya girmesin.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "kadraj",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0005",
+   "metin": "YAP: stüdyonun güvenli alanı dışına okunur öğe koyma.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "kadraj",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0006",
+   "metin": "YAP: okunur yazı 1080p'de en az 28 px. Sığmıyorsa küçültme, kelime kes.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "kadraj",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0007",
+   "metin": "YAPMA: gerçek görüntüyü oranını bozarak kırpma.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "kadraj",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0008",
+   "metin": "YAPMA: panoya paragraf koyma. Çiz ve tek fikir göster.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "hepsi",
+   "kategori": "icerik",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0009",
+   "metin": "YAP: pano başına tek iddia, başlık olarak yaz.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "hepsi",
+   "kategori": "icerik",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0010",
+   "metin": "YAPMA: sayı, logo, alıntı ya da görüntü uydurma. Eksik varlık kesik çizgili \"bekliyor\" kartı olur.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "hepsi",
+   "kategori": "icerik",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0011",
+   "metin": "YAPMA: sahneyi boş açma. İlk karede gerçek bir şey ekranda olsun.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "hareket",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0012",
+   "metin": "YAP: öğe kendi kelimesinde girsin. Kelimeden önce değil, en geç 2 sn sonra.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "hareket",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0013",
+   "metin": "YAPMA: konuşma sürerken ekran 5 sn'den uzun durağan kalmasın.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "hareket",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 5,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0014",
+   "metin": "YAP: edit sonrası `denetim` çalıştır, bulguları kullanıcıya öner. Reddedilen bulguyu sebebiyle buraya yaz, bir daha sayma.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "hepsi",
+   "kategori": "slop",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0015",
+   "metin": "YAPMA: geçiş ve sayaç sesinde `synth-*` örneklerini kullanma; kütüphaneden gerçek kayıt seç (mixkit, kenney, remotion). Sentetikler \"pırt\" gibi duyuluyor.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "ses",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "01-php2shell"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-04",
+   "guncelleme": "2026-11-04"
+  },
+  {
+   "id": "K0016",
+   "metin": "YAPMA: slop ölçümündeki `OLAY_TEK_TUR` bulgusunu sayma; tek geçiş ailesi `usta-editor` kuralıdır, çeşitlilik eksikliği değil.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "ses",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "08-claude-code-5-skill"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-04",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0017",
+   "metin": "YAPMA: senaryoda ya da malzeme listesinde kullanıcının kamera karşısına geçtiğini varsayma; konuşmacı kullanıcının Google Flow'da ürettiği avatardır, malzeme listesi klip başına prompt verir.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "hepsi",
+   "kategori": "icerik",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "09-claude-code-video-edit"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-04",
+   "guncelleme": "2026-11-04"
+  },
+  {
+   "id": "K0018",
+   "metin": "YAP: nasıl yapılır Reels'inde izleyiciye doğrudan seslen, adımları emir kipiyle ver, harekete geçir; yalnız \"ben şunu yaptım\" diye anlatma.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "hepsi",
+   "kategori": "icerik",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "09-claude-code-video-edit"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-04",
+   "guncelleme": "2026-11-04"
+  },
+  {
+   "id": "K0019",
+   "metin": "YAPMA: kullanıcı istemedikçe senaryoda üçüncü taraf repo adı ve yıldız sayısı kullanma.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "hepsi",
+   "kategori": "icerik",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "09-claude-code-video-edit"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-04",
+   "guncelleme": "2026-11-04"
+  },
+  {
+   "id": "K0020",
+   "metin": "YAP: girdide müzik yoksa atlamadan önce `library/music/manifest.json` ve klasörüne bak, uygun parçayı kullan.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "ses",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "instagram-reels-video"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-05",
+   "guncelleme": "2026-11-05"
+  },
+  {
+   "id": "K0021",
+   "metin": "YAP: her teslimde videoyla birlikte platforma uygun açıklama ve hashtag ver (`yayin.md`).",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "hepsi",
+   "kategori": "yayin",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "instagram-reels-video"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-05",
+   "guncelleme": "2026-11-05"
+  },
+  {
+   "id": "K0022",
+   "metin": "YAP: motion grafiğinin rengi seçili stilden ya da videonun kendi renklerinden gelsin; kullanıcı istemedikçe turuncu (`varsayilan`/`turuncu`) tema yazma.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "renk",
+   "onem": "P0",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "stil-paneli"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olcut": "`kurgu.etkin_tema`, ai-edit tema bölümü.",
+   "olusturma": "2026-11-18",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0023",
+   "metin": "YAPMA: klip başına `metin_stil.renk/vurgu/arka` yazma; renk, font, köşe ve hareket seçili stilin token'ından gelir.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "renk",
+   "onem": "P0",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "instagram/1"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olcut": "`kurgu-denetle` STIL_DISI_RENK, `tests/test_sabit_renk.py`",
+   "olusturma": "2026-11-19",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0024",
+   "metin": "YAPMA: ikonun ya da rozetin arkasına disk, halka, rozet ya da kutu koyma; ikonun kendisi stilin vurgusuyla çizilir, okunurluk yalnız ince kontur ve gölgeyle.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P0",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "instagram/1"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olcut": "`tests/test_ikon_alfa.py`",
+   "olusturma": "2026-11-19",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0025",
+   "metin": "YAPMA: alfalı motion kaynağını (VP9 `alpha_mode=1`, ProRes 4444) H.264 proxy'ye çevirme; önizlemede siyah kutu olur.",
+   "neden": "checks.md göçü",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P0",
+   "kaynak": "kullanici",
+   "kanit": [
+    {
+     "proje": "instagram/1"
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olcut": "`studio/app.py medya_eslemesi`, `tests/test_alfa_seffaf.py`",
+   "olusturma": "2026-11-19",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0026",
+   "metin": "YAPMA: V2 grafiğini bağlı olduğu V1 klibinin kesim sınırından sonraki sahneye taşırma.",
+   "neden": "g05 (parcacik/konfeti) duygusal yıldönümü/lüks saat hediye sahnesinin ortasında, kadının çene ve boyun bölgesinin tam üstünde kalın beyaz konturlu kırmızı-yeşil-mavi çizgi film konfetisi patlatıyor. B",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "renk",
+   "onem": "P0",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 52.0,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0052.5.jpg",
+     "not": "g05 (parcacik/konfeti) duygusal yıldönümü/lüks saat hediye sahnesinin ortasında, kadının çene ve boyun bölgesinin tam üstünde kalın beyaz konturlu kırmızı-yeşil-mavi çizgi film konfetisi patlatıyor. Bu hem temiz-kurumsal stilinin 'Komik çizgi film' kaçınma kuralına hem de yüz/kamera alanı kuralına aykırı. Ayrıca g05 kelimeye çapalanmamış (capa: null) ve 52.60 sn'deki V1 kesimini 0,90 sn aşarak sonraki konuşmacı klibinin ve sil geçişinin üstüne taşıyor (kare sağ kenarında yeni klip girerken konfeti hâlâ ekranda)."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 3,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0027",
+   "metin": "YAPMA: V1 kesimlerinde stil token'ının gecis listesinde olmayan geçiş türlerini kullanma.",
+   "neden": "f7ab82ca6b (inputs_2_2_mp4) klibinin girişindeki 'kay' (sol, 0.3 sn) geçişi kare ortasında koyu boş bir şerit üretiyor ve temiz-kurumsal stilinin izin verdiği geçiş listesinde (['sil', 'yukari-it']) y",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "teknik",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 16.8,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/opt_scene_009.jpg",
+     "not": "f7ab82ca6b (inputs_2_2_mp4) klibinin girişindeki 'kay' (sol, 0.3 sn) geçişi kare ortasında koyu boş bir şerit üretiyor ve temiz-kurumsal stilinin izin verdiği geçiş listesinde (['sil', 'yukari-it']) yer almıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0028",
+   "metin": "YAPMA: konuşan kafa planları arasında yüzleri üst üste bindiren ışık veya erime geçişi kullanma; düz kesim yap.",
+   "neden": "0b9d6f2411 (inputs_3_3_mp4) klibinin girişindeki 'isik' (0.3 sn) geçişi, önceki konuşmacının yüzü ve V2 ikonu ile yeni konuşmacının yüzünü üst üste bindirerek çift yüzlü hayalet görüntü oluşturuyor ve",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "renk",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 30.7,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/opt_scene_018.jpg",
+     "not": "0b9d6f2411 (inputs_3_3_mp4) klibinin girişindeki 'isik' (0.3 sn) geçişi, önceki konuşmacının yüzü ve V2 ikonu ile yeni konuşmacının yüzünü üst üste bindirerek çift yüzlü hayalet görüntü oluşturuyor ve stilin gecis listesinde bulunmuyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0029",
+   "metin": "YAP: örnek veya B-roll klipler içinde 0.8 saniyeyi aşan konuşmasız ölü boşlukları ve yüzün kadraj dışına taştığı anları keserek ritmi koru.",
+   "neden": "e8acab1a5c (inputs_1_mp4) klibi 13.9 sn boyunca tek parça bırakılmış; kaynakta 7.85-9.32 sn (1.47 sn) ve 9.88-11.56 sn (1.68 sn) arasında iki uzun ölü sessizlik var ve 13.5. saniyede yürüyen karakteri",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 10.75,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0013.5.jpg",
+     "not": "e8acab1a5c (inputs_1_mp4) klibi 13.9 sn boyunca tek parça bırakılmış; kaynakta 7.85-9.32 sn (1.47 sn) ve 9.88-11.56 sn (1.68 sn) arasında iki uzun ölü sessizlik var ve 13.5. saniyede yürüyen karakterin yüzü üst kadrajdan yarım kesiliyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 5,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0030",
+   "metin": "YAPMA: ikili diyalog planlarında yüzleri kadraj kenarından kesecek sabit zoom veya sure: 0 değerinde hazır efekt kullanma.",
+   "neden": "cbb3356209 (inputs_3_mp4) klibi 13.4 sn boyunca kesilmemiş; kaynakta 2.10-4.40 sn (2.30 sn sessiz bakışma) ve 5.60-8.42 sn (2.82 sn sessiz kutu açılışı) arasında toplam 5.12 sn diyalogsuz boşluk var. ",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 41.3,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0042.0.jpg",
+     "not": "cbb3356209 (inputs_3_mp4) klibi 13.4 sn boyunca kesilmemiş; kaynakta 2.10-4.40 sn (2.30 sn sessiz bakışma) ve 5.60-8.42 sn (2.82 sn sessiz kutu açılışı) arasında toplam 5.12 sn diyalogsuz boşluk var. Ayrıca hazir zoom_in efektinde sure: 0 verilmiş ve 1.08 ölçek ikili kadrajda yüzleri kenardan yarım kesiyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0031",
+   "metin": "YAPMA: alt bant kartını ürün yakın çekiminin merkezine ya da aynı sözü gösteren gömülü altyazının hemen üstüne yerleştirme.",
+   "neden": "g01 (kart/altbant-konu: '— Arvelior / Tarzını zamanla tamamla') 13.5 sn'de modelin bileğindeki saatin, 15.0 sn'de ise yakın çekim saat kadranının alt yarısının ve kronograf göstergesinin tam üstünü ka",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 12.12,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0015.0.jpg",
+     "not": "g01 (kart/altbant-konu: '— Arvelior / Tarzını zamanla tamamla') 13.5 sn'de modelin bileğindeki saatin, 15.0 sn'de ise yakın çekim saat kadranının alt yarısının ve kronograf göstergesinin tam üstünü kapatıyor. Ayrıca karttaki '— Arvelior' üst etiketi 1080p ölçeğinde ~18–20 px yüksekliğinde kalarak 28 px alt sınırının altında kalıyor ve hemen altındaki gömülü altyazıyla ('Arvelior, tarzını') aynı metni tekrarlıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0032",
+   "metin": "YAPMA: konuşmacı yakın çekimdeyken ikonu ya da yön okunu orta yükseklikte yüz ve gözlük kenarına değecek biçimde yerleştirme.",
+   "neden": "g06 (ikon/ok-asagi, yer: 'oto') dikey orta-sol yükseklikte (~%40–52) yerleştiği için okun sağ kanadı doğrudan konuşmacının gözlüğüne ve yanağına temas ediyor (K0004 ihlali). Ayrıca capa.kelime 5 ('Yap",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 55.48,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0055.5.jpg",
+     "not": "g06 (ikon/ok-asagi, yer: 'oto') dikey orta-sol yükseklikte (~%40–52) yerleştiği için okun sağ kanadı doğrudan konuşmacının gözlüğüne ve yanağına temas ediyor (K0004 ihlali). Ayrıca capa.kelime 5 ('Yapay', 55.58 sn) olarak ayarlandığından ok, işaret ettiği 'açıklamaya' (kelime 3, 54.30 sn) kelimesinden 1,18 sn geç giriyor ve yeni cümle ('Yapay zeka ile ilgili') boyunca alakasız biçimde ekranda kalıyor (K0012 ihlali)."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 3,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0033",
+   "metin": "YAP: vurgu ikonunu yardımcı fiile değil anlamı taşıyan anahtar kelimeye çapala ve sonraki cümle başlamadan ekrandan çıkar.",
+   "neden": "g04 (ikon/ates) inputs_3_3_mp4 içinde anlamı taşıyan 'viral' (kelime 4, 33.11 sn) yerine yardımcı fiil olan 'olabilirsin.' (kelime 5, 33.41 sn) üzerine çapalanmış. 33.0 sn'de 'viral' okunurken ikon gö",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "genel",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 33.31,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0034.5.jpg",
+     "not": "g04 (ikon/ates) inputs_3_3_mp4 içinde anlamı taşıyan 'viral' (kelime 4, 33.11 sn) yerine yardımcı fiil olan 'olabilirsin.' (kelime 5, 33.41 sn) üzerine çapalanmış. 33.0 sn'de 'viral' okunurken ikon görünmüyor; 34.5 sn'de ise yeni cümle ('Çünkü artık önemli', 34.47 sn) başladığı hâlde alev ikonu ekranda kalmaya devam ediyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0034",
+   "metin": "YAPMA: klipteki punch veya hazır efekt başlangıç zamanını (t) kaynak videonun mutlak zamanına göre yazma; her zaman klip içi göreli zamana (0 <= t < sure) göre tanımla.",
+   "neden": "Açılış hook klibinde (90326bd406, inputs_1_1_mp4, giris: 1.2, sure: 2.9) punches dizisindeki vurgu zamanı t: 3.15 olarak yazılmış; klip süresi 2.9 sn olduğu için punch-in hiç çalışmıyor.",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P2",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 0.0,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/opt_scene_001.jpg",
+     "not": "Açılış hook klibinde (90326bd406, inputs_1_1_mp4, giris: 1.2, sure: 2.9) punches dizisindeki vurgu zamanı t: 3.15 olarak yazılmış; klip süresi 2.9 sn olduğu için punch-in hiç çalışmıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0035",
+   "metin": "YAPMA: müzik klibinin süresini son V1 klibinin bitişinden uzun bırakıp video sonunda siyah ekran üretme.",
+   "neden": "Son V1 klibi (f80f0d8b52) 56.34 sn'de bitmesine rağmen A3 izindeki e3_muzik klibi 69.853 sn sürdüğü için videonun son 13.59 saniyesi tamamen siyah ekran olarak render edilmiş (kare_0057.0.jpg ve kare_",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "teknik",
+   "onem": "P0",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 56.34,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0057.0.jpg",
+     "not": "Son V1 klibi (f80f0d8b52) 56.34 sn'de bitmesine rağmen A3 izindeki e3_muzik klibi 69.853 sn sürdüğü için videonun son 13.59 saniyesi tamamen siyah ekran olarak render edilmiş (kare_0057.0.jpg ve kare_0060.0.jpg tam siyah; olcum.json STATIK_UZUN 56.5-69.5 sn)."
+    },
+    {
+     "proje": "instagram/1",
+     "zaman": 56.11,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0057.0.jpg",
+     "not": "Son V1 video klibi (a2cbae2d84) 56.11 sn'de bittiği halde A3 müzik klibi (e3-muzik, sure 69.85 sn) ve A2 geçiş sesi (e3-gecis-6, bas 59.77 sn) zaman çizelgesini 69.93 sn'ye uzatıyor; 56.11–69.93 sn arasında 13.82 sn boyunca tamamen siyah ekran render edilmiş (57.0 sn karesi tam siyah)."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0036",
+   "metin": "YAP: konuşan kafa kliplerinde ilk kelimenin Whisper başlangıcı 0.0 sn olsa bile konuşmacının ağzını açmadığı baştaki nefes ve bekleme payını giris zamanını ileri alarak kes.",
+   "neden": "e8b67138b4 klibi (inputs_2_2_mp4) giris: 0.0 ile başlıyor; kaynakta 'Böyle' kelimesi Whisper'da 0.0–1.22 görünse de konuşmacı ağzını yaklaşık 0.75 sn'ye kadar açmıyor ve 15.0 sn karesinde konuşma başl",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 14.9,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0015.0.jpg",
+     "not": "e8b67138b4 klibi (inputs_2_2_mp4) giris: 0.0 ile başlıyor; kaynakta 'Böyle' kelimesi Whisper'da 0.0–1.22 görünse de konuşmacı ağzını yaklaşık 0.75 sn'ye kadar açmıyor ve 15.0 sn karesinde konuşma başlamadan 0.75 sn durağan bekleme oluşuyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 5,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0037",
+   "metin": "YAP: karşılaştırmalı veya çok adımlı kısa videolarda her kademeyi seçili stilin token'ıyla üretilmiş, anahtar kelimeye çapalı kısa bir V2 grafik öğesiyle görsel olarak ayır.",
+   "neden": "kurgu.json içinde V2 izi açık ve piksel-8bit stili (Pixelify Sans/VT323, #F8B800/#3CBCFC/#58D854/#F83800, kose: 0, golge: sert) seçili olmasına rağmen videonun tamamında 0 adet V2 grafik/motion klibi ",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "renk",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 0.0,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0001.5.jpg",
+     "not": "kurgu.json içinde V2 izi açık ve piksel-8bit stili (Pixelify Sans/VT323, #F8B800/#3CBCFC/#58D854/#F83800, kose: 0, golge: sert) seçili olmasına rağmen videonun tamamında 0 adet V2 grafik/motion klibi var. Açılış kancası (0.0-2.9 sn, 'Böyle UGC videolar yaparsan izlenmez.') ve 3 kademeli karşılaştırma yapısı görsel olarak desteklenmemiş."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0038",
+   "metin": "YAPMA: A3 müzik klibini son V1 klibinin bitiş süresinden uzun bırakarak video sonunda boş kare oluşturma.",
+   "neden": "Son V1 klibi (ada4415b2e) 53.05 sn'de bittiği hâlde A3 müzik klibi (e3-muzik) 68.653 sn sürdüğü için 53.05–68.72 sn arasında 15,67 sn boyunca ekran tamamen boş koyu lacivert-gri zemin olarak render ed",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "teknik",
+   "onem": "P0",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 53.05,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0054.0.jpg",
+     "not": "Son V1 klibi (ada4415b2e) 53.05 sn'de bittiği hâlde A3 müzik klibi (e3-muzik) 68.653 sn sürdüğü için 53.05–68.72 sn arasında 15,67 sn boyunca ekran tamamen boş koyu lacivert-gri zemin olarak render edilmiş."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-21"
+  },
+  {
+   "id": "K0039",
+   "metin": "YAPMA: konuşan kafa kliplerini 4.5 saniyeden uzun süre hiçbir ölçek değişimi, hazır efekt veya kesim olmadan durağan bırakma.",
+   "neden": "2f7fdff97d (27.50-35.95 sn, 8.45 sn) ve ada4415b2e (44.80-53.05 sn, 8.25 sn) konuşan kafa kliplerinde tek bir punch efekti kullanıldığı için 30.75-35.95 sn arasında 5.20 sn ve 44.80-50.30 sn arasında ",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 30.75,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0033.0.jpg",
+     "not": "2f7fdff97d (27.50-35.95 sn, 8.45 sn) ve ada4415b2e (44.80-53.05 sn, 8.25 sn) konuşan kafa kliplerinde tek bir punch efekti kullanıldığı için 30.75-35.95 sn arasında 5.20 sn ve 44.80-50.30 sn arasında 5.50 sn boyunca ekranda hiçbir görsel değişim, kesim veya ölçek hareketi yok."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0040",
+   "metin": "YAP: son V1 klibini son kelimenin bitiminden en çok 0.15 saniye sonra kes ve V1 bitişiyle sekans sonu arasında boş ekran bırakma.",
+   "neden": "V1 izindeki son klip (ada4415b2e) 53.05 sn'de bittiği ve 'çekeyim.' kelimesi kaynakta 8.74 sn'de (timeline 52.69 sn) tamamlandığı halde klip sonunda 0.36 sn sessiz kuyruk var ve V1 bittikten sonra 68.",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "teknik",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 53.05,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0054.0.jpg",
+     "not": "V1 izindeki son klip (ada4415b2e) 53.05 sn'de bittiği ve 'çekeyim.' kelimesi kaynakta 8.74 sn'de (timeline 52.69 sn) tamamlandığı halde klip sonunda 0.36 sn sessiz kuyruk var ve V1 bittikten sonra 68.65 sn'ye kadar 15.6 sn boyunca karanlık boş ekran (STATIK_UZUN) oluşuyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0041",
+   "metin": "YAPMA: ardışık konuşan kafa kliplerinde üç kez üst üste aynı hazır efekti tekrarlama; punch ile zoom_in/odak_zoom arasında çeşitlilik kur.",
+   "neden": "Dört anlatıcı klibinin tamamında (04a961081f, cac33ce6e6, 2f7fdff97d, ada4415b2e) art arda aynı hazır efekt ('punch') kullanılmış; hazır efekt çeşitliliği yok.",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "renk",
+   "onem": "P2",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 0.0,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0030.0.jpg",
+     "not": "Dört anlatıcı klibinin tamamında (04a961081f, cac33ce6e6, 2f7fdff97d, ada4415b2e) art arda aynı hazır efekt ('punch') kullanılmış; hazır efekt çeşitliliği yok."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 3,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0042",
+   "metin": "YAPMA: konuşmacının başı kadrajın üst sınırına yakınsa kafayı üst kenardan kesecek 1.05 üstü punch veya zoom_in efekti uygulama.",
+   "neden": "7a578c9643 (inputs_2_mp4, bas: 19.35, sure: 9.57) klibinde konuşmacının başı zaten üst kenara yakınken t: 3.3'te uygulanan s: 1.14 ölçekli punch efekti yüzünden kare_0024.0.jpg karesinde konuşmacının ",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "teknik",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 22.65,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0024.0.jpg",
+     "not": "7a578c9643 (inputs_2_mp4, bas: 19.35, sure: 9.57) klibinde konuşmacının başı zaten üst kenara yakınken t: 3.3'te uygulanan s: 1.14 ölçekli punch efekti yüzünden kare_0024.0.jpg karesinde konuşmacının alnı ve başının üst kısmı kadraj dışına taşmış."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 3,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0043",
+   "metin": "YAPMA: ilk kelimenin Whisper başlangıcı 0.0 sn olan kliplerde baştaki nefes payını keserken giris değerini kelimenin bitişine (e) 0.70 saniyeden daha fazla yaklaştırıp ilk heceyi yutma.",
+   "neden": "0c4c05aa3a (inputs_2_2_mp4) klibinde ilk kelime olan 'Böyle' (Whisper s: 0.0, e: 1.22) için baştaki boşluğu kesmek amacıyla giris: 0.65 verilmiş; ancak 0.65 sn kelimenin ilk hecesinin üstüne bindiği i",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P2",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 9.78,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0010.5.jpg",
+     "not": "0c4c05aa3a (inputs_2_2_mp4) klibinde ilk kelime olan 'Böyle' (Whisper s: 0.0, e: 1.22) için baştaki boşluğu kesmek amacıyla giris: 0.65 verilmiş; ancak 0.65 sn kelimenin ilk hecesinin üstüne bindiği için 'Böyle' kelimesinin başı yutuluyor ve klip doğrudan 'UGC videolar' (kare_0010.5.jpg) ile başlıyor gibi duyuluyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0044",
+   "metin": "YAPMA: konuşmacı çekiminde mikrofon kolu ya da ön plandaki nesnelerin bulunduğu orta-sol/alt kuşağa yön oku veya ikon yerleştirme; temiz üst boşluğu seç.",
+   "neden": "g-aciklama-ok (ikon/ok-asagi) klibi yer: 'oto' bırakıldığı için bileşenin 'alt' önceliğiyle orta-sol kuşağa (y ≈ %47–%60) yerleşmiş; sarı ok doğrudan siyah mikrofon kolunun üstüne binerek görsel karma",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 45.88,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0046.5.jpg",
+     "not": "g-aciklama-ok (ikon/ok-asagi) klibi yer: 'oto' bırakıldığı için bileşenin 'alt' önceliğiyle orta-sol kuşağa (y ≈ %47–%60) yerleşmiş; sarı ok doğrudan siyah mikrofon kolunun üstüne binerek görsel karmaşa yaratıyor ve çene/omuz hattı ile altyazı bandı ('açıklamaya koydum.') arasında sıkışıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0045",
+   "metin": "YAPMA: videodaki tüm V2 grafiklerini art arda yalnız ikon ailesinden kurma; en geç üçüncü öğede seçili stilin tipografisini gösteren farklı bir bileşen ailesiyle görsel çeşitlilik sağla.",
+   "neden": "Videodaki 4 V2 klibinin tamamı (g-izlenmez-carpi, g-azizlenir-unlem, g-viral-ates, g-aciklama-ok) art arda aynı ikon ailesinden seçilmiş; piksel-8bit stilinin tipografisini ve keskin köşeli (kose: 0, ",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "renk",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 0.0,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0030.0.jpg",
+     "not": "Videodaki 4 V2 klibinin tamamı (g-izlenmez-carpi, g-azizlenir-unlem, g-viral-ates, g-aciklama-ok) art arda aynı ikon ailesinden seçilmiş; piksel-8bit stilinin tipografisini ve keskin köşeli (kose: 0, golge: sert) karakterini taşıyan hiçbir kart/etiket bileşeni kullanılmamış. Ayrıca g-viral-ates (29.542 + 1.35 = 30.892 sn) bağlı olduğu V1 klibinin (07079a10da, bitiş 30.865 sn) kesim sınırını 0.027 sn aşıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0046",
+   "metin": "YAPMA: ilk kelimesi 0.0 saniyede başlayan konuşmalı klibin girişine iki konuşmacının yüzünü üst üste bindiren geçiş efekti koyma; düz kesim yap.",
+   "neden": "a8cba1247d (2.933 sn) klibinin girişinde 0.3 sn süreli piksel geçişi kullanılmış; ancak inputs_1_mp4 kaynağında ilk kelime ('Gerçek', 0.0-0.62 sn) 0.0 sn'de hemen başladığı için geçiş sırasında iki ko",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "genel",
+   "onem": "P2",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 2.93,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0003.0.jpg",
+     "not": "a8cba1247d (2.933 sn) klibinin girişinde 0.3 sn süreli piksel geçişi kullanılmış; ancak inputs_1_mp4 kaynağında ilk kelime ('Gerçek', 0.0-0.62 sn) 0.0 sn'de hemen başladığı için geçiş sırasında iki konuşmacının yüzü birbirine karışıyor ve diğer tüm sunucu-örnek geçişleri düz kesim iken yalnız bu kesimde geçiş bulunması tutarsızlık yaratıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-20",
+   "guncelleme": "2026-11-20"
+  }
+ ]
+}

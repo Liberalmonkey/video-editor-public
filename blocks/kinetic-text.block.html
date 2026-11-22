@@ -1,0 +1,29 @@
+<!--meta
+{"name": "kinetic-text", "description": "Tek ifade, kelime kelime maskeli giriş; 'highlight' kelimeleri vurgu renginde. Ekranda aynı anda tek cümle kuralı için ana araç.",
+ "props": {"text": "string*", "highlight": "string", "position": "enum(center|top|bottom)", "size": "enum(m|l|xl)", "stagger": "number"},
+ "default_dur": 2.5, "sfx": {"in": "pop"}, "tags": ["animation", "footage", "reels", "emphasis"]}
+-->
+<style>
+.blk-kinetic-text { display: flex; justify-content: center; padding: 0 calc(var(--safe-r) + var(--u) * 7) 0 calc(var(--safe-l) + var(--u) * 7); text-align: center; }
+.blk-kinetic-text.pos-center { align-items: center; }
+.blk-kinetic-text.pos-top { align-items: flex-start; padding-top: calc(var(--safe-t) + var(--u) * 8); }
+.blk-kinetic-text.pos-bottom { align-items: flex-end; padding-bottom: calc(var(--safe-b) + var(--u) * 10); }
+.blk-kinetic-text .kt { max-width: 18ch; }
+.blk-kinetic-text.sz-m .kt { font-size: calc(var(--u) * 6.5); }
+.blk-kinetic-text.sz-l .kt { font-size: calc(var(--u) * 9); }
+.blk-kinetic-text.sz-xl .kt { font-size: calc(var(--u) * 12.5); max-width: 12ch; }
+</style>
+<markup>
+<div class="blk blk-kinetic-text pos-{{position}} sz-{{size}}"><div class="kt t-display">{{text}}</div></div>
+</markup>
+<script>
+HF_BLOCKS["kinetic-text"] = function (tl, el, P, T, S) {
+  const words = HF.splitWords(el.querySelector(".kt"), P.highlight);
+  HF.maskIn(tl, words, T.start, S, { stagger: P.stagger || S.durations.stagger });
+  el.querySelectorAll(".hl").forEach(function (h, i) {
+    tl.fromTo(h, { scale: 1 }, { scale: 1.06, duration: 0.18, yoyo: true, repeat: 1, ease: S.ease.ui },
+      T.start + 0.25 + words.length * S.durations.stagger + i * 0.08);
+  });
+  HF.exit(tl, el, T, S);
+};
+</script>

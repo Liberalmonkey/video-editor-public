@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/ok-kivrik",
+  "tur": "ikon",
+  "etiketler": ["ok", "kıvrık", "dönüş", "detay", "alt-adım"],
+  "ne_zaman": "Konuşmacı bir noktayı alt başlığa, sonuca ya da ayrıntıya bağladığında (\"bu yüzden\", \"yani\", \"örneğin\", \"buraya bak\").",
+  "sure": { "min": 1.0, "varsayilan": 1.3, "max": 1.6 },
+  "giris_sn": 0.38,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["sol", "ust", "sag", "alt"],
+  "boyut": { "w": 0.26, "h": 0.26 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide corner-down-right", "url": "https://lucide.dev/icons/corner-down-right", "lisans": "ISC" }
+}

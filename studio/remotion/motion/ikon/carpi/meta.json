@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/carpi",
+  "tur": "ikon",
+  "etiketler": ["hata", "yanlış", "red", "hayır", "olumsuz"],
+  "ne_zaman": "Konuşmacı bir şeyin yanlış, hatalı ya da yapılmaması gerektiğini söylediği kelimede (\"hayır\", \"yanlış\", \"olmaz\", \"hata\").",
+  "sure": { "min": 1.0, "varsayilan": 1.25, "max": 1.6 },
+  "giris_sn": 0.35,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "sag", "sol", "alt"],
+  "boyut": { "w": 0.3, "h": 0.3 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide x", "url": "https://lucide.dev/icons/x", "lisans": "ISC" }
+}

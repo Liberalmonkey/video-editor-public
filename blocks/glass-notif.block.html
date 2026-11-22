@@ -1,0 +1,67 @@
+<!--meta
+{"name": "glass-notif", "description": "iOS bildirimi gibi buzlu cam kart: üstte uygulama adı + saat (soluk), altta mesaj (≤2 satır). check=true ise sağda beyaz daire içinde koyu tik rozeti pop eder. Yukarıdan kayarak netleşir.",
+ "props": {"app": "string*", "time": "string", "text": "string*", "position": "enum(right|left|center)", "check": "bool"},
+ "default_dur": 2.5, "sfx": {"in": "pop", "extra": [{"at": 0.55, "type": "ding", "intensity": "soft", "if": "check"}]}, "tags": ["glass", "ornek-marka", "footage"]}
+-->
+<style>
+.blk-glass-notif .gn { position: absolute; top: calc(var(--H) * 0.30); width: min(calc(var(--W) * 0.32), calc(var(--u) * 41), calc(var(--W) / 2 - var(--card-half) - var(--u) * 3 - var(--safe-l)));
+  display: flex; align-items: center; gap: calc(var(--u) * 1.5);
+  padding: calc(var(--u) * 1.4) calc(var(--u) * 1.8) calc(var(--u) * 1.4) calc(var(--u) * 1.4);
+  background: var(--c-glass); border: 1px solid var(--c-glass-border); border-radius: calc(var(--u) * 2.2);
+  -webkit-backdrop-filter: blur(calc(var(--u) * 1.45)) saturate(1.15); backdrop-filter: blur(calc(var(--u) * 1.45)) saturate(1.15);
+  box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 3.4) rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10); }
+/* left/right: konuşmacı kartının (portrait, yarı genişlik H*0.2475) dışında, haplarla aynı hizada */
+.blk-glass-notif.pos-right .gn { left: calc(var(--W) / 2 + var(--card-half) + var(--u) * 3); }
+.blk-glass-notif.pos-left .gn { right: calc(var(--W) / 2 + var(--card-half) + var(--u) * 3); }
+.blk-glass-notif.pos-center .gn { left: 0; right: 0; margin: 0 auto; }
+.blk-glass-notif .gn-app-ic { flex: none; align-self: flex-start; width: calc(var(--u) * 4.2); height: calc(var(--u) * 4.2);
+  border-radius: calc(var(--u) * 1.1); background: var(--c-glass-tile); border: 1px solid rgba(255,255,255,.08);
+  display: grid; place-items: center; color: var(--c-fg); }
+.blk-glass-notif .gn-app-ic svg { width: calc(var(--u) * 2.2); height: calc(var(--u) * 2.2); }
+.blk-glass-notif .gn-body { flex: 1; min-width: 0; }
+.blk-glass-notif .gn-head { display: flex; justify-content: space-between; align-items: baseline; gap: calc(var(--u) * 1);
+  font: 600 calc(var(--u) * 1.75) / 1.2 var(--f-body); color: var(--c-fg); opacity: .78; }
+.blk-glass-notif .gn-time { font-weight: 500; color: var(--c-fg); opacity: .8; font-variant-numeric: tabular-nums; }
+.blk-glass-notif .gn-text { margin-top: calc(var(--u) * 0.5); font: 500 calc(var(--u) * 2.3) / 1.28 var(--f-body); color: var(--c-fg);
+  text-shadow: 0 1px calc(var(--u) * 0.5) rgba(0,0,0,.2);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.blk-glass-notif .gn-check { flex: none; width: calc(var(--u) * 3.6); height: calc(var(--u) * 3.6); border-radius: 50%;
+  background: var(--c-fg); color: var(--c-bg); display: none; place-items: center;
+  box-shadow: 0 calc(var(--u) * 0.3) calc(var(--u) * 1) rgba(0,0,0,.25); }
+.blk-glass-notif .gn-check svg { width: 58%; height: 58%; }
+</style>
+<markup>
+<div class="blk blk-glass-notif pos-{{position}}">
+  <div class="gn">
+    <div class="gn-app-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg></div>
+    <div class="gn-body">
+      <div class="gn-head"><span class="gn-app">{{app}}</span><span class="gn-time">{{time}}</span></div>
+      <div class="gn-text">{{text}}</div>
+    </div>
+    <div class="gn-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+  </div>
+</div>
+</markup>
+<script>
+window.GLASS_U = window.GLASS_U || function () {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--u")) || 14;
+};
+HF_BLOCKS["glass-notif"] = function (tl, el, P, T, S) {
+  const gn = el.querySelector(".gn"), u = GLASS_U();
+  if (!P.time) el.querySelector(".gn-time").style.display = "none";
+  const tin = Math.min(0.45, T.dur * 0.35);
+  tl.fromTo(gn, { opacity: 0, y: -u * 2.15, filter: "blur(12px)" },
+    { opacity: 1, y: 0, filter: "blur(0px)", duration: tin, ease: S.ease.ui }, T.start);
+  tl.set(gn, { filter: "none" }, T.start + tin);
+  const chk = P.check === true || P.check === "true" || P.check === 1;
+  if (chk) {
+    const b = el.querySelector(".gn-check");
+    b.style.display = "grid";
+    tl.fromTo(b, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: S.ease.overshoot }, T.start + Math.min(0.55, T.dur * 0.4));
+  }
+  if (!T.isLast) {
+    const d = S.durations.out;
+    tl.to(gn, { opacity: 0, y: -u * 0.6, duration: d, ease: S.ease.exit }, Math.max(T.start + tin, T.start + T.dur - d));
+  }
+};
+</script>

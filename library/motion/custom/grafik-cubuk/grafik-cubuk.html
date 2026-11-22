@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Çubuk grafik</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Saat window.seek ile sürülür. Üret: vedit motion kur grafik-cubuk -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+/* u: dikeyde 1vw, yatay sekansta güvenli alana sığacak kadar küçülür. */
+:root{--u:min(1vw,.9vh)}
+.sahne{position:absolute;left:9vw;top:16vh;width:calc(65*var(--u));font-family:var(--font);color:var(--yazi);opacity:0}
+.panel{background:var(--zemin);border-radius:var(--kose,18px);padding:calc(4*var(--u)) calc(4.5*var(--u));box-sizing:border-box}
+h1{margin:0 0 calc(3*var(--u));font-weight:var(--agirlik,800);font-size:calc(4.6*var(--u));line-height:1.1}
+.alan{display:flex;align-items:flex-end;gap:calc(3*var(--u));height:calc(33*var(--u))}
+.sutun{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.deger{font-weight:800;font-size:calc(4.4*var(--u));margin-bottom:calc(1.2*var(--u));font-variant-numeric:tabular-nums;font-family:var(--font-rakam);white-space:nowrap}
+.cubuk{width:100%;max-width:calc(13*var(--u));background:var(--vurgu);border-radius:calc(var(--kose,18px)*.5) calc(var(--kose,18px)*.5) 0 0}
+.taban{height:calc(.5*var(--u));background:var(--soluk);opacity:.5;border-radius:99px}
+.etiketler{display:flex;gap:calc(3*var(--u));margin-top:calc(1.4*var(--u))}
+.etiket{font-family:var(--font-rakam);flex:1;text-align:center;font-weight:700;font-size:calc(3.4*var(--u));color:var(--soluk);white-space:nowrap}
+</style></head><body>
+<div class="sahne" id="s"><div class="panel" id="p"><h1 id="b"></h1><div class="alan" id="a"></div><div class="taban"></div><div class="etiketler" id="e"></div></div></div>
+<script>
+const P = Object.assign({ baslik: "Yıllık büyüme", etiketler: "2023,2024,2025", degerler: "40,65,90", birim: "%" }, window.PARAM);
+const D = String(P.degerler).split(",").map(x => parseFloat(x.trim())).filter(Number.isFinite).map(x => Math.max(0, x)).slice(0, 4);
+if (!D.length) D.push(0);
+const E = String(P.etiketler).split(",").map(x => x.trim());
+const EN = Math.max(...D) || 1, OND = D.some(x => x % 1) ? 1 : 0;
+const birim = String(P.birim || "");
+// Türkçede yüzde işareti sayının önüne gelir: %40.
+const yaz = v => { const s = v.toLocaleString("tr-TR", { minimumFractionDigits: OND, maximumFractionDigits: OND });
+  return birim === "%" ? "%" + s : s + (birim ? (birim.length > 1 ? " " : "") + birim : ""); };
+document.getElementById("b").textContent = P.baslik;
+const A = document.getElementById("a"), ET = document.getElementById("e");
+const S = D.map((v, i) => {
+  const c = document.createElement("div"); c.className = "sutun";
+  c.innerHTML = '<div class="deger"></div><div class="cubuk"></div>';
+  if (v < EN) c.querySelector(".cubuk").style.opacity = .5;  // en büyük değer tam renk
+  A.appendChild(c);
+  const l = document.createElement("div"); l.className = "etiket"; l.textContent = E[i] || ""; ET.appendChild(l);
+  return { d: c.querySelector(".deger"), c: c.querySelector(".cubuk"), v };
+});
+const k = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+const eo = x => 1 - Math.pow(1 - x, 3), ei = x => x * x;
+const s = document.getElementById("s"), p = document.getElementById("p");
+window.seek = t => {
+  const gir = eo(k(t, 0, .45)), cik = ei(k(t, 3.45, 3.85));
+  s.style.opacity = Math.min(1, gir * 3) * (1 - cik);
+  s.style.transform = `translateY(calc(${(1 - gir) * 4 - cik * 3}*var(--u)))`;
+  p.style.clipPath = `inset(${(1 - gir) * 100}% 0 0 0)`;
+  S.forEach((o, i) => {
+    const e = eo(k(t, .45 + i * .15, 1.35 + i * .15));
+    o.c.style.height = `calc(${26 * o.v / EN * e}*var(--u))`;
+    o.d.textContent = yaz(OND ? o.v * e : Math.round(o.v * e));
+    o.d.style.opacity = Math.min(1, e * 4);
+  });
+};
+seek(0);
+</script>
+</body></html>

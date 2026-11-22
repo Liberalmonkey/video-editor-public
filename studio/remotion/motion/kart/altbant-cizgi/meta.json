@@ -1,0 +1,15 @@
+{
+  "ad": "kart/altbant-cizgi",
+  "tur": "altbant",
+  "etiketler": ["altbant", "isim", "unvan", "konuşmacı", "kaynak", "çizgi"],
+  "ne_zaman": "Konuşmacının adı, unvanı ya da bir kaynağın künyesi ekranda ilk kez tanıtılırken.",
+  "sure": { "min": 2.5, "varsayilan": 3.2, "max": 4.0 },
+  "giris_sn": 0.4,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["alt", "ust"],
+  "boyut": { "w": 0.8, "h": 0.16 },
+  "en_kucuk_px": 240,
+  "kaynak": null
+}

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Takip çağrısı</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur takip-cagri -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.sahne{position:absolute;left:9vw;top:16vh;max-width:65vw;font-family:var(--font)}
+.panel{display:inline-flex;align-items:center;gap:2.8vmin;max-width:65vw;box-sizing:border-box;padding:2.8vmin 3.6vmin 2.8vmin 2.8vmin;
+  background:var(--zemin);color:var(--yazi);border-radius:var(--kose,18px);
+  animation:gir .45s cubic-bezier(.16,1,.3,1) .05s both,cik .4s cubic-bezier(.6,0,.9,.4) 2.95s both}
+.avatar{flex:none;width:12vmin;height:12vmin;border-radius:50%;background:var(--vurgu);overflow:hidden}
+.avatar svg{width:100%;height:100%;fill:var(--vurgu-ustu,var(--zemin))}
+.sag{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:1.6vmin}
+.ad{font-weight:var(--agirlik,800);font-size:4.8vmin;line-height:1.1}
+.dugme{position:relative;display:grid;border-radius:99px;font-weight:800;font-size:4vmin;line-height:1;
+  animation:bas .35s ease-in-out 1.15s both}
+.dar>span{white-space:normal!important;text-align:center;line-height:1.15}
+.dugme>span{grid-area:1/1;display:flex;align-items:center;justify-content:center;gap:1vmin;padding:1.7vmin 3.4vmin;border-radius:99px;white-space:nowrap}
+.once{background:var(--vurgu);color:var(--vurgu-ustu,var(--zemin));animation:sondur .08s linear 1.3s both}
+.sonra{color:var(--yazi);box-shadow:inset 0 0 0 .4vmin var(--yazi);animation:yak .15s ease-out 1.38s both}
+.sonra svg{width:3.4vmin;height:3.4vmin;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.sonra path{stroke-dasharray:1;animation:ciz .3s ease-out 1.45s both}
+.dokun{position:absolute;left:50%;top:50%;width:9vmin;height:9vmin;margin:-4.5vmin 0 0 -4.5vmin;border-radius:50%;box-shadow:0 0 0 .5vmin var(--yazi);
+  pointer-events:none;animation:dalga .5s ease-out 1.15s both}
+@keyframes gir{from{transform:translateY(5vmin);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes cik{to{transform:translateY(5vmin);opacity:0}}
+@keyframes bas{0%,100%{transform:scale(1)}45%{transform:scale(.88)}}
+@keyframes sondur{to{opacity:0}}
+@keyframes yak{from{opacity:0}to{opacity:1}}
+@keyframes ciz{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes dalga{0%{transform:scale(.3);opacity:0}20%{opacity:.9}100%{transform:scale(1.5);opacity:0}}
+</style></head><body>
+<div class="sahne"><div class="panel">
+  <div class="avatar"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="15" r="7.5"/><path d="M5 40c1-9 7.5-14 15-14s14 5 15 14z"/></svg></div>
+  <div class="sag"><div class="ad" id="ad"></div>
+    <div class="dugme"><span class="once" id="once"></span>
+      <span class="sonra"><svg viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg><b id="sonra" style="font-weight:800"></b></span>
+      <i class="dokun"></i></div></div>
+</div></div>
+<script>
+// Dolgu üstündeki yazı: temanın zemin ve yazı renginden hangisi daha okunaklıysa o (pastel vurgulu açık temada zemin rengi okunmaz).
+function zitYazi(dolgu, ad) {
+  const p = document.body.appendChild(document.createElement("i"));
+  const lum = v => { p.style.color = v; return getComputedStyle(p).color.match(/[\d.]+/g).slice(0, 3)
+    .map(c => (c /= 255) <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4).reduce((s, c, i) => s + c * [.2126, .7152, .0722][i], 0); };
+  const k = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+  const d = lum(dolgu), z = lum("var(--zemin)"), y = lum("var(--yazi)"); p.remove();
+  document.documentElement.style.setProperty(ad, k(d, z) >= k(d, y) ? "var(--zemin)" : "var(--yazi)");
+}
+const P = Object.assign({ ad: "@kullanici", dugme: "Takip et", sonra: "Takip ediliyor" }, window.PARAM);
+const ad = document.getElementById("ad");
+ad.textContent = P.ad; document.getElementById("once").textContent = P.dugme; document.getElementById("sonra").textContent = P.sonra;
+// Uzun ad tek satırda küçülür; alt sınırda da sığmazsa satıra bölünür.
+function kur() {
+  zitYazi("var(--vurgu)", "--vurgu-ustu");
+  const vm = Math.min(innerWidth, innerHeight) / 100, max = innerWidth * .65 - vm * 21.2;
+  ad.style.whiteSpace = "nowrap"; ad.style.maxWidth = ""; let f = 5.2; ad.style.fontSize = f + "vmin";
+  while (ad.getBoundingClientRect().width > max && f > 3.4) { f -= .1; ad.style.fontSize = f + "vmin"; }
+  if (ad.getBoundingClientRect().width > max) { ad.style.whiteSpace = "normal"; ad.style.maxWidth = max + "px"; ad.style.overflowWrap = "anywhere"; }
+  // Düğme de sütuna sığana kadar küçülür; sığmazsa iki satıra bölünür.
+  const dg = document.querySelector(".dugme"); let g = 4; dg.style.fontSize = g + "vmin";
+  while (dg.getBoundingClientRect().width > max && g > 3.2) { g -= .1; dg.style.fontSize = g + "vmin"; }
+  dg.classList.toggle("dar", dg.getBoundingClientRect().width > max);
+}
+kur();
+let hazir = false;
+window.seek = () => { if (!hazir) { hazir = true; kur(); } }; // tema ve font yüklendikten sonra bir kez yeniden ölç
+</script>
+</body></html>

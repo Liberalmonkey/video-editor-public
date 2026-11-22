@@ -1,0 +1,39 @@
+<!--meta
+{"name": "quote", "description": "Alıntı / müşteri yorumu: büyük tırnak, metin kelime kelime, kaynak satırı; opsiyonel 5 yıldız. Sosyal kanıt anı.",
+ "props": {"text": "string*", "author": "string", "stars": "number"},
+ "default_dur": 4.0, "sfx": {"in": "swoosh"}, "tags": ["ugc", "proof", "testimonial", "animation"]}
+-->
+<style>
+.blk-quote { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: calc(var(--u) * 2.4);
+  padding: 0 calc(var(--safe-r) + var(--u) * 9) 0 calc(var(--safe-l) + var(--u) * 9); }
+.blk-quote .q-mark { font: 900 calc(var(--u) * 16) / .6 var(--f-display); color: var(--c-accent); height: calc(var(--u) * 7); }
+.blk-quote .q-text { font: 700 calc(var(--u) * 5.6) / 1.18 var(--f-display); letter-spacing: -0.015em; max-width: 22ch; }
+.blk-quote .q-stars { display: flex; gap: calc(var(--u) * 0.8); }
+.blk-quote .q-star { width: calc(var(--u) * 4); height: calc(var(--u) * 4); fill: var(--c-accent); }
+.blk-quote .q-author { font-size: calc(var(--u) * 3); color: var(--c-muted); }
+</style>
+<markup>
+<div class="blk blk-quote">
+  <div class="q-mark">“</div>
+  <div class="q-text">{{text}}</div>
+  <div class="q-stars"></div>
+  <div class="q-author t-body mask"><span>{{author}}</span></div>
+</div>
+</markup>
+<script>
+HF_BLOCKS["quote"] = function (tl, el, P, T, S) {
+  HF.pop(tl, el.querySelector(".q-mark"), T.start, S);
+  const words = HF.splitWords(el.querySelector(".q-text"));
+  HF.maskIn(tl, words, T.start + 0.15, S, { stagger: 0.04 });
+  const box = el.querySelector(".q-stars");
+  const n = Math.max(0, Math.min(5, P.stars || 0));
+  const stars = [];
+  for (let i = 0; i < n; i++) {
+    box.insertAdjacentHTML("beforeend", '<svg class="q-star" viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>');
+  }
+  box.querySelectorAll(".q-star").forEach(function (s) { stars.push(s); });
+  if (stars.length) HF.pop(tl, stars, T.start + 0.3 + words.length * 0.04, S, { stagger: 0.06 });
+  if (P.author) HF.maskIn(tl, el.querySelector(".q-author > span"), T.start + 0.5 + words.length * 0.04, S);
+  HF.exit(tl, el, T, S);
+};
+</script>

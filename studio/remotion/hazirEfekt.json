@@ -1,0 +1,123 @@
+{
+ "zoom_in": {
+  "amac": "Yavaş itme: 1.0'dan s'ye klip boyunca (ya da sure kadar) yaklaşır.",
+  "ne_zaman": "Uzun konuşma ya da görselde dikkati yavaşça toplamak; anlatı yoğunlaşırken.",
+  "ses": false, "rol": "zoom_in",
+  "param": {"sure": {"vars": 0, "min": 0.3, "max": 60}, "s": {"vars": 1.12, "min": 1.02, "max": 1.35, "degisim": [1.12, 1.08, 1.15, 1.1]}}
+ },
+ "zoom_out": {
+  "amac": "Yavaş geri çekilme: s'den 1.0'a.",
+  "ne_zaman": "Bir fikrin kapanışı, genel resme dönüş; zoom_in'den sonra hemen değil.",
+  "ses": false, "rol": "zoom_out",
+  "param": {"sure": {"vars": 0, "min": 0.3, "max": 60}, "s": {"vars": 1.12, "min": 1.02, "max": 1.35, "degisim": [1.12, 1.08, 1.15, 1.1]}}
+ },
+ "punch": {
+  "amac": "6 karede s'ye anlık punch-in (geri eğrisi), sure kadar tutar, 8 karede bırakır.",
+  "ne_zaman": "Vurgu kelimesi ya da jump cut gizleme; art arda aynı ölçek kullanılmaz (motor değiştirir).",
+  "ses": true, "rol": "punch_in",
+  "param": {"sure": {"vars": 0.8, "min": 0.1, "max": 10}, "s": {"vars": 1.14, "min": 1.1, "max": 1.18, "degisim": [1.12, 1.16, 1.1, 1.18, 1.14]}}
+ },
+ "odak_zoom": {
+  "amac": "Noktaya (x, y) zoom: nokta yerinde kalır, s'ye sure içinde expo eğriyle varır, tutar; geri_don ile tut sonra döner.",
+  "ne_zaman": "Ekran görüntüsünde anlatılan düğme, alan, sayı; kelimeden 2-4 kare önce başlat.",
+  "ses": true, "rol": "zoom_in",
+  "param": {"sure": {"vars": 0.55, "min": 0.2, "max": 2}, "s": {"vars": 1.4, "min": 1.1, "max": 3, "degisim": [1.4, 1.5, 1.35]},
+            "x": {"vars": 0.5, "min": 0, "max": 1}, "y": {"vars": 0.5, "min": 0, "max": 1},
+            "geri_don": {"vars": false}, "tut": {"vars": 1.0, "min": 0.1, "max": 30}}
+ },
+ "ken_burns": {
+  "amac": "Durağan görselde yavaş kaydırma + büyüme; kenar boşluğu açmaz.",
+  "ne_zaman": "2.5 sn'den uzun duran görsel ya da ekran görüntüsü.",
+  "ses": false, "rol": "zoom_in",
+  "param": {"sure": {"vars": 0, "min": 1, "max": 60}, "s": {"vars": 1.15, "min": 1.06, "max": 1.3},
+            "yon": {"vars": "sag", "secenek": ["sol", "sag", "yukari", "asagi"], "degisim": ["sag", "sol", "yukari", "asagi"]}}
+ },
+ "giris_pop": {
+  "amac": "Giriş: s'den 1'e taşarak büyür, opaklık açılır.",
+  "ne_zaman": "V2 grafik, etiket, küçük görsel girişi.",
+  "ses": true, "rol": "pop",
+  "param": {"sure": {"vars": 0.35, "min": 0.15, "max": 1.5}, "s": {"vars": 0.85, "min": 0.5, "max": 0.98}}
+ },
+ "giris_kay": {
+  "amac": "Giriş: yon yönünde kayarak (expo) yerine oturur, opaklık açılır.",
+  "ne_zaman": "Ekran görüntüsü, kart, alt bilgi girişi.",
+  "ses": true, "rol": "slayt",
+  "param": {"sure": {"vars": 0.45, "min": 0.15, "max": 2}, "yon": {"vars": "yukari", "secenek": ["sol", "sag", "yukari", "asagi"], "degisim": ["yukari", "sol", "sag"]},
+            "mesafe": {"vars": 0.25, "min": 0.05, "max": 1}}
+ },
+ "cikis_kay": {
+  "amac": "Çıkış: klibin sonunda yon yönünde hızlanarak kayar, opaklık kapanır.",
+  "ne_zaman": "Uzun duran grafik ya da görselin çıkışı.",
+  "ses": false, "rol": "slayt", "son": true,
+  "param": {"sure": {"vars": 0.35, "min": 0.15, "max": 2}, "yon": {"vars": "asagi", "secenek": ["sol", "sag", "yukari", "asagi"]},
+            "mesafe": {"vars": 0.25, "min": 0.05, "max": 1}}
+ },
+ "cikis_sol": {
+  "amac": "Çıkış: klibin sonunda s'ye küçülerek solar.",
+  "ne_zaman": "Grafiğin sakin çıkışı.",
+  "ses": false, "rol": "zoom_out", "son": true,
+  "param": {"sure": {"vars": 0.35, "min": 0.15, "max": 2}, "s": {"vars": 0.92, "min": 0.5, "max": 1}}
+ },
+ "sarsinti": {
+  "amac": "Sönen kısa sarsıntı (x, y, açı); kenar açmasın diye o an hafif büyütür. Rastgelelik klip kimliğinden, her render aynı.",
+  "ne_zaman": "Darbe, şok, güçlü vurgu; videoda bir-iki kez.",
+  "ses": true, "rol": "vurgu",
+  "param": {"sure": {"vars": 0.4, "min": 0.1, "max": 2}, "guc": {"vars": 16, "min": 2, "max": 60}}
+ },
+ "nabiz": {
+  "amac": "Hafif ritim nabzı: adet kez s'ye çıkıp döner, her vuruş sure aralıkla.",
+  "ne_zaman": "Müzik vuruşu ya da sayılan maddeler; ince kalır.",
+  "ses": false, "rol": "pop",
+  "param": {"sure": {"vars": 0.45, "min": 0.15, "max": 3}, "adet": {"vars": 2, "min": 1, "max": 16}, "s": {"vars": 1.04, "min": 1.01, "max": 1.12}}
+ },
+ "egim": {
+  "amac": "Küçük açıdan (derece) düze oturma; köşe açılmasın diye o an büyütür.",
+  "ne_zaman": "Kart ya da görsel girişine canlılık; konuşmacıda seyrek.",
+  "ses": false, "rol": "slayt",
+  "param": {"sure": {"vars": 0.5, "min": 0.15, "max": 3}, "aci": {"vars": 3, "min": -15, "max": 15, "degisim": [3, -2.5, 4, -3]}}
+ },
+ "bulanik_gir": {
+  "amac": "Bulanıktan netleşerek giriş (guc px), opaklık açılır.",
+  "ne_zaman": "Sakin bölüm girişi, rüya/anı hissi; hızlı kurguda değil.",
+  "ses": false, "rol": "slayt",
+  "param": {"sure": {"vars": 0.4, "min": 0.1, "max": 3}, "guc": {"vars": 24, "min": 2, "max": 80}}
+ },
+ "giris_dus": {
+  "amac": "Fiziksel düşüş girişi: öğe yukarıdan yerçekimiyle (t²) hızlanarak düşer, sekme katsayısıyla her sekmede alçalarak oturur. İlk temas sürenin %45'inde.",
+  "ne_zaman": "Bir nesne, ürün, rozet ya da kart 'yere düşer', 'ortaya çıkar' gibi fiziksel bir girişle gelirken; videoda iki üç kez.",
+  "ses": true, "rol": "vurgu", "ses_an": 0.45,
+  "param": {"sure": {"vars": 1.1, "min": 0.4, "max": 3}, "mesafe": {"vars": 0.55, "min": 0.1, "max": 1.2}, "sekme": {"vars": 0.45, "min": 0, "max": 0.8}}
+ },
+ "carp_zoom": {
+  "amac": "Hazırlıklı çarpma zoom'u: 6 kare hafifçe geri çekilir, 6 karede (x, y) noktasına çarparak s'ye büyür, 6 kare sönen sarsıntıyla mıhlanır; sure boyunca tutar.",
+  "ne_zaman": "Kanıt anı, şok rakam, en güçlü vurgu; videoda en çok iki kez.",
+  "ses": true, "rol": "vurgu", "ses_kare": 12,
+  "param": {"sure": {"vars": 1.2, "min": 0.5, "max": 6}, "s": {"vars": 1.6, "min": 1.2, "max": 2.8}, "x": {"vars": 0.5, "min": 0, "max": 1}, "y": {"vars": 0.5, "min": 0, "max": 1}, "guc": {"vars": 10, "min": 0, "max": 30}}
+ },
+ "giris_carp": {
+  "amac": "Ağır iniş: büyük ölçek ve hafif açıdan 6 karede yere çarparak oturur, sönümlü yayla titrer.",
+  "ne_zaman": "Skor, rozet, fiyat, büyük sayı ya da başlık kartının girişinde; ağırlık ve kesinlik hissi.",
+  "ses": true, "rol": "vurgu", "ses_kare": 6,
+  "param": {"sure": {"vars": 0.6, "min": 0.4, "max": 1.5}, "s": {"vars": 2.2, "min": 1.3, "max": 3}, "aci": {"vars": 4, "min": -12, "max": 12}}
+ },
+ "el_kamerasi": {
+  "amac": "Çok ince organik kamera nefesi: tohumlu yumuşak x/y/açı salınımı (iki sinüsün toplamı, guc px 1080 kısa kenarda) ve kenar açmayan sabit ölçek payı s (en az salınımın gerektirdiği pay). Rastgelelik klip kimliğinden.",
+  "ne_zaman": "Durağan çekim, ekran görüntüsü ya da tripod konuşmacı canlı dursun diye; tüm klip boyunca, sarsıntı ve punch ile çakışmaz.",
+  "ses": false, "rol": "zoom_in",
+  "param": {"sure": {"vars": 0, "min": 0.5, "max": 120}, "guc": {"vars": 6, "min": 1, "max": 24}, "hiz": {"vars": 0.35, "min": 0.1, "max": 1.5}, "s": {"vars": 1.03, "min": 1.01, "max": 1.1}}
+ },
+ "hizli_zoom": {
+  "amac": "8 karelik keskin rampa zoom-in (expo) ve tutma: (x, y) noktası yerinde kalır; sure boyunca s'de durur (sure 0: klibin sonuna kadar).",
+  "ne_zaman": "Vurgu kelimesinde dikkati anlık toplamak; punch'tan farkı geri bırakmaması. Kelimeden 2-3 kare önce başlat.",
+  "ses": true, "rol": "zoom_in",
+  "param": {"sure": {"vars": 0, "min": 0.3, "max": 60}, "s": {"vars": 1.14, "min": 1.04, "max": 1.6, "degisim": [1.14, 1.2, 1.1, 1.17]},
+            "x": {"vars": 0.5, "min": 0, "max": 1}, "y": {"vars": 0.5, "min": 0, "max": 1}}
+ },
+ "odak_karart": {
+  "amac": "Arka planı sakinleştirir: gecis sn'de yumuşakça bulanık (px) ve parlaklık çarpanına iner, sure boyunca tutar, gecis sn'de döner. Bulanıklığın kenar halesini örten minik ölçek payı kendiliğinden.",
+  "ne_zaman": "Üstte kart, sayı ya da başlık grafiği varken alttaki çekim dikkat çalmasın; motion klibiyle aynı aralıkta.",
+  "ses": false, "rol": "zoom_out",
+  "param": {"sure": {"vars": 1.5, "min": 0.3, "max": 30}, "bulanik": {"vars": 6, "min": 0, "max": 12}, "parlaklik": {"vars": 0.72, "min": 0.4, "max": 1},
+            "gecis": {"vars": 0.35, "min": 0.1, "max": 1.5}}
+ }
+}

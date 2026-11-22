@@ -1,0 +1,16 @@
+# UGC stüdyosu — ürün tanıtımı, satış odaklı (kendi çekimin + ekran kaydı + ses)
+studio: ugc
+label: UGC — ürün tanıtımı / satış
+pipeline: footage
+language: tr
+format: {width: 1080, height: 1920, fps: 30}
+variants:
+  - {name: 4x5, width: 1080, height: 1350}
+  - {name: 16x9, width: 1920, height: 1080}
+loudness: {integrated: -14.0, true_peak: -1.0, lra: 11.0}
+# Reels/TikTok arayüzü: üst ~%12, alt ~%22, sağda beğeni/yorum ikonları ~%12
+safe_area: {top: 0.12, bottom: 0.22, left: 0.06, right: 0.12}
+captions: {style: odak, max_chars: 16, max_words: 3, lines: 1, uppercase: false, burn: true}
+target_duration: [20, 60]
+style: default
+words_per_minute: {tr: 155, en: 165}

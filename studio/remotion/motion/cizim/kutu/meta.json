@@ -1,0 +1,15 @@
+{
+  "ad": "cizim/kutu",
+  "tur": "cizim",
+  "etiketler": ["kutu", "çerçeve", "dikdörtgen", "vurgu", "el çizimi"],
+  "ne_zaman": "Konuşmacı ekrandaki bir alan, tablo hücresi, ürün ya da metin bloğunu çerçeveleyip ayırdığında (\"bu kısma odaklan\", \"şu blok\", \"burası önemli\").",
+  "sure": { "min": 0.8, "varsayilan": 1.7, "max": 2.5 },
+  "giris_sn": 0.46,
+  "cikis_sn": 0.25,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["hedef", "orta"],
+  "boyut": { "w": 0.46, "h": 0.28 },
+  "en_kucuk_px": 180,
+  "kaynak": null
+}

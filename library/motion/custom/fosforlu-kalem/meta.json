@@ -1,0 +1,14 @@
+{
+ "title": "Fosforlu kalem: satırı vurgula",
+ "kind": "overlay",
+ "tags": [
+  "vurgu",
+  "fosforlu",
+  "metin"
+ ],
+ "ne_zaman": "Ekrandaki yazılı bir satırı ya da kelimeyi (madde, alıntı, sözleşme cümlesi) vurgularken.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

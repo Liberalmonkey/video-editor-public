@@ -1,0 +1,42 @@
+<!--meta
+{"name": "bar-chart", "description": "Yatay çubuk grafik; çubuklar sırayla büyür, değerler sayar. 'highlight' etiketi vurgu renginde. Gerçek veri ver (uydurma değer yok).",
+ "props": {"title": "string", "items": "list*", "unit": "string", "highlight": "string", "max": "number"},
+ "default_dur": 5.0, "sfx": {"in": "swoosh", "per_item": "tick"}, "tags": ["animation", "data", "explainer"]}
+-->
+<style>
+.blk-bar-chart { display: flex; flex-direction: column; justify-content: center; gap: calc(var(--u) * 2.4);
+  padding: calc(var(--safe-t) + var(--u)*8) calc(var(--safe-r) + var(--u)*9) calc(var(--safe-b) + var(--u)*8) calc(var(--safe-l) + var(--u)*9); }
+.blk-bar-chart .bc-title { font-size: calc(var(--u) * 5.4); margin-bottom: calc(var(--u) * 1); }
+.blk-bar-chart .bc-row { display: grid; grid-template-columns: 28% 1fr auto; align-items: center; gap: calc(var(--u) * 2); }
+.blk-bar-chart .bc-lab { font: 600 calc(var(--u) * 3.2) / 1.1 var(--f-body); color: var(--c-muted); text-align: right; }
+.blk-bar-chart .bc-track { height: calc(var(--u) * 4.2); background: rgba(255,255,255,.06); border-radius: calc(var(--u) * 0.8); overflow: hidden; }
+.blk-bar-chart .bc-bar { height: 100%; background: var(--c-fg); opacity: .85; border-radius: calc(var(--u) * 0.8); transform-origin: 0 50%; }
+.blk-bar-chart .bc-row.hl .bc-bar { background: var(--c-accent); opacity: 1; }
+.blk-bar-chart .bc-row.hl .bc-lab { color: var(--c-fg); }
+.blk-bar-chart .bc-val { font: 800 calc(var(--u) * 3.6) / 1 var(--f-display); font-variant-numeric: tabular-nums; min-width: 5ch; }
+</style>
+<markup>
+<div class="blk blk-bar-chart"><div class="bc-title t-display mask"><span>{{title}}</span></div><div class="bc-rows"></div></div>
+</markup>
+<script>
+HF_BLOCKS["bar-chart"] = function (tl, el, P, T, S) {
+  const rows = el.querySelector(".bc-rows");
+  rows.style.display = "flex"; rows.style.flexDirection = "column"; rows.style.gap = "calc(var(--u) * 1.8)";
+  const items = (P.items || []).map(function (it) { return typeof it === "object" ? it : { label: String(it), value: 0 }; });
+  const max = P.max || Math.max.apply(null, items.map(function (i) { return Number(i.value) || 0; }).concat([1]));
+  let t0 = T.start;
+  if (P.title) { HF.maskIn(tl, el.querySelector(".bc-title > span"), t0, S); t0 += 0.4; }
+  else el.querySelector(".bc-title").style.display = "none";
+  items.forEach(function (it, i) {
+    const r = document.createElement("div"); r.className = "bc-row" + (HF.norm(it.label) === HF.norm(P.highlight || "") ? " hl" : "");
+    r.innerHTML = '<div class="bc-lab"></div><div class="bc-track"><div class="bc-bar"></div></div><div class="bc-val">0</div>';
+    r.querySelector(".bc-lab").textContent = it.label;
+    rows.appendChild(r);
+    const at = t0 + i * 0.22;
+    tl.fromTo(r, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "none" }, at);
+    tl.fromTo(r.querySelector(".bc-bar"), { scaleX: 0 }, { scaleX: (Number(it.value) || 0) / max, duration: 0.9, ease: S.ease.ui }, at);
+    HF.count(tl, r.querySelector(".bc-val"), at, 0.9, { value: it.value, decimals: it.decimals || 0, suffix: P.unit || "" }, S);
+  });
+  HF.exit(tl, el, T, S);
+};
+</script>

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Telefon çerçevesi: uygulama ekranı göster</title>
+<!-- Proje yapımı saydam çerçeve (ADR 0036). İçi boş: altındaki videonun bir bölümünü çevreler. 0.4 sn giriş, bekleme, 0.3 sn çıkış. -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:1080px;height:1920px}
+svg{position:absolute;inset:0;width:1080px;height:1920px}
+svg *{transform-box:view-box}
+.cik{transform-origin:540px 960px;animation:cik .3s cubic-bezier(.5,0,.75,0) 2.7s both}
+@keyframes cik{to{opacity:0;transform:scale(.97)}}
+.tel{position:absolute;left:190px;top:250px;width:700px;height:1420px;box-sizing:border-box;border:34px solid var(--zemin);border-radius:96px;box-shadow:var(--golge);animation:gel .4s cubic-bezier(.2,.9,.3,1) both}
+.ada{position:absolute;left:50%;top:22px;width:190px;height:52px;margin-left:-95px;border-radius:26px;background:var(--zemin)}
+.tus{position:absolute;width:12px;border-radius:6px;background:var(--zemin)}
+.cikd{position:absolute;inset:0;animation:cik .3s cubic-bezier(.5,0,.75,0) 2.7s both}
+@keyframes gel{from{opacity:0;transform:translateY(140px)}to{opacity:1;transform:none}}
+</style></head><body>
+<div class="cikd"><div class="tel"><div class="ada"></div><div class="tus" style="right:-46px;top:300px;height:150px"></div><div class="tus" style="left:-46px;top:240px;height:90px"></div><div class="tus" style="left:-46px;top:360px;height:90px"></div></div></div>
+</body></html>

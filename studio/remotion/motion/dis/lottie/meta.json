@@ -1,0 +1,15 @@
+{
+  "ad": "dis/lottie",
+  "tur": "ikon",
+  "etiketler": ["lottie", "dis-varlik"],
+  "ne_zaman": "İçe aktarılmış Lottie animasyonu (Motion sayfasında 'lottie' alfa yöntemli kayıtlar). param.dosya kaydın dosyası; kısıtlara uy.",
+  "sure": { "min": 0.8, "varsayilan": 1.5, "max": 6 },
+  "giris_sn": 0.3,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "sag", "sol", "orta", "alt"],
+  "boyut": { "w": 0.32, "h": 0.32 },
+  "en_kucuk_px": 200,
+  "kaynak": null
+}

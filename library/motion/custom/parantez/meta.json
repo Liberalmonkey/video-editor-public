@@ -1,0 +1,14 @@
+{
+ "title": "Köşeli parantez: ortadakini çerçevele",
+ "kind": "overlay",
+ "tags": [
+  "parantez",
+  "cerceve",
+  "merkez"
+ ],
+ "ne_zaman": "Ortadaki bir kelimeyi, sayıyı ya da kişiyi iki yandan kapatarak 'işte bu' derken.",
+ "sure": 2.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

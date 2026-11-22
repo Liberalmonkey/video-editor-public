@@ -1,0 +1,14 @@
+{
+ "title": "Zıplayan aşağı ok: alttakine bak",
+ "kind": "overlay",
+ "tags": [
+  "ok",
+  "asagi",
+  "goster"
+ ],
+ "ne_zaman": "Alttaki bir öğeyi (bağlantı, açıklama, düğme, ürün) gösterirken; 'aşağıda', 'açıklamada' denince.",
+ "sure": 1.8,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

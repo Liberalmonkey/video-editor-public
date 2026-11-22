@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Halftone zemin</title>
+<!-- Proje yapımı arka plan döngüsü (ADR 0036). Nokta yarıçapı sin(2π t/6) ile değişir, döngü dikişsiz. Üret: vedit motion kur zemin-halftone -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.zemin{position:absolute;inset:0;background:var(--zemin)}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+</style></head><body>
+<div class="zemin"></div><canvas id="c"></canvas>
+<script>
+const cv = document.getElementById("c"), g = cv.getContext("2d");
+window.seek = t => {
+  const W = innerWidth, H = innerHeight;
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const css = getComputedStyle(document.documentElement);
+  g.clearRect(0, 0, W, H);
+  g.fillStyle = css.getPropertyValue("--vurgu").trim();
+  g.globalAlpha = .32;
+  const s = Math.max(W, H) / 30, rmax = s * .46, cx = W / 2, cy = H * .42, D = Math.hypot(W, H) / 2;
+  for (let y = s / 2; y < H + s; y += s) for (let x = s / 2; x < W + s; x += s) {
+    const d = Math.hypot(x - cx, y - cy) / D;
+    // Merkezden dışa doğru yayılan nabız; uzakta noktalar incelir.
+    const n = .5 + .5 * Math.sin(2 * Math.PI * (t / 6) - d * 2 * Math.PI * 1.5);
+    const r = rmax * (.12 + .88 * n) * (1 - .55 * d);
+    if (r < .6) continue;
+    g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+  }
+};
+seek(0);
+</script>
+</body></html>

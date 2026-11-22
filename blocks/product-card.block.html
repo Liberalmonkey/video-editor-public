@@ -1,0 +1,46 @@
+<!--meta
+{"name": "product-card", "description": "Ürün görseli + adı + tek fayda satırı + opsiyonel fiyat/teklif rozeti. Kart alttan yaylanarak girer. UGC'de demo/teklif anı.",
+ "props": {"image": "image", "name": "string*", "line": "string", "price": "string", "badge": "string", "position": "enum(bottom|center|top)"},
+ "default_dur": 3.5, "sfx": {"in": "pop"}, "tags": ["ugc", "product", "offer"]}
+-->
+<style>
+.blk-product-card { display: flex; justify-content: center; padding: 0 calc(var(--safe-r) + var(--u) * 5) 0 calc(var(--safe-l) + var(--u) * 5); }
+.blk-product-card.pos-bottom { align-items: flex-end; padding-bottom: calc(var(--safe-b) + var(--u) * 6); }
+.blk-product-card.pos-center { align-items: center; }
+.blk-product-card.pos-top { align-items: flex-start; padding-top: calc(var(--safe-t) + var(--u) * 6); }
+.blk-product-card .pc { display: grid; grid-template-columns: auto 1fr; gap: calc(var(--u) * 3); align-items: center; width: min(100%, calc(var(--u) * 86));
+  padding: calc(var(--u) * 2.6); background: var(--c-surface); border-radius: var(--radius); box-shadow: 0 calc(var(--u)*2) calc(var(--u)*6) rgba(0,0,0,.4); }
+.blk-product-card .pc-img { width: calc(var(--u) * 20); height: calc(var(--u) * 20); border-radius: calc(var(--radius) * 0.7); object-fit: cover; background: rgba(255,255,255,.06); }
+.blk-product-card .pc-name { font-size: calc(var(--u) * 5); }
+.blk-product-card .pc-line { font-size: calc(var(--u) * 3.2); color: var(--c-muted); margin-top: calc(var(--u) * 0.8); }
+.blk-product-card .pc-row { display: flex; gap: calc(var(--u) * 1.6); align-items: center; margin-top: calc(var(--u) * 1.6); }
+.blk-product-card .pc-price { font: 800 calc(var(--u) * 4.4) / 1 var(--f-display); color: var(--c-fg); font-variant-numeric: tabular-nums; }
+.blk-product-card .pc-badge { font: 800 calc(var(--u) * 2.6) / 1 var(--f-body); padding: calc(var(--u)*0.9) calc(var(--u)*1.5); border-radius: 99px;
+  background: var(--c-accent); color: var(--c-on-accent); text-transform: uppercase; letter-spacing: .04em; }
+</style>
+<markup>
+<div class="blk blk-product-card pos-{{position}}">
+  <div class="pc">
+    <img class="pc-img" src="{{image}}" alt="" />
+    <div>
+      <div class="pc-name t-display">{{name}}</div>
+      <div class="pc-line t-body">{{line}}</div>
+      <div class="pc-row"><div class="pc-price">{{price}}</div><div class="pc-badge">{{badge}}</div></div>
+    </div>
+  </div>
+</div>
+</markup>
+<script>
+HF_BLOCKS["product-card"] = function (tl, el, P, T, S) {
+  const card = el.querySelector(".pc");
+  if (!P.image) el.querySelector(".pc-img").style.display = "none";
+  if (!P.line) el.querySelector(".pc-line").style.display = "none";
+  if (!P.price) el.querySelector(".pc-price").style.display = "none";
+  if (!P.badge) el.querySelector(".pc-badge").style.display = "none";
+  tl.fromTo(card, { y: 60, opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: S.ease.overshoot }, T.start);
+  HF.fadeUp(tl, el.querySelectorAll(".pc-name, .pc-line, .pc-row"), T.start + 0.15, S, { y: 14, stagger: 0.07 });
+  const badge = el.querySelector(".pc-badge");
+  if (P.badge) HF.pop(tl, badge, T.start + 0.45, S);
+  HF.exit(tl, el, T, S, { y: 30 });
+};
+</script>

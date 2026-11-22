@@ -1,0 +1,13 @@
+{
+ "aciklama": "İlk satır sade sans, vurgu italik serif ve küçük harf; kontursuz, koyu zemin ister.",
+ "kutu": false,
+ "css": {
+  "--vurgu": "#FFD98A",
+  "--vurgu-font": "\"Playfair Display\", Georgia, serif",
+  "--vurgu-egik": "italic",
+  "--harf": "none",
+  "--agirlik": "600",
+  "--kontur": "transparent",
+  "--kontur-k": "0"
+ }
+}

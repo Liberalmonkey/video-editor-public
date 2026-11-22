@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Dalgalı alt çizgi</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur kirmizi-cizgi -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.c{stroke-width:18}
+.g1{animation:ciz .5s cubic-bezier(.3,0,.25,1) .05s both}
+g{animation:cik .25s ease-in .95s both}
+@keyframes cik{to{opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g>
+<path class="c ciz g1" pathLength="1" d="M200 600 Q245 586 290 600 T380 600 T470 600 T560 600 T650 600 T740 600 T830 600"/>
+</g></svg>
+</body></html>

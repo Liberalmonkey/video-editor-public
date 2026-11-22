@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Gazete kupürü çerçevesi: haber, alıntı</title>
+<!-- Proje yapımı saydam çerçeve (ADR 0036). İçi boş: altındaki videonun bir bölümünü çevreler. 0.4 sn giriş, bekleme, 0.3 sn çıkış. -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:1080px;height:1080px}
+svg{position:absolute;inset:0;width:1080px;height:1080px}
+svg *{transform-box:view-box}
+.cik{transform-origin:540px 540px;animation:cik .3s cubic-bezier(.5,0,.75,0) 2.7s both}
+@keyframes cik{to{opacity:0;transform:scale(.97)}}
+.kag{fill:var(--yazi);fill-rule:evenodd}
+.sat{fill:var(--soluk)}
+.kup{filter:drop-shadow(0 12px 20px rgba(0,0,0,.4));transform-origin:540px 540px;animation:gel .4s cubic-bezier(.2,.9,.3,1) both}
+@keyframes gel{from{opacity:0;transform:scale(1.07) rotate(4deg)}to{opacity:1;transform:rotate(1.5deg)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g class="cik"><g class="kup"><path class="kag" d="M150 130 L176 117 L202 130 L228 117 L254 130 L280 117 L306 130 L332 117 L358 130 L384 117 L410 130 L436 117 L462 130 L488 117 L514 130 L540 117 L566 130 L592 117 L618 130 L644 117 L670 130 L696 117 L722 130 L748 117 L774 130 L800 117 L826 130 L852 117 L878 130 L904 117 L930 130 L943 156 L930 183 L943 209 L930 236 L943 262 L930 289 L943 315 L930 342 L943 368 L930 395 L943 421 L930 447 L943 474 L930 500 L943 527 L930 553 L943 580 L930 606 L943 633 L930 659 L943 685 L930 712 L943 738 L930 765 L943 791 L930 818 L943 844 L930 871 L943 897 L930 924 L930 950 L904 963 L878 950 L852 963 L826 950 L800 963 L774 950 L748 963 L722 950 L696 963 L670 950 L644 963 L618 950 L592 963 L566 950 L540 963 L514 950 L488 963 L462 950 L436 963 L410 950 L384 963 L358 950 L332 963 L306 950 L280 963 L254 950 L228 963 L202 950 L176 963 L150 950 L137 924 L150 897 L137 871 L150 844 L137 818 L150 791 L137 765 L150 738 L137 712 L150 685 L137 659 L150 633 L137 606 L150 580 L137 553 L150 527 L137 500 L150 474 L137 447 L150 421 L137 395 L150 368 L137 342 L150 315 L137 289 L150 262 L137 236 L150 209 L137 183 L150 156 Z M210 300 V890 H870 V300 Z"/><rect class="sat" x="210" y="180" width="660" height="34" rx="4"/><rect class="sat" x="210" y="236" width="430" height="22" rx="4"/></g></g></svg>
+</body></html>

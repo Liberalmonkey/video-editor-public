@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/ok-sag",
+  "tur": "ikon",
+  "etiketler": ["ok", "sağ", "ileri", "sonraki", "sonuç"],
+  "ne_zaman": "Konuşmacı bir sonraki adıma, sonuca ya da devamına geçtiğinde (\"sonra\", \"böylece\", \"sıradaki\", \"geçelim\").",
+  "sure": { "min": 1.0, "varsayilan": 1.25, "max": 1.6 },
+  "giris_sn": 0.34,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["sag", "ust", "sol", "alt"],
+  "boyut": { "w": 0.3, "h": 0.3 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide arrow-right", "url": "https://lucide.dev/icons/arrow-right", "lisans": "ISC" }
+}

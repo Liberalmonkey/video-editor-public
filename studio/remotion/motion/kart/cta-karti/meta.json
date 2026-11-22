@@ -1,0 +1,15 @@
+{
+  "ad": "kart/cta-karti",
+  "tur": "cta",
+  "etiketler": ["cta", "eylem", "açıklama", "yorum", "link", "kapanış", "kart"],
+  "ne_zaman": "Videonun sonunda ya da aksiyon anında izleyiciyi açıklamaya, yoruma, kayda ya da linke yönlendirirken.",
+  "sure": { "min": 1.6, "varsayilan": 3.0, "max": 4.8 },
+  "giris_sn": 0.4,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "alt"],
+  "boyut": { "w": 0.84, "h": 0.19 },
+  "en_kucuk_px": 260,
+  "kaynak": null
+}

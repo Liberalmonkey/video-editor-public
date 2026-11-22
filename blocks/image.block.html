@@ -1,0 +1,27 @@
+<!--meta
+{"name": "image", "description": "Görsel katmanı: tam kare ya da kart çerçeveli, yavaş Ken Burns (in/out/left/right). Referans görsel, ürün fotoğrafı, ekran görüntüsü.",
+ "props": {"src": "image*", "fit": "enum(cover|contain)", "kb": "enum(in|out|left|right|none)", "frame": "enum(none|card)", "caption": "string"},
+ "default_dur": 4.0, "sfx": {}, "tags": ["broll", "animation", "ugc"]}
+-->
+<style>
+.blk-image .im-box { position: absolute; inset: 0; overflow: hidden; }
+.blk-image.frame-card .im-box { inset: 12% 8%; border-radius: var(--radius); box-shadow: 0 calc(var(--u)*2) calc(var(--u)*8) rgba(0,0,0,.5); }
+.blk-image .im { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.blk-image.fit-contain .im { object-fit: contain; }
+.blk-image .im-cap { position: absolute; left: 0; right: 0; bottom: calc(var(--safe-b) + var(--u) * 5); text-align: center; font: 600 calc(var(--u)*3) / 1.2 var(--f-body); color: var(--c-fg); text-shadow: 0 2px 8px rgba(0,0,0,.6); }
+</style>
+<markup>
+<div class="blk blk-image frame-{{frame}} fit-{{fit}}"><div class="im-box"><img class="im" src="{{src}}" alt="" /></div><div class="im-cap">{{caption}}</div></div>
+</markup>
+<script>
+HF_BLOCKS["image"] = function (tl, el, P, T, S) {
+  const im = el.querySelector(".im"), box = el.querySelector(".im-box");
+  if (!P.caption) el.querySelector(".im-cap").style.display = "none";
+  const kb = P.kb || "in";
+  const from = { in: { scale: 1.0, xPercent: 0 }, out: { scale: 1.12, xPercent: 0 }, left: { scale: 1.1, xPercent: 3 }, right: { scale: 1.1, xPercent: -3 }, none: { scale: 1, xPercent: 0 } }[kb];
+  const to = { in: { scale: 1.1, xPercent: 0 }, out: { scale: 1.0, xPercent: 0 }, left: { scale: 1.1, xPercent: -3 }, right: { scale: 1.1, xPercent: 3 }, none: { scale: 1, xPercent: 0 } }[kb];
+  tl.fromTo(im, from, Object.assign({ duration: T.dur, ease: "none" }, to), T.start);
+  if (P.frame === "card") tl.fromTo(box, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, ease: S.ease.ui }, T.start);
+  else tl.fromTo(box, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "none" }, T.start);
+};
+</script>

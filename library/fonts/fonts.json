@@ -1,0 +1,63 @@
+{
+ "_note": "Tümü SIL Open Font License (OFL) — google/fonts deposundan. Türkçe (İıŞşĞğÜüÖöÇç) tam; ₺ JetBrains Mono, Playfair, Outfit ve Pixelify Sans'ta yok (2026-11-19 ölçüldü). Silkscreen Türkçe glifsiz, Monoton küçük boyutta okunmaz; alınmadı. Glif denetimi: tests/test_tema_token.py.",
+ "Inter": {
+  "file": "Inter-Variable.ttf",
+  "weight": "100 900",
+  "role": "body/ui"
+ },
+ "Montserrat": {
+  "file": "Montserrat-Variable.ttf",
+  "weight": "100 900",
+  "role": "display/caption"
+ },
+ "Space Grotesk": {
+  "file": "SpaceGrotesk-Variable.ttf",
+  "weight": "300 700",
+  "role": "display/tech"
+ },
+ "Playfair Display": {
+  "file": "PlayfairDisplay-Variable.ttf",
+  "weight": "400 900",
+  "role": "display/editorial"
+ },
+ "JetBrains Mono": {
+  "file": "JetBrainsMono-Variable.ttf",
+  "weight": "100 800",
+  "role": "mono/kod/kicker"
+ },
+ "Outfit": {
+  "file": "Outfit-Variable.ttf",
+  "weight": "100 900",
+  "role": "display (Örnek Marka marka fontu)"
+ },
+ "EB Garamond": {
+  "file": "EBGaramond-Variable.ttf",
+  "weight": "400 800",
+  "role": "serif/editoryal"
+ },
+ "Fraunces": {
+  "file": "Fraunces-Variable.ttf",
+  "weight": "100 900",
+  "role": "display/serif"
+ },
+ "Pixelify Sans": {
+  "file": "PixelifySans-Variable.ttf",
+  "weight": "400 700",
+  "role": "display/piksel (8-bit, 16-bit)"
+ },
+ "VT323": {
+  "file": "VT323-Regular.ttf",
+  "weight": "400",
+  "role": "mono/terminal/piksel gövde"
+ },
+ "Caveat": {
+  "file": "Caveat-Variable.ttf",
+  "weight": "400 700",
+  "role": "el yazısı (beyaz tahta, kupür)"
+ },
+ "Bungee": {
+  "file": "Bungee-Regular.ttf",
+  "weight": "400",
+  "role": "display/pop, retro tabela"
+ }
+}

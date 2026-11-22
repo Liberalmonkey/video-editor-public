@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Soru işareti</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur soru-isareti -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.c{stroke-width:24}
+.g1{animation:ciz .55s cubic-bezier(.4,0,.25,1) .05s both}
+.n{transform-origin:550px 700px;animation:pop .18s cubic-bezier(.3,1.6,.5,1) .6s both}
+.s{transform-origin:550px 740px;animation:sal .6s ease-in-out .78s both}
+.o{animation:cik .3s ease-in 1.35s both}
+@keyframes pop{from{transform:scale(0)}}
+@keyframes sal{0%,100%{transform:rotate(0)}25%{transform:rotate(7deg)}60%{transform:rotate(-5deg)}85%{transform:rotate(2deg)}}
+@keyframes cik{to{opacity:0;transform:translateY(-20px)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g class="o"><g class="s">
+<path class="c ciz g1" pathLength="1" d="M430 380 C 430 290, 500 250, 552 250 C 632 250, 680 302, 680 372 C 680 452, 556 462, 550 560 L 550 608"/>
+<circle class="d n" cx="550" cy="700" r="22"/>
+</g></g></svg>
+</body></html>

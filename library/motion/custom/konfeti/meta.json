@@ -1,0 +1,13 @@
+{
+ "title": "Konfeti: kazanım anı, videoda en çok bir kez",
+ "kind": "overlay",
+ "tags": [
+  "konfeti",
+  "kutlama"
+ ],
+ "ne_zaman": "Kazanım ya da sonuç anında; videoda en çok bir kez.",
+ "sure": 2.4,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

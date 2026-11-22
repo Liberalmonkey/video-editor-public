@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Ünlem</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur unlem -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.d{stroke:var(--vurgu);stroke-width:20;stroke-linejoin:round}
+.y{animation:dus .24s cubic-bezier(.6,0,.95,.6) .02s both}
+.e{transform-origin:540px 712px;animation:ezil .5s .26s both}
+.o{animation:cik .25s ease-in .95s both}
+@keyframes dus{from{transform:translateY(-240px);opacity:0}}
+@keyframes ezil{0%{transform:scale(1.18,.8)}18%{transform:scale(.94,1.06)}30%{transform:scale(1) rotate(5deg)}45%{transform:rotate(-4deg)}60%{transform:rotate(2.5deg)}75%{transform:rotate(-1deg)}100%{transform:rotate(0)}}
+@keyframes cik{to{opacity:0;transform:scale(.9)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g class="o" style="transform-origin:540px 540px"><g class="y"><g class="e">
+<path class="d" d="M502 270 L 578 270 L 557 590 L 523 590 Z"/>
+<circle class="d" cx="540" cy="680" r="24"/>
+</g></g></g></svg>
+</body></html>

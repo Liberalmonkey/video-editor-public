@@ -1,0 +1,100 @@
+{
+  "_not": "WHY: bkz. wiki/decisions/0039-fizik-ritim-galeri.md. Fizik sahnesi presetleri. bake.mjs dünyayı kurar, vedit fizik.py parametreyi denetler, ai-edit kataloğu buradan yazar. Birimler SI: metre, saniye, derece.",
+  "presetler": {
+    "top-dusme": {
+      "title": "Top düşer ve seker",
+      "ne_zaman": "Yerçekimi, düşme, sekme, enerji kaybı, 'yere çakıldı', 'zıpladı' anlatılırken.",
+      "sure": 4,
+      "param": {
+        "yukseklik": {"tip": "sayi", "vars": 3, "min": 0.5, "max": 12, "birim": "m"},
+        "sekme": {"tip": "sayi", "vars": 0.7, "min": 0, "max": 0.95, "not": "sekme katsayısı: 0 yapışır, 0,95 neredeyse kayıpsız"},
+        "yatay_hiz": {"tip": "sayi", "vars": 0.4, "min": -4, "max": 4, "birim": "m/s"},
+        "yaricap": {"tip": "sayi", "vars": 0.25, "min": 0.05, "max": 1, "birim": "m"},
+        "etiket": {"tip": "metin", "vars": "", "en_cok": 40}
+      },
+      "olcum": "yükseklik (m)"
+    },
+    "yuvarlanma": {
+      "title": "Top eğik düzlemden yuvarlanır",
+      "ne_zaman": "Eğim, yuvarlanma, sürtünme, ivmelenen hareket, 'yokuş aşağı' anlatılırken.",
+      "sure": 5,
+      "param": {
+        "egim": {"tip": "sayi", "vars": 20, "min": 5, "max": 45, "birim": "derece"},
+        "uzunluk": {"tip": "sayi", "vars": 5, "min": 2, "max": 12, "birim": "m"},
+        "surtunme": {"tip": "sayi", "vars": 0.6, "min": 0.05, "max": 1.2},
+        "yaricap": {"tip": "sayi", "vars": 0.3, "min": 0.1, "max": 1, "birim": "m"},
+        "engel": {"tip": "secim", "vars": "kutu", "secenek": ["yok", "kutu", "duvar"]},
+        "etiket": {"tip": "metin", "vars": "", "en_cok": 40}
+      },
+      "olcum": "hız (m/s)"
+    },
+    "araba-ivme": {
+      "title": "Araba durgundan hızlanır",
+      "ne_zaman": "İvme, hızlanma, 0-100, kalkış, tork, 'gaza bastı', yarış anlatılırken.",
+      "sure": 5,
+      "param": {
+        "ivme": {"tip": "sayi", "vars": 4, "min": 0.5, "max": 12, "birim": "m/s²"},
+        "en_hiz": {"tip": "sayi", "vars": 25, "min": 3, "max": 80, "birim": "m/s"},
+        "kamera": {"tip": "secim", "vars": "takip", "secenek": ["takip", "yan", "sabit"]},
+        "dubalar": {"tip": "sayi", "vars": 0, "min": 0, "max": 6, "not": "yoldaki duba sayısı; araba çarpıp devirir"},
+        "etiket": {"tip": "metin", "vars": "", "en_cok": 40}
+      },
+      "olcum": "hız (km/sa)"
+    },
+    "domino": {
+      "title": "Domino taşları sırayla devrilir",
+      "ne_zaman": "Zincirleme etki, sebep-sonuç, 'bir şey diğerini tetikledi', domino etkisi anlatılırken.",
+      "sure": 5,
+      "param": {
+        "adet": {"tip": "sayi", "vars": 14, "min": 4, "max": 30},
+        "aralik": {"tip": "sayi", "vars": 0.32, "min": 0.2, "max": 0.6, "birim": "m"},
+        "kivrim": {"tip": "sayi", "vars": 0, "min": -60, "max": 60, "birim": "derece", "not": "dizinin toplam kıvrımı"},
+        "etiket": {"tip": "metin", "vars": "", "en_cok": 40}
+      },
+      "olcum": "devrilen taş"
+    },
+    "sarkac": {
+      "title": "Sarkaç salınır",
+      "ne_zaman": "Salınım, periyot, denge, enerji dönüşümü, 'gidip geliyor' anlatılırken.",
+      "sure": 6,
+      "param": {
+        "boy": {"tip": "sayi", "vars": 2, "min": 0.5, "max": 5, "birim": "m"},
+        "aci": {"tip": "sayi", "vars": 40, "min": 5, "max": 80, "birim": "derece"},
+        "adet": {"tip": "sayi", "vars": 1, "min": 1, "max": 5, "not": "1'den fazlası yan yana çarpışan sarkaçlar"},
+        "etiket": {"tip": "metin", "vars": "", "en_cok": 40}
+      },
+      "olcum": "açı (derece)"
+    },
+    "firlatma": {
+      "title": "Cisim eğik atılır",
+      "ne_zaman": "Eğik atış, parabol, menzil, açı ve hız, 'fırlattı', basketbol atışı anlatılırken.",
+      "sure": 4,
+      "param": {
+        "hiz": {"tip": "sayi", "vars": 9, "min": 2, "max": 30, "birim": "m/s"},
+        "aci": {"tip": "sayi", "vars": 45, "min": 5, "max": 85, "birim": "derece"},
+        "iz": {"tip": "secim", "vars": "acik", "secenek": ["acik", "kapali"], "not": "yörünge izi"},
+        "etiket": {"tip": "metin", "vars": "", "en_cok": 40}
+      },
+      "olcum": "yükseklik (m)"
+    },
+    "kule-cokus": {
+      "title": "Kutu kulesi top çarpınca yıkılır",
+      "ne_zaman": "Çöküş, kırılganlık, 'her şey yıkıldı', darbe, sistemin bozulması anlatılırken.",
+      "sure": 5,
+      "param": {
+        "kat": {"tip": "sayi", "vars": 6, "min": 2, "max": 12},
+        "top_hizi": {"tip": "sayi", "vars": 8, "min": 2, "max": 25, "birim": "m/s"},
+        "etiket": {"tip": "metin", "vars": "", "en_cok": 40}
+      },
+      "olcum": "devrilen kutu"
+    }
+  },
+  "isik": {
+    "studyo": {"title": "Stüdyo", "ne_zaman": "Varsayılan; temiz anlatım.", "yon": [4, 8, 5], "siddet": 2.2, "ortam": 0.55, "bloom": 0, "vinyet": 0.25, "golge": "yumusak"},
+    "gun-isigi": {"title": "Gün ışığı", "ne_zaman": "Açık hava, araba, spor.", "yon": [6, 12, 3], "siddet": 3, "ortam": 0.8, "bloom": 0, "vinyet": 0.1, "golge": "sert", "sicaklik": 5600},
+    "gun-batimi": {"title": "Gün batımı", "ne_zaman": "Duygusal, kapanış, yavaş an.", "yon": [-8, 2.5, 2], "siddet": 2.6, "ortam": 0.35, "bloom": 0.6, "vinyet": 0.45, "golge": "uzun", "sicaklik": 3200},
+    "neon": {"title": "Neon gece", "ne_zaman": "Teknoloji, oyun, enerji, hız.", "yon": [2, 6, -4], "siddet": 1.2, "ortam": 0.18, "bloom": 1.4, "vinyet": 0.55, "golge": "yumusak", "sicaklik": 9000},
+    "sinematik": {"title": "Sinematik kontrast", "ne_zaman": "Dram, gerilim, büyük an.", "yon": [-5, 7, 3], "siddet": 3.2, "ortam": 0.12, "bloom": 0.35, "vinyet": 0.6, "golge": "sert", "sicaklik": 4300},
+    "laboratuvar": {"title": "Laboratuvar beyazı", "ne_zaman": "Bilim, deney, ürün yakın çekimi.", "yon": [0, 10, 6], "siddet": 1.8, "ortam": 1.0, "bloom": 0, "vinyet": 0, "golge": "yumusak", "sicaklik": 6500}
+  }
+}

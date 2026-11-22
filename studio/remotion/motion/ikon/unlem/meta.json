@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/unlem",
+  "tur": "ikon",
+  "etiketler": ["uyarı", "dikkat", "önemli", "kritik", "tehlike"],
+  "ne_zaman": "Konuşmacı kritik bir uyarı, risk ya da dikkat edilmesi gereken noktayı vurguladığında (\"dikkat\", \"sakın\", \"önemli\", \"tehlike\").",
+  "sure": { "min": 1.0, "varsayilan": 1.25, "max": 1.6 },
+  "giris_sn": 0.32,
+  "cikis_sn": 0.18,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "sag", "sol", "alt"],
+  "boyut": { "w": 0.36, "h": 0.36 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide circle-alert", "url": "https://lucide.dev/icons/circle-alert", "lisans": "ISC" }
+}

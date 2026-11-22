@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Ok çiz</title>
+<!-- Proje yapımı saydam motion (ADR 0031). Render: vedit pano <bu dosya> --sure 2 --w 1080 --h 1080 -o ok-ciz.webm -->
+<style>
+html,body{margin:0;background:transparent}
+svg{position:absolute;inset:0;width:1080px;height:1080px}
+path{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.govde{stroke-dasharray:1;stroke-dashoffset:1;animation:ciz .5s cubic-bezier(.16,1,.3,1) .05s both}
+.bas{stroke-dasharray:1;stroke-dashoffset:1;animation:ciz .22s cubic-bezier(.16,1,.3,1) .45s both}
+g{animation:sol .25s var(--ease-cik) 1.6s both}
+@keyframes ciz{to{stroke-dashoffset:0}}
+@keyframes sol{to{opacity:0;transform:translate(12px,-12px)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g>
+<path class="govde" pathLength="1" d="M250 830 C 360 700, 470 640, 560 560 S 720 380, 790 300"/>
+<path class="bas" pathLength="1" d="M672 292 L 794 296 L 772 416"/>
+</g></svg>
+</body></html>

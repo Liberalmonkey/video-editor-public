@@ -1,0 +1,15 @@
+{
+  "ad": "cizim/ustunu-ciz",
+  "tur": "cizim",
+  "etiketler": ["üstünü çiz", "iptal", "yanlış", "eski", "eleme", "el çizimi"],
+  "ne_zaman": "Konuşmacı eski bir yöntemi, yanlış bilgiyi ya da yüksek fiyatı reddedip üstünü çizdiğinde (\"bunu unut\", \"artık geçerli değil\", \"eski fiyat değil\").",
+  "sure": { "min": 0.8, "varsayilan": 1.35, "max": 2.5 },
+  "giris_sn": 0.34,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["hedef", "orta"],
+  "boyut": { "w": 0.56, "h": 0.14 },
+  "en_kucuk_px": 180,
+  "kaynak": null
+}

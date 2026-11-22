@@ -1,0 +1,15 @@
+{
+  "ad": "cizim/cagri",
+  "tur": "cizim",
+  "etiketler": ["çağrı", "call-out", "işaret", "lider çizgi", "hedef", "el çizimi"],
+  "ne_zaman": "Konuşmacı görüntüdeki belirli bir detayı, düğmeyi ya da noktayı kıvrık çizgiyle işaret edip açıkladığında (\"şuradaki detay\", \"tam bu nokta\", \"bakın burada\").",
+  "sure": { "min": 0.8, "varsayilan": 1.8, "max": 2.5 },
+  "giris_sn": 0.45,
+  "cikis_sn": 0.24,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["hedef", "sag", "sol"],
+  "boyut": { "w": 0.34, "h": 0.16 },
+  "en_kucuk_px": 160,
+  "kaynak": null
+}

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Çizgi grafik</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Saat window.seek ile sürülür. Üret: vedit motion kur grafik-cizgi -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+:root{--u:min(1vw,.9vh)}
+.sahne{position:absolute;left:9vw;top:16vh;width:calc(65*var(--u));font-family:var(--font);color:var(--yazi);opacity:0}
+.panel{background:var(--zemin);border-radius:var(--kose,18px);padding:calc(4*var(--u)) calc(4.5*var(--u));box-sizing:border-box}
+h1{margin:0 0 calc(2*var(--u));font-weight:var(--agirlik,800);font-size:calc(4.6*var(--u));line-height:1.1}
+.alan{position:relative;width:100%;aspect-ratio:560/320}
+svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.izgara line{stroke:var(--soluk);stroke-width:2;opacity:.22}
+.cizgi{fill:none;stroke:var(--vurgu);stroke-width:8;stroke-linejoin:round;stroke-linecap:round}
+.dolgu{fill:var(--vurgu);opacity:.16}
+.nokta{fill:var(--zemin);stroke:var(--vurgu);stroke-width:5}
+.son{fill:var(--vurgu);stroke:var(--zemin);stroke-width:6}
+.etiket{font-family:var(--font-rakam);position:absolute;padding:.2em .5em;background:var(--vurgu);color:var(--vurgu-ustu);border-radius:calc(var(--kose,18px)*.6);
+  font-weight:800;font-size:calc(4.4*var(--u));white-space:nowrap;transform-origin:100% 100%}
+</style></head><body>
+<div class="sahne" id="s"><div class="panel" id="p"><h1 id="b"></h1>
+ <div class="alan"><svg viewBox="0 0 560 320">
+  <g class="izgara"><line x1="0" x2="560" y1="80" y2="80"/><line x1="0" x2="560" y1="180" y2="180"/><line x1="0" x2="560" y1="300" y2="300"/></g>
+  <path class="dolgu" id="f"/><path class="cizgi" id="c" pathLength="1" stroke-dasharray="1"/><g id="n"></g><circle class="son" id="o" r="0"/>
+ </svg><div class="etiket" id="e"></div></div>
+</div></div>
+<script>
+const P = Object.assign({ baslik: "Aylık izlenme", degerler: "12,18,15,27,34,48", son_etiket: "+%300" }, window.PARAM);
+const D = String(P.degerler).split(",").map(x => parseFloat(x.trim())).filter(Number.isFinite).slice(0, 12);
+while (D.length < 2) D.push(D[0] || 0);
+const lo = Math.min(...D), hi = Math.max(...D), ar = hi - lo || 1;
+const X = i => 14 + i * (516 / (D.length - 1)), Y = v => 300 - 20 - (v - lo) / ar * 190;
+const pts = D.map((v, i) => [X(i), Y(v)]);
+const yol = "M" + pts.map(q => q.join(",")).join("L");
+const svgNS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+$("b").textContent = P.baslik;
+$("c").setAttribute("d", yol);
+$("f").setAttribute("d", yol + `L${pts.at(-1)[0]},300L${pts[0][0]},300Z`);
+const [sx, sy] = pts.at(-1);
+$("o").setAttribute("cx", sx); $("o").setAttribute("cy", sy);
+const nok = pts.slice(0, -1).map(([x, y]) => { const c = document.createElementNS(svgNS, "circle");
+  c.setAttribute("class", "nokta"); c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 0); $("n").appendChild(c); return c; });
+const et = $("e"); et.textContent = P.son_etiket; if (!P.son_etiket) et.style.display = "none";
+// Etiket son noktanın üstüne, sağ kenarı noktaya hizalı.
+et.style.right = `${(560 - sx - 6) / 560 * 100}%`; et.style.bottom = `${(320 - sy + 24) / 320 * 100}%`;
+const yolEl = $("c"), L = yolEl.getTotalLength();
+const k = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+const eio = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2, eo = x => 1 - Math.pow(1 - x, 3), ei = x => x * x;
+const geri = x => 1 + 2.4 * Math.pow(x - 1, 3) + 1.4 * Math.pow(x - 1, 2);  // hafif taşma, yalnız son noktada
+window.seek = t => {
+  const gir = eo(k(t, 0, .4)), cik = ei(k(t, 3.5, 3.9)), e = eio(k(t, .45, 1.9));
+  $("s").style.opacity = Math.min(1, gir * 3) * (1 - cik);
+  $("s").style.transform = `translateX(calc(${(gir - 1) * 4 + cik * 3}*var(--u)))`;
+  $("p").style.clipPath = `inset(0 ${(1 - gir) * 100}% 0 0)`;
+  yolEl.style.strokeDashoffset = 1 - e;
+  const x = e > 0 ? yolEl.getPointAtLength(e * L).x : 0;
+  $("f").style.clipPath = `inset(0 ${100 - x / 5.6}% 0 0)`;
+  nok.forEach((c, i) => c.setAttribute("r", pts[i][0] <= x + .5 ? 7 : 0));
+  const o = k(t, 1.85, 2.2); $("o").setAttribute("r", 15 * (o ? geri(o) : 0));
+  const l = k(t, 2.0, 2.3); et.style.opacity = Math.min(1, l * 2); et.style.transform = `scale(${.7 + .3 * eo(l)})`;
+};
+seek(0);
+</script>
+</body></html>

@@ -1,0 +1,15 @@
+{
+  "ad": "cerceve/polaroid",
+  "tur": "cerceve",
+  "etiketler": ["polaroid", "fotoğraf", "anı", "çerçeve", "not"],
+  "ne_zaman": "Konuşmacı bir anıyı, eski bir görüntüyü ya da fotoğraf karesini sıcak bir çerçeveyle vurgularken (\"işte o an\", \"bu kareye bakın\").",
+  "sure": { "min": 1.5, "varsayilan": 3.2, "max": 8.0 },
+  "giris_sn": 0.44,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta"],
+  "boyut": { "w": 0.68, "h": 0.8 },
+  "en_kucuk_px": 340,
+  "kaynak": null
+}

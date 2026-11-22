@@ -1,0 +1,17 @@
+{
+ "title": "Dalga zemin: yavaş akan çizgi dalgaları",
+ "kind": "background",
+ "tags": [
+  "zemin",
+  "dongu",
+  "dalga",
+  "cizgi",
+  "akis"
+ ],
+ "ne_zaman": "Süreç, akış ya da ses/müzik konusu anlatılan tam ekran sahnenin arkasında.",
+ "sure": 6.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": true
+}

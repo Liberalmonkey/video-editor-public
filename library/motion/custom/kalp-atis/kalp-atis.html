@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Nabız halkası</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur kalp-atis -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+circle{fill:none;stroke:var(--vurgu)}
+.a{animation:at .8s cubic-bezier(.15,.7,.35,1) both}
+.b{animation:at .75s cubic-bezier(.15,.7,.35,1) .6s both}
+@keyframes at{0%{r:150px;stroke-width:4px;opacity:0}12%{r:170px;stroke-width:26px;opacity:1}70%{stroke-width:10px;opacity:1;animation-timing-function:ease-in}to{r:420px;stroke-width:3px;opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><circle class="a" cx="540" cy="540" r="150"/><circle class="b" cx="540" cy="540" r="150"/></svg>
+</body></html>

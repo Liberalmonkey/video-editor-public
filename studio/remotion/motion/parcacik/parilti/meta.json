@@ -1,0 +1,15 @@
+{
+  "ad": "parcacik/parilti",
+  "tur": "parcacik",
+  "etiketler": ["parıltı", "yıldız", "ışıltı", "parçacık", "sihir"],
+  "ne_zaman": "Konuşmacı temiz bir sonuçtan, yeni bir özellikten, temizlik ya da \"sihirli\" kolaylıktan söz ederken (\"tertemiz oldu\", \"tek tıkla\", \"işte bu kadar\").",
+  "sure": { "min": 0.8, "varsayilan": 1.3, "max": 2.0 },
+  "giris_sn": 0.35,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["tam"],
+  "boyut": { "w": 1, "h": 1 },
+  "en_kucuk_px": 220,
+  "kaynak": null
+}

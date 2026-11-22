@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Grenli gradyan zemin</title>
+<!-- Proje yapımı arka plan döngüsü (ADR 0036). 6 sn, son kare ilk kareye bağlanır. Üret: vedit motion kur zemin-grenli-gradyan -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.zemin{position:absolute;inset:0;background:var(--zemin);overflow:hidden}
+/* Her leke kendi merkezinde döner: 360° = tam tur, döngü dikişsiz. */
+.yol{position:absolute;width:0;height:0;animation:don 6s linear infinite}
+.leke{position:absolute;width:80vmax;height:80vmax;margin:-40vmax 0 0 -40vmax;border-radius:50%}
+.a{left:12vw;top:16vh}.a .leke{transform:translateX(9vw);background:radial-gradient(closest-side,var(--vurgu),transparent);opacity:.6}
+.b{left:85vw;top:58vh;animation-direction:reverse}.b .leke{transform:translateX(11vw);background:radial-gradient(closest-side,var(--ikincil),transparent);opacity:.35}
+.c{left:30vw;top:100vh;animation-delay:-2s}.c .leke{transform:translateX(8vw);background:radial-gradient(closest-side,var(--vurgu),transparent);opacity:.4}
+@keyframes don{to{transform:rotate(360deg)}}
+.gren{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:overlay;opacity:.45}
+</style></head><body>
+<div class="zemin">
+ <div class="yol a"><div class="leke"></div></div>
+ <div class="yol b"><div class="leke"></div></div>
+ <div class="yol c"><div class="leke"></div></div>
+ <svg class="gren" xmlns="http://www.w3.org/2000/svg"><filter id="g" x="0" y="0" width="100%" height="100%">
+  <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" stitchTiles="stitch"/>
+  <feColorMatrix type="saturate" values="0"/></filter>
+  <rect width="100%" height="100%" filter="url(#g)"/></svg>
+</div>
+</body></html>

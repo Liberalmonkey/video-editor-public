@@ -1,0 +1,15 @@
+{
+ "title": "Sohbet balonu: soru ve cevap mesajı sırayla",
+ "kind": "lower-third",
+ "tags": ["sohbet", "mesaj", "soru", "cevap", "dm"],
+ "ne_zaman": "Konuşmacı izleyiciden gelen bir soruyu ya da bir DM'i okuyup cevapladığında soru-cevabı mesaj olarak göstermek için.",
+ "sure": 4.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "soru": {"vars": "Bu nasıl çalışıyor?", "max": 60},
+  "cevap": {"vars": "Üç adımda anlatıyorum.", "max": 60}
+ }
+}

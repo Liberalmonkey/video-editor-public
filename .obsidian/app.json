@@ -1,0 +1,16 @@
+{
+  "attachmentFolderPath": "raw/assets",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "wiki",
+  "useMarkdownLinks": false,
+  "newLinkFormat": "shortest",
+  "alwaysUpdateLinks": true,
+  "userIgnoreFilters": [
+    "graphify-out/",
+    ".claude/",
+    "media/",
+    "templates/",
+    "scripts/",
+    "src/"
+  ]
+}

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="tr" data-composition-variables='[{"id":"baslik","type":"string","label":"Başlık","default":"Duman"}]'>
+<head><meta charset="utf-8">
+<style>
+  html, body, #root { margin: 0; background: none; }
+  .bant { position: absolute; left: 80px; top: 300px; width: 600px; height: 160px; background: rgb(255, 122, 0);
+    color: rgb(255, 255, 255); font: 800 64px sans-serif; display: flex; align-items: center; padding-left: 40px; }
+</style></head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="2" data-width="960" data-height="540" data-fps="30">
+  <div id="kart" class="clip" data-start="0" data-duration="2" data-track-index="1">
+    <div id="bant" class="bant" data-var-text="baslik">Duman</div>
+  </div>
+</div>
+<script src="gsap.min.js"></script>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  tl.fromTo("#bant", { x: -200, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0);
+  window.__timelines["main"] = tl;
+</script>
+</body></html>

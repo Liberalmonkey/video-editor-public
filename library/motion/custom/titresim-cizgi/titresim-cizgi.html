@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Titreşim çizgileri</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur titresim-cizgi -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.c{stroke-width:18}
+.g1{animation:ciz .15s ease-out .03s both}
+.l{animation:tl .1s steps(2) .18s 7 both}
+.r{animation:tr .1s steps(2) .18s 7 both}
+.o{animation:cik .2s ease-in .85s both}
+@keyframes tl{0%{transform:translate(-7px,2px)}50%{transform:translate(5px,-2px)}}
+@keyframes tr{0%{transform:translate(7px,-2px)}50%{transform:translate(-5px,2px)}}
+@keyframes cik{to{opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g class="o">
+<g class="l">
+<path class="c ciz g1" pathLength="1" d="M318 440 L 250 396"/>
+<path class="c ciz g1" pathLength="1" d="M300 540 L 222 540"/>
+<path class="c ciz g1" pathLength="1" d="M318 640 L 250 684"/>
+</g>
+<g class="r">
+<path class="c ciz g1" pathLength="1" d="M762 440 L 830 396"/>
+<path class="c ciz g1" pathLength="1" d="M780 540 L 858 540"/>
+<path class="c ciz g1" pathLength="1" d="M762 640 L 830 684"/>
+</g></g></svg>
+</body></html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Fiyat etiketi</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur fiyat-etiketi -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.sahne{position:absolute;left:9vw;top:16vh;max-width:65vw;font-family:var(--font)}
+.panel{display:inline-flex;flex-direction:column;align-items:flex-start;max-width:65vw;box-sizing:border-box;padding:3vmin 4.6vmin 3.4vmin;
+  background:var(--zemin);color:var(--yazi);border-radius:var(--kose,18px);transform-origin:left center;
+  animation:gir .4s cubic-bezier(.16,1,.3,1) .05s both,cik .4s cubic-bezier(.6,0,.9,.4) 2.95s both}
+.etiket{background:var(--vurgu);color:var(--vurgu-ustu,var(--zemin));font-weight:800;font-size:3.4vmin;letter-spacing:.06em;padding:.8vmin 2vmin;
+  border-radius:calc(var(--kose,18px) * .6);animation:kay .35s cubic-bezier(.16,1,.3,1) .22s both}
+.eski{font-family:var(--font-rakam);position:relative;display:inline-block;margin-top:2.2vmin;font-weight:700;font-size:6vmin;line-height:1;white-space:nowrap;color:color-mix(in srgb,var(--yazi) 58%,transparent)}
+.eski::after{content:"";position:absolute;left:-6%;right:-6%;top:50%;height:1vmin;margin-top:-.5vmin;background:var(--vurgu);border-radius:99px;
+  transform-origin:left center;transform:rotate(-5deg) scaleX(0);animation:ciz .3s cubic-bezier(.6,0,.4,1) .7s both}
+.yeni{font-family:var(--font-rakam);display:inline-block;margin-top:1vmin;font-weight:900;font-size:15vmin;line-height:1;white-space:nowrap;transform-origin:left bottom;
+  animation:zipla .4s var(--ease) 1.05s both}
+@keyframes gir{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes cik{to{transform:translateY(6vmin);opacity:0}}
+@keyframes kay{from{transform:translateX(-3vmin);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes ciz{from{transform:rotate(-5deg) scaleX(0)}to{transform:rotate(-5deg) scaleX(1)}}
+@keyframes zipla{0%{transform:translateY(3vmin);opacity:0}100%{transform:translateY(0);opacity:1}}
+</style></head><body>
+<div class="sahne"><div class="panel"><div class="etiket" id="etiket"></div><div class="eski" id="eski"></div><div class="yeni" id="yeni"></div></div></div>
+<script>
+// Dolgu üstündeki yazı: temanın zemin ve yazı renginden hangisi daha okunaklıysa o (pastel vurgulu açık temada zemin rengi okunmaz).
+function zitYazi(dolgu, ad) {
+  const p = document.body.appendChild(document.createElement("i"));
+  const lum = v => { p.style.color = v; return getComputedStyle(p).color.match(/[\d.]+/g).slice(0, 3)
+    .map(c => (c /= 255) <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4).reduce((s, c, i) => s + c * [.2126, .7152, .0722][i], 0); };
+  const k = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+  const d = lum(dolgu), z = lum("var(--zemin)"), y = lum("var(--yazi)"); p.remove();
+  document.documentElement.style.setProperty(ad, k(d, z) >= k(d, y) ? "var(--zemin)" : "var(--yazi)");
+}
+const P = Object.assign({ eski: "₺999", yeni: "₺499", metin: "Bugüne özel" }, window.PARAM);
+const et = document.getElementById("etiket"), eski = document.getElementById("eski"), yeni = document.getElementById("yeni");
+et.textContent = P.metin.toLocaleUpperCase("tr-TR"); eski.textContent = P.eski; yeni.textContent = P.yeni;
+if (!P.metin) et.style.display = "none";
+if (!P.eski) eski.style.display = "none";
+// Uzun fiyat panelden taşmasın diye küçülür.
+function sigdir(el, taban, alt, maxPx) {
+  let f = taban; el.style.fontSize = f + "vmin";
+  while (el.scrollWidth > maxPx && f > alt) { f -= .2; el.style.fontSize = f + "vmin"; }
+}
+function kur() {
+  zitYazi("var(--vurgu)", "--vurgu-ustu");
+  const vm = Math.min(innerWidth, innerHeight) / 100, max = innerWidth * .65 - vm * 9.2;
+  sigdir(yeni, 15, 6, max); sigdir(eski, 6, 3.4, max); sigdir(et, 3.4, 3.2, max);
+}
+kur();
+let hazir = false;
+window.seek = () => { if (!hazir) { hazir = true; kur(); } }; // tema ve font yüklendikten sonra bir kez yeniden ölç
+</script>
+</body></html>

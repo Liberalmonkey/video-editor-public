@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Sosyal kanıt</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur sosyal-kanit -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.sahne{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:720px;font-family:var(--font)}
+.panel{background:var(--zemin);border-radius:var(--kose,18px);padding:32px 42px;box-shadow:var(--golge);border:2px solid color-mix(in srgb,var(--yazi) 6%,transparent);display:flex;align-items:center;gap:36px;box-sizing:border-box}
+.avatar-grup{display:flex;align-items:center;flex-shrink:0}
+.avatar{width:68px;height:68px;border-radius:50%;border:3.5px solid var(--zemin);font-weight:800;font-size:30px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;margin-left:-20px;box-shadow:var(--golge);transform-origin:center center}
+.avatar:first-child{margin-left:0}
+.a1{background:var(--vurgu);color:var(--vurgu-ustu);z-index:4}
+.a2{background:var(--soluk);color:var(--zemin);z-index:3}
+.a3{background:var(--ikincil);color:var(--ikincil-ustu);z-index:2}
+.a4{background:var(--yazi);color:var(--zemin);z-index:1}
+.metrik-kutu{display:flex;flex-direction:column;justify-content:center}
+.sayi-satir{font-weight:800;font-size:52px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;font-family:var(--font-rakam);color:var(--yazi);display:flex;align-items:baseline}
+.sonek{color:var(--vurgu);font-size:38px;margin-left:4px}
+.etiket{font-weight:700;font-size:30px;color:var(--soluk);margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:380px}
+</style></head><body>
+<div class="sahne" id="sahne">
+ <div class="panel" id="panel">
+  <div class="avatar-grup">
+   <div class="avatar a1" id="av0">AK</div>
+   <div class="avatar a2" id="av1">MD</div>
+   <div class="avatar a3" id="av2">ES</div>
+   <div class="avatar a4" id="av3">YT</div>
+  </div>
+  <div class="metrik-kutu">
+   <div class="sayi-satir"><span id="sayi">0</span><span class="sonek" id="sonek"></span></div>
+   <div class="etiket" id="etiket"></div>
+  </div>
+ </div>
+</div>
+<script>
+const P = Object.assign({ sayi: 50000, etiket: "Mutlu Kullanıcı", sonek: "+" }, window.PARAM);
+const hedefSayi = Math.max(0, Math.min(9999999, Math.round(Number(P.sayi) || 0)));
+const $ = id => document.getElementById(id);
+const tr = v => v.toLocaleString("tr-TR");
+
+$("etiket").textContent = P.etiket;
+$("sonek").textContent = P.sonek;
+
+// Titreme önleme: Sayı genişliğini baştan rezerve et
+$("sayi").textContent = tr(hedefSayi);
+const finalW = $("sayi").getBoundingClientRect().width;
+$("sayi").style.minWidth = finalW + "px";
+$("sayi").textContent = "0";
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const easeOutCubic = x => 1 - Math.pow(1 - x, 3);
+const easeInCubic = x => x * x * x;
+const easeOutBack = (x, s = 1.4) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
+
+window.seek = t => {
+  const p = $("panel"), s = $("sahne");
+
+  // sure: 4.0 sn, son kare boş biter (ADR 0036)
+  if (t <= 0 || t >= 3.9) {
+    s.style.display = "none";
+    return;
+  }
+  s.style.display = "block";
+
+  // Giriş: 0.05..0.38
+  const giris = easeOutCubic(clamp((t - 0.05) / 0.33, 0, 1));
+  // Çıkış: 3.45..3.85 (denetim 2026-11-19: son 0,75 sn boştu)
+  const cikis = easeInCubic(clamp((t - 3.45) / 0.4, 0, 1));
+
+  p.style.opacity = (giris * (1 - cikis)).toFixed(3);
+  p.style.transform = `scale(${(0.88 + 0.12 * giris - 0.10 * cikis).toFixed(3)}) translateY(${((1 - giris) * 30 + cikis * 35).toFixed(1)}px)`;
+
+  // Avatarlar dalga pop-in: 0.15..0.95
+  for (let i = 0; i < 4; i++) {
+    const av = $("av" + i);
+    const basla = 0.15 + i * 0.10;
+    const avT = clamp((t - basla) / 0.35, 0, 1);
+    const avScale = avT > 0 ? easeOutBack(avT) : 0;
+    av.style.transform = `scale(${Math.max(0, avScale).toFixed(3)})`;
+    av.style.opacity = (clamp(avT * 2, 0, 1)).toFixed(2);
+  }
+
+  // Sayı fırlayışı: 0.25..1.45
+  const sayacT = clamp((t - 0.25) / 1.20, 0, 1);
+  const sayacOran = sayacT >= 1 ? 1 : 1 - Math.pow(2, -9 * sayacT);
+  const anlikSayi = Math.round(hedefSayi * sayacOran);
+  $("sayi").textContent = tr(anlikSayi);
+};
+
+seek(0);
+</script>
+</body></html>

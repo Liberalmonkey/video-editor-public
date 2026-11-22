@@ -1,0 +1,15 @@
+{
+ "title": "Bildirim kartı: üstten inen telefon bildirimi",
+ "kind": "lower-third",
+ "tags": ["bildirim", "mesaj", "telefon", "uyari"],
+ "ne_zaman": "Konuşmada bir mesaj, sipariş, ödeme ya da hatırlatma geldiği anlatılırken o anı telefon bildirimi gibi göstermek için.",
+ "sure": 3.5,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "baslik": {"vars": "Yeni mesaj", "max": 24},
+  "metin": {"vars": "Bildirim satırı buraya gelir", "max": 56}
+ }
+}

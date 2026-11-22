@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Zıplayan aşağı ok</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur ok-asagi -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+g{animation:dus 1.8s both}
+@keyframes dus{
+0%{transform:translateY(-240px);opacity:0;animation-timing-function:cubic-bezier(.5,0,.9,.5)}
+4%{opacity:1;animation-timing-function:cubic-bezier(.5,0,.9,.5)}
+14%{transform:translateY(0);animation-timing-function:cubic-bezier(.1,.5,.5,1)}
+22%{transform:translateY(-95px);animation-timing-function:cubic-bezier(.5,0,.9,.5)}
+30%{transform:translateY(0);animation-timing-function:cubic-bezier(.1,.5,.5,1)}
+35%{transform:translateY(-30px);animation-timing-function:cubic-bezier(.5,0,.9,.5)}
+40%{transform:translateY(0);opacity:1}
+74%{transform:translateY(0);opacity:1;animation-timing-function:ease-in}
+90%,100%{transform:translateY(24px);opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g>
+<path class="c" style="stroke-width:24" d="M540 290 Q 534 470 540 650"/>
+<path class="c" style="stroke-width:24" d="M440 548 L 540 655 L 640 548"/>
+</g></svg>
+</body></html>

@@ -1,0 +1,15 @@
+{
+ "title": "Kaydet: yer imi yukarıdan iner",
+ "kind": "icon",
+ "tags": [
+  "kaydet",
+  "yer-imi",
+  "sakla",
+  "etkilesim"
+ ],
+ "ne_zaman": "Konuşmacı 'bunu kaydet' dediğinde ya da sonra dönülecek değerli bir bilgi verildiğinde.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

@@ -1,0 +1,82 @@
+/* Ortak taban stiller — vedit build her kompozisyona ekler.
+   Değişkenler build tarafından :root'a yazılır: --u (min(W,H)/100 px), --safe-t/b/l/r,
+   --c-* renkler, --f-* fontlar, --radius. Boyutları her zaman var(--u) ile ver → format bağımsız. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { margin: 0; overflow: hidden; background: var(--c-bg); }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--c-bg);
+  font-family: var(--f-body); color: var(--c-fg); -webkit-font-smoothing: antialiased; }
+
+/* Zamanlı katmanlar tam kare kutu */
+.clip, .blk-wrap { position: absolute; inset: 0; }
+.blk { position: absolute; inset: 0; }
+
+/* Video katmanları (sarmalayıcı zamansız, video zamanlı) */
+.vwrap { position: absolute; inset: 0; overflow: hidden; }
+.vwrap .inner { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.vwrap video, .vwrap img.vimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vwrap.fit-contain video, .vwrap.fit-contain img.vimg { object-fit: contain; }
+.vwrap.layout-pip-br { inset: auto calc(var(--safe-r) + var(--u) * 4) calc(var(--safe-b) + var(--u) * 4) auto;
+  width: 34%; aspect-ratio: 9 / 16; border-radius: var(--radius); box-shadow: 0 calc(var(--u)*1.5) calc(var(--u)*5) rgba(0,0,0,.45); }
+.vwrap.layout-pip-bl { inset: auto auto calc(var(--safe-b) + var(--u) * 4) calc(var(--safe-l) + var(--u) * 4);
+  width: 34%; aspect-ratio: 9 / 16; border-radius: var(--radius); box-shadow: 0 calc(var(--u)*1.5) calc(var(--u)*5) rgba(0,0,0,.45); }
+.vwrap.layout-top-half { inset: 0 0 50% 0; }
+.vwrap.layout-bottom-half { inset: 50% 0 0 0; }
+.vwrap.layout-card { inset: 9% 6%; border-radius: var(--radius); box-shadow: 0 calc(var(--u)*2) calc(var(--u)*8) rgba(0,0,0,.5); }
+/* portrait: dikey (9:16) kaynak yatay karede ortada tam boy kart — büyütme yok, netlik korunur */
+.vwrap.layout-portrait { top: 6%; height: 88%; width: calc(var(--card-half) * 2); left: calc(var(--W) / 2 - var(--card-half));
+  border-radius: calc(var(--u) * 2.4); box-shadow: 0 calc(var(--u)*2) calc(var(--u)*8) rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.12); }
+/* screen: ekran kaydı için 16:9 cam çerçeveli kart */
+.vwrap.layout-screen { top: 11%; height: 70%; width: calc(var(--H) * 0.70 * 16 / 9); left: calc((var(--W) - var(--H) * 0.70 * 16 / 9) / 2);
+  border-radius: calc(var(--u) * 1.6); box-shadow: 0 calc(var(--u)*2) calc(var(--u)*8) rgba(0,0,0,.55), 0 0 0 calc(var(--u)*0.6) rgba(255,255,255,.14); }
+
+/* Maskeli kelime girişleri */
+.w-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.w { display: inline-block; }
+.hl { color: var(--c-accent); }
+.mask { display: block; overflow: hidden; padding-bottom: 0.06em; }
+.mask > * { display: block; }
+
+/* Tipografi yardımcıları */
+.t-display { font-family: var(--f-display); font-weight: var(--w-display); letter-spacing: -0.025em; line-height: 1.02; }
+.t-body { font-family: var(--f-body); font-weight: 500; line-height: 1.3; }
+.t-num { font-variant-numeric: tabular-nums; }
+
+/* Kağıt/grain dokusu (statik, seed'li SVG gürültü) */
+.grain { position: absolute; inset: -10%; pointer-events: none; opacity: var(--grain);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+
+/* ---------------- Altyazı stilleri ---------------- */
+.captions { position: absolute; left: calc(var(--safe-l) + var(--u0) * 4); right: calc(var(--safe-r) + var(--u0) * 4);
+  bottom: var(--cap-bottom); z-index: 50; pointer-events: none; }
+.cap-page { position: absolute; inset: auto 0 0 0; display: flex; flex-wrap: wrap; justify-content: center;
+  align-items: flex-end; gap: 0 0.28em; text-align: center; }
+.cap-page .cw { display: inline-block; }
+
+/* odak: her videonun standardı (ADR 0014). Marka token'ına bağlı değildir: beyaz, okunan kelime turuncu, siyah kontur */
+.cap-odak .cap-page { font: 800 calc(var(--u0) * 6.4) / 1.15 "Montserrat", ui-sans-serif, system-ui, sans-serif; color: #FFFFFF;
+  -webkit-text-stroke: 0.16em #000000; paint-order: stroke fill; }
+.cap-odak .cw[data-on="1"] { color: #FF7A00; }
+
+/* clean-sub: YouTube tarzı, cümle düzeyi, yarı saydam kutu */
+.cap-clean-sub .cap-page { font: 600 calc(var(--u0) * 4.2) / 1.25 var(--f-body); color: var(--c-cap-fg); }
+.cap-clean-sub .cap-page .line-box { background: rgba(0, 0, 0, .55); padding: 0.12em 0.5em; border-radius: 0.25em; }
+.cap-clean-sub .cw[data-on="1"] { color: var(--c-cap-fg); }
+
+/* bold-pop: Reels/UGC, kalın, kelime vurgusu + pop */
+.cap-bold-pop .cap-page { font: 900 calc(var(--u0) * 7.6) / 1.05 var(--f-display); color: var(--c-cap-fg);
+  letter-spacing: -0.01em; -webkit-text-stroke: calc(var(--u0) * 0.35) var(--c-cap-stroke); paint-order: stroke fill;
+  text-shadow: 0 calc(var(--u0) * 0.6) calc(var(--u0) * 1.6) rgba(0, 0, 0, .55); }
+.cap-bold-pop .cw[data-on="1"] { color: var(--c-cap-hl); }
+
+/* karaoke: tüm sayfa görünür, konuşulan kelime dolar */
+.cap-karaoke .cap-page { font: 800 calc(var(--u0) * 6) / 1.1 var(--f-display); color: rgba(255,255,255,.45);
+  -webkit-text-stroke: calc(var(--u) * 0.25) rgba(0,0,0,.6); paint-order: stroke fill; }
+.cap-karaoke .cw[data-on="1"] { color: var(--c-cap-fg); }
+.cap-karaoke .cw[data-cur="1"] { color: var(--c-cap-hl); }
+
+/* underline: söylenen kelimeler beyaz + vurgu renginde alt çizgi, sıradakiler soluk (AIS referansı) */
+.cap-underline .cap-page { font: 600 calc(var(--u0) * 4.3) / 1.3 var(--f-body); color: rgba(255,255,255,.45);
+  letter-spacing: -0.005em; text-shadow: 0 calc(var(--u0) * 0.3) calc(var(--u0) * 1.4) rgba(0,0,0,.55); }
+.cap-underline .cw { background: linear-gradient(var(--c-cap-hl), var(--c-cap-hl)) no-repeat 0 100% / 0% calc(var(--u0) * 0.32);
+  padding-bottom: calc(var(--u0) * 0.35); transition: none; }
+.cap-underline .cw[data-on="1"] { color: var(--c-cap-fg); background-size: 100% calc(var(--u0) * 0.32); }

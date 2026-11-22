@@ -1,0 +1,24 @@
+{
+ "title": "Kart yelpaze: tek karttan açılan üçlü seçenek destesi",
+ "kind": "overlay",
+ "tags": ["kart", "yelpaze", "deste", "ozellik", "secenek", "karsilastirma", "liste"],
+ "ne_zaman": "Üç kilit özellik, adım ya da seçeneği sırayla yelpaze gibi açıp sonra tek kartta toplamak için.",
+ "sure": 4.5,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "kart1": {
+   "vars": "Hızlı Kurgu",
+   "max": 18
+  },
+  "kart2": {
+   "vars": "Yüksek Kalite",
+   "max": 18
+  },
+  "kart3": {
+   "vars": "Sıfır Maliyet",
+   "max": 18
+  }
+ }
+}

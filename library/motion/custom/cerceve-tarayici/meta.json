@@ -1,0 +1,15 @@
+{
+ "title": "Tarayıcı penceresi çerçevesi: web sayfası göster",
+ "kind": "overlay",
+ "tags": [
+  "cerceve",
+  "tarayici",
+  "web",
+  "ekran"
+ ],
+ "ne_zaman": "Bir web sitesi, ekran kaydı ya da çevrimiçi aracı gösterirken; 16:9 ekran görüntüsünün üstüne konur.",
+ "sure": 3.0,
+ "w": 1920,
+ "h": 1080,
+ "loop": false
+}

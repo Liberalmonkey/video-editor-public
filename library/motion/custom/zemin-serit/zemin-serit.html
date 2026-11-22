@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Şerit zemin</title>
+<!-- Proje yapımı arka plan döngüsü (ADR 0036). 6 sn'de tam bir şerit periyodu kayar, döngü dikişsiz. Üret: vedit motion kur zemin-serit -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.zemin{position:absolute;inset:0;background:var(--zemin);overflow:hidden}
+.don{position:absolute;left:50%;top:50%;width:260vmax;height:260vmax;margin:-130vmax 0 0 -130vmax;transform:rotate(-32deg)}
+.serit{position:absolute;top:0;bottom:0;left:0;right:-16vw;animation:kay 6s linear infinite;
+  background:repeating-linear-gradient(90deg,var(--zemin) 0 9vw,color-mix(in srgb,var(--vurgu) 16%,var(--zemin)) 9vw 16vw)}
+@keyframes kay{to{transform:translateX(-16vw)}}
+</style></head><body>
+<div class="zemin"><div class="don"><div class="serit"></div></div></div>
+</body></html>

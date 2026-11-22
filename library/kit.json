@@ -1,0 +1,19 @@
+{
+ "_note": "Kütüphane kiti (ADR 0012). locked: bu kimliklerin dosyası ve manifest kaydı kullanıcı açıkça istemedikçe değiştirilmez, yeniden üretilmez. always[stüdyo|*][rol]: o rol her videoda bu varlıkla karşılanır; stüdyoya özel rol '*' rolünü ezer. null = yuva boş: ilk ihtiyaçta bir kez üretilir, library/motion/custom/<id>/ altına konur, manifest'e kaydedilir, buraya yazılır ve kilitlenir.",
+ "locked": [
+  "typing-synth-typing-01",
+  "click-remotion-mouse-click"
+ ],
+ "always": {
+  "*": {
+   "keyboard": "typing-synth-typing-01",
+   "mouse_click": "click-remotion-mouse-click",
+   "zoom_in": null,
+   "zoom_out": null,
+   "gecis": null
+  },
+  "youtube-animasyon": {
+   "subscribe": null
+  }
+ }
+}

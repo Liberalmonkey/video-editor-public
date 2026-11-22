@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Tarayıcı penceresi çerçevesi: web sayfası göster</title>
+<!-- Proje yapımı saydam çerçeve (ADR 0036). İçi boş: altındaki videonun bir bölümünü çevreler. 0.4 sn giriş, bekleme, 0.3 sn çıkış. -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:1920px;height:1080px}
+svg{position:absolute;inset:0;width:1920px;height:1080px}
+svg *{transform-box:view-box}
+.cik{transform-origin:960px 540px;animation:cik .3s cubic-bezier(.5,0,.75,0) 2.7s both}
+@keyframes cik{to{opacity:0;transform:scale(.97)}}
+.pen{position:absolute;left:160px;top:90px;width:1600px;height:900px;box-sizing:border-box;border:var(--cizgi,10px) solid var(--zemin);border-top:0;border-radius:var(--kose,18px);box-shadow:var(--golge);animation:gel .4s cubic-bezier(.2,.9,.3,1) both}
+.bar{position:absolute;left:calc(-1*var(--cizgi,10px));right:calc(-1*var(--cizgi,10px));top:0;height:84px;background:var(--zemin);border-radius:var(--kose,18px) var(--kose,18px) 0 0}
+.bar i{position:absolute;top:30px;width:24px;height:24px;border-radius:50%}
+.bar i:nth-child(1){left:34px;background:var(--vurgu)}
+.bar i:nth-child(2){left:74px;background:var(--ikincil)}
+.bar i:nth-child(3){left:114px;background:var(--yazi);opacity:.5}
+.adr{position:absolute;left:180px;right:180px;top:20px;height:44px;border-radius:22px;background:var(--yazi);opacity:.14}
+.cikd{position:absolute;inset:0;animation:cik .3s cubic-bezier(.5,0,.75,0) 2.7s both}
+@keyframes gel{from{opacity:0;transform:translateY(40px) scale(.97)}to{opacity:1;transform:none}}
+</style></head><body>
+<div class="cikd"><div class="pen"><div class="bar"><i></i><i></i><i></i><div class="adr"></div></div></div></div>
+</body></html>

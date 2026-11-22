@@ -1,0 +1,200 @@
+{
+ "$defs": {
+  "Kanit": {
+   "additionalProperties": false,
+   "properties": {
+    "proje": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Proje"
+    },
+    "zaman": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Zaman"
+    },
+    "kare": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Kare"
+    },
+    "not": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Not"
+    }
+   },
+   "title": "Kanit",
+   "type": "object"
+  },
+  "Kural": {
+   "additionalProperties": false,
+   "properties": {
+    "id": {
+     "title": "Id",
+     "type": "string"
+    },
+    "metin": {
+     "title": "Metin",
+     "type": "string"
+    },
+    "neden": {
+     "default": "",
+     "title": "Neden",
+     "type": "string"
+    },
+    "kapsam": {
+     "default": "global",
+     "enum": [
+      "global",
+      "studyo",
+      "stil",
+      "proje"
+     ],
+     "title": "Kapsam",
+     "type": "string"
+    },
+    "kapsam_deger": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Kapsam Deger"
+    },
+    "hedef_rol": {
+     "default": "hepsi",
+     "enum": [
+      "E1",
+      "E2",
+      "E3",
+      "hepsi"
+     ],
+     "title": "Hedef Rol",
+     "type": "string"
+    },
+    "kategori": {
+     "default": "genel",
+     "title": "Kategori",
+     "type": "string"
+    },
+    "onem": {
+     "default": "P1",
+     "enum": [
+      "P0",
+      "P1",
+      "P2"
+     ],
+     "title": "Onem",
+     "type": "string"
+    },
+    "kaynak": {
+     "default": "kullanici",
+     "title": "Kaynak",
+     "type": "string"
+    },
+    "kanit": {
+     "default": [],
+     "items": {
+      "$ref": "#/$defs/Kanit"
+     },
+     "title": "Kanit",
+     "type": "array"
+    },
+    "durum": {
+     "default": "aktif",
+     "enum": [
+      "aktif",
+      "oneri",
+      "pasif",
+      "silinen"
+     ],
+     "title": "Durum",
+     "type": "string"
+    },
+    "tekrar": {
+     "default": 1,
+     "minimum": 1,
+     "title": "Tekrar",
+     "type": "integer"
+    },
+    "olcut": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Olcut"
+    },
+    "olusturma": {
+     "title": "Olusturma",
+     "type": "string"
+    },
+    "guncelleme": {
+     "title": "Guncelleme",
+     "type": "string"
+    }
+   },
+   "required": [
+    "id",
+    "metin"
+   ],
+   "title": "Kural",
+   "type": "object"
+  }
+ },
+ "additionalProperties": false,
+ "properties": {
+  "surum": {
+   "default": 1,
+   "title": "Surum",
+   "type": "integer"
+  },
+  "kurallar": {
+   "default": [],
+   "items": {
+    "$ref": "#/$defs/Kural"
+   },
+   "title": "Kurallar",
+   "type": "array"
+  }
+ },
+ "title": "Depo",
+ "type": "object"
+}

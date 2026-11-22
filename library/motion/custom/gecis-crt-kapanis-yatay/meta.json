@@ -1,0 +1,16 @@
+{
+ "title": "CRT tüplü ekran kapanış geçişi 16:9; ortası (0,40 sn) kesime gelir",
+ "kind": "transition",
+ "tags": [
+  "gecis",
+  "crt",
+  "ekran",
+  "tarama",
+  "yatay"
+ ],
+ "ne_zaman": "16:9 videoda teknoloji, oyun, retro ya da sert konu değişiminde sahneyi tüplü ekran gibi kapatıp tarama çizgileriyle yenisini açarken; kesimi klibin ortasına (0,40 sn) koy.",
+ "sure": 0.8,
+ "w": 1920,
+ "h": 1080,
+ "loop": false
+}

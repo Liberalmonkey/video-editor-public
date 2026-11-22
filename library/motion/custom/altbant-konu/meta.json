@@ -1,0 +1,15 @@
+{
+ "title": "Alt bant konu: haber bandı gibi etiket ve konu satırı",
+ "kind": "lower-third",
+ "tags": ["altbant", "konu", "haber", "baslik"],
+ "ne_zaman": "Konuşma yeni bir konuya ya da bölüme geçtiğinde konuyu haber bandı gibi tek satırda göstermek için.",
+ "sure": 3.5,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "etiket": {"vars": "KONU", "max": 14},
+  "metin": {"vars": "Konu satırı buraya gelir", "max": 44}
+ }
+}

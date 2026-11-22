@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="tr">
+<head><meta charset="utf-8">
+<style>
+  html, body, #root { margin: 0; background: rgb(0, 0, 0); }
+  #v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+</style></head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="2" data-width="960" data-height="540" data-fps="30">
+  <video id="v" class="clip" src="klip.mp4" data-start="0" data-duration="2" data-media-start="1" data-track-index="1" muted playsinline></video>
+</div>
+<script src="gsap.min.js"></script>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  tl.fromTo("#v", { scale: 1 }, { scale: 1.2, duration: 2, ease: "none" }, 0);
+  window.__timelines["main"] = tl;
+</script>
+</body></html>

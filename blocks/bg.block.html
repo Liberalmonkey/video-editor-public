@@ -1,0 +1,29 @@
+<!--meta
+{"name": "bg", "description": "Sahne arka planı: düz renk, çok hafif iki ton geçiş, nokta/çizgi grid ya da kâğıt dokusu; yavaş kamera kayması (drift). Animasyon sahnelerinin zemini; mor-mavi 'AI şablonu' gradyanı YASAK.",
+ "props": {"kind": "enum(solid|soft|grid|dots|paper)", "color": "color", "color2": "color", "drift": "enum(none|slow|push)"},
+ "default_dur": 5.0, "sfx": {}, "tags": ["animation", "background"]}
+-->
+<style>
+.blk-bg { z-index: 0; }
+.blk-bg .bg-l { position: absolute; inset: -6%; background: var(--bg-c, var(--c-bg)); }
+.blk-bg.k-soft .bg-l { background: radial-gradient(120% 90% at 30% 20%, var(--bg-c2, var(--c-surface)) 0%, var(--bg-c, var(--c-bg)) 70%); }
+.blk-bg.k-grid .bg-l { background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: calc(var(--u) * 8) calc(var(--u) * 8); background-color: var(--bg-c, var(--c-bg)); }
+.blk-bg.k-dots .bg-l { background-image: radial-gradient(rgba(255,255,255,.09) 1.2px, transparent 1.6px); background-size: calc(var(--u) * 4) calc(var(--u) * 4); background-color: var(--bg-c, var(--c-bg)); }
+.blk-bg.k-paper .bg-l { background-color: var(--bg-c, #EFE8DA); }
+.blk-bg .grain { opacity: calc(var(--grain) * 1.6); }
+</style>
+<markup>
+<div class="blk blk-bg k-{{kind}}"><div class="bg-l"></div><div class="grain"></div></div>
+</markup>
+<script>
+HF_BLOCKS["bg"] = function (tl, el, P, T, S) {
+  const l = el.querySelector(".bg-l");
+  if (P.color) el.style.setProperty("--bg-c", P.color);
+  if (P.color2) el.style.setProperty("--bg-c2", P.color2);
+  if (P.kind !== "paper") el.querySelector(".grain").style.display = (S.grain > 0 ? "block" : "none");
+  const d = P.drift || "slow";
+  if (d === "slow") tl.fromTo(l, { x: 0, y: 0 }, { x: -18, y: -10, duration: T.dur, ease: "none" }, T.start);
+  else if (d === "push") tl.fromTo(l, { scale: 1 }, { scale: 1.05, duration: T.dur, ease: S.ease.camera }, T.start);
+};
+</script>

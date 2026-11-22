@@ -1,0 +1,16 @@
+{
+ "title": "Fiyat etiketi: eski fiyat çizilir, yeni fiyat gelir",
+ "kind": "lower-third",
+ "tags": ["fiyat", "indirim", "kampanya", "satis", "ugc"],
+ "ne_zaman": "UGC ya da satış videosunda konuşmacı indirimi, kampanya fiyatını ya da 'şimdi şu kadar' dediği anda eski ve yeni fiyatı göstermek için.",
+ "sure": 3.5,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "eski": {"vars": "₺999", "max": 10},
+  "yeni": {"vars": "₺499", "max": 10},
+  "metin": {"vars": "Bugüne özel", "max": 24}
+ }
+}

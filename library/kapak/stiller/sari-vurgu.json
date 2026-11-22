@@ -1,0 +1,7 @@
+{
+ "aciklama": "Koyu ya da sahne zeminde beyaz yazı, sarı vurgu (21 kapak).",
+ "kutu": false,
+ "css": {
+  "--vurgu": "#FFD600"
+ }
+}

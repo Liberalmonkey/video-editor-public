@@ -1,0 +1,15 @@
+{
+  "ad": "parcacik/sok-dalgasi",
+  "tur": "parcacik",
+  "etiketler": ["şok", "dalga", "halka", "vuruş", "parçacık"],
+  "ne_zaman": "Konuşmacı ani bir etkiyi, çarpma anını, kırılma noktasını ya da güçlü vurgu kelimesini söylerken (\"bir anda\", \"bam\", \"tüm dengeler değişti\").",
+  "sure": { "min": 0.8, "varsayilan": 1.1, "max": 2.0 },
+  "giris_sn": 0.32,
+  "cikis_sn": 0.2,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.54, "h": 0.54 },
+  "en_kucuk_px": 220,
+  "kaynak": null
+}

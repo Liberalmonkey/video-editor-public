@@ -1,0 +1,14 @@
+{
+ "title": "Yıldız patlama rozeti: büyük vurgu",
+ "kind": "overlay",
+ "tags": [
+  "rozet",
+  "patlama",
+  "vurgu"
+ ],
+ "ne_zaman": "Ortadaki bir sayıyı, indirimi ya da 'YENİ' gibi bir öğeyi arkasından rozetle patlatırken; üstüne başka katman gelir.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

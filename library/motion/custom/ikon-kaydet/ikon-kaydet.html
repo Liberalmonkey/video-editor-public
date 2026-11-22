@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Kaydet: yer imi yukarıdan iner</title>
+<!-- Proje yapımı saydam ikon (ADR 0036, 0043). Arka şekil yok: ikonun kendisi --vurgu, ikincil parça --ikincil. Okunurluk yalnız
+#okun filtresi (ince --ikon-kontur dış çizgi, --ikon-golge gölge). Giriş/çıkış stilin easing'i. Yer imi yukarıdan iner, içi dolar. -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px}
+svg *{transform-box:view-box}
+#okun feFlood.k{flood-color:var(--ikon-kontur)}
+#okun feFlood.g{flood-color:var(--ikon-golge)}
+.ikon{filter:url(#okun)}
+.gel{transform-origin:540px 540px;animation:gel .34s var(--ease) both}
+.cik{transform-origin:540px 540px;animation:cik .22s var(--ease-cik) 1.36s both}
+.c{fill:none;stroke:var(--vurgu);stroke-width:34;stroke-linecap:var(--ucu);stroke-linejoin:var(--birlesim)}
+.c2{fill:none;stroke:var(--ikincil);stroke-width:34;stroke-linecap:var(--ucu);stroke-linejoin:var(--birlesim)}
+.d{fill:var(--vurgu)}
+.d2{fill:var(--ikincil)}
+@keyframes gel{from{transform:scale(.62);opacity:0}40%{opacity:1}to{transform:scale(1);opacity:1}}
+@keyframes cik{to{transform:scale(.82);opacity:0}}
+.in{animation:in .4s var(--ease) .05s both}
+.dol{transform-origin:540px 370px;animation:dol .3s cubic-bezier(.4,0,.2,1) .7s both}
+@keyframes in{from{transform:translateY(-60px);opacity:0}30%{opacity:1}to{transform:translateY(0);opacity:1}}
+@keyframes dol{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><defs><filter id="okun" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+<feMorphology in="SourceAlpha" operator="dilate" radius="5" result="gen"/><feFlood class="k"/><feComposite in2="gen" operator="in" result="kontur"/>
+<feGaussianBlur in="gen" stdDeviation="7" result="bul"/><feOffset in="bul" dy="7" result="kay"/><feFlood class="g"/><feComposite in2="kay" operator="in" result="golge"/>
+<feMerge><feMergeNode in="golge"/><feMergeNode in="kontur"/><feMergeNode in="SourceGraphic"/></feMerge></filter><clipPath id="k"><path d="M455 385 H625 V695 L540 628 L455 695 Z"/></clipPath></defs>
+<g class="ikon"><g class="cik"><g class="gel"><g transform="translate(540 540) scale(1.3) translate(-540 -540)">
+<g class="in"><g clip-path="url(#k)"><rect class="d dol" x="440" y="370" width="200" height="340"/></g><path class="c" d="M455 385 H625 V695 L540 628 L455 695 Z"/></g>
+</g></g></g></g></svg>
+</body></html>

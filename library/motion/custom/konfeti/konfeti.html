@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Konfeti</title>
+<!-- Proje yapımı saydam motion (ADR 0031), fikir: pano P221Confetti. Kazanım anı, videoda en çok bir kez.
+     Render: vedit pano <bu dosya> --sure 2.4 --w 1080 --h 1080 -o konfeti.webm -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+i{position:absolute;left:540px;top:600px;border-radius:3px}
+</style></head><body>
+<script>
+// Tohumlu rastgele: her render aynı patlama.
+let tohum = 7;
+const r = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);
+// Tema CSS'i sayfa betiğinden sonra eklenir; renk değişken kalır ki seçili tema uygulansın.
+const renk = ["var(--vurgu)", "var(--yazi)", "var(--ikincil)", "var(--soluk)", "var(--vurgu)"];
+for (let i = 0; i < 44; i++) {
+  const e = document.createElement("i");
+  const w = 14 + r() * 12, h = 22 + r() * 16;
+  e.style.cssText = `width:${w}px;height:${h}px;margin:${-h / 2}px 0 0 ${-w / 2}px;background:${renk[i % renk.length]}`;
+  document.body.appendChild(e);
+  const a = -Math.PI / 2 + (r() - 0.5) * 2.4, g = 220 + r() * 220; // en çok 440 px: 1080 tuvalin kenarına değmez (denetim 2026-11-19)
+  const x = Math.cos(a) * g, y = Math.sin(a) * g, don = (r() - 0.5) * 900;
+  e.animate([
+    { transform: "translate(0,0) rotate(0deg) scale(.4)", opacity: 0 },
+    { transform: `translate(${x * 0.2}px,${y * 0.2}px) rotate(${don * 0.1}deg) scale(1)`, opacity: 1, offset: 0.06 },
+    { transform: `translate(${x}px,${y}px) rotate(${don * 0.5}deg)`, opacity: 1, offset: 0.35 },
+    { transform: `translate(${x * 1.05}px,${y + 380}px) rotate(${don}deg)`, opacity: 0 },
+  ], { duration: 2300, easing: "cubic-bezier(.2,.7,.4,1)", fill: "both", delay: r() * 60 });
+}
+</script>
+</body></html>

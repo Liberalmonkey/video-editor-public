@@ -1,0 +1,17 @@
+{
+ "title": "Şerit zemin: çapraz kayan iki tonlu şeritler",
+ "kind": "background",
+ "tags": [
+  "zemin",
+  "dongu",
+  "serit",
+  "capraz",
+  "hareket"
+ ],
+ "ne_zaman": "Bölüm geçişi kartı, liste başlığı ya da tempolu bir tam ekran sahnenin arkasında.",
+ "sure": 6.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": true
+}

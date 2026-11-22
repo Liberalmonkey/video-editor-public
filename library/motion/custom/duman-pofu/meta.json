@@ -1,0 +1,14 @@
+{
+ "title": "Duman pofu: çıkış ya da ortaya çıkma",
+ "kind": "overlay",
+ "tags": [
+  "duman",
+  "cizgi-film",
+  "gecis"
+ ],
+ "ne_zaman": "Bir öğe kaybolurken ya da birden belirirken (ürün ortaya çıkar, eski yöntem 'puf' diye gider).",
+ "sure": 1.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

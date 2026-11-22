@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Kupür başlık</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur kupur-baslik -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.sahne{position:absolute;left:calc(9vw + 1vmin);top:22vh;width:calc(65vw - 1vmin);display:flex;flex-wrap:wrap;align-items:center;gap:1.6vmin 1.4vmin;font-family:var(--font)}
+.kupur{position:relative;display:inline-block;padding:.22em .34em .2em;background:var(--zemin);color:var(--yazi);
+  font-weight:900;line-height:1;white-space:nowrap;transform:translateY(var(--y)) rotate(var(--r));
+  animation:dus .4s cubic-bezier(.2,1.2,.4,1) both,ucus .3s cubic-bezier(.6,0,.9,.4) both}
+.kupur b{position:relative;z-index:1;font-weight:inherit}
+.fosfor{position:absolute;left:.18em;right:.18em;top:.16em;bottom:.12em;background:var(--ikincil);transform-origin:left center;transform:scaleX(0) skewX(-6deg);
+  animation:fos .35s cubic-bezier(.6,0,.3,1) both}
+.vurgulu b{animation:koyu .15s linear both}
+@keyframes dus{from{transform:translateY(calc(var(--y) - 7vmin)) rotate(calc(var(--r) * -3)) scale(1.15);opacity:0}
+  to{transform:translateY(var(--y)) rotate(var(--r)) scale(1);opacity:1}}
+@keyframes ucus{to{transform:translateY(calc(var(--y) + 8vmin)) rotate(calc(var(--r) * 3));opacity:0}}
+@keyframes fos{from{transform:scaleX(0) skewX(-6deg)}to{transform:scaleX(1) skewX(-6deg)}}
+@keyframes koyu{to{color:var(--ikincil-ustu,var(--zemin))}}
+</style></head><body>
+<div class="sahne" id="sahne"></div>
+<script>
+// Dolgu üstündeki yazı: temanın zemin ve yazı renginden hangisi daha okunaklıysa o (pastel vurgulu açık temada zemin rengi okunmaz).
+function zitYazi(dolgu, ad) {
+  const p = document.body.appendChild(document.createElement("i"));
+  const lum = v => { p.style.color = v; return getComputedStyle(p).color.match(/[\d.]+/g).slice(0, 3)
+    .map(c => (c /= 255) <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4).reduce((s, c, i) => s + c * [.2126, .7152, .0722][i], 0); };
+  const k = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+  const d = lum(dolgu), z = lum("var(--zemin)"), y = lum("var(--yazi)"); p.remove();
+  document.documentElement.style.setProperty(ad, k(d, z) >= k(d, y) ? "var(--zemin)" : "var(--yazi)");
+}
+const P = Object.assign({ metin: "Gazetede okuduğun manşet", vurgu: "" }, window.PARAM);
+const sahne = document.getElementById("sahne");
+// Tohumlu rastgele: her render aynı açı ve aynı kesik kenar.
+function tohum(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const tr = s => s.toLocaleUpperCase("tr-TR").replace(/[^\p{L}\p{N}]/gu, "");
+function kesik(r) { // kâğıt makasla kesilmiş gibi düzensiz kenar
+  const n = 7, ust = [], alt = [];
+  for (let i = 0; i <= n; i++) { const x = (i / n * 100).toFixed(1); ust.push(`${x}% ${(r() * 7).toFixed(1)}%`); alt.unshift(`${x}% ${(100 - r() * 7).toFixed(1)}%`); }
+  return `polygon(${ust.join(",")},${alt.join(",")})`;
+}
+function kur() {
+  zitYazi("var(--ikincil)", "--ikincil-ustu");
+  sahne.innerHTML = "";
+  const r = tohum(48271), kel = P.metin.split(/\s+/).filter(Boolean), hedef = tr(P.vurgu || "");
+  const adim = Math.min(.18, 1.3 / Math.max(1, kel.length)), cAdim = Math.min(.05, .3 / Math.max(1, kel.length));
+  let son = .2, fosVar = false;
+  kel.forEach((k, i) => {
+    const d = document.createElement("span"); d.className = "kupur";
+    d.style.setProperty("--r", ((r() - .5) * 5).toFixed(2) + "deg");
+    d.style.setProperty("--y", ((r() - .5) * 1.4).toFixed(2) + "vmin");
+    d.style.clipPath = kesik(r);
+    son = .2 + i * adim;
+    d.style.animationDelay = `${son}s, ${3.3 + (kel.length - 1 - i) * cAdim}s`;
+    const b = document.createElement("b"); b.textContent = k.toLocaleUpperCase("tr-TR");
+    if (hedef && !fosVar && tr(k).includes(hedef)) { fosVar = true; d.classList.add("vurgulu"); const f = document.createElement("i"); f.className = "fosfor"; d.appendChild(f); }
+    d.appendChild(b); sahne.appendChild(d);
+  });
+  const fos = sahne.querySelector(".fosfor");
+  if (fos) { const t = son + .5; fos.style.animationDelay = t + "s"; fos.nextSibling.style.animationDelay = (t + .12) + "s"; }
+  // Uzun başlık küçülür: kelime 65vw'ye ve blok güvenli alana (22vh-68vh) sığana kadar.
+  const vm = Math.min(innerWidth, innerHeight) / 100, maxW = innerWidth * .65 - vm, maxH = innerHeight * .44;
+  let f = Math.max(5, Math.min(10, 10 * Math.sqrt(14 / Math.max(1, P.metin.length))));
+  const sig = () => sahne.scrollHeight <= maxH && [...sahne.children].every(c => c.offsetWidth <= maxW);
+  sahne.style.fontSize = f + "vmin";
+  while (!sig() && f > 3.4) { f -= .2; sahne.style.fontSize = f + "vmin"; }
+}
+kur();
+let hazir = false;
+window.seek = () => { if (!hazir) { hazir = true; kur(); } }; // tema ve font yüklendikten sonra bir kez yeniden ölç
+</script>
+</body></html>

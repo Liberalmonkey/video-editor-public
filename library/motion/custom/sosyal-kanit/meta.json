@@ -1,0 +1,25 @@
+{
+ "title": "Sosyal kanıt: fırlayan sayaç ve dalgalanan avatar yığını",
+ "kind": "lower-third",
+ "tags": ["sosyal-kanit", "sayac", "abone", "kullanici", "avatar", "topluluk", "guven"],
+ "ne_zaman": "Kullanıcı, müşteri, abone veya başarı rakamlarını güçlü bir sosyal kanıtla göstermek için.",
+ "sure": 4.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "sayi": {
+   "vars": 50000,
+   "min": 0,
+   "max": 9999999
+  },
+  "etiket": {
+   "vars": "Mutlu Kullanıcı",
+   "max": 24
+  },
+  "sonek": {
+   "vars": "+",
+   "max": 4
+  }
+ }
+}

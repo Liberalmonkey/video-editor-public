@@ -1,0 +1,57 @@
+<!--meta
+{"name": "glass-cta", "description": "Buzlu cam kart içinde marka yeşili hap buton + ok; buton bir kez nabız atar (1→1.04→1), altında soluk alt satır. Konuşmacı kartının solunda/sağında (dikey ortalı) ya da center: kartın alt-ortasında, altyazının üstünde (uzun buton metni için). Videoda tek CTA.",
+ "props": {"text": "string*", "sub": "string", "side": "enum(right|left|center)"},
+ "default_dur": 3.0, "sfx": {"in": "pop", "extra": [{"at": 0.85, "type": "click", "intensity": "soft"}]}, "tags": ["glass", "ornek-marka", "footage"]}
+-->
+<style>
+.blk-glass-cta .gt-col { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; }
+.blk-glass-cta.side-left .gt-col { right: calc(var(--W) / 2 + var(--card-half) + var(--u) * 3); }
+.blk-glass-cta.side-right .gt-col { left: calc(var(--W) / 2 + var(--card-half) + var(--u) * 3); }
+.blk-glass-cta.side-center .gt-col { left: 0; right: 0; top: auto; bottom: calc(var(--cap-bottom) + var(--u) * 6.5); justify-content: center; }
+.blk-glass-cta.side-center .gt { max-width: calc(var(--u) * 60); }
+.blk-glass-cta .gt { max-width: min(calc(var(--u) * 48), calc(var(--W) / 2 - var(--card-half) - var(--u) * 3 - var(--safe-l))); padding: calc(var(--u) * 1.8);
+  display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--u) * 1.4);
+  background: var(--c-glass); border: 1px solid var(--c-glass-border); border-radius: calc(var(--u) * 2.6);
+  -webkit-backdrop-filter: blur(calc(var(--u) * 1.45)) saturate(1.15); backdrop-filter: blur(calc(var(--u) * 1.45)) saturate(1.15);
+  box-shadow: 0 calc(var(--u) * 1.2) calc(var(--u) * 4) rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10); }
+.blk-glass-cta .gt-btn { display: flex; align-items: center; justify-content: center; gap: calc(var(--u) * 1.1); white-space: nowrap;
+  padding: calc(var(--u) * 1.7) calc(var(--u) * 2.6); border-radius: 999px; background: var(--c-brand); color: #fff;
+  font: 600 calc(var(--u) * 3.2) / 1 var(--f-body); letter-spacing: -0.01em;
+  box-shadow: 0 calc(var(--u) * 0.6) calc(var(--u) * 2) rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.18); }
+.blk-glass-cta .gt-ic { width: 1.05em; height: 1.05em; flex: none; }
+.blk-glass-cta .gt-sub { padding: 0 calc(var(--u) * 0.8); text-align: center; font: 500 calc(var(--u) * 2.2) / 1.3 var(--f-body);
+  color: var(--c-fg); opacity: .72; }
+</style>
+<markup>
+<div class="blk blk-glass-cta side-{{side}}">
+  <div class="gt-col"><div class="gt">
+    <div class="gt-btn"><span>{{text}}</span><svg class="gt-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></div>
+    <div class="gt-sub">{{sub}}</div>
+  </div></div>
+</div>
+</markup>
+<script>
+window.GLASS_U = window.GLASS_U || function () {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--u")) || 14;
+};
+HF_BLOCKS["glass-cta"] = function (tl, el, P, T, S) {
+  const gt = el.querySelector(".gt"), btn = el.querySelector(".gt-btn"), ic = el.querySelector(".gt-ic"), u = GLASS_U();
+  const sub = el.querySelector(".gt-sub");
+  if (!P.sub) sub.style.display = "none";
+  const dir = P.side === "left" ? -1 : P.side === "center" ? 0 : 1;
+  const tin = Math.min(0.5, T.dur * 0.3);
+  tl.fromTo(gt, { opacity: 0, x: dir * u * 2.85, y: dir === 0 ? u * 2 : 0, filter: "blur(12px)" },
+    { opacity: 1, x: 0, y: 0, filter: "blur(0px)", duration: tin, ease: S.ease.ui }, T.start);
+  tl.set(gt, { filter: "none" }, T.start + tin);
+  tl.fromTo(btn, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: S.ease.overshoot }, T.start);
+  if (P.sub) HF.fadeUp(tl, sub, T.start + 0.15, S, { y: u * 0.6, dur: 0.4 });
+  // tek nabız + ok dürtmesi
+  tl.to(btn, { scale: 1.04, duration: 0.18, ease: "power2.out" }, T.start + 0.85)
+    .to(btn, { scale: 1, duration: 0.22, ease: "power2.inOut" }, T.start + 1.03);
+  tl.fromTo(ic, { x: 0 }, { x: u * 0.4, duration: 0.18, yoyo: true, repeat: 1, ease: "sine.inOut" }, T.start + 0.85);
+  if (!T.isLast) {
+    const d = S.durations.out;
+    tl.to(gt, { opacity: 0, x: dir * u * 0.6, duration: d, ease: S.ease.exit }, Math.max(T.start + tin, T.start + T.dur - d));
+  }
+};
+</script>

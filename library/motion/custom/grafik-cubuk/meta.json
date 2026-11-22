@@ -1,0 +1,34 @@
+{
+ "title": "Çubuk grafik: 2-4 çubuk büyür, değer sayar",
+ "kind": "lower-third",
+ "tags": [
+  "grafik",
+  "veri",
+  "cubuk",
+  "karsilastirma"
+ ],
+ "ne_zaman": "Konuşmacı yıllar, ürünler ya da seçenekler arasında 2-4 sayıyı karşılaştırdığında.",
+ "sure": 4.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "baslik": {
+   "vars": "Yıllık büyüme",
+   "max": 32
+  },
+  "etiketler": {
+   "vars": "2023,2024,2025",
+   "max": 60
+  },
+  "degerler": {
+   "vars": "40,65,90",
+   "max": 40
+  },
+  "birim": {
+   "vars": "%",
+   "max": 4
+  }
+ }
+}

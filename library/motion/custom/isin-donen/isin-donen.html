@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Dönen ışın</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur isin-donen -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+stop{stop-color:var(--vurgu)}
+.don{transform-origin:540px 540px;animation:don 2s linear both}
+.gir{transform-origin:540px 540px;animation:gir .4s cubic-bezier(.2,.8,.3,1) both, cik .35s ease-in 1.5s forwards}
+@keyframes don{to{transform:rotate(30deg)}}
+@keyframes gir{from{transform:scale(.6);opacity:0}}
+@keyframes cik{to{opacity:0;transform:scale(1.08)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><defs>
+<radialGradient id="rg" gradientUnits="userSpaceOnUse" cx="540" cy="540" r="520">
+<stop offset=".28" stop-opacity=".9"/><stop offset="1" stop-opacity="0"/></radialGradient></defs>
+<g class="gir"><g class="don" id="k"></g></g></svg>
+<script>
+let tohum = 1;
+const r = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);
+const NS = "http://www.w3.org/2000/svg", svg = document.querySelector("svg");
+const el = (ad, at, ana = svg) => { const e = document.createElementNS(NS, ad); for (const k in at) e.setAttribute(k, at[k]); ana.appendChild(e); return e; };
+const K = document.getElementById("k"), N = 16, p = (rr, a) => `${540 + Math.cos(a) * rr},${540 + Math.sin(a) * rr}`;
+for (let i = 0; i < N; i++) {
+  const a = (i / N) * Math.PI * 2, g = .07;
+  el("polygon", { fill: "url(#rg)", points: `${p(230, a - g * .35)} ${p(520, a - g)} ${p(520, a + g)} ${p(230, a + g * .35)}` }, K);
+}
+</script>
+</body></html>

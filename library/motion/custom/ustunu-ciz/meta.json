@@ -1,0 +1,14 @@
+{
+ "title": "Kırmızı çarpı: bu değil, eski yol",
+ "kind": "overlay",
+ "tags": [
+  "carpi",
+  "yanlis",
+  "ustunu-ciz"
+ ],
+ "ne_zaman": "Yanlış, eski ya da reddedilen seçenek söylenirken.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

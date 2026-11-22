@@ -1,0 +1,33 @@
+{
+ "title": "Karşılaştırma: önce soluk, sonra vurgulu iki sütun",
+ "kind": "lower-third",
+ "tags": [
+  "karsilastirma",
+  "once-sonra",
+  "fark"
+ ],
+ "ne_zaman": "Konuşmacı eski ve yeni durumu, sorunu ve çözümü ya da iki seçeneği yan yana koyduğunda.",
+ "sure": 4.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "sol_baslik": {
+   "vars": "Önce",
+   "max": 14
+  },
+  "sol": {
+   "vars": "Saatlerce elle kurgu",
+   "max": 28
+  },
+  "sag_baslik": {
+   "vars": "Sonra",
+   "max": 14
+  },
+  "sag": {
+   "vars": "Dakikalar içinde hazır video",
+   "max": 28
+  }
+ }
+}

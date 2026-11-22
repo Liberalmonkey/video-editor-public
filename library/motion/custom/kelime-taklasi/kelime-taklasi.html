@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Kelime taklası</title>
+<!-- Proje yapımı parametrik motion şablonu (ADR 0036). Sanal saat window.seek ile sürülür. Üret: vedit motion kur kelime-taklasi -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:1080px;height:1080px;font-family:var(--font)}
+.sahne{position:absolute;left:80px;top:400px;width:920px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;opacity:0}
+.panel{background:var(--zemin);border-radius:var(--kose,18px);border:2px solid color-mix(in srgb,var(--yazi) 12%,transparent);padding:36px 44px;box-sizing:border-box;box-shadow:var(--golge);display:inline-flex;align-items:center;justify-content:center;max-width:920px}
+.cumle{font-size:42px;font-weight:700;color:var(--yazi);display:inline-flex;align-items:center;flex-wrap:nowrap;line-height:1.2;white-space:nowrap}
+.cumle-basi,.cumle-sonu{display:inline-block;white-space:pre}
+.flip-kapsayici{display:inline-block;vertical-align:middle;perspective:900px;position:relative;height:68px;margin:0 10px;box-sizing:border-box}
+.kart-yuzu{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:40px;font-weight:800;padding:0 20px;box-sizing:border-box;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d}
+.onceki-kart{background:var(--vurgu);color:var(--vurgu-ustu)}
+.sonraki-kart{background:var(--ikincil);color:var(--ikincil-ustu);transform:rotateX(-180deg)}
+/* Ölçüm için gizli test elemanları */
+.olcum-kutusu{position:absolute;left:-9999px;top:-9999px;visibility:hidden;font-size:40px;font-weight:800;padding:0 20px;box-sizing:border-box;white-space:nowrap}
+</style></head><body>
+<div class="sahne" id="sahne">
+ <div class="panel">
+  <div class="cumle">
+   <span class="cumle-basi" id="cumleBasi"></span>
+   <div class="flip-kapsayici" id="flipKapsayici">
+    <div class="kart-yuzu onceki-kart" id="kartOnceki"></div>
+    <div class="kart-yuzu sonraki-kart" id="kartSonraki"></div>
+   </div>
+   <span class="cumle-sonu" id="cumleSonu"></span>
+  </div>
+ </div>
+</div>
+
+<div class="olcum-kutusu" id="olcumOnceki"></div>
+<div class="olcum-kutusu" id="olcumSonraki"></div>
+
+<script>
+const P = Object.assign({
+  cumle_basi: "Video üretmek artık ",
+  onceki: "ZOR",
+  sonraki: "KOLAY",
+  cumle_sonu: " değil."
+}, window.PARAM);
+
+const $ = id => document.getElementById(id);
+
+const metinOnceki = String(P.onceki || "").toLocaleUpperCase("tr-TR");
+const metinSonraki = String(P.sonraki || "").toLocaleUpperCase("tr-TR");
+
+$("cumleBasi").textContent = P.cumle_basi || "";
+$("cumleSonu").textContent = P.cumle_sonu || "";
+$("kartOnceki").textContent = metinOnceki;
+$("kartSonraki").textContent = metinSonraki;
+
+$("olcumOnceki").textContent = metinOnceki;
+$("olcumSonraki").textContent = metinSonraki;
+
+let w1 = 120, w2 = 140;
+let olculdu = false;
+
+function olc() {
+  const rect1 = $("olcumOnceki").getBoundingClientRect();
+  const rect2 = $("olcumSonraki").getBoundingClientRect();
+  w1 = Math.max(60, Math.ceil(rect1.width));
+  w2 = Math.max(60, Math.ceil(rect2.width));
+  olculdu = true;
+}
+olc();
+
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const easeInOutCubic = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+
+window.seek = t => {
+  if (!olculdu) olc();
+
+  // Toplam süre 4.0 sn
+  // Giriş: 0.0 - 0.35s
+  // Takla: 1.4s - 2.15s (0.75s)
+  // Çıkış: 3.4s - 3.95s; 3.95+ tamamen boş (saydam)
+  if (t >= 3.95) {
+    $("sahne").style.opacity = "0";
+    return;
+  }
+
+  const gir = easeOut(clamp(t / 0.35, 0, 1));
+  const cik = clamp((t - 3.4) / 0.55, 0, 1);
+  const cikE = cik * cik;
+
+  const sahne = $("sahne");
+  sahne.style.opacity = String(gir * (1 - cikE));
+  const translateYGir = (1 - gir) * 35;
+  const translateYCik = cikE * -25;
+  sahne.style.transform = `translateY(${translateYGir + translateYCik}px) scale(${0.96 + gir * 0.04 - cikE * 0.04})`;
+
+  const kapsayici = $("flipKapsayici");
+  const kartOnceki = $("kartOnceki");
+  const kartSonraki = $("kartSonraki");
+
+  if (t < 1.4) {
+    // Takla öncesi: w1 genişliği, 0 derece
+    kapsayici.style.width = w1 + "px";
+    kartOnceki.style.transform = "rotateX(0deg)";
+    kartSonraki.style.transform = "rotateX(-180deg)";
+  } else if (t < 2.15) {
+    // Takla esnası
+    const pGenel = (t - 1.4) / 0.75;
+    const pAci = easeInOutCubic(pGenel);
+    const pGenislik = easeInOutCubic(pGenel);
+
+    // Genişlik farkı yumuşakça kapanır
+    const anlikGenislik = w1 + (w2 - w1) * pGenislik;
+    kapsayici.style.width = anlikGenislik + "px";
+
+    // 3B dönme açısı (0 -> 180 derece)
+    const aci = pAci * 180;
+    kartOnceki.style.transform = `rotateX(${aci}deg)`;
+    kartSonraki.style.transform = `rotateX(${aci - 180}deg)`;
+  } else {
+    // Takla sonrası: w2 genişliği, 180 derece (sonraki kart önde)
+    kapsayici.style.width = w2 + "px";
+    kartOnceki.style.transform = "rotateX(180deg)";
+    kartSonraki.style.transform = "rotateX(0deg)";
+  }
+};
+
+window.seek(0);
+</script>
+</body></html>

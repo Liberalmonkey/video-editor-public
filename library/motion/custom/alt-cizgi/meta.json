@@ -1,0 +1,13 @@
+{
+ "title": "Çift alt çizgi: kelime ya da satırın altını çiz",
+ "kind": "overlay",
+ "tags": [
+  "alt-cizgi",
+  "vurgu"
+ ],
+ "ne_zaman": "Ekrandaki bir kelime ya da satır vurgulanırken.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

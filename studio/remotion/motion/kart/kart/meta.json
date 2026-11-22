@@ -1,0 +1,15 @@
+{
+  "ad": "kart/kart",
+  "tur": "kart",
+  "etiketler": ["kart", "madde", "özet", "kural", "liste"],
+  "ne_zaman": "Konuşmacı bir fikri başlık ve bir ya da iki kısa maddeyle özetlerken (\"iki kural\", \"üç adım\", \"özetle\").",
+  "sure": { "min": 0.8, "varsayilan": 2.4, "max": 3.0 },
+  "giris_sn": 0.42,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "orta"],
+  "boyut": { "w": 0.78, "h": 0.3 },
+  "en_kucuk_px": 260,
+  "kaynak": null
+}

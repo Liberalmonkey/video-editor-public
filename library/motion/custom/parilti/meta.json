@@ -1,0 +1,14 @@
+{
+ "title": "Parıltı: yeni ya da temiz olanı göster",
+ "kind": "overlay",
+ "tags": [
+  "parilti",
+  "yeni",
+  "temiz"
+ ],
+ "ne_zaman": "Yeni, temiz, parlak ya da 'sihirli' bir sonucu gösterirken: önce/sonra karşılaştırmasının 'sonra' anı.",
+ "sure": 1.4,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

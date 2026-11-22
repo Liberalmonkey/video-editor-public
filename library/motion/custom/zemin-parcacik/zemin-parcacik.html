@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Parçacık zemin</title>
+<!-- Proje yapımı arka plan döngüsü (ADR 0036). Her parçacık bir döngüde doğar, yükselir, söner; tohumlu. Üret: vedit motion kur zemin-parcacik -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.zemin{position:absolute;inset:0;background:var(--zemin)}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+</style></head><body>
+<div class="zemin"></div><canvas id="c"></canvas>
+<script>
+let tohum = 23;
+const r = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);
+const parca = Array.from({ length: 46 }, () => ({
+  x: r(), y: .12 + r() * 1.0, faz: r(), sal: r(), boy: .45 + r() * .75, yol: .16 + r() * .14,
+  tepe: .2 + r() * .45, vurgu: r() < .3,
+}));
+const cv = document.getElementById("c"), g = cv.getContext("2d");
+window.seek = t => {
+  const W = innerWidth, H = innerHeight, u = Math.min(W, H) / 100;
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const css = getComputedStyle(document.documentElement);
+  const renk = [css.getPropertyValue("--yazi").trim(), css.getPropertyValue("--vurgu").trim()];
+  g.clearRect(0, 0, W, H);
+  for (const p of parca) {
+    const f = (t / 6 + p.faz) % 1;  // bir döngüde tam bir ömür
+    g.globalAlpha = p.tepe * Math.sin(Math.PI * f);
+    g.fillStyle = renk[+p.vurgu];
+    const x = p.x * W + Math.sin(2 * Math.PI * (f + p.sal)) * 1.2 * u, y = (p.y - p.yol * f) * H;
+    g.beginPath(); g.arc(x, y, p.boy * u, 0, 7); g.fill();
+  }
+};
+seek(0);
+</script>
+</body></html>

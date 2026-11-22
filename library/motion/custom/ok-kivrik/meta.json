@@ -1,0 +1,14 @@
+{
+ "title": "Kıvrık ok: aşağı soldaki öğeyi göster",
+ "kind": "overlay",
+ "tags": [
+  "ok",
+  "goster",
+  "el-cizimi"
+ ],
+ "ne_zaman": "Konuşmacı aşağıdaki ya da soldaki bir öğeyi (fiyat, düğme, ürün) gösterirken, düz ok fazla sert kaçtığında.",
+ "sure": 1.8,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

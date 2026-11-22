@@ -1,0 +1,15 @@
+{
+  "ad": "kart/altbant-konu",
+  "tur": "altbant",
+  "etiketler": ["altbant", "konu", "tez", "özet", "başlık"],
+  "ne_zaman": "Konuşmacı bölümün ana konusunu ya da iki satırlık özet mesajını netleştirirken.",
+  "sure": { "min": 2.5, "varsayilan": 3.4, "max": 4.0 },
+  "giris_sn": 0.44,
+  "cikis_sn": 0.24,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["alt", "ust"],
+  "boyut": { "w": 0.82, "h": 0.21 },
+  "en_kucuk_px": 240,
+  "kaynak": null
+}

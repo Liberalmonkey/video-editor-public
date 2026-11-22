@@ -1,0 +1,68 @@
+{
+    "items": [
+        {
+            "path": "openmontage",
+            "id": "openmontage",
+            "type": "template"
+        },
+        {
+            "id": "lemo-opuscar",
+            "type": "plugin"
+        },
+        {
+            "id": "gsap-skills",
+            "type": "plugin"
+        },
+        {
+            "id": "playwright-cli",
+            "type": "skills"
+        },
+        {
+            "id": "youtube-agent-skill",
+            "type": "skills",
+            "repo": "Jakeschincariol/youtube-agent-skill",
+            "commit": "a2feb2104981a375ffd4f87ee04f4f5344ac43c6"
+        },
+        {
+            "id": "explainer-board-brief",
+            "type": "skill",
+            "repo": "sirioberati__YouTube-AI-Motion-Graphics"
+        },
+        {
+            "id": "explainer-board-system",
+            "type": "skill",
+            "repo": "sirioberati__YouTube-AI-Motion-Graphics"
+        },
+        {
+            "id": "board-sync",
+            "type": "skill",
+            "repo": "custom"
+        },
+        {
+            "id": "earshot",
+            "type": "skills"
+        },
+        {
+            "id": "impeccable",
+            "type": "plugin"
+        },
+        {
+            "id": "ui-ux-pro-max",
+            "type": "plugin"
+        },
+        {
+            "id": "llm-wiki",
+            "type": "skills",
+            "repo": "paperclipai__paperclip",
+            "path": "packages/plugins/plugin-llm-wiki/skills",
+            "note": "ingest, ask, lint, wiki-index olarak Türkçe uyarlandı; Paperclip araçları çıkarıldı"
+        },
+        {
+            "id": "video-izle",
+            "type": "skill",
+            "repo": "guimatheus92__mcp-video-analyzer",
+            "commit": "39ba405",
+            "note": "skills/video uyarlandı: ad video-izle (eski /video ile çakışmasın), npm sürümü 0.11.0 sabit, çıktı work/izle"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+  "oto_hf": true,
+  "_not": "ADR 0051 hız kapısı: HyperFrames render süresi Remotion'un en çok 1,5 katı. Kurguda motor: remotion zorlar.",
+  "olcum_2026_11_22": {
+    "proje": "instagram/1 (51,7 sn, 1080x1920, 17 video klip)",
+    "taslak_tam": {"remotion_yarim_olcek_sn": 101, "hf_yarim_olcek_sn": 132, "oran": 1.31},
+    "final_tam_cozunurluk": {"remotion_sn": 238, "hf_draft_sn": 281, "oran": 1.18},
+    "aralik_5_sn": {"hf_tam_derleme_sn": 87, "hf_pencereli_yarim_olcek_sn": 34},
+    "isci": "otomatik (4) en hızlı; 8 işçi 240 sn (bellek)"
+  }
+}

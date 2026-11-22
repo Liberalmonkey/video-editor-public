@@ -1,0 +1,27 @@
+{
+ "title": "Halka grafik: halka dolar, ortada yüzde sayar",
+ "kind": "lower-third",
+ "tags": [
+  "grafik",
+  "veri",
+  "yuzde",
+  "halka"
+ ],
+ "ne_zaman": "Konuşmacı tek bir yüzde ya da oran söylediğinde (ör. kullanıcıların yüzde 72'si).",
+ "sure": 3.5,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "deger": {
+   "vars": 72,
+   "min": 0,
+   "max": 100
+  },
+  "metin": {
+   "vars": "Kullanıcı memnuniyeti",
+   "max": 32
+  }
+ }
+}

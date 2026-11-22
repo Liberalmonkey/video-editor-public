@@ -1,0 +1,15 @@
+{
+  "ad": "veri/karsilastirma",
+  "tur": "veri",
+  "etiketler": ["karşılaştırma", "önce", "sonra", "a/b", "fark", "kazanan", "kıyas"],
+  "ne_zaman": "Konuşmacı iki seçeneği, önce-sonra ya da A-B sonuçlarını yan yana kıyaslayıp kazanan tarafı vurgularken (\"öncesi ve sonrası\", \"A mı B mi\", \"fark ortada\").",
+  "sure": { "min": 1.5, "varsayilan": 2.8, "max": 4.0 },
+  "giris_sn": 0.44,
+  "cikis_sn": 0.25,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.85, "h": 0.34 },
+  "en_kucuk_px": 340,
+  "kaynak": null
+}

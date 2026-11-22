@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Dalga zemin</title>
+<!-- Proje yapımı arka plan döngüsü (ADR 0036). Faz 6 sn'de tam tur döner, döngü dikişsiz. Üret: vedit motion kur zemin-dalga -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.zemin{position:absolute;inset:0;background:var(--zemin)}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+</style></head><body>
+<div class="zemin"></div><canvas id="c"></canvas>
+<script>
+const cv = document.getElementById("c"), g = cv.getContext("2d");
+window.seek = t => {
+  const W = innerWidth, H = innerHeight, u = Math.min(W, H) / 100, TAU = 2 * Math.PI, w = TAU * t / 6;
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const css = getComputedStyle(document.documentElement);
+  const yazi = css.getPropertyValue("--yazi").trim(), vurgu = css.getPropertyValue("--vurgu").trim();
+  g.clearRect(0, 0, W, H);
+  g.lineWidth = .22 * u; g.lineCap = "round";
+  const n = 18, lam = Math.max(W, H) * .55;
+  for (let i = 0; i < n; i++) {
+    const y0 = H * (i + .5) / n, vur = i % 5 === 2;
+    g.strokeStyle = vur ? vurgu : yazi; g.globalAlpha = vur ? .5 : .17;
+    g.beginPath();
+    for (let x = -10; x <= W + 10; x += 8) {
+      const y = y0 + 3.2 * u * Math.sin(TAU * x / lam + w + i * .45) + 1.2 * u * Math.sin(TAU * x / (lam * .5) - 2 * w + i);
+      x < 0 ? g.moveTo(x, y) : g.lineTo(x, y);
+    }
+    g.stroke();
+  }
+};
+seek(0);
+</script>
+</body></html>

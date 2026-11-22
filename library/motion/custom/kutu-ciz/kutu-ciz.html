@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>El çizimi kutu</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur kutu-ciz -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.g1{animation:ciz .85s cubic-bezier(.45,.05,.35,1) .05s both}
+g{animation:cik .3s ease-in 1.55s both}
+@keyframes cik{to{opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g>
+<path class="c ciz g1" pathLength="1" d="M236 336 Q 540 314 856 322 Q 868 540 860 752 Q 540 768 222 758 Q 214 540 230 306 Q 236 296 262 300"/>
+</g></svg>
+</body></html>

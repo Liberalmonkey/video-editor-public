@@ -1,0 +1,15 @@
+{
+  "ad": "tipografi/durum-rozeti",
+  "tur": "tipografi",
+  "etiketler": ["durum", "rozet", "metrik", "sonuç", "seviye", "gösterge", "tipografi"],
+  "ne_zaman": "Konuşmacı bir sonuç, performans, düşüş ya da yükseliş metriği söylediğinde (\"izlenme düşük\", \"dönüşüm arttı\").",
+  "sure": { "min": 1.4, "varsayilan": 2.4, "max": 4.2 },
+  "giris_sn": 0.36,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "sag", "sol"],
+  "boyut": { "w": 0.56, "h": 0.13 },
+  "en_kucuk_px": 220,
+  "kaynak": null
+}

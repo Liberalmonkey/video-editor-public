@@ -1,0 +1,15 @@
+{
+ "title": "Polaroid çerçeve: anı fotoğrafı",
+ "kind": "overlay",
+ "tags": [
+  "cerceve",
+  "polaroid",
+  "fotograf",
+  "ani"
+ ],
+ "ne_zaman": "Bir kişiyi, anıyı ya da tek bir ürün karesini fotoğraf gibi sunmak için; kare görüntü bölgesi beyaz çerçevenin ortasına denk gelir.",
+ "sure": 3.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

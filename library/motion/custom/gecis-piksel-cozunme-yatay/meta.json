@@ -1,0 +1,16 @@
+{
+ "title": "Kare piksel çözünme geçişi 16:9; ortası (0,40 sn) kesime gelir",
+ "kind": "transition",
+ "tags": [
+  "gecis",
+  "piksel",
+  "cozunme",
+  "mozaik",
+  "yatay"
+ ],
+ "ne_zaman": "16:9 videoda dijital konu, veri, oyun ya da ritmik sahne değişiminde ekranı 48 px kare piksellere bölerek kapatıp ters sırada açarken; kesimi klibin ortasına (0,40 sn) koy.",
+ "sure": 0.8,
+ "w": 1920,
+ "h": 1080,
+ "loop": false
+}

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Seçim Şeridi</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur secim-seridi -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh;font-family:var(--font)}
+.sahne{position:absolute;inset:0;width:1080px;height:1080px;display:flex;align-items:center;justify-content:center;
+  animation:sahne-gir .45s cubic-bezier(.16,1,.3,1) .05s both,sahne-cik .45s cubic-bezier(.7,0,.84,0) 3.95s both}
+
+.panel{max-width:880px;background:var(--zemin);border-radius:var(--kose,20px);
+  padding:50px 56px;box-sizing:border-box;border:2px solid color-mix(in srgb,var(--yazi) 10%,transparent);
+  box-shadow:var(--golge);transform-origin:center center;
+  animation:panel-gir .5s cubic-bezier(.16,1,.3,1) .08s both}
+
+.cumle{font-size:44px;font-weight:var(--agirlik,800);line-height:1.45;color:var(--yazi);
+  word-break:normal;display:inline}
+
+/* Seçim Şeridi Kapsayıcısı */
+.secim-kapsayici{position:relative;display:inline-block;padding:0 6px;margin:0 -2px;vertical-align:baseline}
+
+.serit{position:absolute;top:2px;bottom:2px;left:0;right:0;background:var(--vurgu);
+  border-radius:8px;transform-origin:left center;transform:scaleX(0);z-index:1;
+  box-shadow:0 0 20px color-mix(in srgb,var(--vurgu) 40%,transparent);
+  animation:serit-cek .6s cubic-bezier(.16,1,.3,1) 1.4s both}
+
+.secim-metin{position:relative;z-index:2;color:var(--yazi);
+  animation:renk-donus .25s ease 1.6s both}
+
+@keyframes sahne-gir{from{opacity:0}to{opacity:1}}
+@keyframes sahne-cik{to{opacity:0;transform:scale(.95)}}
+@keyframes panel-gir{from{opacity:0;transform:scale(.9) translateY(15px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes serit-cek{
+  from{transform:scaleX(0)}
+  to{transform:scaleX(1)}
+}
+@keyframes renk-donus{
+  to{color:var(--zemin)}
+}
+</style></head><body>
+<div class="sahne">
+  <div class="panel">
+    <div class="cumle" id="cumle"></div>
+  </div>
+</div>
+<script>
+const P = Object.assign({
+  metin: "Yapay zeka tüm kurgu sürecini hızlandırır.",
+  secilen: "tüm kurgu sürecini"
+}, window.PARAM);
+
+const cumleEl = document.getElementById("cumle");
+
+function kur() {
+  const metin = P.metin || "";
+  let secilen = P.secilen || "";
+  
+  if (!secilen || !metin.includes(secilen)) {
+    const kelimeler = metin.trim().split(/\s+/);
+    secilen = kelimeler[kelimeler.length - 1] || "";
+  }
+  
+  cumleEl.innerHTML = "";
+  
+  if (!secilen || !metin.includes(secilen)) {
+    cumleEl.textContent = metin;
+    return;
+  }
+  
+  const idx = metin.indexOf(secilen);
+  const on = metin.substring(0, idx);
+  const hedef = metin.substring(idx, idx + secilen.length);
+  const arka = metin.substring(idx + secilen.length);
+  
+  if (on) cumleEl.appendChild(document.createTextNode(on));
+  
+  const kapsayici = document.createElement("span");
+  kapsayici.className = "secim-kapsayici";
+  
+  const serit = document.createElement("span");
+  serit.className = "serit";
+  kapsayici.appendChild(serit);
+  
+  const spanMetin = document.createElement("span");
+  spanMetin.className = "secim-metin";
+  spanMetin.textContent = hedef;
+  kapsayici.appendChild(spanMetin);
+  
+  cumleEl.appendChild(kapsayici);
+  
+  if (arka) cumleEl.appendChild(document.createTextNode(arka));
+}
+
+kur();
+let hazir = false;
+window.seek = () => { if (!hazir) { hazir = true; kur(); } };
+</script>
+</body></html>

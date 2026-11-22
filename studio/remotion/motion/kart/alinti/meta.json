@@ -1,0 +1,15 @@
+{
+  "ad": "kart/alinti",
+  "tur": "kart",
+  "etiketler": ["alıntı", "söz", "tırnak", "vurgu", "cümle"],
+  "ne_zaman": "Konuşmacı akılda kalacak güçlü bir cümle, alıntı ya da temel prensip söylediğinde.",
+  "sure": { "min": 0.8, "varsayilan": 2.6, "max": 3.0 },
+  "giris_sn": 0.45,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "orta"],
+  "boyut": { "w": 0.8, "h": 0.32 },
+  "en_kucuk_px": 260,
+  "kaynak": null
+}

@@ -1,0 +1,7 @@
+{
+ "ad": "yuvarlak-turuncu",
+ "title": "Yuvarlak turuncu maskot",
+ "ne_zaman": "Sıcak, samimi anlatıcı; eğitim, ürün tanıtımı, çocuk ve aile içeriği.",
+ "renk": {"govde": "#FF7A00", "govde_golge": "#C85500", "yuz": "#FFD9B0", "goz": "#1B1B1F", "ag": "#5A1A12", "dil": "#FF6B6B", "yanak": "#FF8F8F", "vurgu": "#14161C"},
+ "oran": {"en": 1.0, "boy": 0.9, "goz_aralik": 1.0, "goz_r": 1.0}
+}

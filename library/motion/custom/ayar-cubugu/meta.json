@@ -1,0 +1,25 @@
+{
+ "title": "Ayar çubuğu: etiketli elastik kaydırıcı ve değer sayacı",
+ "kind": "lower-third",
+ "tags": ["slider", "ayar", "cubuk", "yuzde", "deger", "lastik", "metrik"],
+ "ne_zaman": "Bir oranın, kalitenin, ilerlemenin veya performans ayarının yükselip sınıra oturduğu anlarda.",
+ "sure": 4.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "etiket": {
+   "vars": "Kalite",
+   "max": 20
+  },
+  "deger": {
+   "vars": 100,
+   "min": 0,
+   "max": 100
+  },
+  "birim": {
+   "vars": "%",
+   "max": 4
+  }
+ }
+}

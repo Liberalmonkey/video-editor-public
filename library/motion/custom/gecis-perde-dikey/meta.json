@@ -1,0 +1,16 @@
+{
+ "title": "İki yandan perde geçişi 9:16; ortası (0,40 sn) kesime gelir",
+ "kind": "transition",
+ "tags": [
+  "gecis",
+  "perde",
+  "yan",
+  "sahne",
+  "dikey"
+ ],
+ "ne_zaman": "9:16 videoda sahne, bölüm ya da perde arası hissi istenen anda (giriş sonrası ana konuya, bir hikâyeden sonuca); tiyatro perdesi gibi ortada birleşip açılır; kesimi klibin ortasına (0,40 sn) koy.",
+ "sure": 0.8,
+ "w": 1080,
+ "h": 1920,
+ "loop": false
+}

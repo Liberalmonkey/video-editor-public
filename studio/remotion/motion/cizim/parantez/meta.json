@@ -1,0 +1,15 @@
+{
+  "ad": "cizim/parantez",
+  "tur": "cizim",
+  "etiketler": ["parantez", "süslü", "grupla", "çerçeve", "vurgu", "el çizimi"],
+  "ne_zaman": "Konuşmacı bir ifadeyi, madde grubunu ya da ara notu iki yandan ayırıp öne çıkardığında (\"parantez açalım\", \"bu ikisi birlikte\", \"özetle\").",
+  "sure": { "min": 0.8, "varsayilan": 1.65, "max": 2.5 },
+  "giris_sn": 0.44,
+  "cikis_sn": 0.24,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["hedef", "orta"],
+  "boyut": { "w": 0.52, "h": 0.26 },
+  "en_kucuk_px": 180,
+  "kaynak": null
+}

@@ -1,0 +1,16 @@
+{
+ "title": "Komut paleti: arama kutusu açılır, metin yazılır, sonuç süzülüp onaylanır",
+ "kind": "overlay",
+ "tags": ["komut", "palet", "arama", "filtre", "secim", "onay"],
+ "ne_zaman": "Bir yazılım özelliğini, arama işlemini veya hızlı komut çalıştırma akışını simüle etmek için.",
+ "sure": 5.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "arama": {"vars": "video dışa aktar", "max": 28},
+  "sonuc1": {"vars": "4K MP4 Yüksek Kalite", "max": 30},
+  "sonuc2": {"vars": "Hızlı Önizleme Taslağı", "max": 30},
+  "sonuc3": {"vars": "Ses ve Altyazı Dışa Aktar", "max": 30}
+ }
+}

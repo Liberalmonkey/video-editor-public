@@ -1,0 +1,18 @@
+{
+ "_not": "tests/test_sabit_renk.py beyaz listesi (ADR 0043). Her dosya en çok `en_cok` sabit renk ya da font adı taşıyabilir; gerekçesiz girdi kabul edilmez. Yeni sabit renk yazmak yerine stilin token'ını kullan.",
+ "dosyalar": {
+  "src/vedit/tema_token.py": {"en_cok": 31, "neden": "Token üreticisi: kontrast çapası (siyah/beyaz), ADR 0014 altyazı varsayılanı, font yedek tablosu ve şema varsayılanları burada tanımlanır."},
+  "studio/remotion/motion/Galeri.tsx": {"en_cok": 5, "neden": "Galeri kontağı QA aracıdır, kurguda çizilmez: dama zemin (alfa kaybını gösterir), nötr gri hücre ve okunur ad etiketi stilden bağımsız olmalı (ADR 0045)."},
+  "src/vedit/schemas.py": {"en_cok": 5, "neden": "Şema varsayılanları: eski timeline zemini ve AltyaziStil'in ADR 0014 standardı (stil seçilmemiş videonun değeri)."},
+  "src/vedit/build.py": {"en_cok": 4, "neden": "Eski /video hattı (HyperFrames); yalnız açık istekte çalışır, ADR 0014 odak altyazısı."},
+  "src/vedit/stil_katalog.py": {"en_cok": 5, "neden": "Kartta font yoksa paket metnine ve tokens.json'a yazılan yedek font adları; render'a doğrudan gitmez."},
+  "src/vedit/studio/kutuphane.py": {"en_cok": 4, "neden": "Kütüphaneden silinemeyen çekirdek fontların adları (ADR 0014 ve SplitReel)."},
+  "src/vedit/kapak.py": {"en_cok": 2, "neden": "Kapak font tablosu; kapak yazısı altyazı ve stil token'ından bağımsızdır (ADR 0027)."},
+  "src/vedit/kurgu_kalite.py": {"en_cok": 2, "neden": "Nötr beyaz ve siyah her stilde serbest renk sayılır (stil dışı renk denetimi)."},
+  "src/vedit/tema.py": {"en_cok": 1, "neden": "Videodan çıkarılan proje temasının font yedeği."},
+  "studio/remotion/tema.ts": {"en_cok": 5, "neden": "Gölge ve tarama dokusu siyahı, font yedek tablosu (serif/monospace/cursive)."},
+  "studio/remotion/Kurgu.tsx": {"en_cok": 2, "neden": "Yalnız Stüdyo önizlemesinde görünen sahne hata kutusu; videoya girmez."},
+  "studio/remotion/fizik/FizikSahne.tsx": {"en_cok": 1, "neden": "Işımasız 3D malzemenin emissive siyahı: fiziksel sabit, stil rengi değil."},
+  "openmontage/remotion-composer/src/SplitReel.tsx": {"en_cok": 24, "neden": "Vendor SplitReel'in tema verilmediğindeki eski paleti (T, F) ve ADR 0014 altyazısı (CAP); temaUygula giriş katmanı stil seçilince hepsini ezer."}
+ }
+}

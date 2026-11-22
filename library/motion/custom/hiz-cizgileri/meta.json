@@ -1,0 +1,15 @@
+{
+ "title": "Hız çizgileri: merkeze odakla",
+ "kind": "overlay",
+ "tags": [
+  "hiz",
+  "manga",
+  "odak",
+  "vurgu"
+ ],
+ "ne_zaman": "Ani bir vurguda ya da punch zoom ile birlikte; konuşmacının yüzü ya da ürün merkezdeyken, çizgiler merkezi boş bırakır.",
+ "sure": 1.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

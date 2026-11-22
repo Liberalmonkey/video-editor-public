@@ -1,0 +1,26 @@
+# Obsidian / araç meta verisi
+.obsidian/
+.claude/
+templates/
+graphify-out/
+
+# Medya — grafiğe asla girmesin (transkripsiyon maliyeti)
+raw/assets/
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.webm
+*.wav
+*.mp3
+*.flac
+
+# Kod dışı / ağır
+node_modules/
+.venv/
+openmontage/
+Projeler/
+studios/
+library/
+*.ttf
+*.onnx

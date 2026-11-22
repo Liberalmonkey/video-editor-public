@@ -1,0 +1,3269 @@
+{
+ "_note": "Motion grafik / stok video kayıtları (overlay, arka plan, geçiş, lower-third). Kullanıcı dosyayı library/motion/<site>/<id>.<mp4|mov|webm> olarak koyar, ajan kaydeder. Alanlar: id, file, title, site, kind (overlay|background|transition|lower-third|icon|broll), alpha (true: şeffaf .mov/.webm; false: düz/yeşil perde), width, height, duration_s, loop, license, source_url, attribution. Lisans alanı boş dosya kullanılmaz. Projeye özel üretilen yeniden kullanılabilir grafikler (ör. abone ol) library/motion/custom/<id>/ altına konur (render <id>.webm şeffaf + kaynak dosya, git'te): site \"custom\", source alanı kaynak dosyanın yolu. Kilit ve her zaman kullanılan roller library/kit.json'da (ADR 0012).",
+ "entries": [
+  {
+   "id": "ok-ciz",
+   "file": "library/motion/custom/ok-ciz/ok-ciz.webm",
+   "title": "El çizimi ok: bir öğeyi göster",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "ok",
+    "callout",
+    "goster"
+   ],
+   "ne_zaman": "Karede bir öğeyi gösterirken: düğme, sayı, ürün.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 2.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ok-ciz/ok-ciz.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ok-ciz/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-ciz"
+  },
+  {
+   "id": "daire-ciz",
+   "file": "library/motion/custom/daire-ciz/daire-ciz.webm",
+   "title": "El çizimi daire: bir öğeyi çevrele",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "daire",
+    "vurgu",
+    "cevrele"
+   ],
+   "ne_zaman": "Anlatılan öğeyi çevrelemek için: ekran görüntüsünde alan, yüzde bir ayrıntı.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 2.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/daire-ciz/daire-ciz.html",
+   "source_url": null,
+   "poster": "library/motion/custom/daire-ciz/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur daire-ciz",
+   "arsiv": "cizim/daire"
+  },
+  {
+   "id": "alt-cizgi",
+   "file": "library/motion/custom/alt-cizgi/alt-cizgi.webm",
+   "title": "Çift alt çizgi: kelime ya da satırın altını çiz",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "alt-cizgi",
+    "vurgu"
+   ],
+   "ne_zaman": "Ekrandaki bir kelime ya da satır vurgulanırken.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/alt-cizgi/alt-cizgi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/alt-cizgi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur alt-cizgi",
+   "arsiv": "cizim/alt-cizgi"
+  },
+  {
+   "id": "ustunu-ciz",
+   "file": "library/motion/custom/ustunu-ciz/ustunu-ciz.webm",
+   "title": "Kırmızı çarpı: bu değil, eski yol",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "carpi",
+    "yanlis",
+    "ustunu-ciz"
+   ],
+   "ne_zaman": "Yanlış, eski ya da reddedilen seçenek söylenirken.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ustunu-ciz/ustunu-ciz.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ustunu-ciz/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ustunu-ciz",
+   "arsiv": "cizim/ustunu-ciz"
+  },
+  {
+   "id": "onay-tik",
+   "file": "library/motion/custom/onay-tik/onay-tik.webm",
+   "title": "Turuncu onay: tamam, oldu",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "onay",
+    "tik",
+    "tamam"
+   ],
+   "ne_zaman": "Bir adım tamamlanınca ya da doğru seçenek söylenince.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/onay-tik/onay-tik.html",
+   "source_url": null,
+   "poster": "library/motion/custom/onay-tik/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur onay-tik",
+   "arsiv": "ikon/tik"
+  },
+  {
+   "id": "vurgu-patlama",
+   "file": "library/motion/custom/vurgu-patlama/vurgu-patlama.webm",
+   "title": "Işın patlaması: kısa vurgu, zoom anı",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "patlama",
+    "vurgu",
+    "zoom"
+   ],
+   "ne_zaman": "Punch ya da zoom anında, en güçlü kelimede.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 0.65,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/vurgu-patlama/vurgu-patlama.html",
+   "source_url": null,
+   "poster": "library/motion/custom/vurgu-patlama/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur vurgu-patlama"
+  },
+  {
+   "id": "konfeti",
+   "file": "library/motion/custom/konfeti/konfeti.webm",
+   "title": "Konfeti: kazanım anı, videoda en çok bir kez",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "konfeti",
+    "kutlama"
+   ],
+   "ne_zaman": "Kazanım ya da sonuç anında; videoda en çok bir kez.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 2.4,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/konfeti/konfeti.html",
+   "source_url": null,
+   "poster": "library/motion/custom/konfeti/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur konfeti",
+   "arsiv": "parcacik/konfeti"
+  },
+  {
+   "id": "gecis-sil-dikey",
+   "file": "library/motion/custom/gecis-sil-dikey/gecis-sil-dikey.webm",
+   "title": "Turuncu-koyu silme geçişi 9:16; ortası (0,4 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "silme",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda konu ya da sahne değişiminde; ortası kesime gelir.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-sil-dikey/gecis-sil-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-sil-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-sil-dikey",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-sil-yatay",
+   "file": "library/motion/custom/gecis-sil-yatay/gecis-sil-yatay.webm",
+   "title": "Turuncu-koyu silme geçişi 16:9; ortası (0,4 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "silme",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda konu ya da sahne değişiminde; ortası kesime gelir.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-sil-yatay/gecis-sil-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-sil-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-sil-yatay",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "baslik-acilis",
+   "file": "library/motion/custom/baslik-acilis/baslik-acilis.webm",
+   "title": "Başlık açılışı: üst etiket, büyük başlık, çizgi",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "baslik",
+    "acilis",
+    "bolum"
+   ],
+   "ne_zaman": "Video ya da bölüm açılırken konuyu tek satırda söylemek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/baslik-acilis/baslik-acilis.html",
+   "source_url": null,
+   "poster": "library/motion/custom/baslik-acilis/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur baslik-acilis",
+   "param": {
+    "ust": {
+     "vars": "YENİ",
+     "max": 16
+    },
+    "metin": {
+     "vars": "Başlık buraya",
+     "max": 40
+    }
+   },
+   "tam": true
+  },
+  {
+   "id": "alinti-karti",
+   "file": "library/motion/custom/alinti-karti/alinti-karti.webm",
+   "title": "Alıntı kartı: tırnak çizilir, alıntı satır satır gelir",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "alinti",
+    "soz",
+    "kaynak",
+    "kart"
+   ],
+   "ne_zaman": "Konuşmacı bir kitaptan, uzmandan ya da yorumdan cümle aktardığında sözü ve kaynağını ekranda okutmak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/alinti-karti/alinti-karti.html",
+   "source_url": null,
+   "poster": "library/motion/custom/alinti-karti/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur alinti-karti",
+   "param": {
+    "metin": {
+     "vars": "Alıntı metni buraya gelir, satır satır okunur.",
+     "max": 110
+    },
+    "kaynak": {
+     "vars": "Kaynak",
+     "max": 32
+    }
+   },
+   "tam": true,
+   "arsiv": "kart/alinti"
+  },
+  {
+   "id": "altbant-konu",
+   "file": "library/motion/custom/altbant-konu/altbant-konu.webm",
+   "title": "Alt bant konu: haber bandı gibi etiket ve konu satırı",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "altbant",
+    "konu",
+    "haber",
+    "baslik"
+   ],
+   "ne_zaman": "Konuşma yeni bir konuya ya da bölüme geçtiğinde konuyu haber bandı gibi tek satırda göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/altbant-konu/altbant-konu.html",
+   "source_url": null,
+   "poster": "library/motion/custom/altbant-konu/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur altbant-konu",
+   "param": {
+    "etiket": {
+     "vars": "KONU",
+     "max": 14
+    },
+    "metin": {
+     "vars": "Konu satırı buraya gelir",
+     "max": 44
+    }
+   },
+   "tam": true,
+   "arsiv": "kart/altbant-konu"
+  },
+  {
+   "id": "altbant-kutu",
+   "file": "library/motion/custom/altbant-kutu/altbant-kutu.webm",
+   "title": "Alt bant kutu: açılan kutuda ad, çizgi ve unvan",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "altbant",
+    "isim",
+    "unvan",
+    "konusmaci",
+    "kutu"
+   ],
+   "ne_zaman": "Röportaj ya da uzman görüşünde konuşmacıyı sakin, kurumsal bir kutuyla tanıtmak için; şerit sürümünden daha ağırbaşlı.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/altbant-kutu/altbant-kutu.html",
+   "source_url": null,
+   "poster": "library/motion/custom/altbant-kutu/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur altbant-kutu",
+   "param": {
+    "ad": {
+     "vars": "Ad Soyad",
+     "max": 28
+    },
+    "unvan": {
+     "vars": "Unvan",
+     "max": 36
+    }
+   },
+   "tam": true,
+   "arsiv": "kart/altbant-blok"
+  },
+  {
+   "id": "altbant-serit",
+   "file": "library/motion/custom/altbant-serit/altbant-serit.webm",
+   "title": "Alt bant şerit: vurgu şeridi yanında ad ve unvan",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "altbant",
+    "isim",
+    "unvan",
+    "konusmaci"
+   ],
+   "ne_zaman": "Konuşan kişi ekranda ilk kez göründüğünde adını ve unvanını 3-4 saniye tanıtmak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/altbant-serit/altbant-serit.html",
+   "source_url": null,
+   "poster": "library/motion/custom/altbant-serit/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur altbant-serit",
+   "param": {
+    "ad": {
+     "vars": "Ad Soyad",
+     "max": 28
+    },
+    "unvan": {
+     "vars": "Unvan",
+     "max": 36
+    }
+   },
+   "tam": true,
+   "arsiv": "kart/altbant-cizgi"
+  },
+  {
+   "id": "bildirim-karti",
+   "file": "library/motion/custom/bildirim-karti/bildirim-karti.webm",
+   "title": "Bildirim kartı: üstten inen telefon bildirimi",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "bildirim",
+    "mesaj",
+    "telefon",
+    "uyari"
+   ],
+   "ne_zaman": "Konuşmada bir mesaj, sipariş, ödeme ya da hatırlatma geldiği anlatılırken o anı telefon bildirimi gibi göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/bildirim-karti/bildirim-karti.html",
+   "source_url": null,
+   "poster": "library/motion/custom/bildirim-karti/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur bildirim-karti",
+   "param": {
+    "baslik": {
+     "vars": "Yeni mesaj",
+     "max": 24
+    },
+    "metin": {
+     "vars": "Bildirim satırı buraya gelir",
+     "max": 56
+    }
+   },
+   "tam": true,
+   "arsiv": "kart/bildirim"
+  },
+  {
+   "id": "cerceve-bant",
+   "file": "library/motion/custom/cerceve-bant/cerceve-bant.webm",
+   "title": "Bant çerçeve: köşeleri bantlı fotoğraf",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "cerceve",
+    "bant",
+    "kolaj",
+    "fotograf"
+   ],
+   "ne_zaman": "Bir ekran görüntüsü, fotoğraf ya da kanıt karesini panoya yapıştırılmış gibi göstermek için; kare görüntü bölgesinin üstüne konur.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/cerceve-bant/cerceve-bant.html",
+   "source_url": null,
+   "poster": "library/motion/custom/cerceve-bant/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-bant",
+   "arsiv": "cerceve/bant"
+  },
+  {
+   "id": "cerceve-kayit",
+   "file": "library/motion/custom/cerceve-kayit/cerceve-kayit.webm",
+   "title": "Kayıt vizörü: kamera kaydı havası",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "cerceve",
+    "kayit",
+    "kamera",
+    "canli"
+   ],
+   "ne_zaman": "Ham çekim, kamera arkası, canlı an ya da 'şu an kaydediyorum' hissi vermek için; 16:9 görüntünün tamamına konur.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/cerceve-kayit/cerceve-kayit.html",
+   "source_url": null,
+   "poster": "library/motion/custom/cerceve-kayit/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-kayit"
+  },
+  {
+   "id": "cerceve-kose",
+   "file": "library/motion/custom/cerceve-kose/cerceve-kose.webm",
+   "title": "Vizör köşeleri: odak alanı",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "cerceve",
+    "vizor",
+    "odak",
+    "kose"
+   ],
+   "ne_zaman": "Karedeki bir bölgeye, ürüne ya da yüze 'buraya bak' diye odak vermek için; vurgulanacak bölgenin üstüne konur.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/cerceve-kose/cerceve-kose.html",
+   "source_url": null,
+   "poster": "library/motion/custom/cerceve-kose/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-kose"
+  },
+  {
+   "id": "cerceve-kupur",
+   "file": "library/motion/custom/cerceve-kupur/cerceve-kupur.webm",
+   "title": "Gazete kupürü çerçevesi: haber, alıntı",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "cerceve",
+    "gazete",
+    "kupur",
+    "haber"
+   ],
+   "ne_zaman": "Bir haberden, makaleden ya da eski bir kaynaktan alıntı gösterirken; kare görüntü bölgesinin üstüne konur.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/cerceve-kupur/cerceve-kupur.html",
+   "source_url": null,
+   "poster": "library/motion/custom/cerceve-kupur/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-kupur"
+  },
+  {
+   "id": "cerceve-polaroid",
+   "file": "library/motion/custom/cerceve-polaroid/cerceve-polaroid.webm",
+   "title": "Polaroid çerçeve: anı fotoğrafı",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "cerceve",
+    "polaroid",
+    "fotograf",
+    "ani"
+   ],
+   "ne_zaman": "Bir kişiyi, anıyı ya da tek bir ürün karesini fotoğraf gibi sunmak için; kare görüntü bölgesi beyaz çerçevenin ortasına denk gelir.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/cerceve-polaroid/cerceve-polaroid.html",
+   "source_url": null,
+   "poster": "library/motion/custom/cerceve-polaroid/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-polaroid",
+   "arsiv": "cerceve/polaroid"
+  },
+  {
+   "id": "cerceve-tarayici",
+   "file": "library/motion/custom/cerceve-tarayici/cerceve-tarayici.webm",
+   "title": "Tarayıcı penceresi çerçevesi: web sayfası göster",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "cerceve",
+    "tarayici",
+    "web",
+    "ekran"
+   ],
+   "ne_zaman": "Bir web sitesi, ekran kaydı ya da çevrimiçi aracı gösterirken; 16:9 ekran görüntüsünün üstüne konur.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/cerceve-tarayici/cerceve-tarayici.html",
+   "source_url": null,
+   "poster": "library/motion/custom/cerceve-tarayici/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-tarayici",
+   "arsiv": "cerceve/tarayici"
+  },
+  {
+   "id": "cerceve-telefon",
+   "file": "library/motion/custom/cerceve-telefon/cerceve-telefon.webm",
+   "title": "Telefon çerçevesi: uygulama ekranı göster",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "cerceve",
+    "telefon",
+    "mobil",
+    "uygulama"
+   ],
+   "ne_zaman": "Bir uygulama, mesaj ya da dikey ekran kaydını telefon içinde gösterirken; 9:16 görüntünün üstüne konur.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/cerceve-telefon/cerceve-telefon.html",
+   "source_url": null,
+   "poster": "library/motion/custom/cerceve-telefon/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-telefon",
+   "arsiv": "cerceve/telefon"
+  },
+  {
+   "id": "cerceve-yirtik-kagit",
+   "file": "library/motion/custom/cerceve-yirtik-kagit/cerceve-yirtik-kagit.webm",
+   "title": "Yırtık kâğıt çerçeve: el yapımı kolaj",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "cerceve",
+    "kagit",
+    "kolaj",
+    "yirtik"
+   ],
+   "ne_zaman": "Bir anıyı, eski fotoğrafı ya da 'önce' görüntüsünü kolaj havasında öne çıkarmak için; kare görüntü bölgesinin üstüne konur.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/cerceve-yirtik-kagit/cerceve-yirtik-kagit.html",
+   "source_url": null,
+   "poster": "library/motion/custom/cerceve-yirtik-kagit/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-yirtik-kagit",
+   "arsiv": "cerceve/yirtik"
+  },
+  {
+   "id": "duman-pofu",
+   "file": "library/motion/custom/duman-pofu/duman-pofu.webm",
+   "title": "Duman pofu: çıkış ya da ortaya çıkma",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "duman",
+    "cizgi-film",
+    "gecis"
+   ],
+   "ne_zaman": "Bir öğe kaybolurken ya da birden belirirken (ürün ortaya çıkar, eski yöntem 'puf' diye gider).",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/duman-pofu/duman-pofu.html",
+   "source_url": null,
+   "poster": "library/motion/custom/duman-pofu/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur duman-pofu"
+  },
+  {
+   "id": "fiyat-etiketi",
+   "file": "library/motion/custom/fiyat-etiketi/fiyat-etiketi.webm",
+   "title": "Fiyat etiketi: eski fiyat çizilir, yeni fiyat gelir",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "fiyat",
+    "indirim",
+    "kampanya",
+    "satis",
+    "ugc"
+   ],
+   "ne_zaman": "UGC ya da satış videosunda konuşmacı indirimi, kampanya fiyatını ya da 'şimdi şu kadar' dediği anda eski ve yeni fiyatı göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/fiyat-etiketi/fiyat-etiketi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/fiyat-etiketi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur fiyat-etiketi",
+   "param": {
+    "eski": {
+     "vars": "₺999",
+     "max": 10
+    },
+    "yeni": {
+     "vars": "₺499",
+     "max": 10
+    },
+    "metin": {
+     "vars": "Bugüne özel",
+     "max": 24
+    }
+   },
+   "tam": true
+  },
+  {
+   "id": "fosforlu-kalem",
+   "file": "library/motion/custom/fosforlu-kalem/fosforlu-kalem.webm",
+   "title": "Fosforlu kalem: satırı vurgula",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "vurgu",
+    "fosforlu",
+    "metin"
+   ],
+   "ne_zaman": "Ekrandaki yazılı bir satırı ya da kelimeyi (madde, alıntı, sözleşme cümlesi) vurgularken.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/fosforlu-kalem/fosforlu-kalem.html",
+   "source_url": null,
+   "poster": "library/motion/custom/fosforlu-kalem/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur fosforlu-kalem",
+   "arsiv": "cizim/fosforlu"
+  },
+  {
+   "id": "gecis-capraz-serit-dikey",
+   "file": "library/motion/custom/gecis-capraz-serit-dikey/gecis-capraz-serit-dikey.webm",
+   "title": "Üç çapraz renk şeridi geçişi 9:16; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "serit",
+    "capraz",
+    "enerjik",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda enerjik, hızlı tempolu videoda konu ya da bölüm değişiminde (ürün özelliğinden fiyata, sorudan cevaba); turuncu-sarı-koyu üç renk art arda geçer; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-capraz-serit-dikey/gecis-capraz-serit-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-capraz-serit-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-capraz-serit-dikey",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-capraz-serit-yatay",
+   "file": "library/motion/custom/gecis-capraz-serit-yatay/gecis-capraz-serit-yatay.webm",
+   "title": "Üç çapraz renk şeridi geçişi 16:9; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "serit",
+    "capraz",
+    "enerjik",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda enerjik, hızlı tempolu videoda konu ya da bölüm değişiminde (ürün özelliğinden fiyata, sorudan cevaba); turuncu-sarı-koyu üç renk art arda geçer; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-capraz-serit-yatay/gecis-capraz-serit-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-capraz-serit-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-capraz-serit-yatay",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-flas-dikey",
+   "file": "library/motion/custom/gecis-flas-dikey/gecis-flas-dikey.webm",
+   "title": "Beyaz flaş geçişi 9:16; ortası (0,25 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "flas",
+    "beyaz",
+    "vurus",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda vuruşlu bir an, fotoğraf ya da ürün ortaya çıkışı, müzikte düşüş ya da şok edici bilgiye kesimde; en kısa ve en sert geçiş; kesimi klibin ortasına (0,25 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-flas-dikey/gecis-flas-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-flas-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-flas-dikey",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-flas-yatay",
+   "file": "library/motion/custom/gecis-flas-yatay/gecis-flas-yatay.webm",
+   "title": "Beyaz flaş geçişi 16:9; ortası (0,25 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "flas",
+    "beyaz",
+    "vurus",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda vuruşlu bir an, fotoğraf ya da ürün ortaya çıkışı, müzikte düşüş ya da şok edici bilgiye kesimde; en kısa ve en sert geçiş; kesimi klibin ortasına (0,25 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-flas-yatay/gecis-flas-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-flas-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-flas-yatay",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-glitch-dikey",
+   "file": "library/motion/custom/gecis-glitch-dikey/gecis-glitch-dikey.webm",
+   "title": "Glitch bozulma geçişi 9:16; ortası (0,30 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "glitch",
+    "dijital",
+    "teknoloji",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda teknoloji, yazılım, yapay zekâ ya da internet konusunda bir başlıktan ötekine ya da şaşırtıcı bir bilgiye sıçrarken; kısa ve sert; kesimi klibin ortasına (0,30 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-glitch-dikey/gecis-glitch-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-glitch-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-glitch-dikey",
+   "arsiv": "V1:piksel"
+  },
+  {
+   "id": "gecis-glitch-yatay",
+   "file": "library/motion/custom/gecis-glitch-yatay/gecis-glitch-yatay.webm",
+   "title": "Glitch bozulma geçişi 16:9; ortası (0,30 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "glitch",
+    "dijital",
+    "teknoloji",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda teknoloji, yazılım, yapay zekâ ya da internet konusunda bir başlıktan ötekine ya da şaşırtıcı bir bilgiye sıçrarken; kısa ve sert; kesimi klibin ortasına (0,30 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-glitch-yatay/gecis-glitch-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-glitch-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-glitch-yatay",
+   "arsiv": "V1:piksel"
+  },
+  {
+   "id": "gecis-iris-dikey",
+   "file": "library/motion/custom/gecis-iris-dikey/gecis-iris-dikey.webm",
+   "title": "Daire iris geçişi 9:16; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "iris",
+    "daire",
+    "klasik",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda bir bölümü kapatıp yenisini açarken ya da zaman atlaması (önce/sonra, ertesi gün) gösterirken; dikkat merkezdeki öğeye toplanır; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-iris-dikey/gecis-iris-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-iris-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-iris-dikey",
+   "arsiv": "V1:iris"
+  },
+  {
+   "id": "gecis-iris-yatay",
+   "file": "library/motion/custom/gecis-iris-yatay/gecis-iris-yatay.webm",
+   "title": "Daire iris geçişi 16:9; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "iris",
+    "daire",
+    "klasik",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda bir bölümü kapatıp yenisini açarken ya da zaman atlaması (önce/sonra, ertesi gün) gösterirken; dikkat merkezdeki öğeye toplanır; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-iris-yatay/gecis-iris-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-iris-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-iris-yatay",
+   "arsiv": "V1:iris"
+  },
+  {
+   "id": "gecis-isik-sizintisi-dikey",
+   "file": "library/motion/custom/gecis-isik-sizintisi-dikey/gecis-isik-sizintisi-dikey.webm",
+   "title": "Sıcak ışık sızıntısı geçişi 9:16; ortası (0,50 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "isik",
+    "sicak",
+    "sinematik",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda vlog, anı, seyahat ya da duygusal anlatımda bir sahneden ötekine, zaman ya da mekân değişiminde; sıcak ve sinematik his verir; kesimi klibin ortasına (0,50 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 1.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-isik-sizintisi-dikey/gecis-isik-sizintisi-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-isik-sizintisi-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-isik-sizintisi-dikey",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-isik-sizintisi-yatay",
+   "file": "library/motion/custom/gecis-isik-sizintisi-yatay/gecis-isik-sizintisi-yatay.webm",
+   "title": "Sıcak ışık sızıntısı geçişi 16:9; ortası (0,50 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "isik",
+    "sicak",
+    "sinematik",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda vlog, anı, seyahat ya da duygusal anlatımda bir sahneden ötekine, zaman ya da mekân değişiminde; sıcak ve sinematik his verir; kesimi klibin ortasına (0,50 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 1.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-isik-sizintisi-yatay/gecis-isik-sizintisi-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-isik-sizintisi-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-isik-sizintisi-yatay",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-kagit-yirtik-dikey",
+   "file": "library/motion/custom/gecis-kagit-yirtik-dikey/gecis-kagit-yirtik-dikey.webm",
+   "title": "Yırtık kâğıt şeridi geçişi 9:16; ortası (0,45 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "kagit",
+    "yirtik",
+    "dokulu",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda el yapımı, samimi ya da hikâye anlatan bir bölümden yeni bir alt başlığa ya da örneğe geçerken; sert kesim fazla teknik kaçacağı yerde; kesimi klibin ortasına (0,45 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.9,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-kagit-yirtik-dikey/gecis-kagit-yirtik-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-kagit-yirtik-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-kagit-yirtik-dikey",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-kagit-yirtik-yatay",
+   "file": "library/motion/custom/gecis-kagit-yirtik-yatay/gecis-kagit-yirtik-yatay.webm",
+   "title": "Yırtık kâğıt şeridi geçişi 16:9; ortası (0,45 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "kagit",
+    "yirtik",
+    "dokulu",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda el yapımı, samimi ya da hikâye anlatan bir bölümden yeni bir alt başlığa ya da örneğe geçerken; sert kesim fazla teknik kaçacağı yerde; kesimi klibin ortasına (0,45 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.9,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-kagit-yirtik-yatay/gecis-kagit-yirtik-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-kagit-yirtik-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-kagit-yirtik-yatay",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-murekkep-dikey",
+   "file": "library/motion/custom/gecis-murekkep-dikey/gecis-murekkep-dikey.webm",
+   "title": "Mürekkep lekesi geçişi 9:16; ortası (0,50 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "murekkep",
+    "leke",
+    "organik",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda duygusal, düşünsel ya da yaratıcı bir konuya, bir fikirden ötekine yumuşak ama belirgin geçişte; enerjik satış anlarına uymaz; kesimi klibin ortasına (0,50 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 1.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-murekkep-dikey/gecis-murekkep-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-murekkep-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-murekkep-dikey",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-murekkep-yatay",
+   "file": "library/motion/custom/gecis-murekkep-yatay/gecis-murekkep-yatay.webm",
+   "title": "Mürekkep lekesi geçişi 16:9; ortası (0,50 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "murekkep",
+    "leke",
+    "organik",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda duygusal, düşünsel ya da yaratıcı bir konuya, bir fikirden ötekine yumuşak ama belirgin geçişte; enerjik satış anlarına uymaz; kesimi klibin ortasına (0,50 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 1.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-murekkep-yatay/gecis-murekkep-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-murekkep-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-murekkep-yatay",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-panjur-dikey",
+   "file": "library/motion/custom/gecis-panjur-dikey/gecis-panjur-dikey.webm",
+   "title": "Yatay panjur geçişi 9:16; ortası (0,45 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "panjur",
+    "serit",
+    "sirali",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda liste ya da adım adım anlatımda bir maddeden sonrakine, bir dosyadan ötekine geçerken; düzenli ve kurumsal his verir; kesimi klibin ortasına (0,45 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.9,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-panjur-dikey/gecis-panjur-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-panjur-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-panjur-dikey",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-panjur-yatay",
+   "file": "library/motion/custom/gecis-panjur-yatay/gecis-panjur-yatay.webm",
+   "title": "Yatay panjur geçişi 16:9; ortası (0,45 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "panjur",
+    "serit",
+    "sirali",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda liste ya da adım adım anlatımda bir maddeden sonrakine, bir dosyadan ötekine geçerken; düzenli ve kurumsal his verir; kesimi klibin ortasına (0,45 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.9,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-panjur-yatay/gecis-panjur-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-panjur-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-panjur-yatay",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-perde-dikey",
+   "file": "library/motion/custom/gecis-perde-dikey/gecis-perde-dikey.webm",
+   "title": "İki yandan perde geçişi 9:16; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "perde",
+    "yan",
+    "sahne",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda sahne, bölüm ya da perde arası hissi istenen anda (giriş sonrası ana konuya, bir hikâyeden sonuca); tiyatro perdesi gibi ortada birleşip açılır; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-perde-dikey/gecis-perde-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-perde-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-perde-dikey",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-perde-yatay",
+   "file": "library/motion/custom/gecis-perde-yatay/gecis-perde-yatay.webm",
+   "title": "İki yandan perde geçişi 16:9; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "perde",
+    "yan",
+    "sahne",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda sahne, bölüm ya da perde arası hissi istenen anda (giriş sonrası ana konuya, bir hikâyeden sonuca); tiyatro perdesi gibi ortada birleşip açılır; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-perde-yatay/gecis-perde-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-perde-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-perde-yatay",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-sekil-perde-dikey",
+   "file": "library/motion/custom/gecis-sekil-perde-dikey/gecis-sekil-perde-dikey.webm",
+   "title": "Altıgen karo perde geçişi 9:16; ortası (0,45 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "altigen",
+    "karo",
+    "geometrik",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda bilim, veri, teknoloji ya da sistem anlatan videoda bir bölümden ötekine geçerken; karolar köşeden köşeye yayılarak kapatır; kesimi klibin ortasına (0,45 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.9,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-sekil-perde-dikey/gecis-sekil-perde-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-sekil-perde-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-sekil-perde-dikey",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-sekil-perde-yatay",
+   "file": "library/motion/custom/gecis-sekil-perde-yatay/gecis-sekil-perde-yatay.webm",
+   "title": "Altıgen karo perde geçişi 16:9; ortası (0,45 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "altigen",
+    "karo",
+    "geometrik",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda bilim, veri, teknoloji ya da sistem anlatan videoda bir bölümden ötekine geçerken; karolar köşeden köşeye yayılarak kapatır; kesimi klibin ortasına (0,45 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.9,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-sekil-perde-yatay/gecis-sekil-perde-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-sekil-perde-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-sekil-perde-yatay",
+   "arsiv": "V1:sil"
+  },
+  {
+   "id": "gecis-yukari-it-dikey",
+   "file": "library/motion/custom/gecis-yukari-it-dikey/gecis-yukari-it-dikey.webm",
+   "title": "Alttan yukarı iten panel geçişi 9:16; ortası (0,35 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "it",
+    "yukari",
+    "panel",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda sıradaki maddeye, sonraki adıma ya da yeni bir örneğe geçerken; dikey akışta kaydırma (scroll) hissi verir, ileri gitme anlamı taşır; kesimi klibin ortasına (0,35 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.7,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-yukari-it-dikey/gecis-yukari-it-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-yukari-it-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-yukari-it-dikey",
+   "arsiv": "V1:kay"
+  },
+  {
+   "id": "gecis-yukari-it-yatay",
+   "file": "library/motion/custom/gecis-yukari-it-yatay/gecis-yukari-it-yatay.webm",
+   "title": "Alttan yukarı iten panel geçişi 16:9; ortası (0,35 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "it",
+    "yukari",
+    "panel",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda sıradaki maddeye, sonraki adıma ya da yeni bir örneğe geçerken; dikey akışta kaydırma (scroll) hissi verir, ileri gitme anlamı taşır; kesimi klibin ortasına (0,35 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.7,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-yukari-it-yatay/gecis-yukari-it-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-yukari-it-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-yukari-it-yatay",
+   "arsiv": "V1:kay"
+  },
+  {
+   "id": "geri-sayim",
+   "file": "library/motion/custom/geri-sayim/geri-sayim.webm",
+   "title": "Geri sayım: 3, 2, 1 büyük rakamlar",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "geri-sayim",
+    "acilis",
+    "baslangic"
+   ],
+   "ne_zaman": "Bir deneme, açılış ya da büyük gösterimden hemen önce gerilim kurmak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.2,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/geri-sayim/geri-sayim.html",
+   "source_url": null,
+   "poster": "library/motion/custom/geri-sayim/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur geri-sayim",
+   "param": {
+    "metin": {
+     "vars": "Başlıyoruz",
+     "max": 24
+    }
+   },
+   "tam": true
+  },
+  {
+   "id": "grafik-cizgi",
+   "file": "library/motion/custom/grafik-cizgi/grafik-cizgi.webm",
+   "title": "Çizgi grafik: zamanla artış, son nokta vurgulu",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "grafik",
+    "veri",
+    "trend",
+    "buyume"
+   ],
+   "ne_zaman": "Konuşmacı zaman içinde bir artışı ya da düşüşü anlattığında; son değer etiketle vurgulanır.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/grafik-cizgi/grafik-cizgi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/grafik-cizgi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur grafik-cizgi",
+   "param": {
+    "baslik": {
+     "vars": "Aylık izlenme",
+     "max": 32
+    },
+    "degerler": {
+     "vars": "12,18,15,27,34,48",
+     "max": 60
+    },
+    "son_etiket": {
+     "vars": "+%300",
+     "max": 14
+    }
+   },
+   "tam": true,
+   "arsiv": "veri/cizgi"
+  },
+  {
+   "id": "grafik-cubuk",
+   "file": "library/motion/custom/grafik-cubuk/grafik-cubuk.webm",
+   "title": "Çubuk grafik: 2-4 çubuk büyür, değer sayar",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "grafik",
+    "veri",
+    "cubuk",
+    "karsilastirma"
+   ],
+   "ne_zaman": "Konuşmacı yıllar, ürünler ya da seçenekler arasında 2-4 sayıyı karşılaştırdığında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/grafik-cubuk/grafik-cubuk.html",
+   "source_url": null,
+   "poster": "library/motion/custom/grafik-cubuk/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur grafik-cubuk",
+   "param": {
+    "baslik": {
+     "vars": "Yıllık büyüme",
+     "max": 32
+    },
+    "etiketler": {
+     "vars": "2023,2024,2025",
+     "max": 60
+    },
+    "degerler": {
+     "vars": "40,65,90",
+     "max": 40
+    },
+    "birim": {
+     "vars": "%",
+     "max": 4
+    }
+   },
+   "tam": true,
+   "arsiv": "veri/cubuk"
+  },
+  {
+   "id": "grafik-halka",
+   "file": "library/motion/custom/grafik-halka/grafik-halka.webm",
+   "title": "Halka grafik: halka dolar, ortada yüzde sayar",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "grafik",
+    "veri",
+    "yuzde",
+    "halka"
+   ],
+   "ne_zaman": "Konuşmacı tek bir yüzde ya da oran söylediğinde (ör. kullanıcıların yüzde 72'si).",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/grafik-halka/grafik-halka.html",
+   "source_url": null,
+   "poster": "library/motion/custom/grafik-halka/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur grafik-halka",
+   "param": {
+    "deger": {
+     "vars": 72,
+     "min": 0,
+     "max": 100
+    },
+    "metin": {
+     "vars": "Kullanıcı memnuniyeti",
+     "max": 32
+    }
+   },
+   "tam": true,
+   "arsiv": "veri/halka"
+  },
+  {
+   "id": "hiz-cizgileri",
+   "file": "library/motion/custom/hiz-cizgileri/hiz-cizgileri.webm",
+   "title": "Hız çizgileri: merkeze odakla",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "hiz",
+    "manga",
+    "odak",
+    "vurgu"
+   ],
+   "ne_zaman": "Ani bir vurguda ya da punch zoom ile birlikte; konuşmacının yüzü ya da ürün merkezdeyken, çizgiler merkezi boş bırakır.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/hiz-cizgileri/hiz-cizgileri.html",
+   "source_url": null,
+   "poster": "library/motion/custom/hiz-cizgileri/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur hiz-cizgileri"
+  },
+  {
+   "id": "ikon-ampul",
+   "file": "library/motion/custom/ikon-ampul/ikon-ampul.webm",
+   "title": "Ampul: yanar, ışın çıkar",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "fikir",
+    "ampul",
+    "ipucu",
+    "ders"
+   ],
+   "ne_zaman": "Bir fikir, ipucu ya da 'aklıma geldi' anı söylendiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-ampul/ikon-ampul.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-ampul/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-ampul",
+   "arsiv": "ikon/ampul"
+  },
+  {
+   "id": "ikon-ates",
+   "file": "library/motion/custom/ikon-ates/ikon-ates.webm",
+   "title": "Ateş: alev titreşir",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "ates",
+    "alev",
+    "trend",
+    "sicak"
+   ],
+   "ne_zaman": "Çok iyi giden, popüler ya da 'yanıyor' denecek bir şey anlatıldığında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-ates/ikon-ates.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-ates/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-ates",
+   "arsiv": "ikon/ates"
+  },
+  {
+   "id": "ikon-begeni",
+   "file": "library/motion/custom/ikon-begeni/ikon-begeni.webm",
+   "title": "Beğeni: başparmak yukarı kalkar",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "begeni",
+    "like",
+    "onay",
+    "tepki"
+   ],
+   "ne_zaman": "Konuşmacı izleyiciden beğeni istediğinde ya da bir fikri onayladığında, cümlenin vurgulu kelimesinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-begeni/ikon-begeni.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-begeni/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-begeni",
+   "arsiv": "ikon/begeni"
+  },
+  {
+   "id": "ikon-kalp",
+   "file": "library/motion/custom/ikon-kalp/ikon-kalp.webm",
+   "title": "Kalp: dolar ve bir kez atar",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "kalp",
+    "sevgi",
+    "begeni",
+    "tepki"
+   ],
+   "ne_zaman": "Sevilen bir şey, duygusal bir an ya da 'bunu çok sevdim' cümlesi söylendiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-kalp/ikon-kalp.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-kalp/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-kalp",
+   "arsiv": "ikon/kalp"
+  },
+  {
+   "id": "ikon-kaydet",
+   "file": "library/motion/custom/ikon-kaydet/ikon-kaydet.webm",
+   "title": "Kaydet: yer imi yukarıdan iner",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "kaydet",
+    "yer-imi",
+    "sakla",
+    "etkilesim"
+   ],
+   "ne_zaman": "Konuşmacı 'bunu kaydet' dediğinde ya da sonra dönülecek değerli bir bilgi verildiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-kaydet/ikon-kaydet.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-kaydet/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-kaydet",
+   "arsiv": "ikon/kaydet"
+  },
+  {
+   "id": "ikon-konum",
+   "file": "library/motion/custom/ikon-konum/ikon-konum.webm",
+   "title": "Konum: iğne düşer, halka yayar",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "konum",
+    "harita",
+    "yer",
+    "adres"
+   ],
+   "ne_zaman": "Bir şehir, mekân ya da adres söylendiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-konum/ikon-konum.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-konum/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-konum",
+   "arsiv": "ikon/konum"
+  },
+  {
+   "id": "ikon-para",
+   "file": "library/motion/custom/ikon-para/ikon-para.webm",
+   "title": "Para: madeni para döner",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "para",
+    "kazanc",
+    "fiyat",
+    "tasarruf"
+   ],
+   "ne_zaman": "Fiyat, kazanç, maliyet ya da tasarruf söylendiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-para/ikon-para.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-para/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-para",
+   "arsiv": "ikon/para"
+  },
+  {
+   "id": "ikon-paylas",
+   "file": "library/motion/custom/ikon-paylas/ikon-paylas.webm",
+   "title": "Paylaş: ok ileri fırlar",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "paylas",
+    "gonder",
+    "ilet",
+    "etkilesim"
+   ],
+   "ne_zaman": "Konuşmacı 'arkadaşına gönder' ya da 'paylaş' dediğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-paylas/ikon-paylas.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-paylas/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-paylas",
+   "arsiv": "ikon/paylas"
+  },
+  {
+   "id": "ikon-saat",
+   "file": "library/motion/custom/ikon-saat/ikon-saat.webm",
+   "title": "Saat: akrep ve yelkovan hızla döner",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "saat",
+    "zaman",
+    "sure",
+    "bekleme"
+   ],
+   "ne_zaman": "Zaman geçtiği, süre ya da 'saatler sonra' söylendiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-saat/ikon-saat.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-saat/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-saat",
+   "arsiv": "ikon/saat"
+  },
+  {
+   "id": "ikon-takip",
+   "file": "library/motion/custom/ikon-takip/ikon-takip.webm",
+   "title": "Takip: artı onaya döner",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "takip",
+    "abone",
+    "kisi",
+    "katil"
+   ],
+   "ne_zaman": "Konuşmacı 'takip et' ya da 'abone ol' dediğinde, çağrı cümlesinin sonunda.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-takip/ikon-takip.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-takip/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-takip"
+  },
+  {
+   "id": "ikon-yorum",
+   "file": "library/motion/custom/ikon-yorum/ikon-yorum.webm",
+   "title": "Yorum: balonda üç nokta belirir",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "yorum",
+    "soru",
+    "konusma",
+    "etkilesim"
+   ],
+   "ne_zaman": "Konuşmacı 'yorumlara yazın' dediğinde ya da izleyiciye soru sorduğunda.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-yorum/ikon-yorum.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-yorum/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-yorum"
+  },
+  {
+   "id": "ikon-zil",
+   "file": "library/motion/custom/ikon-zil/ikon-zil.webm",
+   "title": "Zil: sallanır, bildirim",
+   "site": "custom",
+   "kind": "icon",
+   "tags": [
+    "zil",
+    "bildirim",
+    "abone",
+    "hatirlatma"
+   ],
+   "ne_zaman": "Konuşmacı bildirimleri açmayı söylediğinde ya da bir uyarı, hatırlatma geldiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ikon-zil/ikon-zil.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ikon-zil/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-zil",
+   "arsiv": "ikon/zil"
+  },
+  {
+   "id": "isin-donen",
+   "file": "library/motion/custom/isin-donen/isin-donen.webm",
+   "title": "Dönen ışın: büyük açılış ya da ödül",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "isin",
+    "odul",
+    "acilis"
+   ],
+   "ne_zaman": "Büyük bir açıklama, ödül, sonuç ya da ürün tanıtımı anında; ortadaki öğenin arkasında, merkez boş kalır.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 2.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/isin-donen/isin-donen.html",
+   "source_url": null,
+   "poster": "library/motion/custom/isin-donen/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur isin-donen"
+  },
+  {
+   "id": "kalp-atis",
+   "file": "library/motion/custom/kalp-atis/kalp-atis.webm",
+   "title": "Nabız halkası: iki atım",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "nabiz",
+    "halka",
+    "kalp"
+   ],
+   "ne_zaman": "Canlılık, heyecan ya da 'kalbim durdu' gibi duygusal bir anda; merkezdeki öğenin etrafında iki atım.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.4,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/kalp-atis/kalp-atis.html",
+   "source_url": null,
+   "poster": "library/motion/custom/kalp-atis/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kalp-atis"
+  },
+  {
+   "id": "karsilastirma",
+   "file": "library/motion/custom/karsilastirma/karsilastirma.webm",
+   "title": "Karşılaştırma: önce soluk, sonra vurgulu iki sütun",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "karsilastirma",
+    "once-sonra",
+    "fark"
+   ],
+   "ne_zaman": "Konuşmacı eski ve yeni durumu, sorunu ve çözümü ya da iki seçeneği yan yana koyduğunda.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/karsilastirma/karsilastirma.html",
+   "source_url": null,
+   "poster": "library/motion/custom/karsilastirma/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur karsilastirma",
+   "param": {
+    "sol_baslik": {
+     "vars": "Önce",
+     "max": 14
+    },
+    "sol": {
+     "vars": "Saatlerce elle kurgu",
+     "max": 28
+    },
+    "sag_baslik": {
+     "vars": "Sonra",
+     "max": 14
+    },
+    "sag": {
+     "vars": "Dakikalar içinde hazır video",
+     "max": 28
+    }
+   },
+   "tam": true,
+   "arsiv": "veri/karsilastirma"
+  },
+  {
+   "id": "kirmizi-cizgi",
+   "file": "library/motion/custom/kirmizi-cizgi/kirmizi-cizgi.webm",
+   "title": "Dalgalı alt çizgi: yanlışı ya da önemliyi işaretle",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "alt-cizgi",
+    "duzeltme",
+    "metin"
+   ],
+   "ne_zaman": "Ekrandaki bir kelime ya da sayının yanlış veya kritik olduğunu söylerken, düzeltme notu gibi.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.4,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/kirmizi-cizgi/kirmizi-cizgi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/kirmizi-cizgi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kirmizi-cizgi"
+  },
+  {
+   "id": "kontrol-listesi",
+   "file": "library/motion/custom/kontrol-listesi/kontrol-listesi.webm",
+   "title": "Kontrol listesi: maddeler sırayla gelir, tiklenir",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "liste",
+    "adim",
+    "kontrol",
+    "ozet"
+   ],
+   "ne_zaman": "Konuşmacı 2-4 adımı, şartı ya da özeti sıraladığında; her madde söylendikçe tiklenir.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/kontrol-listesi/kontrol-listesi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/kontrol-listesi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kontrol-listesi",
+   "param": {
+    "baslik": {
+     "vars": "Bugünün planı",
+     "max": 28
+    },
+    "maddeler": {
+     "vars": "İlk adım|İkinci adım|Üçüncü adım",
+     "max": 90
+    }
+   },
+   "tam": true
+  },
+  {
+   "id": "kupur-baslik",
+   "file": "library/motion/custom/kupur-baslik/kupur-baslik.webm",
+   "title": "Kupür başlık: kâğıt şeritlerde kelime kelime manşet",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "baslik",
+    "manset",
+    "gazete",
+    "kolaj",
+    "vurgu"
+   ],
+   "ne_zaman": "Bir haberden, iddiadan ya da çarpıcı bir cümleden söz edilirken onu gazete manşeti gibi gösterip tek kelimesini fosforla vurgulamak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/kupur-baslik/kupur-baslik.html",
+   "source_url": null,
+   "poster": "library/motion/custom/kupur-baslik/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kupur-baslik",
+   "param": {
+    "metin": {
+     "vars": "Gazetede okuduğun manşet",
+     "max": 48
+    },
+    "vurgu": {
+     "vars": "",
+     "max": 16
+    }
+   },
+   "tam": true
+  },
+  {
+   "id": "kutu-ciz",
+   "file": "library/motion/custom/kutu-ciz/kutu-ciz.webm",
+   "title": "El çizimi kutu: bir alanı çerçevele",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "kutu",
+    "cerceve",
+    "el-cizimi"
+   ],
+   "ne_zaman": "Ekrandaki bir alanı (tablo satırı, ekran görüntüsünde bir bölüm, fiyat etiketi) işaretlerken.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 2.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/kutu-ciz/kutu-ciz.html",
+   "source_url": null,
+   "poster": "library/motion/custom/kutu-ciz/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kutu-ciz",
+   "arsiv": "cizim/kutu"
+  },
+  {
+   "id": "ok-asagi",
+   "file": "library/motion/custom/ok-asagi/ok-asagi.webm",
+   "title": "Zıplayan aşağı ok: alttakine bak",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "ok",
+    "asagi",
+    "goster"
+   ],
+   "ne_zaman": "Alttaki bir öğeyi (bağlantı, açıklama, düğme, ürün) gösterirken; 'aşağıda', 'açıklamada' denince.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ok-asagi/ok-asagi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ok-asagi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-asagi",
+   "arsiv": "ikon/ok-asagi"
+  },
+  {
+   "id": "ok-cift",
+   "file": "library/motion/custom/ok-cift/ok-cift.webm",
+   "title": "Çift ok: ortadakini iki yandan göster",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "ok",
+    "goster",
+    "merkez"
+   ],
+   "ne_zaman": "Karenin ortasındaki tek öğeyi (sayı, ürün, yüz) iki yandan sıkıştırarak öne çıkarırken.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ok-cift/ok-cift.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ok-cift/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-cift"
+  },
+  {
+   "id": "ok-duz",
+   "file": "library/motion/custom/ok-duz/ok-duz.webm",
+   "title": "Düz ok: sağdaki öğeyi göster",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "ok",
+    "goster",
+    "yon"
+   ],
+   "ne_zaman": "Sağdaki bir öğeye ya da bir adımdan sonrakine dikkat çekerken: önce/sonra, A'dan B'ye.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.4,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ok-duz/ok-duz.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ok-duz/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-duz",
+   "arsiv": "ikon/ok-sag"
+  },
+  {
+   "id": "ok-kivrik",
+   "file": "library/motion/custom/ok-kivrik/ok-kivrik.webm",
+   "title": "Kıvrık ok: aşağı soldaki öğeyi göster",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "ok",
+    "goster",
+    "el-cizimi"
+   ],
+   "ne_zaman": "Konuşmacı aşağıdaki ya da soldaki bir öğeyi (fiyat, düğme, ürün) gösterirken, düz ok fazla sert kaçtığında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ok-kivrik/ok-kivrik.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ok-kivrik/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-kivrik",
+   "arsiv": "ikon/ok-kivrik"
+  },
+  {
+   "id": "parantez",
+   "file": "library/motion/custom/parantez/parantez.webm",
+   "title": "Köşeli parantez: ortadakini çerçevele",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "parantez",
+    "cerceve",
+    "merkez"
+   ],
+   "ne_zaman": "Ortadaki bir kelimeyi, sayıyı ya da kişiyi iki yandan kapatarak 'işte bu' derken.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 2.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/parantez/parantez.html",
+   "source_url": null,
+   "poster": "library/motion/custom/parantez/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur parantez",
+   "arsiv": "cizim/parantez"
+  },
+  {
+   "id": "parilti",
+   "file": "library/motion/custom/parilti/parilti.webm",
+   "title": "Parıltı: yeni ya da temiz olanı göster",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "parilti",
+    "yeni",
+    "temiz"
+   ],
+   "ne_zaman": "Yeni, temiz, parlak ya da 'sihirli' bir sonucu gösterirken: önce/sonra karşılaştırmasının 'sonra' anı.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.4,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/parilti/parilti.html",
+   "source_url": null,
+   "poster": "library/motion/custom/parilti/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur parilti",
+   "arsiv": "parcacik/parilti"
+  },
+  {
+   "id": "sayi-rozeti",
+   "file": "library/motion/custom/sayi-rozeti/sayi-rozeti.webm",
+   "title": "Sayı rozeti: büyük sayı sayarak gelir, altında etiket",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "sayi",
+    "veri",
+    "rakam",
+    "sonuc"
+   ],
+   "ne_zaman": "Konuşmacı tek bir çarpıcı sayı söylediğinde (abone, satış, kazanç, kişi sayısı).",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/sayi-rozeti/sayi-rozeti.html",
+   "source_url": null,
+   "poster": "library/motion/custom/sayi-rozeti/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur sayi-rozeti",
+   "param": {
+    "deger": {
+     "vars": 1250,
+     "min": 0,
+     "max": 999999
+    },
+    "onek": {
+     "vars": "",
+     "max": 3
+    },
+    "sonek": {
+     "vars": "+",
+     "max": 4
+    },
+    "metin": {
+     "vars": "Yeni abone bu hafta",
+     "max": 28
+    }
+   },
+   "tam": true
+  },
+  {
+   "id": "sohbet-balonu",
+   "file": "library/motion/custom/sohbet-balonu/sohbet-balonu.webm",
+   "title": "Sohbet balonu: soru ve cevap mesajı sırayla",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "sohbet",
+    "mesaj",
+    "soru",
+    "cevap",
+    "dm"
+   ],
+   "ne_zaman": "Konuşmacı izleyiciden gelen bir soruyu ya da bir DM'i okuyup cevapladığında soru-cevabı mesaj olarak göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/sohbet-balonu/sohbet-balonu.html",
+   "source_url": null,
+   "poster": "library/motion/custom/sohbet-balonu/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur sohbet-balonu",
+   "param": {
+    "soru": {
+     "vars": "Bu nasıl çalışıyor?",
+     "max": 60
+    },
+    "cevap": {
+     "vars": "Üç adımda anlatıyorum.",
+     "max": 60
+    }
+   },
+   "tam": true
+  },
+  {
+   "id": "sok-dalgasi",
+   "file": "library/motion/custom/sok-dalgasi/sok-dalgasi.webm",
+   "title": "Şok dalgası: darbe anı",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "darbe",
+    "halka",
+    "vurgu"
+   ],
+   "ne_zaman": "Sert bir vurgu anında: çarpıcı sayı, kesme, punch zoom ya da bir şeyin yere düştüğü an.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 0.9,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/sok-dalgasi/sok-dalgasi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/sok-dalgasi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur sok-dalgasi",
+   "arsiv": "parcacik/sok-dalgasi"
+  },
+  {
+   "id": "soru-isareti",
+   "file": "library/motion/custom/soru-isareti/soru-isareti.webm",
+   "title": "Soru işareti: merak ya da belirsizlik",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "soru",
+    "merak",
+    "el-cizimi"
+   ],
+   "ne_zaman": "Konuşmacı bir soru sorduğunda ya da 'neden?', 'nasıl?' diye merak uyandırdığında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/soru-isareti/soru-isareti.html",
+   "source_url": null,
+   "poster": "library/motion/custom/soru-isareti/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur soru-isareti",
+   "arsiv": "ikon/soru"
+  },
+  {
+   "id": "takip-cagri",
+   "file": "library/motion/custom/takip-cagri/takip-cagri.webm",
+   "title": "Takip çağrısı: profil adı ve basılan takip düğmesi",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "takip",
+    "cta",
+    "abone",
+    "profil",
+    "kapanis"
+   ],
+   "ne_zaman": "Videonun sonunda ya da konuşmacı 'takip et' dediği anda izleyiciyi hesabı takip etmeye çağırmak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 3.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/takip-cagri/takip-cagri.html",
+   "source_url": null,
+   "poster": "library/motion/custom/takip-cagri/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur takip-cagri",
+   "param": {
+    "ad": {
+     "vars": "@kullanici",
+     "max": 24
+    },
+    "dugme": {
+     "vars": "Takip et",
+     "max": 14
+    },
+    "sonra": {
+     "vars": "Takip ediliyor",
+     "max": 18
+    }
+   },
+   "tam": true,
+   "arsiv": "kart/abone"
+  },
+  {
+   "id": "titresim-cizgi",
+   "file": "library/motion/custom/titresim-cizgi/titresim-cizgi.webm",
+   "title": "Titreşim çizgileri: dikkat, bu titriyor",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "dikkat",
+    "titresim",
+    "el-cizimi"
+   ],
+   "ne_zaman": "Ortadaki bir öğe (telefon, bildirim, ürün) titreşirken ya da 'işte bu!' diye dikkat çekilirken.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.2,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/titresim-cizgi/titresim-cizgi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/titresim-cizgi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur titresim-cizgi"
+  },
+  {
+   "id": "unlem",
+   "file": "library/motion/custom/unlem/unlem.webm",
+   "title": "Ünlem: uyarı ya da şok anı",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "unlem",
+    "uyari",
+    "dikkat"
+   ],
+   "ne_zaman": "Uyarı, hata ya da şaşırtıcı bir bilgi söylendiği anda: 'dikkat', 'yapma', 'inanılmaz'.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.4,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/unlem/unlem.html",
+   "source_url": null,
+   "poster": "library/motion/custom/unlem/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur unlem",
+   "arsiv": "ikon/unlem"
+  },
+  {
+   "id": "yildiz-patlama",
+   "file": "library/motion/custom/yildiz-patlama/yildiz-patlama.webm",
+   "title": "Yıldız patlama rozeti: büyük vurgu",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "rozet",
+    "patlama",
+    "vurgu"
+   ],
+   "ne_zaman": "Ortadaki bir sayıyı, indirimi ya da 'YENİ' gibi bir öğeyi arkasından rozetle patlatırken; üstüne başka katman gelir.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 1.6,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/yildiz-patlama/yildiz-patlama.html",
+   "source_url": null,
+   "poster": "library/motion/custom/yildiz-patlama/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur yildiz-patlama",
+   "arsiv": "parcacik/yildiz-patlama"
+  },
+  {
+   "id": "zemin-blueprint",
+   "file": "library/motion/custom/zemin-blueprint/zemin-blueprint.webm",
+   "title": "Blueprint zemin: kayan teknik çizim ızgarası",
+   "site": "custom",
+   "kind": "background",
+   "tags": [
+    "zemin",
+    "dongu",
+    "blueprint",
+    "teknik",
+    "izgara"
+   ],
+   "ne_zaman": "Nasıl yapılır, teknik açıklama, plan ya da kod anlatılan tam ekran sahnenin arkasında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 6.0,
+   "loop": true,
+   "license": "project-made",
+   "source": "library/motion/custom/zemin-blueprint/zemin-blueprint.html",
+   "source_url": null,
+   "poster": "library/motion/custom/zemin-blueprint/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-blueprint",
+   "arsiv": "zemin/grid"
+  },
+  {
+   "id": "zemin-dalga",
+   "file": "library/motion/custom/zemin-dalga/zemin-dalga.webm",
+   "title": "Dalga zemin: yavaş akan çizgi dalgaları",
+   "site": "custom",
+   "kind": "background",
+   "tags": [
+    "zemin",
+    "dongu",
+    "dalga",
+    "cizgi",
+    "akis"
+   ],
+   "ne_zaman": "Süreç, akış ya da ses/müzik konusu anlatılan tam ekran sahnenin arkasında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 6.0,
+   "loop": true,
+   "license": "project-made",
+   "source": "library/motion/custom/zemin-dalga/zemin-dalga.html",
+   "source_url": null,
+   "poster": "library/motion/custom/zemin-dalga/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-dalga"
+  },
+  {
+   "id": "zemin-grenli-gradyan",
+   "file": "library/motion/custom/zemin-grenli-gradyan/zemin-grenli-gradyan.webm",
+   "title": "Grenli gradyan zemin: yavaş kayan renk lekeleri",
+   "site": "custom",
+   "kind": "background",
+   "tags": [
+    "zemin",
+    "dongu",
+    "gradyan",
+    "gren",
+    "sicak"
+   ],
+   "ne_zaman": "Tam ekran başlık, alıntı ya da veri sahnesinin arkasına sıcak ve canlı bir zemin gerektiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 6.0,
+   "loop": true,
+   "license": "project-made",
+   "source": "library/motion/custom/zemin-grenli-gradyan/zemin-grenli-gradyan.html",
+   "source_url": null,
+   "poster": "library/motion/custom/zemin-grenli-gradyan/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-grenli-gradyan",
+   "arsiv": "zemin/grenli-gradyan"
+  },
+  {
+   "id": "zemin-halftone",
+   "file": "library/motion/custom/zemin-halftone/zemin-halftone.webm",
+   "title": "Halftone zemin: merkezden nabız gibi büyüyen noktalar",
+   "site": "custom",
+   "kind": "background",
+   "tags": [
+    "zemin",
+    "dongu",
+    "halftone",
+    "nabiz",
+    "enerji"
+   ],
+   "ne_zaman": "Sayı rozeti, geri sayım ya da duyuru gibi enerjik tam ekran sahnenin arkasında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 6.0,
+   "loop": true,
+   "license": "project-made",
+   "source": "library/motion/custom/zemin-halftone/zemin-halftone.html",
+   "source_url": null,
+   "poster": "library/motion/custom/zemin-halftone/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-halftone",
+   "arsiv": "zemin/halftone"
+  },
+  {
+   "id": "zemin-kagit",
+   "file": "library/motion/custom/zemin-kagit/zemin-kagit.webm",
+   "title": "Kâğıt dokusu zemin: hafif kayan lifli doku",
+   "site": "custom",
+   "kind": "background",
+   "tags": [
+    "zemin",
+    "dongu",
+    "kagit",
+    "doku",
+    "editoryal"
+   ],
+   "ne_zaman": "Alıntı, tanım ya da hikâye anlatan sakin tam ekran sahnenin arkasında; editoryal ve kolaj temalarıyla.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 6.0,
+   "loop": true,
+   "license": "project-made",
+   "source": "library/motion/custom/zemin-kagit/zemin-kagit.html",
+   "source_url": null,
+   "poster": "library/motion/custom/zemin-kagit/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-kagit",
+   "arsiv": "zemin/kagit"
+  },
+  {
+   "id": "zemin-nokta-izgara",
+   "file": "library/motion/custom/zemin-nokta-izgara/zemin-nokta-izgara.webm",
+   "title": "Nokta ızgara zemin: yavaş kayan düzenli noktalar",
+   "site": "custom",
+   "kind": "background",
+   "tags": [
+    "zemin",
+    "dongu",
+    "nokta",
+    "izgara",
+    "sade"
+   ],
+   "ne_zaman": "Grafik, liste ya da karşılaştırma sahnesinin arkasına dikkat çekmeyen düzenli bir zemin gerektiğinde.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 6.0,
+   "loop": true,
+   "license": "project-made",
+   "source": "library/motion/custom/zemin-nokta-izgara/zemin-nokta-izgara.html",
+   "source_url": null,
+   "poster": "library/motion/custom/zemin-nokta-izgara/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-nokta-izgara",
+   "arsiv": "zemin/nokta-izgara"
+  },
+  {
+   "id": "zemin-parcacik",
+   "file": "library/motion/custom/zemin-parcacik/zemin-parcacik.webm",
+   "title": "Parçacık zemin: yavaş yükselen seyrek noktalar",
+   "site": "custom",
+   "kind": "background",
+   "tags": [
+    "zemin",
+    "dongu",
+    "parcacik",
+    "sakin",
+    "atmosfer"
+   ],
+   "ne_zaman": "Duygusal ya da düşündüren bir cümlenin, kapanış mesajının ya da sorunun tam ekran arkasında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 6.0,
+   "loop": true,
+   "license": "project-made",
+   "source": "library/motion/custom/zemin-parcacik/zemin-parcacik.html",
+   "source_url": null,
+   "poster": "library/motion/custom/zemin-parcacik/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-parcacik"
+  },
+  {
+   "id": "zemin-serit",
+   "file": "library/motion/custom/zemin-serit/zemin-serit.webm",
+   "title": "Şerit zemin: çapraz kayan iki tonlu şeritler",
+   "site": "custom",
+   "kind": "background",
+   "tags": [
+    "zemin",
+    "dongu",
+    "serit",
+    "capraz",
+    "hareket"
+   ],
+   "ne_zaman": "Bölüm geçişi kartı, liste başlığı ya da tempolu bir tam ekran sahnenin arkasında.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 6.0,
+   "loop": true,
+   "license": "project-made",
+   "source": "library/motion/custom/zemin-serit/zemin-serit.html",
+   "source_url": null,
+   "poster": "library/motion/custom/zemin-serit/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-serit"
+  },
+  {
+   "id": "gecis-crt-kapanis-dikey",
+   "file": "library/motion/custom/gecis-crt-kapanis-dikey/gecis-crt-kapanis-dikey.webm",
+   "title": "CRT tüplü ekran kapanış geçişi 9:16; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "crt",
+    "ekran",
+    "tarama",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda teknoloji, oyun, retro ya da sert konu değişiminde sahneyi tüplü ekran gibi kapatıp tarama çizgileriyle yenisini açarken; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-crt-kapanis-dikey/gecis-crt-kapanis-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-crt-kapanis-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-crt-kapanis-dikey",
+   "arsiv": "V1:piksel"
+  },
+  {
+   "id": "gecis-crt-kapanis-yatay",
+   "file": "library/motion/custom/gecis-crt-kapanis-yatay/gecis-crt-kapanis-yatay.webm",
+   "title": "CRT tüplü ekran kapanış geçişi 16:9; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "crt",
+    "ekran",
+    "tarama",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda teknoloji, oyun, retro ya da sert konu değişiminde sahneyi tüplü ekran gibi kapatıp tarama çizgileriyle yenisini açarken; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-crt-kapanis-yatay/gecis-crt-kapanis-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-crt-kapanis-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-crt-kapanis-yatay",
+   "arsiv": "V1:piksel"
+  },
+  {
+   "id": "gecis-firca-darbesi-dikey",
+   "file": "library/motion/custom/gecis-firca-darbesi-dikey/gecis-firca-darbesi-dikey.webm",
+   "title": "Kuru fırça darbesi geçişi 9:16; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "firca",
+    "boya",
+    "organik",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda hikaye, sanat, tasarım ya da enerjik bölüm geçişinde sahneyi 5 eğik kuru fırça şeridiyle boyayıp açarken; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-firca-darbesi-dikey/gecis-firca-darbesi-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-firca-darbesi-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-firca-darbesi-dikey",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-firca-darbesi-yatay",
+   "file": "library/motion/custom/gecis-firca-darbesi-yatay/gecis-firca-darbesi-yatay.webm",
+   "title": "Kuru fırça darbesi geçişi 16:9; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "firca",
+    "boya",
+    "organik",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda hikaye, sanat, tasarım ya da enerjik bölüm geçişinde sahneyi 5 eğik kuru fırça şeridiyle boyayıp açarken; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-firca-darbesi-yatay/gecis-firca-darbesi-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-firca-darbesi-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-firca-darbesi-yatay",
+   "arsiv": "V1:isik"
+  },
+  {
+   "id": "gecis-pencere-dikey",
+   "file": "library/motion/custom/gecis-pencere-dikey/gecis-pencere-dikey.webm",
+   "title": "Yuvarlak köşeli pencere geçişi 9:16; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "pencere",
+    "cerceve",
+    "portal",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda arayüz, ürün detayı ya da odaklanılan bir karttan yeni sahneye geçerken; merkezdeki pencere kapanıp büyüyerek yeni sahneyi açar; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-pencere-dikey/gecis-pencere-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-pencere-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-pencere-dikey",
+   "arsiv": "V1:iris"
+  },
+  {
+   "id": "gecis-pencere-yatay",
+   "file": "library/motion/custom/gecis-pencere-yatay/gecis-pencere-yatay.webm",
+   "title": "Yuvarlak köşeli pencere geçişi 16:9; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "pencere",
+    "cerceve",
+    "portal",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda arayüz, ürün detayı ya da odaklanılan bir karttan yeni sahneye geçerken; merkezdeki pencere kapanıp büyüyerek yeni sahneyi açar; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-pencere-yatay/gecis-pencere-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-pencere-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-pencere-yatay",
+   "arsiv": "V1:iris"
+  },
+  {
+   "id": "gecis-piksel-cozunme-dikey",
+   "file": "library/motion/custom/gecis-piksel-cozunme-dikey/gecis-piksel-cozunme-dikey.webm",
+   "title": "Kare piksel çözünme geçişi 9:16; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "piksel",
+    "cozunme",
+    "mozaik",
+    "dikey"
+   ],
+   "ne_zaman": "9:16 videoda dijital konu, veri, oyun ya da ritmik sahne değişiminde ekranı 54 px kare piksellere bölerek kapatıp ters sırada açarken; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-piksel-cozunme-dikey/gecis-piksel-cozunme-dikey.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-piksel-cozunme-dikey/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-piksel-cozunme-dikey",
+   "arsiv": "V1:piksel"
+  },
+  {
+   "id": "gecis-piksel-cozunme-yatay",
+   "file": "library/motion/custom/gecis-piksel-cozunme-yatay/gecis-piksel-cozunme-yatay.webm",
+   "title": "Kare piksel çözünme geçişi 16:9; ortası (0,40 sn) kesime gelir",
+   "site": "custom",
+   "kind": "transition",
+   "tags": [
+    "gecis",
+    "piksel",
+    "cozunme",
+    "mozaik",
+    "yatay"
+   ],
+   "ne_zaman": "16:9 videoda dijital konu, veri, oyun ya da ritmik sahne değişiminde ekranı 48 px kare piksellere bölerek kapatıp ters sırada açarken; kesimi klibin ortasına (0,40 sn) koy.",
+   "alpha": true,
+   "width": 1920,
+   "height": 1080,
+   "duration_s": 0.8,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/gecis-piksel-cozunme-yatay/gecis-piksel-cozunme-yatay.html",
+   "source_url": null,
+   "poster": "library/motion/custom/gecis-piksel-cozunme-yatay/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-piksel-cozunme-yatay",
+   "arsiv": "V1:piksel"
+  },
+  {
+   "id": "ai-kenarlik",
+   "file": "library/motion/custom/ai-kenarlik/ai-kenarlik.webm",
+   "title": "AI kenarlık: nefes alan gradyan ışık çerçevesi ve durum etiketi",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "ai",
+    "yapay-zeka",
+    "kenarlik",
+    "isik",
+    "cerceve",
+    "nefes",
+    "isleme",
+    "durum"
+   ],
+   "ne_zaman": "Yapay zekanın dinlediği, düşündüğü ya da arka planda bir işlem yürüttüğü anlarda tüm kadrajı sarmak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1920,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ai-kenarlik/ai-kenarlik.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ai-kenarlik/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ai-kenarlik",
+   "param": {
+    "etiket": {
+     "vars": "Yapay Zekâ Dinliyor...",
+     "max": 24
+    }
+   },
+   "tam": true
+  },
+  {
+   "id": "ajan-adimlari",
+   "file": "library/motion/custom/ajan-adimlari/ajan-adimlari.webm",
+   "title": "Ajan adımları: dönen göstergeli ve onay tikli AI görev akış kartı",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "ajan",
+    "adimlar",
+    "yapay-zeka",
+    "ai",
+    "surec",
+    "terminal",
+    "onay"
+   ],
+   "ne_zaman": "Yapay zekâ modeli veya arka plan ajanı çok adımlı bir görevi icra ederken adımları ve sonucu göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ajan-adimlari/ajan-adimlari.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ajan-adimlari/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ajan-adimlari",
+   "param": {
+    "adim1": {
+     "vars": "İçerik taranıyor...",
+     "max": 36
+    },
+    "adim2": {
+     "vars": "Model çalıştırılıyor...",
+     "max": 36
+    },
+    "adim3": {
+     "vars": "Sonuçlar doğrulanıyor...",
+     "max": 36
+    },
+    "sonuc": {
+     "vars": "Kurgu hazırlandı",
+     "max": 36
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "ayar-cubugu",
+   "file": "library/motion/custom/ayar-cubugu/ayar-cubugu.webm",
+   "title": "Ayar çubuğu: etiketli elastik kaydırıcı ve değer sayacı",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "slider",
+    "ayar",
+    "cubuk",
+    "yuzde",
+    "deger",
+    "lastik",
+    "metrik"
+   ],
+   "ne_zaman": "Bir oranın, kalitenin, ilerlemenin veya performans ayarının yükselip sınıra oturduğu anlarda.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/ayar-cubugu/ayar-cubugu.html",
+   "source_url": null,
+   "poster": "library/motion/custom/ayar-cubugu/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ayar-cubugu",
+   "param": {
+    "etiket": {
+     "vars": "Kalite",
+     "max": 20
+    },
+    "deger": {
+     "vars": 100,
+     "min": 0,
+     "max": 100
+    },
+    "birim": {
+     "vars": "%",
+     "max": 4
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "isik-demeti",
+   "file": "library/motion/custom/isik-demeti/isik-demeti.webm",
+   "title": "Işık demeti: iki kart arasında kavisli akan enerji çizgisi",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "isik",
+    "demet",
+    "baglanti",
+    "kart",
+    "enerji",
+    "veri"
+   ],
+   "ne_zaman": "İki kavram, servis veya girdi-çıktı arasındaki bağlantıyı, veri akışını veya entegrasyonu göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/isik-demeti/isik-demeti.html",
+   "source_url": null,
+   "poster": "library/motion/custom/isik-demeti/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur isik-demeti",
+   "param": {
+    "sol": {
+     "vars": "Kaynak",
+     "max": 18
+    },
+    "sag": {
+     "vars": "Hedef",
+     "max": 18
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "kart-yelpaze",
+   "file": "library/motion/custom/kart-yelpaze/kart-yelpaze.webm",
+   "title": "Kart yelpaze: tek karttan açılan üçlü seçenek destesi",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "kart",
+    "yelpaze",
+    "deste",
+    "ozellik",
+    "secenek",
+    "karsilastirma",
+    "liste"
+   ],
+   "ne_zaman": "Üç kilit özellik, adım ya da seçeneği sırayla yelpaze gibi açıp sonra tek kartta toplamak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/kart-yelpaze/kart-yelpaze.html",
+   "source_url": null,
+   "poster": "library/motion/custom/kart-yelpaze/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kart-yelpaze",
+   "param": {
+    "kart1": {
+     "vars": "Hızlı Kurgu",
+     "max": 18
+    },
+    "kart2": {
+     "vars": "Yüksek Kalite",
+     "max": 18
+    },
+    "kart3": {
+     "vars": "Sıfır Maliyet",
+     "max": 18
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "kelime-taklasi",
+   "file": "library/motion/custom/kelime-taklasi/kelime-taklasi.webm",
+   "title": "Kelime taklası: cümle içinde 3B eksende takla atan kelime dönüşümü",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "kelime-taklasi",
+    "3b",
+    "tipografi",
+    "donusum",
+    "flip",
+    "vurgu",
+    "kelime"
+   ],
+   "ne_zaman": "Bir cümlenin ana fikrini, zıtlığını veya dönüşümünü (örn: zor -> kolay, yavaş -> hızlı) tek kelimelik 3B taklayla vurgulamak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/kelime-taklasi/kelime-taklasi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/kelime-taklasi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kelime-taklasi",
+   "param": {
+    "cumle_basi": {
+     "vars": "Video üretmek artık ",
+     "max": 32
+    },
+    "onceki": {
+     "vars": "ZOR",
+     "max": 16
+    },
+    "sonraki": {
+     "vars": "KOLAY",
+     "max": 16
+    },
+    "cumle_sonu": {
+     "vars": " değil.",
+     "max": 24
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "kenar-isiltisi",
+   "file": "library/motion/custom/kenar-isiltisi/kenar-isiltisi.webm",
+   "title": "Kenar ışıltısı: kart çerçevesi etrafında dolaşan parlak ışık huzmesi",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "kenar",
+    "isilti",
+    "cerceve",
+    "kart",
+    "vurgu",
+    "parilti"
+   ],
+   "ne_zaman": "Önemli bir özelliği, duyuruyu veya premium bir bilgiyi dikkat çeken ışıltılı bir kartla vurgulamak için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/kenar-isiltisi/kenar-isiltisi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/kenar-isiltisi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kenar-isiltisi",
+   "param": {
+    "baslik": {
+     "vars": "Öne Çıkan Başlık",
+     "max": 28
+    },
+    "alt": {
+     "vars": "Detaylı açıklama ve alt bilgi metni",
+     "max": 40
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "komut-paleti",
+   "file": "library/motion/custom/komut-paleti/komut-paleti.webm",
+   "title": "Komut paleti: arama kutusu açılır, metin yazılır, sonuç süzülüp onaylanır",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "komut",
+    "palet",
+    "arama",
+    "filtre",
+    "secim",
+    "onay"
+   ],
+   "ne_zaman": "Bir yazılım özelliğini, arama işlemini veya hızlı komut çalıştırma akışını simüle etmek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 5.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/komut-paleti/komut-paleti.html",
+   "source_url": null,
+   "poster": "library/motion/custom/komut-paleti/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur komut-paleti",
+   "param": {
+    "arama": {
+     "vars": "video dışa aktar",
+     "max": 28
+    },
+    "sonuc1": {
+     "vars": "4K MP4 Yüksek Kalite",
+     "max": 30
+    },
+    "sonuc2": {
+     "vars": "Hızlı Önizleme Taslağı",
+     "max": 30
+    },
+    "sonuc3": {
+     "vars": "Ses ve Altyazı Dışa Aktar",
+     "max": 30
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "odometre-sayac",
+   "file": "library/motion/custom/odometre-sayac/odometre-sayac.webm",
+   "title": "Odometre sayaç: mekanik yuvarlanan basamaklı sayı sayacı",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "odometre",
+    "sayac",
+    "rakam",
+    "metrik",
+    "istatistik",
+    "mekanik",
+    "sayi"
+   ],
+   "ne_zaman": "Görüntülenme, kazanç, abone, satış veya performans metriklerini mekanik yuvarlanan basamaklarla etkili şekilde göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/odometre-sayac/odometre-sayac.html",
+   "source_url": null,
+   "poster": "library/motion/custom/odometre-sayac/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur odometre-sayac",
+   "param": {
+    "hedef": {
+     "vars": 125000,
+     "min": 0,
+     "max": 9999999
+    },
+    "onek": {
+     "vars": "",
+     "max": 4
+    },
+    "sonek": {
+     "vars": "",
+     "max": 6
+    },
+    "etiket": {
+     "vars": "Toplam Görüntülenme",
+     "max": 28
+    }
+   },
+   "tam": false,
+   "arsiv": "veri/odometre"
+  },
+  {
+   "id": "secim-seridi",
+   "file": "library/motion/custom/secim-seridi/secim-seridi.webm",
+   "title": "Seçim şeridi: cümlenin önemli kısmının renkli bantla seçilmesi",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "secim",
+    "serit",
+    "vurgu",
+    "metin",
+    "isaret",
+    "kelime"
+   ],
+   "ne_zaman": "Bir cümle içindeki kilit terimi, anahtar mesajı veya sonucu metin seçimi gibi belirginleştirmek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/secim-seridi/secim-seridi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/secim-seridi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur secim-seridi",
+   "param": {
+    "metin": {
+     "vars": "Yapay zeka tüm kurgu sürecini hızlandırır.",
+     "max": 60
+    },
+    "secilen": {
+     "vars": "tüm kurgu sürecini",
+     "max": 40
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "sosyal-kanit",
+   "file": "library/motion/custom/sosyal-kanit/sosyal-kanit.webm",
+   "title": "Sosyal kanıt: fırlayan sayaç ve dalgalanan avatar yığını",
+   "site": "custom",
+   "kind": "lower-third",
+   "tags": [
+    "sosyal-kanit",
+    "sayac",
+    "abone",
+    "kullanici",
+    "avatar",
+    "topluluk",
+    "guven"
+   ],
+   "ne_zaman": "Kullanıcı, müşteri, abone veya başarı rakamlarını güçlü bir sosyal kanıtla göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.0,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/sosyal-kanit/sosyal-kanit.html",
+   "source_url": null,
+   "poster": "library/motion/custom/sosyal-kanit/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur sosyal-kanit",
+   "param": {
+    "sayi": {
+     "vars": 50000,
+     "min": 0,
+     "max": 9999999
+    },
+    "etiket": {
+     "vars": "Mutlu Kullanıcı",
+     "max": 24
+    },
+    "sonek": {
+     "vars": "+",
+     "max": 4
+    }
+   },
+   "tam": false
+  },
+  {
+   "id": "terminal-akisi",
+   "file": "library/motion/custom/terminal-akisi/terminal-akisi.webm",
+   "title": "Terminal akışı: daktilo komut ve satır satır çıktılı CLI penceresi",
+   "site": "custom",
+   "kind": "overlay",
+   "tags": [
+    "terminal",
+    "cli",
+    "kod",
+    "komut",
+    "daktilo",
+    "konsol",
+    "pencere"
+   ],
+   "ne_zaman": "Terminal komutları, kod çalıştırma veya sistem süreçlerini daktilo yazımı ve satır satır çıktıyla göstermek için.",
+   "alpha": true,
+   "width": 1080,
+   "height": 1080,
+   "duration_s": 4.5,
+   "loop": false,
+   "license": "project-made",
+   "source": "library/motion/custom/terminal-akisi/terminal-akisi.html",
+   "source_url": null,
+   "poster": "library/motion/custom/terminal-akisi/poster.jpg",
+   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur terminal-akisi",
+   "param": {
+    "baslik": {
+     "vars": "bash ~ video",
+     "max": 16
+    },
+    "komut": {
+     "vars": "vedit final --hizli --ses",
+     "max": 48
+    },
+    "cikti1": {
+     "vars": "-> Ses miksi ve render tamamlandı",
+     "max": 48
+    },
+    "cikti2": {
+     "vars": "-> 60 fps teslim hazır (1080x1080)",
+     "max": 48
+    }
+   },
+   "tam": false
+  }
+ ]
+}

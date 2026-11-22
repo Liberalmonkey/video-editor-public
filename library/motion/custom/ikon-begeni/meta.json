@@ -1,0 +1,15 @@
+{
+ "title": "Beğeni: başparmak yukarı kalkar",
+ "kind": "icon",
+ "tags": [
+  "begeni",
+  "like",
+  "onay",
+  "tepki"
+ ],
+ "ne_zaman": "Konuşmacı izleyiciden beğeni istediğinde ya da bir fikri onayladığında, cümlenin vurgulu kelimesinde.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

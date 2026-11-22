@@ -1,0 +1,13 @@
+# YouTube animasyon stüdyosu — eğitici / eğlenceli, 10–15 dk
+studio: youtube-animasyon
+label: YouTube animasyon (eğitici/eğlenceli)
+pipeline: animation
+language: tr
+format: {width: 1920, height: 1080, fps: 30}
+variants: []
+loudness: {integrated: -14.0, true_peak: -1.0, lra: 11.0}
+safe_area: {top: 0.05, bottom: 0.06, left: 0.05, right: 0.05}
+captions: {style: odak, max_chars: 42, max_words: 9, lines: 2, uppercase: false, burn: true}
+target_duration: [600, 900]
+style: default
+words_per_minute: {tr: 140, en: 150}

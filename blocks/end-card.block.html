@@ -1,0 +1,29 @@
+<!--meta
+{"name": "end-card", "description": "Kapanış kartı: başlık/teşekkür + kullanıcı adı/handle + opsiyonel logo; YouTube'da son 5-20 sn (end screen alanı boş bırakılır).",
+ "props": {"title": "string*", "handle": "string", "logo": "image", "layout": "enum(center|youtube)"},
+ "default_dur": 5.0, "sfx": {"in": "whoosh"}, "tags": ["end", "youtube", "reels", "ugc"]}
+-->
+<style>
+.blk-end-card { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: calc(var(--u) * 2.4); text-align: center; }
+.blk-end-card .ec-bg { position: absolute; inset: 0; background: var(--c-bg); }
+.blk-end-card.layout-youtube { justify-content: flex-start; padding-top: calc(var(--safe-t) + var(--u) * 9); }
+.blk-end-card .ec-logo { position: relative; width: calc(var(--u) * 14); height: calc(var(--u) * 14); object-fit: contain; }
+.blk-end-card .ec-title { position: relative; font-size: calc(var(--u) * 7); max-width: 18ch; }
+.blk-end-card .ec-handle { position: relative; font: 700 calc(var(--u) * 3.4) / 1 var(--f-mono); color: var(--c-accent); }
+</style>
+<markup>
+<div class="blk blk-end-card layout-{{layout}}">
+  <div class="ec-bg"></div>
+  <img class="ec-logo" src="{{logo}}" alt="" />
+  <div class="ec-title t-display">{{title}}</div>
+  <div class="ec-handle mask"><span>{{handle}}</span></div>
+</div>
+</markup>
+<script>
+HF_BLOCKS["end-card"] = function (tl, el, P, T, S) {
+  tl.fromTo(el.querySelector(".ec-bg"), { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "none" }, T.start);
+  if (P.logo) HF.pop(tl, el.querySelector(".ec-logo"), T.start + 0.1, S); else el.querySelector(".ec-logo").style.display = "none";
+  HF.maskIn(tl, HF.splitWords(el.querySelector(".ec-title")), T.start + 0.2, S);
+  if (P.handle) HF.maskIn(tl, el.querySelector(".ec-handle > span"), T.start + 0.55, S);
+};
+</script>

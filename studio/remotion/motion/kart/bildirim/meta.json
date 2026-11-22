@@ -1,0 +1,15 @@
+{
+  "ad": "kart/bildirim",
+  "tur": "cta",
+  "etiketler": ["bildirim", "uyarı", "ipucu", "mesaj", "cta"],
+  "ne_zaman": "Konuşmacı önemli bir hatırlatma, ipucu ya da \"bunu kaydet\" çağrısını telefon bildirimi hissiyle verirken.",
+  "sure": { "min": 1.5, "varsayilan": 2.8, "max": 4.0 },
+  "giris_sn": 0.4,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "alt"],
+  "boyut": { "w": 0.82, "h": 0.18 },
+  "en_kucuk_px": 240,
+  "kaynak": null
+}

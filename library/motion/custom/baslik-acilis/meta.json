@@ -1,0 +1,15 @@
+{
+ "title": "Başlık açılışı: üst etiket, büyük başlık, çizgi",
+ "kind": "lower-third",
+ "tags": ["baslik", "acilis", "bolum"],
+ "ne_zaman": "Video ya da bölüm açılırken konuyu tek satırda söylemek için.",
+ "sure": 3.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "ust": {"vars": "YENİ", "max": 16},
+  "metin": {"vars": "Başlık buraya", "max": 40}
+ }
+}

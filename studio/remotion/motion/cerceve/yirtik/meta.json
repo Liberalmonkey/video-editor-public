@@ -1,0 +1,15 @@
+{
+  "ad": "cerceve/yirtik",
+  "tur": "cerceve",
+  "etiketler": ["yırtık", "kağıt", "şerit", "kolaj", "çerçeve"],
+  "ne_zaman": "Konuşmacı bir gazete kupürü, arşiv karesi ya da sert bir vurgu kesitini yırtık kağıt şeritleriyle çerçevelerken (\"işin aslı burada\", \"arşive dönelim\").",
+  "sure": { "min": 1.5, "varsayilan": 3.2, "max": 8.0 },
+  "giris_sn": 0.4,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta"],
+  "boyut": { "w": 0.8, "h": 0.56 },
+  "en_kucuk_px": 360,
+  "kaynak": null
+}

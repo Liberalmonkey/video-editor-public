@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "montserrat",
+        "createdAt": "2026-11-15T19:25:05.036Z",
+        "reason": "project standard: CLAUDE.md and ADR 0014/0027 fix Montserrat 800 as the default caption and cover typeface; predates this session"
+      }
+    ]
+  }
+}

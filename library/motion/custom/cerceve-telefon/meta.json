@@ -1,0 +1,15 @@
+{
+ "title": "Telefon çerçevesi: uygulama ekranı göster",
+ "kind": "overlay",
+ "tags": [
+  "cerceve",
+  "telefon",
+  "mobil",
+  "uygulama"
+ ],
+ "ne_zaman": "Bir uygulama, mesaj ya da dikey ekran kaydını telefon içinde gösterirken; 9:16 görüntünün üstüne konur.",
+ "sure": 3.0,
+ "w": 1080,
+ "h": 1920,
+ "loop": false
+}

@@ -1,0 +1,36 @@
+{
+ "title": "Kelime taklası: cümle içinde 3B eksende takla atan kelime dönüşümü",
+ "kind": "lower-third",
+ "tags": [
+  "kelime-taklasi",
+  "3b",
+  "tipografi",
+  "donusum",
+  "flip",
+  "vurgu",
+  "kelime"
+ ],
+ "ne_zaman": "Bir cümlenin ana fikrini, zıtlığını veya dönüşümünü (örn: zor -> kolay, yavaş -> hızlı) tek kelimelik 3B taklayla vurgulamak için.",
+ "sure": 4.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "cumle_basi": {
+   "vars": "Video üretmek artık ",
+   "max": 32
+  },
+  "onceki": {
+   "vars": "ZOR",
+   "max": 16
+  },
+  "sonraki": {
+   "vars": "KOLAY",
+   "max": 16
+  },
+  "cumle_sonu": {
+   "vars": " değil.",
+   "max": 24
+  }
+ }
+}

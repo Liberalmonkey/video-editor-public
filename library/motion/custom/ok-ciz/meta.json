@@ -1,0 +1,14 @@
+{
+ "title": "El çizimi ok: bir öğeyi göster",
+ "kind": "overlay",
+ "tags": [
+  "ok",
+  "callout",
+  "goster"
+ ],
+ "ne_zaman": "Karede bir öğeyi gösterirken: düğme, sayı, ürün.",
+ "sure": 2.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

@@ -1,0 +1,16 @@
+{
+ "title": "Alttan yukarı iten panel geçişi 9:16; ortası (0,35 sn) kesime gelir",
+ "kind": "transition",
+ "tags": [
+  "gecis",
+  "it",
+  "yukari",
+  "panel",
+  "dikey"
+ ],
+ "ne_zaman": "9:16 videoda sıradaki maddeye, sonraki adıma ya da yeni bir örneğe geçerken; dikey akışta kaydırma (scroll) hissi verir, ileri gitme anlamı taşır; kesimi klibin ortasına (0,35 sn) koy.",
+ "sure": 0.7,
+ "w": 1080,
+ "h": 1920,
+ "loop": false
+}

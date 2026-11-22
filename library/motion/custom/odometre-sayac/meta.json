@@ -1,0 +1,37 @@
+{
+ "title": "Odometre sayaç: mekanik yuvarlanan basamaklı sayı sayacı",
+ "kind": "overlay",
+ "tags": [
+  "odometre",
+  "sayac",
+  "rakam",
+  "metrik",
+  "istatistik",
+  "mekanik",
+  "sayi"
+ ],
+ "ne_zaman": "Görüntülenme, kazanç, abone, satış veya performans metriklerini mekanik yuvarlanan basamaklarla etkili şekilde göstermek için.",
+ "sure": 4.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "hedef": {
+   "vars": 125000,
+   "min": 0,
+   "max": 9999999
+  },
+  "onek": {
+   "vars": "",
+   "max": 4
+  },
+  "sonek": {
+   "vars": "",
+   "max": 6
+  },
+  "etiket": {
+   "vars": "Toplam Görüntülenme",
+   "max": 28
+  }
+ }
+}

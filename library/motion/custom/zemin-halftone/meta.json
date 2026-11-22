@@ -1,0 +1,17 @@
+{
+ "title": "Halftone zemin: merkezden nabız gibi büyüyen noktalar",
+ "kind": "background",
+ "tags": [
+  "zemin",
+  "dongu",
+  "halftone",
+  "nabiz",
+  "enerji"
+ ],
+ "ne_zaman": "Sayı rozeti, geri sayım ya da duyuru gibi enerjik tam ekran sahnenin arkasında.",
+ "sure": 6.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": true
+}

@@ -1,0 +1,14 @@
+{
+ "title": "Çift ok: ortadakini iki yandan göster",
+ "kind": "overlay",
+ "tags": [
+  "ok",
+  "goster",
+  "merkez"
+ ],
+ "ne_zaman": "Karenin ortasındaki tek öğeyi (sayı, ürün, yüz) iki yandan sıkıştırarak öne çıkarırken.",
+ "sure": 1.8,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

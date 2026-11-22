@@ -1,0 +1,32 @@
+<!--meta
+{"name": "stat", "description": "Büyük sayı sayarak gelir (tabular rakam) + etiket. Değer büyüdükçe hafif ölçek artar. Veri/kanıt anı.",
+ "props": {"value": "number*", "from": "number", "prefix": "string", "suffix": "string", "decimals": "number", "label": "string", "count_dur": "number", "position": "enum(center|top|bottom)"},
+ "default_dur": 3.0, "sfx": {"in": "riser-short", "extra": [{"at": "count_end", "type": "impact", "intensity": "soft"}]}, "tags": ["data", "proof", "animation", "ugc"]}
+-->
+<style>
+.blk-stat { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: calc(var(--u) * 1.2); text-align: center; }
+.blk-stat.pos-top { justify-content: flex-start; padding-top: calc(var(--safe-t) + var(--u) * 10); }
+.blk-stat.pos-bottom { justify-content: flex-end; padding-bottom: calc(var(--safe-b) + var(--u) * 12); }
+.blk-stat .st-num { font: 900 calc(var(--u) * 17) / 1 var(--f-display); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; color: var(--c-fg); }
+.blk-stat .st-label { font-size: calc(var(--u) * 3.8); color: var(--c-muted); max-width: 26ch; }
+.blk-stat .st-line { width: calc(var(--u) * 12); height: calc(var(--u) * 0.7); background: var(--c-accent); border-radius: 9px; transform-origin: 50% 50%; }
+</style>
+<markup>
+<div class="blk blk-stat pos-{{position}}">
+  <div class="st-num">0</div>
+  <div class="st-line"></div>
+  <div class="st-label t-body mask"><span>{{label}}</span></div>
+</div>
+</markup>
+<script>
+HF_BLOCKS["stat"] = function (tl, el, P, T, S) {
+  const num = el.querySelector(".st-num");
+  const cd = P.count_dur || Math.min(1.4, T.dur * 0.5);
+  HF.fadeUp(tl, num, T.start, S, { y: 30, dur: 0.35 });
+  HF.count(tl, num, T.start + 0.05, cd, P, S);
+  tl.fromTo(num, { scale: 0.92 }, { scale: 1, duration: cd, ease: S.ease.ui }, T.start + 0.05);
+  tl.fromTo(el.querySelector(".st-line"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: S.ease.ui }, T.start + cd * 0.6);
+  if (P.label) HF.maskIn(tl, el.querySelector(".st-label > span"), T.start + cd * 0.7, S);
+  HF.exit(tl, el, T, S);
+};
+</script>

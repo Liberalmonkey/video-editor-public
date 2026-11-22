@@ -1,0 +1,15 @@
+{
+ "title": "Bant çerçeve: köşeleri bantlı fotoğraf",
+ "kind": "overlay",
+ "tags": [
+  "cerceve",
+  "bant",
+  "kolaj",
+  "fotograf"
+ ],
+ "ne_zaman": "Bir ekran görüntüsü, fotoğraf ya da kanıt karesini panoya yapıştırılmış gibi göstermek için; kare görüntü bölgesinin üstüne konur.",
+ "sure": 3.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

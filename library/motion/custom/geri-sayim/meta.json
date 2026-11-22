@@ -1,0 +1,21 @@
+{
+ "title": "Geri sayım: 3, 2, 1 büyük rakamlar",
+ "kind": "lower-third",
+ "tags": [
+  "geri-sayim",
+  "acilis",
+  "baslangic"
+ ],
+ "ne_zaman": "Bir deneme, açılış ya da büyük gösterimden hemen önce gerilim kurmak için.",
+ "sure": 3.2,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": false,
+ "param": {
+  "metin": {
+   "vars": "Başlıyoruz",
+   "max": 24
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+  "ad": "cerceve/telefon",
+  "tur": "cerceve",
+  "etiketler": ["telefon", "ekran", "mobil", "çerçeve", "demo"],
+  "ne_zaman": "Konuşmacı bir mobil uygulama, mesaj ya da ekran kaydını telefon çerçevesi içinde gösterirken (\"telefonda şöyle görünüyor\", \"uygulamayı açtım\").",
+  "sure": { "min": 1.5, "varsayilan": 3.2, "max": 8.0 },
+  "giris_sn": 0.42,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta"],
+  "boyut": { "w": 0.6, "h": 0.84 },
+  "en_kucuk_px": 320,
+  "kaynak": null
+}

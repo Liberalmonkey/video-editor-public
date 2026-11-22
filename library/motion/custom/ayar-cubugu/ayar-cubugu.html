@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Ayar çubuğu</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur ayar-cubugu -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.sahne{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:720px;font-family:var(--font)}
+.panel{background:var(--zemin);border-radius:var(--kose,18px);padding:36px 44px 40px;box-shadow:var(--golge);border:2px solid color-mix(in srgb,var(--yazi) 6%,transparent);box-sizing:border-box}
+.baslik-satir{display:flex;justify-content:space-between;align-items:baseline}
+.etiket{font-weight:700;font-size:32px;color:var(--soluk);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:440px}
+.deger-kutu{font-weight:800;font-size:42px;color:var(--vurgu);font-variant-numeric:tabular-nums;font-family:var(--font-rakam);white-space:nowrap;display:flex;align-items:baseline}
+.birim{font-size:30px;margin-left:4px;color:var(--vurgu)}
+.ray{width:100%;height:var(--cizgi,10px);min-height:8px;background:color-mix(in srgb,var(--yazi) 12%,transparent);border-radius:99px;position:relative;margin-top:28px}
+.dolgu{height:100%;background:var(--vurgu);border-radius:99px;position:absolute;left:0;top:0;width:0%}
+.tutamak{width:34px;height:34px;background:var(--yazi);border:4px solid var(--vurgu);border-radius:50%;position:absolute;top:50%;left:0%;transform:translate(-50%,-50%);box-shadow:var(--golge);box-sizing:border-box}
+</style></head><body>
+<div class="sahne" id="sahne">
+ <div class="panel" id="panel">
+  <div class="baslik-satir">
+   <div class="etiket" id="etiket"></div>
+   <div class="deger-kutu"><span id="sayi">0</span><span class="birim" id="birim"></span></div>
+  </div>
+  <div class="ray" id="ray">
+   <div class="dolgu" id="dolgu"></div>
+   <div class="tutamak" id="tutamak"></div>
+  </div>
+ </div>
+</div>
+<script>
+const P = Object.assign({ etiket: "Kalite", deger: 100, birim: "%" }, window.PARAM);
+const hedefDeger = Math.max(0, Math.min(100, Math.round(Number(P.deger) || 0)));
+const $ = id => document.getElementById(id);
+$("etiket").textContent = P.etiket;
+$("birim").textContent = P.birim;
+
+// Titreme önleme: Değer genişliğini baştan son hedefe göre hesaplayıp sabitle
+$("sayi").textContent = hedefDeger;
+const finalW = $("sayi").getBoundingClientRect().width;
+$("sayi").style.minWidth = finalW + "px";
+$("sayi").textContent = "0";
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const easeOutCubic = x => 1 - Math.pow(1 - x, 3);
+const easeInCubic = x => x * x * x;
+
+window.seek = t => {
+  const p = $("panel"), s = $("sahne");
+  // t: 0..4.0 - Son kare boş biter (ADR 0036)
+  if (t <= 0 || t >= 3.25) {
+    s.style.display = "none";
+    return;
+  }
+  s.style.display = "block";
+
+  // Giriş: 0.05..0.38
+  const giris = easeOutCubic(clamp((t - 0.05) / 0.33, 0, 1));
+  // Çıkış: 2.65..3.22
+  const cikis = easeInCubic(clamp((t - 2.65) / 0.57, 0, 1));
+
+  p.style.opacity = (giris * (1 - cikis)).toFixed(3);
+  p.style.transform = `scale(${(0.88 + 0.12 * giris - 0.10 * cikis).toFixed(3)}) translateY(${((1 - giris) * 30 + cikis * 35).toFixed(1)}px)`;
+
+  // Sürüklenme ve lastik sekmesi: 0.40..1.75
+  const hedefOran = hedefDeger / 100;
+  const ilerlemeT = clamp((t - 0.40) / 0.95, 0, 1);
+  const ilerleme = easeOutCubic(ilerlemeT);
+
+  // Uç sınıra varınca elastik esneme (lastik bant): 1.35..1.85
+  let esneme = 0;
+  if (t > 1.35 && hedefDeger > 0) {
+    const s = clamp((t - 1.35) / 0.50, 0, 1);
+    esneme = Math.sin(s * Math.PI * 2.5) * Math.exp(-s * 5) * 0.08;
+  }
+
+  const anlikOran = clamp(hedefOran * ilerleme + esneme, 0, 1.08);
+  const gorselYuzde = clamp(anlikOran * 100, 0, 100);
+
+  $("dolgu").style.width = gorselYuzde.toFixed(2) + "%";
+  $("tutamak").style.left = gorselYuzde.toFixed(2) + "%";
+
+  const anlikDeger = Math.round(clamp(hedefDeger * ilerleme, 0, hedefDeger));
+  $("sayi").textContent = anlikDeger;
+};
+
+seek(0);
+</script>
+</body></html>

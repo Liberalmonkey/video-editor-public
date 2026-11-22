@@ -1,0 +1,15 @@
+{
+  "ad": "veri/adimlar",
+  "tur": "veri",
+  "etiketler": ["adımlar", "süreç", "aşama", "yol haritası", "sıra", "ilerleme"],
+  "ne_zaman": "Konuşmacı üç ila beş adımlı bir süreci, iş akışını ya da hangi aşamada olunduğunu açıklarken (\"birinci adım\", \"ikinci aşama\", \"dört adımda\", \"şimdi buradayız\").",
+  "sure": { "min": 1.5, "varsayilan": 2.8, "max": 4.0 },
+  "giris_sn": 0.44,
+  "cikis_sn": 0.25,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta", "ust"],
+  "boyut": { "w": 0.85, "h": 0.34 },
+  "en_kucuk_px": 340,
+  "kaynak": null
+}

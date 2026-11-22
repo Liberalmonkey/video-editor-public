@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Ampul: yanar, ışın çıkar</title>
+<!-- Proje yapımı saydam ikon (ADR 0036, 0043). Arka şekil yok: ikonun kendisi --vurgu, ikincil parça --ikincil. Okunurluk yalnız
+#okun filtresi (ince --ikon-kontur dış çizgi, --ikon-golge gölge). Giriş/çıkış stilin easing'i. Ampul yanar, cam ikincil renkle dolar, ışınlar çizilir. -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px}
+svg *{transform-box:view-box}
+#okun feFlood.k{flood-color:var(--ikon-kontur)}
+#okun feFlood.g{flood-color:var(--ikon-golge)}
+.ikon{filter:url(#okun)}
+.gel{transform-origin:540px 540px;animation:gel .34s var(--ease) both}
+.cik{transform-origin:540px 540px;animation:cik .22s var(--ease-cik) 1.36s both}
+.c{fill:none;stroke:var(--vurgu);stroke-width:34;stroke-linecap:var(--ucu);stroke-linejoin:var(--birlesim)}
+.c2{fill:none;stroke:var(--ikincil);stroke-width:34;stroke-linecap:var(--ucu);stroke-linejoin:var(--birlesim)}
+.d{fill:var(--vurgu)}
+.d2{fill:var(--ikincil)}
+@keyframes gel{from{transform:scale(.62);opacity:0}40%{opacity:1}to{transform:scale(1);opacity:1}}
+@keyframes cik{to{transform:scale(.82);opacity:0}}
+.cam{fill:transparent;animation:yan .12s steps(1) .5s both}
+.isin{stroke-dasharray:1;stroke-dashoffset:1;animation:isin .3s var(--ease) .55s both}
+@keyframes yan{to{fill:var(--ikincil)}}
+@keyframes isin{to{stroke-dashoffset:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><defs><filter id="okun" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+<feMorphology in="SourceAlpha" operator="dilate" radius="5" result="gen"/><feFlood class="k"/><feComposite in2="gen" operator="in" result="kontur"/>
+<feGaussianBlur in="gen" stdDeviation="7" result="bul"/><feOffset in="bul" dy="7" result="kay"/><feFlood class="g"/><feComposite in2="kay" operator="in" result="golge"/>
+<feMerge><feMergeNode in="golge"/><feMergeNode in="kontur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<g class="ikon"><g class="cik"><g class="gel"><g transform="translate(540 540) scale(1.3) translate(-540 -540)">
+<g transform="translate(0 15)"><path class="c2 isin" pathLength="1" d="M390 495 L355 495"/><path class="c2 isin" pathLength="1" d="M434 389 L409 364"/><path class="c2 isin" pathLength="1" d="M540 345 L540 310"/><path class="c2 isin" pathLength="1" d="M646 389 L671 364"/><path class="c2 isin" pathLength="1" d="M690 495 L725 495"/><path class="c cam" d="M490 615 Q425 565 425 495 A115 115 0 0 1 655 495 Q655 565 590 615 V645 H490 Z"/>
+<path class="c" d="M500 690 H580"/></g>
+</g></g></g></g></svg>
+</body></html>

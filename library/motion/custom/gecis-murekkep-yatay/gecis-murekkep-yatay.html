@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Mürekkep lekesi 16:9</title>
+<!-- Saydam geçiş (ADR 0036). Ekran sürenin tam ortasında (0,50 sn) tamamen kapalı: kesim oraya konur.
+     Zaman window.seek(t) ile sürülür; ilk ve son kare saydam. Renkler temadan. -->
+<style>html,body{margin:0;background:transparent;overflow:hidden}canvas{position:absolute;left:0;top:0;width:100vw;height:100vh}</style>
+</head><body><canvas id="c"></canvas><script>
+const D=1.0;
+const c=document.getElementById('c'),x=c.getContext('2d');
+const R=(n,v)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||v;
+const cl=v=>Math.min(1,Math.max(0,v)), ara=(p,a,b)=>cl((p-a)/(b-a)), lerp=(a,b,u)=>a+(b-a)*u;
+const eO=u=>1-Math.pow(1-u,3), eI=u=>u*u*u, eIO=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
+const eO4=u=>1-Math.pow(1-u,4), eI4=u=>u*u*u*u, eIO2=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+function tohum(s){return()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+// giriş [GA,GB], tam kapalı [GB,CA] (orta dahil), çıkış [CA,CB]; son kareden önce biter
+const GA=.03,GB=.45,CA=.55,CB=.9;
+let RENK={};
+window.seek=t=>{
+  if(c.width!==innerWidth||c.height!==innerHeight){c.width=innerWidth;c.height=innerHeight}
+  const W=c.width,H=c.height;x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,W,H);
+  RENK={v:R('--vurgu'),i:R('--ikincil'),z:R('--zemin'),y:R('--yazi')};
+  const p=cl(t/D);if(p<=0||p>=1)return;ciz(p,W,H,t);
+};
+
+const rnd=tohum(21);const HAR=[];for(let k=1;k<=6;k++)HAR.push([rnd()*6.28,(rnd()*.5+.5)/k]);
+const DAM=[];for(let i=0;i<14;i++)DAM.push([rnd()*6.28,1.05+rnd()*.35,.02+rnd()*.035,rnd()*.15]);
+function leke(cx,cy,r,faz,renk){
+  x.beginPath();const n=120;
+  for(let i=0;i<=n;i++){const a=i/n*6.283;let s=0;HAR.forEach(([f,g],k)=>s+=g*Math.sin(a*(k+2)+f+faz*(k%2?1:-1)));
+    const rr=r*(1+.09*s);x.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}
+  x.closePath();x.fillStyle=renk;x.fill();
+}
+function ciz(p,W,H){
+  const cx=W/2,cy=H/2,Rt=Math.hypot(W,H)/2*1.3;
+  let u;if(p<GB)u=eO(ara(p,GA,GB));else if(p<CA)u=1;else u=1-eIO2(ara(p,CA,CB));
+  if(u<=0)return;const faz=p*2.2;
+  leke(cx,cy,Rt*u*1.04,faz+.7,RENK.v);
+  leke(cx,cy,Rt*u,faz,RENK.z);
+  const m=Math.min(W,H);
+  DAM.forEach(([a,d,r,g])=>{const v=cl((u-g)/(1-g));if(v<=0)return;const rr=Rt*u*d;
+    x.beginPath();x.arc(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr,m*r*v,0,6.283);x.fillStyle=RENK.z;x.fill()});
+}
+window.seek(0);
+</script></body></html>

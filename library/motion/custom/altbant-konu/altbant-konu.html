@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Alt bant konu</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur altbant-konu -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.sahne{position:absolute;left:9vw;bottom:32vh;width:65vw;font-family:var(--font);
+  animation:sil .4s cubic-bezier(.65,0,.35,1) 2.95s both}
+.etiket-k{overflow:hidden;display:inline-block;vertical-align:bottom}
+.etiket{display:inline-block;background:var(--vurgu);color:var(--vurgu-ustu,var(--zemin));font-weight:800;font-size:3.4vmin;letter-spacing:.08em;
+  padding:.9vmin 2.2vmin;border-radius:var(--kose,18px) var(--kose,18px) 0 0;animation:yuksel .3s cubic-bezier(.16,1,.3,1) .38s both}
+.bant{background:var(--zemin);color:var(--yazi);border-left:1.4vmin solid var(--vurgu);padding:2.2vmin 3vmin;
+  border-radius:0 var(--kose,18px) var(--kose,18px) var(--kose,18px);animation:ac .4s cubic-bezier(.65,0,.35,1) .05s both}
+.metin{font-weight:700;font-size:4.6vmin;line-height:1.22;animation:kay .45s cubic-bezier(.16,1,.3,1) .32s both}
+@keyframes ac{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes sil{from{clip-path:inset(-10vmin 0 0 0)}to{clip-path:inset(-10vmin 100% 0 0)}}
+@keyframes yuksel{from{transform:translateY(105%)}to{transform:translateY(0)}}
+@keyframes kay{from{transform:translateX(-4vmin);opacity:0}to{transform:translateX(0);opacity:1}}
+</style></head><body>
+<div class="sahne"><div class="etiket-k"><div class="etiket" id="etiket"></div></div><div class="bant"><div class="metin" id="metin"></div></div></div>
+<script>
+// Dolgu üstündeki yazı: temanın zemin ve yazı renginden hangisi daha okunaklıysa o (pastel vurgulu açık temada zemin rengi okunmaz).
+function zitYazi(dolgu, ad) {
+  const p = document.body.appendChild(document.createElement("i"));
+  const lum = v => { p.style.color = v; return getComputedStyle(p).color.match(/[\d.]+/g).slice(0, 3)
+    .map(c => (c /= 255) <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4).reduce((s, c, i) => s + c * [.2126, .7152, .0722][i], 0); };
+  const k = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+  const d = lum(dolgu), z = lum("var(--zemin)"), y = lum("var(--yazi)"); p.remove();
+  document.documentElement.style.setProperty(ad, k(d, z) >= k(d, y) ? "var(--zemin)" : "var(--yazi)");
+}
+const P = Object.assign({ etiket: "KONU", metin: "Konu satırı buraya gelir" }, window.PARAM);
+const et = document.getElementById("etiket"), mt = document.getElementById("metin");
+et.textContent = P.etiket.toLocaleUpperCase("tr-TR");
+if (!P.etiket) { et.parentNode.style.display = "none"; document.querySelector(".bant").style.borderTopLeftRadius = "var(--kose,18px)"; }
+mt.textContent = P.metin;
+// Konu tek satıra sığana kadar küçülür (en az 3.8vmin); sığmazsa bant genişliğinde satıra bölünür.
+function kur() {
+  zitYazi("var(--vurgu)", "--vurgu-ustu");
+  mt.style.whiteSpace = "nowrap"; let f = 5.2; mt.style.fontSize = f + "vmin";
+  while (mt.scrollWidth > mt.clientWidth && f > 3.8) { f -= .1; mt.style.fontSize = f + "vmin"; }
+  if (mt.scrollWidth > mt.clientWidth) mt.style.whiteSpace = "normal";
+}
+kur();
+let hazir = false;
+window.seek = () => { if (!hazir) { hazir = true; kur(); } }; // tema ve font yüklendikten sonra bir kez yeniden ölç
+</script>
+</body></html>

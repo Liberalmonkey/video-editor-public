@@ -1,0 +1,31 @@
+<!--meta
+{"name": "callout", "description": "Ekrandaki bir bölgeyi (ekran kaydında buton, ürün detayı) kutu/daire ile işaretler, çizgiyle etikete bağlar. rect = [x,y,w,h] kare yüzdesi (0-100).",
+ "props": {"rect": "rect*", "label": "string", "shape": "enum(box|circle)", "label_side": "enum(auto|top|bottom|left|right)"},
+ "default_dur": 2.5, "sfx": {"in": "click"}, "tags": ["screen", "footage", "ugc", "tutorial"]}
+-->
+<style>
+.blk-callout .co-ring { position: absolute; border: calc(var(--u) * 0.55) solid var(--c-accent); border-radius: calc(var(--u) * 1.4);
+  box-shadow: 0 0 0 200vmax rgba(0,0,0,.35); }
+.blk-callout.shape-circle .co-ring { border-radius: 50%; }
+.blk-callout .co-label { position: absolute; padding: calc(var(--u)*1) calc(var(--u)*1.8); background: var(--c-accent); color: var(--c-on-accent);
+  font: 700 calc(var(--u) * 3.2) / 1.1 var(--f-body); border-radius: calc(var(--u) * 1); white-space: nowrap; }
+</style>
+<markup>
+<div class="blk blk-callout shape-{{shape}}"><div class="co-ring"></div><div class="co-label">{{label}}</div></div>
+</markup>
+<script>
+HF_BLOCKS["callout"] = function (tl, el, P, T, S) {
+  const r = P.rect || [40, 40, 20, 20];
+  const ring = el.querySelector(".co-ring"), lab = el.querySelector(".co-label");
+  Object.assign(ring.style, { left: r[0] + "%", top: r[1] + "%", width: r[2] + "%", height: r[3] + "%" });
+  let side = P.label_side && P.label_side !== "auto" ? P.label_side : (r[1] > 55 ? "top" : "bottom");
+  if (side === "top") Object.assign(lab.style, { left: r[0] + "%", bottom: (100 - r[1] + 1.5) + "%" });
+  else if (side === "bottom") Object.assign(lab.style, { left: r[0] + "%", top: (r[1] + r[3] + 1.5) + "%" });
+  else if (side === "left") Object.assign(lab.style, { right: (100 - r[0] + 1.5) + "%", top: r[1] + "%" });
+  else Object.assign(lab.style, { left: (r[0] + r[2] + 1.5) + "%", top: r[1] + "%" });
+  if (!P.label) lab.style.display = "none";
+  tl.fromTo(ring, { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.32, ease: S.ease.ui }, T.start);
+  HF.fadeUp(tl, lab, T.start + 0.18, S, { y: 10 });
+  HF.exit(tl, el, T, S, { y: 0 });
+};
+</script>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Parıltı</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur parilti -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.y{fill:var(--ikincil)}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><defs>
+<path id="yz" d="M0 -1 Q .13 -.13 1 0 Q .13 .13 0 1 Q -.13 .13 -1 0 Q -.13 -.13 0 -1 Z"/></defs></svg>
+<script>
+let tohum = 3;
+const r = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);
+const NS = "http://www.w3.org/2000/svg", svg = document.querySelector("svg");
+const el = (ad, at, ana = svg) => { const e = document.createElementNS(NS, ad); for (const k in at) e.setAttribute(k, at[k]); ana.appendChild(e); return e; };
+const Y = [[380, 380, 90, 0], [700, 330, 62, 200], [760, 650, 100, 380], [330, 700, 56, 560]];
+for (const [x, y, s, g] of Y) {
+  const e = el("use", { href: "#yz", class: "y" });
+  e.animate([
+    { transform: `translate(${x}px,${y}px) scale(0) rotate(-40deg)` },
+    { transform: `translate(${x}px,${y}px) scale(${s * 1.15}) rotate(0deg)`, offset: .35 },
+    { transform: `translate(${x}px,${y}px) scale(${s * .8}) rotate(10deg)`, offset: .6 },
+    { transform: `translate(${x}px,${y}px) scale(0) rotate(40deg)` },
+  ], { duration: 560, delay: g, easing: "ease-in-out", fill: "both" });
+}
+</script>
+</body></html>

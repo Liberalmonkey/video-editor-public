@@ -1,0 +1,15 @@
+{
+  "ad": "cerceve/bant",
+  "tur": "cerceve",
+  "etiketler": ["bant", "kolaj", "çerçeve", "yapışkan", "not"],
+  "ne_zaman": "Konuşmacı bir klibi, görseli ya da kanıtı duvara bantlanmış gibi organik kolaj havasıyla öne çıkarırken (\"bakın bunu buraya astım\", \"kanıtı şu\").",
+  "sure": { "min": 1.5, "varsayilan": 3.0, "max": 8.0 },
+  "giris_sn": 0.4,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta"],
+  "boyut": { "w": 0.74, "h": 0.62 },
+  "en_kucuk_px": 340,
+  "kaynak": null
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Hız çizgileri</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur hiz-cizgileri -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+
+</style></head><body>
+<svg viewBox="0 0 1080 1080"></svg>
+<script>
+let tohum = 11;
+const r = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);
+const NS = "http://www.w3.org/2000/svg", svg = document.querySelector("svg");
+const el = (ad, at, ana = svg) => { const e = document.createElementNS(NS, ad); for (const k in at) e.setAttribute(k, at[k]); ana.appendChild(e); return e; };
+const N = 44;
+for (let i = 0; i < N; i++) {
+  const a = (i / N) * Math.PI * 2 + (r() - .5) * .1, ic = 330 + r() * 120, dis = 820, gen = .012 + r() * .014;
+  const p = (rr, aa) => `${540 + Math.cos(aa) * rr},${540 + Math.sin(aa) * rr}`;
+  const e = el("polygon", { class: "d", points: `${p(dis, a - gen)} ${p(dis, a + gen)} ${p(ic, a)}` });
+  const dx = Math.cos(a) * 160, dy = Math.sin(a) * 160;
+  e.animate([
+    { transform: `translate(${dx}px,${dy}px)`, opacity: 0 },
+    { transform: "translate(0,0)", opacity: 1, offset: .22 },
+    { transform: `translate(${dx * .15}px,${dy * .15}px)`, opacity: 1, offset: .7 },
+    { transform: `translate(${dx * .7}px,${dy * .7}px)`, opacity: 0 },
+  ], { duration: 760 + r() * 60, delay: r() * 40, easing: "cubic-bezier(.2,.6,.4,1)", fill: "both" });
+}
+</script>
+</body></html>

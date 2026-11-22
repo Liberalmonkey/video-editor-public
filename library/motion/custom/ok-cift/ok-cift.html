@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Çift ok</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur ok-cift -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.s{animation:sg .45s cubic-bezier(.2,.9,.3,1) .05s both}
+.r{animation:sg2 .45s cubic-bezier(.2,.9,.3,1) .05s both}
+.g1{animation:ciz .4s cubic-bezier(.3,0,.2,1) .05s both}
+.g2{animation:ciz .16s ease-out .4s both}
+.s>g{animation:cs .3s ease-in 1.35s both}
+.r>g{animation:cr .3s ease-in 1.35s both}
+@keyframes sg{from{transform:translateX(-60px)}}
+@keyframes sg2{from{transform:translateX(60px)}}
+@keyframes cs{to{opacity:0;transform:translateX(-60px)}}
+@keyframes cr{to{opacity:0;transform:translateX(60px)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080">
+<g class="s"><g>
+<path class="c ciz g1" pathLength="1" d="M120 548 Q 250 534 380 540"/>
+<path class="c ciz g2" pathLength="1" d="M310 470 L 386 540 L 310 610"/>
+</g></g>
+<g class="r"><g>
+<path class="c ciz g1" pathLength="1" d="M960 532 Q 830 546 700 540"/>
+<path class="c ciz g2" pathLength="1" d="M770 470 L 694 540 L 770 610"/>
+</g></g>
+</svg>
+</body></html>

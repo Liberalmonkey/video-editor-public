@@ -1,0 +1,14 @@
+{
+ "title": "Soru işareti: merak ya da belirsizlik",
+ "kind": "overlay",
+ "tags": [
+  "soru",
+  "merak",
+  "el-cizimi"
+ ],
+ "ne_zaman": "Konuşmacı bir soru sorduğunda ya da 'neden?', 'nasıl?' diye merak uyandırdığında.",
+ "sure": 1.8,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

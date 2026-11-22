@@ -1,0 +1,8 @@
+{
+ "aciklama": "Koyu zeminde beyaz yazı, ikinci satır kırmızı kutuda. Referanslarda en sık (31 kapak); Reels serisi.",
+ "kutu": true,
+ "css": {
+  "--vurgu": "#E52521",
+  "--kontur-k": "0.35vh"
+ }
+}

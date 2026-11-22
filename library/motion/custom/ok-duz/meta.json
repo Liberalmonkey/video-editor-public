@@ -1,0 +1,14 @@
+{
+ "title": "Düz ok: sağdaki öğeyi göster",
+ "kind": "overlay",
+ "tags": [
+  "ok",
+  "goster",
+  "yon"
+ ],
+ "ne_zaman": "Sağdaki bir öğeye ya da bir adımdan sonrakine dikkat çekerken: önce/sonra, A'dan B'ye.",
+ "sure": 1.4,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

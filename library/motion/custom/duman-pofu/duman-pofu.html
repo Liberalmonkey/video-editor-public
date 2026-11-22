@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Duman pofu</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur duman-pofu -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.z{fill:var(--zemin)}.y{fill:var(--yazi)}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g id="a"></g><g id="b"></g></svg>
+<script>
+let tohum = 5;
+const r = () => ((tohum = (tohum * 16807) % 2147483647) / 2147483647);
+const NS = "http://www.w3.org/2000/svg", svg = document.querySelector("svg");
+const el = (ad, at, ana = svg) => { const e = document.createElementNS(NS, ad); for (const k in at) e.setAttribute(k, at[k]); ana.appendChild(e); return e; };
+const A = document.getElementById("a"), B = document.getElementById("b");
+for (let i = 0; i < 11; i++) {
+  const ac = (i / 11) * Math.PI * 2 + (r() - .5) * .5, d = 170 + r() * 130, R = 70 + r() * 45;
+  const x = Math.cos(ac) * d, y = Math.sin(ac) * d * .8;
+  const k = [
+    { transform: `translate(${540 + x * .25}px,${540 + y * .25}px) scale(.2)` },
+    { transform: `translate(${540 + x * .75}px,${540 + y * .75}px) scale(1)`, offset: .3 },
+    { transform: `translate(${540 + x}px,${540 + y - 30}px) scale(0)` },
+  ];
+  const o = { duration: 760 + r() * 60, delay: r() * 30, easing: "cubic-bezier(.2,.7,.5,1)", fill: "both" };
+  el("circle", { r: R + 9, class: "z" }, A).animate(k, o);
+  el("circle", { r: R, class: "y" }, B).animate(k, o);
+}
+</script>
+</body></html>

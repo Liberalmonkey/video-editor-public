@@ -1,0 +1,15 @@
+{
+ "title": "Saat: akrep ve yelkovan hızla döner",
+ "kind": "icon",
+ "tags": [
+  "saat",
+  "zaman",
+  "sure",
+  "bekleme"
+ ],
+ "ne_zaman": "Zaman geçtiği, süre ya da 'saatler sonra' söylendiğinde.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

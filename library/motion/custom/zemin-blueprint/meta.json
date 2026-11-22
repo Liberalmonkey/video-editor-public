@@ -1,0 +1,17 @@
+{
+ "title": "Blueprint zemin: kayan teknik çizim ızgarası",
+ "kind": "background",
+ "tags": [
+  "zemin",
+  "dongu",
+  "blueprint",
+  "teknik",
+  "izgara"
+ ],
+ "ne_zaman": "Nasıl yapılır, teknik açıklama, plan ya da kod anlatılan tam ekran sahnenin arkasında.",
+ "sure": 6.0,
+ "w": 1080,
+ "h": 1920,
+ "tam": true,
+ "loop": true
+}

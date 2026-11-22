@@ -1,0 +1,13 @@
+# Instagram stüdyosu — Reels (çekim ya da animasyon; proje başına --pipeline ile seçilir)
+studio: instagram
+label: Instagram Reels
+pipeline: mixed
+language: tr
+format: {width: 1080, height: 1920, fps: 30}
+variants: []
+loudness: {integrated: -14.0, true_peak: -1.0, lra: 11.0}
+safe_area: {top: 0.12, bottom: 0.22, left: 0.06, right: 0.12}
+captions: {style: odak, max_chars: 16, max_words: 3, lines: 1, uppercase: false, burn: true}
+target_duration: [15, 90]
+style: ai-reels
+words_per_minute: {tr: 155, en: 165}

@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/zil",
+  "tur": "ikon",
+  "etiketler": ["zil", "bildirim", "abone", "hatırlat", "uyarı"],
+  "ne_zaman": "Konuşmacı bildirim açmayı, abone olmayı ya da önemli bir duyuruyu hatırlattığında (\"bildirim\", \"abone ol\", \"kaçırma\", \"zil\").",
+  "sure": { "min": 1.0, "varsayilan": 1.4, "max": 1.6 },
+  "giris_sn": 0.35,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "sag", "sol", "alt"],
+  "boyut": { "w": 0.26, "h": 0.26 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide bell", "url": "https://lucide.dev/icons/bell", "lisans": "ISC" }
+}

@@ -1,0 +1,9 @@
+{
+ "aciklama": "Gerçek sahne üstünde tek renk beyaz, kalın siyah kontur (29 kapak). Rozet ve bölünmüş kalıbı.",
+ "kutu": false,
+ "css": {
+  "--vurgu": "#fff",
+  "--kontur-k": "1vh",
+  "--agirlik": "900"
+ }
+}

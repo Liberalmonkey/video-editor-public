@@ -1,0 +1,15 @@
+{
+  "ad": "ikon/saat",
+  "tur": "ikon",
+  "etiketler": ["saat", "zaman", "süre", "hız", "vakit"],
+  "ne_zaman": "Konuşmacı zaman, süre, gecikme ya da hızdan bahsettiğinde (\"zaman\", \"dakika\", \"saat\", \"hızlı\", \"bekleme\").",
+  "sure": { "min": 1.0, "varsayilan": 1.4, "max": 1.6 },
+  "giris_sn": 0.4,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "sol", "sag", "alt"],
+  "boyut": { "w": 0.26, "h": 0.26 },
+  "en_kucuk_px": 180,
+  "kaynak": { "ad": "Lucide clock", "url": "https://lucide.dev/icons/clock", "lisans": "ISC" }
+}

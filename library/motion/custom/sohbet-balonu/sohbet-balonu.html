@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Sohbet balonu</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur sohbet-balonu -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.sahne{position:absolute;left:9vw;top:24vh;width:65vw;display:flex;flex-direction:column;gap:2.6vmin;font-family:var(--font);
+  animation:cik .4s cubic-bezier(.6,0,.9,.4) 3.38s both}
+.balon{max-width:min(82%,70vmin);box-sizing:border-box;padding:2.2vmin 3vmin;font-weight:600;font-size:4.2vmin;line-height:1.28;border-radius:3.6vmin}
+.soru{align-self:flex-start;background:var(--zemin);color:var(--yazi);border-bottom-left-radius:.8vmin;transform-origin:left bottom;
+  animation:pat .4s cubic-bezier(.2,1.3,.4,1) .15s both}
+.yuva{align-self:flex-end;display:grid;justify-items:end;max-width:min(82%,70vmin)}
+.yuva>*{grid-area:1/1}
+.cevap{max-width:100%;background:var(--vurgu);color:var(--vurgu-ustu,var(--zemin));font-weight:700;border-bottom-right-radius:.8vmin;transform-origin:right bottom;
+  animation:pat .4s cubic-bezier(.2,1.3,.4,1) 1.78s both}
+.yaziyor{align-self:end;display:flex;gap:1.2vmin;padding:2.6vmin 3vmin;background:var(--vurgu);border-radius:3.6vmin;border-bottom-right-radius:.8vmin;
+  transform-origin:right bottom;animation:pat .3s cubic-bezier(.2,1.3,.4,1) .75s both,sondur .15s ease-in 1.68s both}
+.yaziyor i{width:1.6vmin;height:1.6vmin;border-radius:50%;background:var(--vurgu-ustu,var(--zemin));animation:zipla .42s ease-in-out 1.0s 2 both}
+.yaziyor i:nth-child(2){animation-delay:1.1s}.yaziyor i:nth-child(3){animation-delay:1.2s}
+@keyframes pat{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes sondur{to{transform:scale(.4);opacity:0}}
+@keyframes zipla{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(-1.2vmin);opacity:1}}
+@keyframes cik{to{transform:translateY(5vmin);opacity:0}}
+</style></head><body>
+<div class="sahne">
+  <div class="balon soru" id="soru"></div>
+  <div class="yuva"><div class="yaziyor"><i></i><i></i><i></i></div><div class="balon cevap" id="cevap"></div></div>
+</div>
+<script>
+// Dolgu üstündeki yazı: temanın zemin ve yazı renginden hangisi daha okunaklıysa o (pastel vurgulu açık temada zemin rengi okunmaz).
+function zitYazi(dolgu, ad) {
+  const p = document.body.appendChild(document.createElement("i"));
+  const lum = v => { p.style.color = v; return getComputedStyle(p).color.match(/[\d.]+/g).slice(0, 3)
+    .map(c => (c /= 255) <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4).reduce((s, c, i) => s + c * [.2126, .7152, .0722][i], 0); };
+  const k = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+  const d = lum(dolgu), z = lum("var(--zemin)"), y = lum("var(--yazi)"); p.remove();
+  document.documentElement.style.setProperty(ad, k(d, z) >= k(d, y) ? "var(--zemin)" : "var(--yazi)");
+}
+const P = Object.assign({ soru: "Bu nasıl çalışıyor?", cevap: "Üç adımda anlatıyorum." }, window.PARAM);
+const soru = document.getElementById("soru"), cevap = document.getElementById("cevap");
+soru.textContent = P.soru; cevap.textContent = P.cevap;
+// Uzun mesajda yazı biraz küçülür; balon genişliği sınırlı olduğundan gerisi satıra bölünür.
+for (const el of [soru, cevap]) el.style.fontSize = Math.max(3.6, Math.min(4.6, 4.6 * 28 / Math.max(28, el.textContent.length))) + "vmin";
+let hazir = false;
+window.seek = () => { if (!hazir) { hazir = true; zitYazi("var(--vurgu)", "--vurgu-ustu"); } }; // tema yüklendikten sonra
+</script>
+</body></html>

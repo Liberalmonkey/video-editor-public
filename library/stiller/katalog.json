@@ -1,0 +1,3235 @@
+{
+ "_not": "Hazır stil kataloğu (ADR 0042). Her kayıt kurulu skill ve repolardaki bir video stilinin Türkçe kartıdır; belirli bir eserin karakteri ya da sahnesi kopyalanmaz, görsel dil tarif edilir. `motion_tema` varsa library/motion/tema/<ad>.css kullanılır; yoksa `palet`ten library/motion/tema/<id>.css üretilir (vedit stil-katalog kur). Paket (STYLE.md, MOTION.md, tokens.json) eklenirken bu karttan yazılır. Her kartın kendi paleti ve `token` bloğu (şekil, hareket, altyazı, ek renk) vardır; tema `vedit stil-katalog kur` ile library/motion/tema/<id>.{css,json} olarak yazılır (ADR 0043).",
+ "kategoriler": [
+  "Anime",
+  "Çizgi film",
+  "Modern motion",
+  "Editoryal",
+  "Kurumsal",
+  "Sinematik",
+  "Retro",
+  "Sanat akımı"
+ ],
+ "stiller": [
+  {
+   "id": "anime-sulu-boya",
+   "ad": "Anime sulu boya",
+   "kategori": "Anime",
+   "kaynak": "huashu-art-motion 风格配方/25_ghibli.md; openmontage/styles/anime-ghibli.yaml",
+   "lisans": "MIT; AGPL-3.0",
+   "ozet": "El çizimi stüdyo animesinin sıcak, düşünceli dili: sulu boya arka plan, yumuşak kenar, rüzgârla yaşayan doğa.",
+   "palet": {
+    "vurgu": "#FF8FB1",
+    "ikincil": "#A8E6CF",
+    "zemin": "#0F2419",
+    "yazi": "#F5F0E8",
+    "soluk": "#8B9A7E"
+   },
+   "font": {
+    "baslik": "Fraunces",
+    "govde": "Inter"
+   },
+   "agirlik": 600,
+   "kose": 22,
+   "cizgi": 4,
+   "tempo": "yavas",
+   "kesim": [
+    3.0,
+    5.5
+   ],
+   "gorsel": [
+    "Şeffaf üst üste binen sulu boya katmanları, kenarda su izi",
+    "Organik şekiller; sert geometrik çizgi yok",
+    "Altın saat ışığı, yumuşak hilal gölge (cel)",
+    "Geniş boşluk, katmanlı derinlik"
+   ],
+   "hareket": [
+    "Rüzgârda dalgalanan perde, toplu sallanan çimen, ağaç gölgesinde ışık lekesi",
+    "Yumuşak çıkış eğrisi (sine.inOut), sıçrama yok",
+    "Yavaş kamera kayması ve ken burns"
+   ],
+   "gecis": [
+    "murekkep",
+    "isik-sizintisi",
+    "film_yanigi",
+    "isik",
+    "sil"
+   ],
+   "hazir": [
+    "ken_burns",
+    "zoom_in"
+   ],
+   "motion": [
+    "parilti",
+    "duman-pofu",
+    "zemin-parcacik",
+    "alinti-karti",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "kart/cta-karti"
+   ],
+   "uygun": "Hikâye anlatımı, doğa ve duygu, kişisel deneme, eğitimde merak.",
+   "kacin": [
+    "Glitch, flaş, sert kesim zinciri",
+    "Neon ve doygun dijital renk",
+    "Hızlı sayaç ve yoğun arayüz grafiği"
+   ],
+   "gorsel_prompt": "hand-painted anime background, soft transparent watercolor washes, wet paper edges, warm golden-hour light, gentle cel shading, lush natural detail, calm and whimsical mood, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "doku": "kagit",
+     "ikon_cizgi": 9
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.35,
+       0,
+       0.2,
+       1
+      ],
+      "exit": [
+       0.45,
+       0,
+       0.75,
+       0
+      ],
+      "emphasis": [
+       0.3,
+       1,
+       0.55,
+       1
+      ],
+      "settle": [
+       0.38,
+       1,
+       0.72,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "anime-sinematik-isik",
+   "ad": "Anime sinematik ışık",
+   "kategori": "Anime",
+   "kaynak": "huashu-art-motion 风格配方/35_shinkai.md",
+   "lisans": "MIT",
+   "ozet": "Modern anime sinemasının ışık dili: dev kümülüs bulutları, ışık huzmesi, mercek parlaması, net cel gölge bandı.",
+   "palet": {
+    "vurgu": "#7FD4FF",
+    "ikincil": "#FFD6A5",
+    "zemin": "#0B1A33",
+    "yazi": "#F4F8FF",
+    "soluk": "#8AA4C8"
+   },
+   "font": {
+    "baslik": "Outfit",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "kose": 16,
+   "cizgi": 4,
+   "tempo": "orta",
+   "kesim": [
+    2.5,
+    4.5
+   ],
+   "gorsel": [
+    "Gökyüzü kadrajın yarısından fazlası; yoğun bulut detayı",
+    "Tyndall ışık huzmesi, mercek halesi, havada ışık tozu",
+    "Sert kenarlı cel gölge bandı",
+    "Mavi-mor gece, turuncuya kaçmayan şeftali gün batımı"
+   ],
+   "hareket": [
+    "Işık parçacığı yavaşça süzülür, bulut kayar",
+    "Çapraz ışık süpürmesiyle sahneye giriş",
+    "power2.out yumuşak, uzun tutuş"
+   ],
+   "gecis": [
+    "isik-sizintisi",
+    "flas",
+    "film_yanigi",
+    "isik",
+    "zoom_kirbac"
+   ],
+   "hazir": [
+    "ken_burns",
+    "odak_zoom",
+    "bulanik_gir"
+   ],
+   "motion": [
+    "isik-demeti",
+    "parilti",
+    "zemin-parcacik",
+    "baslik-acilis",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Duygusal hikâye, motivasyon, şehir ve gökyüzü anlatımı, müzik eşliğinde montaj.",
+   "kacin": [
+    "Düz, gölgesiz arayüz grafiği",
+    "Kesik kâğıt ve gren dokusu",
+    "Komik sıçrama animasyonu"
+   ],
+   "gorsel_prompt": "modern anime film still, towering cumulus clouds, volumetric god rays, lens flare and floating light particles, crisp cel-shaded shadow bands, saturated blue sky, emotional cinematic composition, no text",
+   "token": {
+    "sekil": {
+     "golge": "glow",
+     "ikon_cizgi": 9
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.25,
+       1,
+       0.4,
+       1
+      ],
+      "exit": [
+       0.5,
+       0,
+       0.78,
+       0
+      ],
+      "emphasis": [
+       0.24,
+       1.05,
+       0.45,
+       1
+      ],
+      "settle": [
+       0.33,
+       1,
+       0.68,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "sahne-cizgi-film",
+   "ad": "Sahne çizgi film (düz anlatım)",
+   "kategori": "Çizgi film",
+   "kaynak": "bang-motion references/kartun-panggung.md",
+   "lisans": "MIT",
+   "ozet": "Her sahne kendi sahnesi: düz vektör dünya, en az on hareketli nesne, kamera sahnenin içinde yakın çekimde kalır.",
+   "palet": {
+    "vurgu": "#FF4D6D",
+    "ikincil": "#3EC1D3",
+    "zemin": "#FFF6E5",
+    "yazi": "#1F2041",
+    "soluk": "#8D8BA7"
+   },
+   "font": {
+    "baslik": "Montserrat",
+    "govde": "Inter"
+   },
+   "agirlik": 800,
+   "kose": 24,
+   "cizgi": 6,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    4.0
+   ],
+   "gorsel": [
+    "Parlak düz renk, doku yok",
+    "Vektör karakter, eklemli kafa",
+    "Etiketler sahnenin içinde (tabela, ekran), yüzen başlık yok"
+   ],
+   "hareket": [
+    "Kamera hiç geniş açıya çıkmaz: yakınlık 1,08-1,95",
+    "Sahneler arası düz kesim ya da 96 px kayma, en çok 10 px bulanıklık",
+    "Sahnede sürekli küçük hareket: göz kırpma, sallanma, nesne tepkisi"
+   ],
+   "gecis": [
+    "sil",
+    "yukari-it",
+    "bolunme",
+    "kay"
+   ],
+   "hazir": [
+    "odak_zoom",
+    "giris_pop",
+    "nabiz"
+   ],
+   "motion": [
+    "sohbet-balonu",
+    "ikon-ampul",
+    "soru-isareti",
+    "unlem",
+    "yildiz-patlama",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Eğitici açıklama, süreç anlatımı, çocuk ve aile içeriği, ürün nasıl çalışır videosu.",
+   "kacin": [
+    "Geniş açı ve boş sahne",
+    "Gerçek çekim üstüne yoğun yazı",
+    "Koyu sinematik palet"
+   ],
+   "gorsel_prompt": "flat vector cartoon stage, bright solid colors, no texture, friendly rounded characters, clean background props, educational explainer look, medium close framing, no text",
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "kontur": 6,
+     "ikon_cizgi": 15
+    },
+    "hareket": {
+     "easing": "yay",
+     "egri": {
+      "enter": [
+       0.18,
+       1,
+       0.32,
+       1
+      ],
+      "exit": [
+       0.65,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.34,
+       1.5,
+       0.62,
+       1
+      ],
+      "settle": [
+       0.32,
+       1.22,
+       0.62,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "rubberhose-1930",
+   "ad": "1930 lastik kol çizgi film",
+   "kategori": "Çizgi film",
+   "kaynak": "huashu-art-motion 风格配方/33_rubberhose.md",
+   "lisans": "MIT",
+   "ozet": "Erken dönem siyah-beyaz çizgi film: dilimli göz, makarna kol, beyaz eldiven, her şey ritimle zıplar, film çiziği titrer.",
+   "palet": {
+    "vurgu": "#E8C547",
+    "ikincil": "#C0392B",
+    "zemin": "#1C1A17",
+    "yazi": "#F2E8CF",
+    "soluk": "#8C8270"
+   },
+   "font": {
+    "baslik": "Playfair Display",
+    "govde": "EB Garamond"
+   },
+   "agirlik": 800,
+   "kose": 6,
+   "cizgi": 8,
+   "tempo": "orta",
+   "kesim": [
+    1.5,
+    3.0
+   ],
+   "gorsel": [
+    "Sepya ve kırık siyah-beyaz; tek altın vurgu",
+    "Film greni, çizik, kenar kararması (vinyet)",
+    "Kalın siyah kontur, yuvarlak hatlar"
+   ],
+   "hareket": [
+    "12 fps adımlı animasyon",
+    "Her şey müziğin vuruşunda zıplar (squash and stretch)",
+    "İris açılış ve kapanış"
+   ],
+   "gecis": [
+    "iris",
+    "crt-kapanis",
+    "film_yanigi",
+    "yirtma"
+   ],
+   "hazir": [
+    "nabiz",
+    "giris_dus",
+    "sarsinti"
+   ],
+   "motion": [
+    "yildiz-patlama",
+    "unlem",
+    "kalp-atis",
+    "zemin-kagit",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Nostalji, mizah, tarih anlatımı, müzikli kısa skeç.",
+   "kacin": [
+    "Modern arayüz kartı ve cam efekti",
+    "Neon ve doygun renk",
+    "Yumuşak 3D"
+   ],
+   "gorsel_prompt": "1930s rubber hose cartoon style, black and white with sepia tone, pie-cut eyes, noodle limbs, white gloves, film grain and scratches, vignette, bouncy pose, no text",
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "kontur": 8,
+     "doku": "gren",
+     "ikon_cizgi": 18
+    },
+    "hareket": {
+     "easing": "yay",
+     "adim_fps": 12,
+     "egri": {
+      "enter": [
+       0.2,
+       1,
+       0.34,
+       1
+      ],
+      "exit": [
+       0.68,
+       0,
+       0.85,
+       0
+      ],
+      "emphasis": [
+       0.34,
+       1.58,
+       0.64,
+       1
+      ],
+      "settle": [
+       0.34,
+       1.32,
+       0.64,
+       1
+      ],
+      "adim": 5
+     }
+    },
+    "font": {
+     "harf": "buyuk"
+    }
+   }
+  },
+  {
+   "id": "cagdas-duz-illustrasyon",
+   "ad": "Çağdaş düz illüstrasyon",
+   "kategori": "Çizgi film",
+   "kaynak": "huashu-art-motion 风格配方/16_2026.md",
+   "lisans": "MIT",
+   "ozet": "Bugünün editoryal illüstrasyonu: konturssuz renk blokları, noktacıklı gren dokusu, oyuncu karakter tepkileri.",
+   "palet": {
+    "vurgu": "#5B5BF7",
+    "ikincil": "#FF8FA3",
+    "zemin": "#FFF8EF",
+    "yazi": "#1D1B2F",
+    "soluk": "#A39FB8"
+   },
+   "font": {
+    "baslik": "Outfit",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "kose": 28,
+   "cizgi": 0,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    3.5
+   ],
+   "gorsel": [
+    "Konturssuz düz renk blokları",
+    "Yoğunluğu değişen nokta greni ile hacim",
+    "Sınırlı palet: bir soğuk, bir sıcak vurgu"
+   ],
+   "hareket": [
+    "Karakter tepkisi: zıplama, şaşırma, ikincil sönümlü hareket",
+    "Üç renkli eş merkezli halka geçişi",
+    "back.out(1.4) ile hafif taşma"
+   ],
+   "gecis": [
+    "sekil-perde",
+    "iris",
+    "bolunme",
+    "sil"
+   ],
+   "hazir": [
+    "giris_pop",
+    "nabiz"
+   ],
+   "motion": [
+    "zemin-nokta-izgara",
+    "ikon-ampul",
+    "kontrol-listesi",
+    "karsilastirma",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Marka anlatımı, uygulama tanıtımı, sosyal medya açıklayıcı, topluluk içeriği.",
+   "kacin": [
+    "Siyah kalın kontur",
+    "Fotoğraf gerçekçiliği",
+    "Koyu sinematik zemin"
+   ],
+   "gorsel_prompt": "contemporary flat editorial illustration, no outlines, solid color blocks, fine stippled grain shading, limited palette with indigo and pink accents, playful character, clean off-white background, no text",
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "ikon_cizgi": 12
+    },
+    "hareket": {
+     "easing": "yay",
+     "egri": {
+      "enter": [
+       0.2,
+       1,
+       0.34,
+       1
+      ],
+      "exit": [
+       0.62,
+       0,
+       0.82,
+       0
+      ],
+      "emphasis": [
+       0.32,
+       1.4,
+       0.6,
+       1
+      ],
+      "settle": [
+       0.3,
+       1.18,
+       0.62,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "kesik-kagit-karakter",
+   "ad": "Kesik kâğıt karakter",
+   "kategori": "Çizgi film",
+   "kaynak": "huashu-art-motion 风格配方/52_south_park.md",
+   "lisans": "MIT",
+   "ozet": "Dijital kesik kâğıt animasyonu: basit geometrik karakter, sınırlı oyunculuk, düz arka plan, kuru mizah.",
+   "palet": {
+    "vurgu": "#2E86DE",
+    "ikincil": "#F6C445",
+    "zemin": "#EAF2F8",
+    "yazi": "#1B1B1B",
+    "soluk": "#7F8C8D"
+   },
+   "font": {
+    "baslik": "Montserrat",
+    "govde": "Inter"
+   },
+   "agirlik": 900,
+   "kose": 10,
+   "cizgi": 6,
+   "tempo": "hizli",
+   "kesim": [
+    1.2,
+    2.5
+   ],
+   "gorsel": [
+    "Daire ve elipsten kurulmuş karakter",
+    "Kâğıt kesik kenarı, hafif gölge",
+    "Düz renk, perspektifsiz arka plan"
+   ],
+   "hareket": [
+    "Sınırlı animasyon: ağız ve göz değişir, gövde kayar",
+    "Ani kesim, tepki çekimi",
+    "Adımlı (8-12 fps) hareket"
+   ],
+   "gecis": [
+    "sil",
+    "kagit-yirtik",
+    "yirtma",
+    "kay"
+   ],
+   "hazir": [
+    "punch",
+    "carp_zoom",
+    "sarsinti"
+   ],
+   "motion": [
+    "sohbet-balonu",
+    "soru-isareti",
+    "unlem",
+    "cerceve-kupur",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Mizah, hiciv, hızlı tepki videosu, günlük hayat skeci.",
+   "kacin": [
+    "Yumuşak geçiş ve uzun ışık efekti",
+    "Gerçekçi gölge",
+    "Ağır sinematik müzik"
+   ],
+   "gorsel_prompt": "digital construction paper cutout animation style, simple geometric characters made of circles, flat colors, paper edge texture, flat background, deadpan comedic framing, no text",
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "doku": "kagit",
+     "ikon_cizgi": 15
+    },
+    "hareket": {
+     "easing": "keskin",
+     "adim_fps": 12,
+     "egri": {
+      "enter": [
+       0.14,
+       1,
+       0.28,
+       1
+      ],
+      "exit": [
+       0.72,
+       0,
+       0.86,
+       0
+      ],
+      "emphasis": [
+       0.28,
+       1.38,
+       0.52,
+       1
+      ],
+      "settle": [
+       0.22,
+       1,
+       0.38,
+       1
+      ],
+      "adim": 4
+     }
+    }
+   }
+  },
+  {
+   "id": "yumusak-3d",
+   "ad": "Yumuşak 3D animasyon",
+   "kategori": "Çizgi film",
+   "kaynak": "huashu-art-motion 风格配方/53_pixar.md; bang-motion techniques.md §7e (soft 3D/clay)",
+   "lisans": "MIT",
+   "ozet": "Büyük stüdyo 3D animasyonunun sıcak dili: yuvarlak formlar, mat malzeme, yumuşak gölge, abartılı ama inandırıcı oyunculuk.",
+   "palet": {
+    "vurgu": "#4CC9F0",
+    "ikincil": "#FFD166",
+    "zemin": "#14213D",
+    "yazi": "#FFFFFF",
+    "soluk": "#9DB4C0"
+   },
+   "font": {
+    "baslik": "Outfit",
+    "govde": "Inter"
+   },
+   "agirlik": 800,
+   "kose": 32,
+   "cizgi": 4,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    4.0
+   ],
+   "gorsel": [
+    "Kalın yuvarlatılmış köşe, mat pastel malzeme (pürüzlülük 0,7-0,9)",
+    "Yumuşak alan gölgesi, kenar ışığı",
+    "Sığ alan derinliği"
+   ],
+   "hareket": [
+    "Squash and stretch, öngörü ve takip hareketi",
+    "Kamera yavaş yaklaşır",
+    "back.out ile taşma, elastik yerleşme"
+   ],
+   "gecis": [
+    "iris",
+    "yukari-it",
+    "zoom_kirbac",
+    "bolunme"
+   ],
+   "hazir": [
+    "giris_pop",
+    "zoom_in",
+    "nabiz"
+   ],
+   "motion": [
+    "ikon-kalp",
+    "ikon-begeni",
+    "yildiz-patlama",
+    "sayi-rozeti",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Ürün maskotu, fintech ve uygulama tanıtımı, çocuk eğitimi, sıcak marka hikâyesi.",
+   "kacin": [
+    "Sert kontur ve gren",
+    "Glitch",
+    "Karanlık gerilim tonu"
+   ],
+   "gorsel_prompt": "soft 3D animated film look, rounded clay-like shapes, matte pastel materials, soft area shadows and rim light, shallow depth of field, warm expressive character, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "ikon_cizgi": 14
+    },
+    "hareket": {
+     "easing": "yay",
+     "egri": {
+      "enter": [
+       0.22,
+       1,
+       0.36,
+       1
+      ],
+      "exit": [
+       0.58,
+       0,
+       0.8,
+       0
+      ],
+      "emphasis": [
+       0.34,
+       1.48,
+       0.62,
+       1
+      ],
+      "settle": [
+       0.34,
+       1.26,
+       0.66,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "duz-motion-grafik",
+   "ad": "Düz motion grafik",
+   "kategori": "Modern motion",
+   "kaynak": "openmontage/styles/flat-motion-graphics.yaml",
+   "lisans": "AGPL-3.0",
+   "ozet": "Reels ve lansman için enerjik, modern düz grafik: mor-indigo zemin, pembe ve camgöbeği vurgu, hızlı silme geçişleri.",
+   "palet": {
+    "vurgu": "#EC4899",
+    "ikincil": "#06B6D4",
+    "zemin": "#0F172A",
+    "yazi": "#F8FAFC",
+    "soluk": "#94A3B8"
+   },
+   "font": {
+    "baslik": "Space Grotesk",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "kose": 18,
+   "cizgi": 6,
+   "tempo": "hizli",
+   "kesim": [
+    1.2,
+    2.5
+   ],
+   "gorsel": [
+    "Düz renk blokları, geometrik şekil",
+    "Gradyan yalnız arka planda",
+    "Yüksek kontrast, tek yazı ailesi"
+   ],
+   "hareket": [
+    "Sola silme, yakınlaşma, şekil dönüşümü, düz kesim",
+    "Geçiş 0,3 sn, yazı kartı 2,5 sn",
+    "expo.out hızlı giriş"
+   ],
+   "gecis": [
+    "sil",
+    "capraz-serit",
+    "sekil-perde",
+    "zoom_kirbac",
+    "bolunme",
+    "isik",
+    "kirbac"
+   ],
+   "hazir": [
+    "punch",
+    "giris_kay",
+    "carp_zoom"
+   ],
+   "motion": [
+    "baslik-acilis",
+    "grafik-cubuk",
+    "sayi-rozeti",
+    "odometre-sayac",
+    "kelime-taklasi",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Sosyal medya açıklayıcı, Reels, ürün lansmanı, girişim sunumu.",
+   "kacin": [
+    "Kâğıt ve gren dokusu",
+    "Yavaş çapraz geçiş",
+    "Serif yazı"
+   ],
+   "gorsel_prompt": "flat motion graphics frame, bold geometric shapes, deep indigo background, hot pink and cyan accents, clean vector, high contrast, modern tech startup look, no text",
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "ikon_cizgi": 12
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.7,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.28,
+       1.36,
+       0.5,
+       1
+      ],
+      "settle": [
+       0.22,
+       1,
+       0.36,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "grenli-gradyan",
+   "ad": "Grenli gradyan",
+   "kategori": "Modern motion",
+   "kaynak": "bang-motion techniques.md §7d (grainy gradient)",
+   "lisans": "MIT",
+   "ozet": "Sıcaktan mora akan grenli gradyan yüzey; modern marka ve yaratıcı içerik için yumuşak, dokulu bir dünya.",
+   "font": {
+    "baslik": "Montserrat",
+    "govde": "Inter"
+   },
+   "agirlik": 800,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    3.5
+   ],
+   "gorsel": [
+    "Yavaş akan çok noktalı gradyan, ince film greni",
+    "Beyaz yazı, yuvarlak köşeli cam kart",
+    "Düz olmayan yüzey: her karede hafif hareket"
+   ],
+   "hareket": [
+    "Arka plan sürekli ve yavaş akar",
+    "Yazı power4.out ile yükselir",
+    "Işık sızıntısı geçişi"
+   ],
+   "gecis": [
+    "isik-sizintisi",
+    "flas",
+    "zoom_kirbac",
+    "bolunme",
+    "isik",
+    "kirbac"
+   ],
+   "hazir": [
+    "bulanik_gir",
+    "zoom_in"
+   ],
+   "motion": [
+    "zemin-grenli-gradyan",
+    "baslik-acilis",
+    "alinti-karti",
+    "parilti",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Yaratıcı marka, kişisel gelişim, podcast kesiti, ilham videosu.",
+   "kacin": [
+    "Düz tek renk zemin",
+    "Kesik kâğıt ve kontur",
+    "Glitch"
+   ],
+   "gorsel_prompt": "grainy gradient background, warm coral flowing into deep violet, fine film grain, soft blurred shapes, modern brand aesthetic, no text",
+   "palet": {
+    "vurgu": "#FF5E3A",
+    "ikincil": "#FFC857",
+    "zemin": "#2A1A4A",
+    "yazi": "#FFFFFF",
+    "soluk": "#D6C8F0"
+   },
+   "kose": 24,
+   "cizgi": 8,
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "doku": "gren",
+     "ikon_cizgi": 12
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.18,
+       1,
+       0.32,
+       1
+      ],
+      "exit": [
+       0.52,
+       0,
+       0.78,
+       0
+      ],
+      "emphasis": [
+       0.25,
+       1.08,
+       0.48,
+       1
+      ],
+      "settle": [
+       0.32,
+       1,
+       0.65,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "kinetik-arayuz",
+   "ad": "Kinetik arayüz",
+   "kategori": "Modern motion",
+   "kaynak": "library/motion/tema/kinetik-ui.css; bang-motion techniques.md §8",
+   "lisans": "proje; MIT",
+   "palet": {
+    "vurgu": "#3B5BFF",
+    "ikincil": "#1ED760",
+    "zemin": "#F3F3F0",
+    "yazi": "#111111",
+    "soluk": "#86868B"
+   },
+   "kose": 20,
+   "cizgi": 2,
+   "ozet": "Yazılım lansmanı dili: açık zemin, hareketli arayüz kartları, imleç, tıklama ve ekran kaydı odak zoom'u.",
+   "font": {
+    "baslik": "Inter",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "tempo": "hizli",
+   "kesim": [
+    1.5,
+    3.0
+   ],
+   "gorsel": [
+    "Açık gri zemin, beyaz kart, ince gölge",
+    "Gerçek arayüz parçası ya da sade mockup",
+    "Tek sıcak vurgu, yeşil onay"
+   ],
+   "hareket": [
+    "Kart katmanları yay (spring) ile yerleşir",
+    "İmleç yolu ve tıklama halkası",
+    "Ekran kaydında odak zoom"
+   ],
+   "gecis": [
+    "yukari-it",
+    "pencere",
+    "zoom_kirbac",
+    "bolunme",
+    "isik",
+    "kirbac"
+   ],
+   "hazir": [
+    "odak_zoom",
+    "giris_kay",
+    "punch"
+   ],
+   "motion": [
+    "komut-paleti",
+    "bildirim-karti",
+    "terminal-akisi",
+    "ajan-adimlari",
+    "onay-tik",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "SaaS ve yapay zekâ aracı tanıtımı, eğitim, ürün turu.",
+   "kacin": [
+    "Doku ve gren",
+    "Karikatür karakter",
+    "Serif yazı"
+   ],
+   "gorsel_prompt": "clean software product UI mockup floating cards, light gray background, soft shadows, modern interface, minimal, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "ikon_cizgi": 9
+    },
+    "hareket": {
+     "easing": "yay",
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.68,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.24,
+       1.24,
+       0.42,
+       1
+      ],
+      "settle": [
+       0.26,
+       1.12,
+       0.52,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "cam-ve-isik",
+   "ad": "Cam ve ışık (yapay zekâ)",
+   "kategori": "Modern motion",
+   "kaynak": "bang-motion techniques.md §6, §7e (kaca / bola bercahaya)",
+   "lisans": "MIT",
+   "ozet": "Yapay zekâ anlatımının modern dili: koyu uzay, kırılan cam yüzey, parlayan çekirdek, ince ışık halesi.",
+   "palet": {
+    "vurgu": "#8B5CF6",
+    "ikincil": "#22D3EE",
+    "zemin": "#070712",
+    "yazi": "#F5F3FF",
+    "soluk": "#8A87A8"
+   },
+   "font": {
+    "baslik": "Space Grotesk",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "kose": 20,
+   "cizgi": 3,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    3.5
+   ],
+   "gorsel": [
+    "Buzlu cam kart (backdrop blur), ince açık kenar",
+    "Parlayan küre ya da çekirdek, küçük bloom",
+    "Mor-camgöbeği çift vurgu, koyu zemin"
+   ],
+   "hareket": [
+    "Parlama doğru yapılır: dar hale, taşan bulanıklık değil",
+    "Yönlü hareket bulanıklığı ile hızlı giriş",
+    "Kamera yavaşça içeri iter"
+   ],
+   "gecis": [
+    "isik-sizintisi",
+    "piksel-cozunme",
+    "zoom_kirbac",
+    "bolunme",
+    "isik",
+    "kirbac"
+   ],
+   "hazir": [
+    "bulanik_gir",
+    "odak_zoom",
+    "zoom_in"
+   ],
+   "motion": [
+    "ai-kenarlik",
+    "kenar-isiltisi",
+    "ajan-adimlari",
+    "isin-donen",
+    "parilti",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Yapay zekâ, teknoloji haberi, gelecek ve bilim anlatımı.",
+   "kacin": [
+    "Turuncu vurgu",
+    "Kâğıt ve kolaj",
+    "Çizgi film karakteri"
+   ],
+   "gorsel_prompt": "dark space background with a glowing glass orb core, frosted translucent glass panels, refraction, subtle bloom, violet and cyan light, futuristic AI aesthetic, no text",
+   "token": {
+    "sekil": {
+     "golge": "glow",
+     "ikon_cizgi": 9
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.66,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.22,
+       1.18,
+       0.38,
+       1
+      ],
+      "settle": [
+       0.26,
+       1,
+       0.48,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "neon-cizgi",
+   "ad": "Neon çizgi",
+   "kategori": "Modern motion",
+   "kaynak": "bang-motion techniques.md §6, §7e (garis neon di gelap)",
+   "lisans": "MIT",
+   "ozet": "Karanlıkta ince parlayan kontur, katmanlı çerçeve ve eğri; müzik, teknoloji ve gece enerjisi.",
+   "palet": {
+    "vurgu": "#00F0FF",
+    "ikincil": "#FF2E97",
+    "zemin": "#05060A",
+    "yazi": "#EAFBFF",
+    "soluk": "#6B7A8F"
+   },
+   "font": {
+    "baslik": "Space Grotesk",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "kose": 14,
+   "cizgi": 3,
+   "tempo": "hizli",
+   "kesim": [
+    1.0,
+    2.2
+   ],
+   "gorsel": [
+    "İnce parlayan çizgi; dolgu yok",
+    "Siyaha yakın zemin, iki neon renk",
+    "Katmanlı çerçeve ve yay"
+   ],
+   "hareket": [
+    "Çizgi kendini çizer (stroke-dashoffset)",
+    "Vuruşta nabız ve titreşim",
+    "Kısa flaş ve glitch geçişi"
+   ],
+   "gecis": [
+    "glitch",
+    "flas",
+    "bozulma",
+    "piksel",
+    "zoom_kirbac",
+    "kirbac"
+   ],
+   "hazir": [
+    "nabiz",
+    "punch",
+    "sarsinti"
+   ],
+   "motion": [
+    "kutu-ciz",
+    "ok-ciz",
+    "titresim-cizgi",
+    "sok-dalgasi",
+    "hiz-cizgileri",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Müzik, oyun, teknoloji, gece hayatı, hızlı tempolu Reels.",
+   "kacin": [
+    "Açık zemin",
+    "Pastel",
+    "Serif ve el yazısı"
+   ],
+   "gorsel_prompt": "thin glowing neon outlines on near-black background, cyan and magenta light lines, layered frames and arcs, subtle glow, night tech energy, no text",
+   "token": {
+    "sekil": {
+     "golge": "glow",
+     "ikon_cizgi": 9
+    },
+    "hareket": {
+     "easing": "keskin",
+     "davranis": "titreme-giris",
+     "egri": {
+      "enter": [
+       0.14,
+       1,
+       0.28,
+       1
+      ],
+      "exit": [
+       0.72,
+       0,
+       0.86,
+       0
+      ],
+      "emphasis": [
+       0.26,
+       1.34,
+       0.48,
+       1
+      ],
+      "settle": [
+       0.2,
+       1,
+       0.36,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "brutalist-mono",
+   "ad": "Brutalist mono",
+   "kategori": "Modern motion",
+   "kaynak": "bang-motion (brutalist mono); library/motion/tema/brutalist-mono.css",
+   "lisans": "MIT",
+   "ozet": "Siyah-beyaz, keskin köşe, dev yazı, tek sarı vurgu; iddialı fikir ve manifesto videoları için.",
+   "font": {
+    "baslik": "Montserrat",
+    "govde": "Inter"
+   },
+   "agirlik": 900,
+   "tempo": "hizli",
+   "kesim": [
+    1.0,
+    2.0
+   ],
+   "gorsel": [
+    "Ekranı dolduran dev yazı",
+    "Sıfır köşe yuvarlama, kalın çizgi",
+    "Tek sarı vurgu"
+   ],
+   "hareket": [
+    "Sert kesim, taşmasız giriş (power4.out)",
+    "Yazı kelime kelime çarpar",
+    "Ölçekli punch"
+   ],
+   "gecis": [
+    "sil",
+    "panjur",
+    "bozulma",
+    "piksel",
+    "zoom_kirbac",
+    "kirbac"
+   ],
+   "hazir": [
+    "punch",
+    "carp_zoom",
+    "giris_carp"
+   ],
+   "motion": [
+    "kupur-baslik",
+    "ustunu-ciz",
+    "kirmizi-cizgi",
+    "kelime-taklasi",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Görüş, manifesto, iş dünyası tavsiyesi, sert hook.",
+   "kacin": [
+    "Yumuşak gradyan",
+    "Pastel ve yuvarlak köşe",
+    "Uzun çapraz geçiş"
+   ],
+   "gorsel_prompt": "brutalist black and white poster composition, massive bold type blocks, hard edges, single yellow accent, high contrast, no text",
+   "palet": {
+    "vurgu": "#FFE600",
+    "ikincil": "#FFFFFF",
+    "zemin": "#000000",
+    "yazi": "#FFFFFF",
+    "soluk": "#9A9A9A"
+   },
+   "kose": 0,
+   "cizgi": 14,
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "kontur": 4,
+     "ikon_cizgi": 19
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.12,
+       1,
+       0.24,
+       1
+      ],
+      "exit": [
+       0.75,
+       0,
+       0.88,
+       0
+      ],
+      "emphasis": [
+       0.18,
+       1.15,
+       0.3,
+       1
+      ],
+      "settle": [
+       0.16,
+       1,
+       0.28,
+       1
+      ]
+     }
+    },
+    "font": {
+     "harf": "buyuk"
+    }
+   }
+  },
+  {
+   "id": "temiz-kurumsal",
+   "ad": "Temiz kurumsal",
+   "kategori": "Kurumsal",
+   "kaynak": "openmontage/styles/clean-professional.yaml",
+   "lisans": "AGPL-3.0",
+   "ozet": "Güven veren, net açıklayıcı dil: beyaz zemin, mavi ana renk, yeşil onay, dokusuz düz yüzey.",
+   "palet": {
+    "vurgu": "#2563EB",
+    "ikincil": "#10B981",
+    "zemin": "#FFFFFF",
+    "yazi": "#1F2937",
+    "soluk": "#6B7280"
+   },
+   "font": {
+    "baslik": "Inter",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "kose": 12,
+   "cizgi": 4,
+   "tempo": "orta",
+   "kesim": [
+    2.5,
+    4.0
+   ],
+   "gorsel": [
+    "Beyaz kart, ince ayraç, dokusuz",
+    "Mavi ana, yeşil ve kehribar ikincil",
+    "Bol boşluk, düzenli ızgara"
+   ],
+   "hareket": [
+    "Solma, çözülme, sola kayma",
+    "Geçiş 0,4 sn, yazı kartı 3,5 sn",
+    "power3.out sakin giriş"
+   ],
+   "gecis": [
+    "sil",
+    "yukari-it",
+    "bolunme",
+    "zoom_kirbac",
+    "kay"
+   ],
+   "hazir": [
+    "giris_kay",
+    "zoom_in"
+   ],
+   "motion": [
+    "altbant-kutu",
+    "grafik-cubuk",
+    "grafik-halka",
+    "kontrol-listesi",
+    "karsilastirma",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Kurumsal açıklayıcı, eğitim, SaaS demosu, konferans konuşması.",
+   "kacin": [
+    "Glitch, neon",
+    "Ağır gren",
+    "Komik çizgi film"
+   ],
+   "gorsel_prompt": "clean corporate explainer frame, white background, blue and green accents, flat minimal shapes, tidy grid, trustworthy professional look, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "ikon_cizgi": 10
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.65,
+       0,
+       0.82,
+       0
+      ],
+      "emphasis": [
+       0.22,
+       1.14,
+       0.38,
+       1
+      ],
+      "settle": [
+       0.25,
+       1,
+       0.45,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "premium-minimal",
+   "ad": "Premium minimal",
+   "kategori": "Kurumsal",
+   "kaynak": "openmontage/styles/premium-minimalist.yaml",
+   "lisans": "AGPL-3.0",
+   "ozet": "Sakin, editoryal, kesin: mat yüzey, ince çizgi, petrol yeşili vurgu; yatırımcı ve uzman anlatımı için.",
+   "palet": {
+    "vurgu": "#0F766E",
+    "ikincil": "#2563EB",
+    "zemin": "#F9FAFB",
+    "yazi": "#111827",
+    "soluk": "#6B7280"
+   },
+   "font": {
+    "baslik": "Inter",
+    "govde": "Inter"
+   },
+   "agirlik": 600,
+   "kose": 8,
+   "cizgi": 2,
+   "tempo": "yavas",
+   "kesim": [
+    3.0,
+    5.0
+   ],
+   "gorsel": [
+    "Mat düz alanlar, ince ayraç çizgisi",
+    "Fotoğraf greni yalnız gerekirse",
+    "Sayılar büyük, etiketler küçük"
+   ],
+   "hareket": [
+    "Solma ve sola kayma, 0,45 sn",
+    "Yazı kartı 3,75 sn",
+    "Hiç taşma yok; expo.out"
+   ],
+   "gecis": [
+    "perde",
+    "sil",
+    "bolunme",
+    "zoom_kirbac",
+    "kay"
+   ],
+   "hazir": [
+    "ken_burns",
+    "giris_kay"
+   ],
+   "motion": [
+    "altbant-serit",
+    "grafik-cizgi",
+    "odometre-sayac",
+    "alinti-karti",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Yatırımcı güncellemesi, uzman açıklaması, güven isteyen lansman.",
+   "kacin": [
+    "Doygun renk",
+    "Zıplama ve konfeti",
+    "Kalın kontur"
+   ],
+   "gorsel_prompt": "premium minimalist editorial frame, matte off-white fields, fine divider lines, deep teal accent, calm precise composition, no text",
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "ikon_cizgi": 8
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.22,
+       1,
+       0.36,
+       1
+      ],
+      "exit": [
+       0.55,
+       0,
+       0.78,
+       0
+      ],
+      "emphasis": [
+       0.24,
+       1,
+       0.44,
+       1
+      ],
+      "settle": [
+       0.33,
+       1,
+       0.68,
+       1
+      ]
+     }
+    },
+    "font": {
+     "izleme": 0.02
+    }
+   }
+  },
+  {
+   "id": "minimal-diyagram",
+   "ad": "Minimal diyagram",
+   "kategori": "Kurumsal",
+   "kaynak": "openmontage/styles/minimalist-diagram.yaml",
+   "lisans": "AGPL-3.0",
+   "ozet": "Teknik derin dalış için odaklı dil: kâğıt beyazı zemin, çizilen ok ve kutu, tek kırmızı vurgu.",
+   "palet": {
+    "vurgu": "#E94560",
+    "ikincil": "#0F3460",
+    "zemin": "#FAFAFA",
+    "yazi": "#1A1A2E",
+    "soluk": "#9CA3AF"
+   },
+   "font": {
+    "baslik": "Inter",
+    "govde": "Inter",
+    "mono": "JetBrains Mono"
+   },
+   "agirlik": 600,
+   "kose": 6,
+   "cizgi": 3,
+   "tempo": "yavas",
+   "kesim": [
+    3.0,
+    5.0
+   ],
+   "gorsel": [
+    "Kâğıt dokulu açık zemin",
+    "İnce çizgili kutu, ok, bağlantı",
+    "Kod ve formül tek aralıklı yazıda"
+   ],
+   "hareket": [
+    "Çizgi kendini çizer, kutu sonra dolar",
+    "Yalnız solma ve çözülme",
+    "Bir anda tek fikir"
+   ],
+   "gecis": [
+    "sil",
+    "perde",
+    "bolunme",
+    "zoom_kirbac",
+    "kay"
+   ],
+   "hazir": [
+    "odak_zoom",
+    "ken_burns"
+   ],
+   "motion": [
+    "zemin-blueprint",
+    "ok-ciz",
+    "kutu-ciz",
+    "daire-ciz",
+    "terminal-akisi",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Mimari, matematik, bilgisayar bilimi, dokümantasyon videosu.",
+   "kacin": [
+    "Konfeti ve ikon yağmuru",
+    "Neon",
+    "Hızlı kesim zinciri"
+   ],
+   "gorsel_prompt": "minimalist technical diagram on paper-white background, thin hand-drawn quality lines, boxes and arrows, single red accent, precise and calm, no text",
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "ikon_cizgi": 8
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.22,
+       1,
+       0.38,
+       1
+      ],
+      "exit": [
+       0.52,
+       0,
+       0.78,
+       0
+      ],
+      "emphasis": [
+       0.25,
+       1,
+       0.5,
+       1
+      ],
+      "settle": [
+       0.3,
+       1,
+       0.6,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "editoryal-acik",
+   "ad": "Editoryal açık",
+   "kategori": "Editoryal",
+   "kaynak": "bang-motion (editorial light); library/motion/tema/editorial-acik.css",
+   "lisans": "MIT",
+   "ozet": "Dergi sayfası gibi: kırık beyaz zemin, siyah yazı, ince çizgi, tek lacivert vurgu.",
+   "font": {
+    "baslik": "Playfair Display",
+    "govde": "Inter"
+   },
+   "agirlik": 600,
+   "tempo": "orta",
+   "kesim": [
+    2.5,
+    4.0
+   ],
+   "gorsel": [
+    "Serif başlık, sans gövde",
+    "İnce kural çizgisi, sütun düzeni",
+    "Fotoğraf çerçeveli, kenar boşluklu"
+   ],
+   "hareket": [
+    "Satır satır maske açılışı",
+    "Sakin kayma, taşma yok",
+    "Fotoğrafta ken burns"
+   ],
+   "gecis": [
+    "perde",
+    "sil",
+    "yirtma",
+    "film_yanigi",
+    "kay"
+   ],
+   "hazir": [
+    "ken_burns",
+    "giris_kay"
+   ],
+   "motion": [
+    "alinti-karti",
+    "altbant-serit",
+    "alt-cizgi",
+    "cerceve-polaroid",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Haber yorumu, kitap ve kültür, uzun biçimli deneme.",
+   "kacin": [
+    "Neon ve glitch",
+    "Çizgi film",
+    "Konfeti"
+   ],
+   "gorsel_prompt": "editorial magazine layout aesthetic, off-white paper, black serif headline area, thin rules, navy accent, refined photography, no text",
+   "palet": {
+    "vurgu": "#0B3D91",
+    "ikincil": "#C8553D",
+    "zemin": "#F7F5F0",
+    "yazi": "#111111",
+    "soluk": "#77736B"
+   },
+   "kose": 0,
+   "cizgi": 4,
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "ikon_cizgi": 8
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.22,
+       1,
+       0.36,
+       1
+      ],
+      "exit": [
+       0.55,
+       0,
+       0.8,
+       0
+      ],
+      "emphasis": [
+       0.25,
+       1,
+       0.48,
+       1
+      ],
+      "settle": [
+       0.33,
+       1,
+       0.68,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "kupur-kolaj",
+   "ad": "Küpür kolaj",
+   "kategori": "Editoryal",
+   "kaynak": "bang-motion (visual journalism); library/motion/tema/kupur-kolaj.css",
+   "lisans": "MIT",
+   "ozet": "Görsel gazetecilik: kâğıt zemin, gazete küpürü, kırmızı çizgi, fosforlu sarı, yırtık kenar.",
+   "font": {
+    "baslik": "Montserrat",
+    "govde": "Inter"
+   },
+   "agirlik": 900,
+   "tempo": "orta",
+   "kesim": [
+    1.5,
+    3.0
+   ],
+   "gorsel": [
+    "Kesik başlık, yırtık kâğıt kenarı",
+    "Kırmızı kalem dairesi, fosforlu kalem",
+    "Kâğıt dokusu ve gölge"
+   ],
+   "hareket": [
+    "Kamera kolaj üstünde gezer, kesik parçalara iter",
+    "Kalem çizgisi kendini çizer",
+    "Kâğıt yırtılma geçişi"
+   ],
+   "gecis": [
+    "kagit-yirtik",
+    "firca-darbesi",
+    "yirtma",
+    "film_yanigi",
+    "kay"
+   ],
+   "hazir": [
+    "ken_burns",
+    "odak_zoom"
+   ],
+   "motion": [
+    "kupur-baslik",
+    "fosforlu-kalem",
+    "daire-ciz",
+    "cerceve-yirtik-kagit",
+    "zemin-kagit",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Haber analizi, araştırma, olay anlatımı, belgesel kısa video.",
+   "kacin": [
+    "Cam ve neon",
+    "Yumuşak 3D",
+    "Temiz kurumsal düzen"
+   ],
+   "gorsel_prompt": "visual journalism collage, newspaper clippings on paper background, torn edges, red pen circles, yellow highlighter marks, paper texture and shadows, no text",
+   "palet": {
+    "vurgu": "#E3120B",
+    "ikincil": "#FFE14D",
+    "zemin": "#F2EBDD",
+    "yazi": "#141414",
+    "soluk": "#6B655A"
+   },
+   "kose": 2,
+   "cizgi": 12,
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "doku": "kagit",
+     "ikon_cizgi": 16
+    },
+    "hareket": {
+     "easing": "keskin",
+     "adim_fps": 12,
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.7,
+       0,
+       0.85,
+       0
+      ],
+      "emphasis": [
+       0.24,
+       1.22,
+       0.4,
+       1
+      ],
+      "settle": [
+       0.22,
+       1,
+       0.38,
+       1
+      ],
+      "adim": 5
+     }
+    },
+    "font": {
+     "harf": "buyuk"
+    }
+   }
+  },
+  {
+   "id": "altin-fintech",
+   "ad": "Altın fintech",
+   "kategori": "Kurumsal",
+   "kaynak": "library/motion/tema/altin-fintech.css",
+   "lisans": "proje",
+   "ozet": "Finans ve yatırım anlatımı: gece laciverti, altın vurgu, yeşil artış, net grafik.",
+   "font": {
+    "baslik": "Outfit",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    3.5
+   ],
+   "gorsel": [
+    "Koyu lacivert zemin, altın vurgu",
+    "Yeşil artış, kırmızı düşüş",
+    "Büyük sayı, küçük etiket"
+   ],
+   "hareket": [
+    "Sayaç expo.out ile sayar",
+    "Grafik çizgisi soldan sağa çizilir",
+    "Altın parıltı tek seferlik"
+   ],
+   "gecis": [
+    "sil",
+    "capraz-serit",
+    "bolunme",
+    "zoom_kirbac",
+    "kay"
+   ],
+   "hazir": [
+    "odak_zoom",
+    "punch"
+   ],
+   "motion": [
+    "odometre-sayac",
+    "grafik-cizgi",
+    "grafik-cubuk",
+    "ikon-para",
+    "fiyat-etiketi",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Finans, yatırım, kripto, iş dünyası.",
+   "kacin": [
+    "Çizgi film",
+    "Pastel",
+    "Kâğıt kolaj"
+   ],
+   "gorsel_prompt": "premium fintech dark navy background, gold accents, subtle green growth lines, clean data visualization feel, no text",
+   "palet": {
+    "vurgu": "#E8B84B",
+    "ikincil": "#34D399",
+    "zemin": "#0C0F1A",
+    "yazi": "#F6F4EB",
+    "soluk": "#8B93B5"
+   },
+   "kose": 14,
+   "cizgi": 3,
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "ikon_cizgi": 10
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.68,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.22,
+       1.18,
+       0.36,
+       1
+      ],
+      "settle": [
+       0.24,
+       1,
+       0.42,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "sinematik-koyu",
+   "ad": "Sinematik koyu",
+   "kategori": "Sinematik",
+   "kaynak": "bang-motion (cinematic dark); library/motion/tema/sinematik-koyu.css",
+   "lisans": "MIT",
+   "ozet": "Siyaha yakın zemin, soğuk beyaz yazı, camgöbeği vurgu; belgesel ve gerilim anlatımı.",
+   "font": {
+    "baslik": "Montserrat",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "tempo": "orta",
+   "kesim": [
+    2.5,
+    4.5
+   ],
+   "gorsel": [
+    "Geniş sinema oranı hissi, koyu kenar",
+    "Soğuk vurgu, düşük doygunluk",
+    "Işık huzmesi ve ince gren"
+   ],
+   "hareket": [
+    "Yavaş push-in, uzun tutuş",
+    "Harf aralığı açılarak yazı girişi",
+    "Flaş yerine ışık sızıntısı"
+   ],
+   "gecis": [
+    "isik-sizintisi",
+    "perde",
+    "film_yanigi",
+    "isik",
+    "zoom_kirbac"
+   ],
+   "hazir": [
+    "ken_burns",
+    "zoom_in",
+    "bulanik_gir"
+   ],
+   "motion": [
+    "baslik-acilis",
+    "isik-demeti",
+    "altbant-konu",
+    "cerceve-bant",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Belgesel, gerilim, gizem, tarih ve gerçek olay.",
+   "kacin": [
+    "Pastel ve konfeti",
+    "Zıplayan ikon",
+    "Açık zemin"
+   ],
+   "gorsel_prompt": "cinematic dark film still, near-black shadows, cool teal highlights, low saturation, volumetric light, subtle grain, anamorphic mood, no text",
+   "palet": {
+    "vurgu": "#3EE6C9",
+    "ikincil": "#FF7A00",
+    "zemin": "#05070A",
+    "yazi": "#F2F5F7",
+    "soluk": "#8B95A1"
+   },
+   "kose": 12,
+   "cizgi": 6,
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "ikon_cizgi": 10
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.22,
+       1,
+       0.36,
+       1
+      ],
+      "exit": [
+       0.5,
+       0,
+       0.75,
+       0
+      ],
+      "emphasis": [
+       0.25,
+       1,
+       0.5,
+       1
+      ],
+      "settle": [
+       0.35,
+       1,
+       0.7,
+       1
+      ]
+     }
+    },
+    "font": {
+     "harf": "buyuk",
+     "izleme": 0.08
+    }
+   }
+  },
+  {
+   "id": "sert-isik-gercekcilik",
+   "ad": "Sert ışık gerçekçilik",
+   "kategori": "Sinematik",
+   "kaynak": "huashu-art-motion 风格配方/24_hopper.md",
+   "lisans": "MIT",
+   "ozet": "Amerikan gerçekçi resminin yalnız ışığı: sert kenarlı güneş lekesi, sessiz iç mekân, yalnızlık hissi.",
+   "palet": {
+    "vurgu": "#F2C14E",
+    "ikincil": "#2A9D8F",
+    "zemin": "#13202B",
+    "yazi": "#F4EDE1",
+    "soluk": "#7D8C99"
+   },
+   "font": {
+    "baslik": "Playfair Display",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "kose": 4,
+   "cizgi": 3,
+   "tempo": "yavas",
+   "kesim": [
+    3.5,
+    6.0
+   ],
+   "gorsel": [
+    "Sert kenarlı ışık bloğu, keskin gölge",
+    "Düz boyanmış yüzey, az detay",
+    "Sıcak ışık, soğuk gölge"
+   ],
+   "hareket": [
+    "Işık lekesi yavaşça yüzün üstünden geçer",
+    "Sabit kadraj, nadir kesim",
+    "Sert kenarlı güneş süpürmesiyle geçiş"
+   ],
+   "gecis": [
+    "perde",
+    "isik-sizintisi",
+    "film_yanigi",
+    "isik",
+    "zoom_kirbac"
+   ],
+   "hazir": [
+    "ken_burns"
+   ],
+   "motion": [
+    "isik-demeti",
+    "alinti-karti",
+    "altbant-serit",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "kart/cta-karti"
+   ],
+   "uygun": "Deneme, yalnızlık ve şehir hayatı, düşünce videosu, sakin anlatım.",
+   "kacin": [
+    "Hızlı kesim",
+    "Konfeti ve ikon",
+    "Neon"
+   ],
+   "gorsel_prompt": "quiet realist interior painting style, hard-edged sunlight patches across walls, crisp shadows, flat painted surfaces, warm light and cool shade, solitary mood, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "ikon_cizgi": 8
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.3,
+       0,
+       0.25,
+       1
+      ],
+      "exit": [
+       0.48,
+       0,
+       0.76,
+       0
+      ],
+      "emphasis": [
+       0.28,
+       1,
+       0.56,
+       1
+      ],
+      "settle": [
+       0.38,
+       1,
+       0.72,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "piksel-8bit",
+   "ad": "Piksel 8-bit",
+   "kategori": "Retro",
+   "kaynak": "huashu-art-motion 风格配方/14_8bit.md; library/motion/tema/piksel-16bit.css",
+   "lisans": "MIT",
+   "ozet": "Oyun konsolu dili: düşük çözünürlüklü piksel, 14 renk palet, HUD kalbi, soru bloğundan çıkan altın.",
+   "font": {
+    "baslik": "Pixelify Sans",
+    "govde": "Pixelify Sans",
+    "mono": "VT323"
+   },
+   "agirlik": 700,
+   "tempo": "hizli",
+   "kesim": [
+    1.2,
+    2.5
+   ],
+   "gorsel": [
+    "240x135 piksel ızgara, 1 px siyah kenar",
+    "Sınırlı palet",
+    "HUD: can, puan, seviye"
+   ],
+   "hareket": [
+    "15-30 fps adımlı hareket",
+    "Piksel blokla büyüyüp küçülme geçişi",
+    "Toplanan nesnede zıplama"
+   ],
+   "gecis": [
+    "piksel-cozunme",
+    "panjur",
+    "bozulma",
+    "piksel",
+    "zoom_kirbac",
+    "kirbac"
+   ],
+   "hazir": [
+    "punch",
+    "nabiz",
+    "sarsinti"
+   ],
+   "motion": [
+    "sayi-rozeti",
+    "yildiz-patlama",
+    "geri-sayim",
+    "ikon-kalp",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Oyun kültürü, retro teknoloji, algoritma, eğlenceli eğitim.",
+   "kacin": [
+    "Bulanıklık ve yumuşak gölge",
+    "Serif",
+    "Fotoğraf gerçekçiliği"
+   ],
+   "gorsel_prompt": "8-bit pixel art scene, 240x135 low resolution grid, limited 14 color palette, 1px dark outlines, retro game HUD vibe, crisp pixels, no text",
+   "palet": {
+    "vurgu": "#F8B800",
+    "ikincil": "#3CBCFC",
+    "zemin": "#000000",
+    "yazi": "#FCFCFC",
+    "soluk": "#BCBCBC"
+   },
+   "kose": 0,
+   "cizgi": 8,
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "kontur": 6,
+     "doku": "piksel",
+     "piksel": 2,
+     "ikon_cizgi": 16
+    },
+    "hareket": {
+     "easing": "basamak",
+     "adim_fps": 8,
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.7,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.3,
+       1.45,
+       0.58,
+       1
+      ],
+      "settle": [
+       0.2,
+       1,
+       0.36,
+       1
+      ],
+      "adim": 4
+     }
+    },
+    "font": {
+     "harf": "buyuk",
+     "rakam": "VT323"
+    },
+    "renk": {
+     "olumlu": "#58D854",
+     "olumsuz": "#F83800"
+    },
+    "altyazi": {
+     "font": "Pixelify Sans",
+     "kontur": 10,
+     "agirlik": 700
+    }
+   }
+  },
+  {
+   "id": "vaporwave",
+   "ad": "Vaporwave neon",
+   "kategori": "Retro",
+   "kaynak": "huashu-art-motion 风格配方/26_vaporwave.md",
+   "lisans": "MIT",
+   "ozet": "Seksenler sonu dijital nostalji: neon çift renk, perspektif ızgara, VHS kanal kayması, şeritli gün batımı.",
+   "palet": {
+    "vurgu": "#FF71CE",
+    "ikincil": "#01CDFE",
+    "zemin": "#1A0B2E",
+    "yazi": "#FFFBFE",
+    "soluk": "#B967FF"
+   },
+   "font": {
+    "baslik": "Space Grotesk",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "kose": 6,
+   "cizgi": 4,
+   "tempo": "orta",
+   "kesim": [
+    1.5,
+    3.0
+   ],
+   "gorsel": [
+    "Pembe-camgöbeği neon parlama",
+    "İleri akan perspektif ızgara, şeritli güneş",
+    "VHS kanal kayması ve tarama gürültüsü"
+   ],
+   "hareket": [
+    "Izgara sürekli öne akar",
+    "Tabela titrer",
+    "VHS yırtılması ve yukarı kayma geçişi"
+   ],
+   "gecis": [
+    "glitch",
+    "crt-kapanis",
+    "bozulma",
+    "piksel",
+    "zoom_kirbac",
+    "kirbac"
+   ],
+   "hazir": [
+    "sarsinti",
+    "nabiz",
+    "bulanik_gir"
+   ],
+   "motion": [
+    "titresim-cizgi",
+    "zemin-serit",
+    "isin-donen",
+    "kenar-isiltisi",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Müzik, internet kültürü, nostalji, eğlence.",
+   "kacin": [
+    "Kurumsal düz düzen",
+    "Kâğıt ve kalem",
+    "Doğa tonları"
+   ],
+   "gorsel_prompt": "vaporwave retro digital scene, neon pink and cyan glow, perspective grid floor, striped setting sun, VHS chromatic aberration and scanlines, no text",
+   "token": {
+    "sekil": {
+     "golge": "glow",
+     "doku": "tarama",
+     "ikon_cizgi": 10
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "davranis": "titreme-giris",
+     "egri": {
+      "enter": [
+       0.24,
+       1,
+       0.42,
+       1
+      ],
+      "exit": [
+       0.56,
+       0,
+       0.8,
+       0
+      ],
+      "emphasis": [
+       0.28,
+       1.24,
+       0.48,
+       1
+      ],
+      "settle": [
+       0.32,
+       1,
+       0.64,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "retro-analog",
+   "ad": "Retro analog",
+   "kategori": "Retro",
+   "kaynak": "bang-motion (retro/analog); library/motion/tema/retro-analog.css",
+   "lisans": "MIT",
+   "ozet": "Krem, hardal, tuğla; kalın çizgi ve yumuşak gren ile yetmişler afişi sıcaklığı.",
+   "font": {
+    "baslik": "Bungee",
+    "govde": "Inter"
+   },
+   "agirlik": 800,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    3.5
+   ],
+   "gorsel": [
+    "Sıcak toprak paleti",
+    "Kalın çizgi, yuvarlak dalga şekli",
+    "Baskı greni ve hafif kayma"
+   ],
+   "hareket": [
+    "Dalga ve şerit yavaşça kayar",
+    "Yazı yay ile oturur",
+    "Fırça darbesi geçişi"
+   ],
+   "gecis": [
+    "firca-darbesi",
+    "panjur",
+    "film_yanigi",
+    "zoom_kirbac",
+    "kirbac",
+    "yirtma"
+   ],
+   "hazir": [
+    "giris_pop",
+    "ken_burns"
+   ],
+   "motion": [
+    "zemin-serit",
+    "zemin-halftone",
+    "baslik-acilis",
+    "cerceve-bant",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Yemek, seyahat, müzik, kişisel marka.",
+   "kacin": [
+    "Neon ve cam",
+    "Soğuk teknoloji",
+    "Glitch"
+   ],
+   "gorsel_prompt": "1970s retro analog poster style, cream mustard and brick palette, thick rounded wave shapes, print grain, slight misregistration, no text",
+   "palet": {
+    "vurgu": "#D1495B",
+    "ikincil": "#EDAE49",
+    "zemin": "#2B2D42",
+    "yazi": "#F4EBD0",
+    "soluk": "#B8AE97"
+   },
+   "kose": 6,
+   "cizgi": 12,
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "doku": "gren",
+     "ikon_cizgi": 17
+    },
+    "hareket": {
+     "easing": "yay",
+     "egri": {
+      "enter": [
+       0.2,
+       1,
+       0.36,
+       1
+      ],
+      "exit": [
+       0.6,
+       0,
+       0.82,
+       0
+      ],
+      "emphasis": [
+       0.32,
+       1.42,
+       0.6,
+       1
+      ],
+      "settle": [
+       0.32,
+       1.2,
+       0.62,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "pop-art-noktali",
+   "ad": "Pop art noktalı",
+   "kategori": "Sanat akımı",
+   "kaynak": "huashu-art-motion 风格配方/13_pop.md",
+   "lisans": "MIT",
+   "ozet": "Çizgi roman pop sanatı: Ben-Day noktası, kalın siyah kontur, yansıma balonu, dört karede renk değişimi.",
+   "palet": {
+    "vurgu": "#E4002B",
+    "ikincil": "#FFE600",
+    "zemin": "#FDF6E3",
+    "yazi": "#111111",
+    "soluk": "#1E5AA8"
+   },
+   "font": {
+    "baslik": "Bungee",
+    "govde": "Inter"
+   },
+   "agirlik": 900,
+   "kose": 4,
+   "cizgi": 10,
+   "tempo": "hizli",
+   "kesim": [
+    1.0,
+    2.2
+   ],
+   "gorsel": [
+    "Ben-Day nokta deseni",
+    "Kalın siyah kontur, ana renkler",
+    "Yansıma (POW) balonu"
+   ],
+   "hareket": [
+    "Dört karede renk değişimi",
+    "Yansıma balonu titrer",
+    "Şimşek ve noktalanma geçişi"
+   ],
+   "gecis": [
+    "flas",
+    "sekil-perde",
+    "zoom_kirbac",
+    "bolunme",
+    "sil"
+   ],
+   "hazir": [
+    "punch",
+    "carp_zoom",
+    "sarsinti"
+   ],
+   "motion": [
+    "zemin-halftone",
+    "vurgu-patlama",
+    "yildiz-patlama",
+    "unlem",
+    "sok-dalgasi",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Hook, mizah, ürün vurgusu, çarpıcı karşılaştırma.",
+   "kacin": [
+    "Yumuşak gradyan",
+    "Yavaş geçiş",
+    "Soluk renk"
+   ],
+   "gorsel_prompt": "pop art comic style, Ben-Day halftone dots, thick black outlines, primary red yellow blue, bold graphic composition, no text",
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "kontur": 6,
+     "doku": "halftone",
+     "ikon_cizgi": 18
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.14,
+       1,
+       0.26,
+       1
+      ],
+      "exit": [
+       0.72,
+       0,
+       0.86,
+       0
+      ],
+      "emphasis": [
+       0.32,
+       1.54,
+       0.56,
+       1
+      ],
+      "settle": [
+       0.24,
+       1.15,
+       0.44,
+       1
+      ]
+     }
+    },
+    "font": {
+     "harf": "buyuk"
+    }
+   }
+  },
+  {
+   "id": "murekkep-zen",
+   "ad": "Mürekkep zen",
+   "kategori": "Sanat akımı",
+   "kaynak": "huashu-art-motion 风格配方/17_ink.md; library/motion/tema/murekkep-zen.css",
+   "lisans": "MIT",
+   "ozet": "Doğu mürekkep resmi: fırçanın kuru izi, yayılan mürekkep, geniş boşluk, kırmızı mühür.",
+   "font": {
+    "baslik": "EB Garamond",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "tempo": "yavas",
+   "kesim": [
+    3.0,
+    5.0
+   ],
+   "gorsel": [
+    "Kuru fırça izi, mürekkep yayılması",
+    "Boşluk kompozisyonun yarısı",
+    "Tek kırmızı mühür vurgusu"
+   ],
+   "hareket": [
+    "Açılışta fırça kendini yazar",
+    "Mürekkep halkası yavaşça yayılır",
+    "Uzun, nefes alan tutuş"
+   ],
+   "gecis": [
+    "murekkep",
+    "firca-darbesi",
+    "film_yanigi",
+    "yirtma",
+    "isik",
+    "sil"
+   ],
+   "hazir": [
+    "ken_burns",
+    "bulanik_gir"
+   ],
+   "motion": [
+    "alinti-karti",
+    "duman-pofu",
+    "zemin-kagit",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "kart/cta-karti"
+   ],
+   "uygun": "Felsefe, tarih, psikoloji, kitap özeti, meditasyon.",
+   "kacin": [
+    "Neon, glitch",
+    "Yoğun arayüz",
+    "Hızlı kesim"
+   ],
+   "gorsel_prompt": "East Asian ink wash painting, dry brush strokes, ink bleeding into rice paper, generous empty space, single red seal accent, serene, no text",
+   "palet": {
+    "vurgu": "#C83E2B",
+    "ikincil": "#4A4A48",
+    "zemin": "#F4EFE6",
+    "yazi": "#1C1C1C",
+    "soluk": "#8C857B"
+   },
+   "kose": 4,
+   "cizgi": 6,
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "doku": "kagit",
+     "ikon_cizgi": 10
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.28,
+       1,
+       0.48,
+       1
+      ],
+      "exit": [
+       0.46,
+       0,
+       0.74,
+       0
+      ],
+      "emphasis": [
+       0.28,
+       1,
+       0.55,
+       1
+      ],
+      "settle": [
+       0.38,
+       1,
+       0.74,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "kesik-kagit-kolaj",
+   "ad": "Kesik kâğıt kolaj",
+   "kategori": "Sanat akımı",
+   "kaynak": "huashu-art-motion 风格配方/30_matisse.md",
+   "lisans": "MIT",
+   "ozet": "Makasla kesilmiş doygun renk kâğıtlar: düzensiz kenar, iğneli kâğıt gölgesi, yüzen organik şekiller.",
+   "palet": {
+    "vurgu": "#1F4E9C",
+    "ikincil": "#F2A541",
+    "zemin": "#F6EFE3",
+    "yazi": "#1A1A1A",
+    "soluk": "#8A8172"
+   },
+   "font": {
+    "baslik": "Fraunces",
+    "govde": "Inter"
+   },
+   "agirlik": 800,
+   "kose": 18,
+   "cizgi": 0,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    3.5
+   ],
+   "gorsel": [
+    "Makas kenarı düzensiz şekiller",
+    "Doygun düz renk, hafif kâğıt gölgesi",
+    "Yosun ve yaprak gibi organik form"
+   ],
+   "hareket": [
+    "Kâğıt parçaları süzülür ve sallanır",
+    "Mavi kâğıt sahneyi süpürür",
+    "Yumuşak yay yerleşmesi"
+   ],
+   "gecis": [
+    "sekil-perde",
+    "kagit-yirtik",
+    "yirtma",
+    "film_yanigi",
+    "kay"
+   ],
+   "hazir": [
+    "giris_pop",
+    "ken_burns"
+   ],
+   "motion": [
+    "cerceve-kupur",
+    "zemin-kagit",
+    "parilti",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Sanat, tasarım, yaratıcı süreç, çocuk ve aile içeriği.",
+   "kacin": [
+    "Neon ve cam",
+    "Fotoğraf gerçekçiliği",
+    "Kurumsal grafik"
+   ],
+   "gorsel_prompt": "paper cut-out collage, irregular scissor-cut organic shapes, saturated blue and amber paper, pinned paper drop shadows, warm off-white background, no text",
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "doku": "kagit",
+     "ikon_cizgi": 13
+    },
+    "hareket": {
+     "easing": "keskin",
+     "adim_fps": 12,
+     "egri": {
+      "enter": [
+       0.22,
+       1,
+       0.38,
+       1
+      ],
+      "exit": [
+       0.58,
+       0,
+       0.8,
+       0
+      ],
+      "emphasis": [
+       0.3,
+       1.32,
+       0.58,
+       1
+      ],
+      "settle": [
+       0.32,
+       1.16,
+       0.62,
+       1
+      ],
+      "adim": 6
+     }
+    }
+   }
+  },
+  {
+   "id": "bauhaus-geometri",
+   "ad": "Bauhaus geometri",
+   "kategori": "Sanat akımı",
+   "kaynak": "huashu-art-motion 风格配方/12_bauhaus.md",
+   "lisans": "MIT",
+   "ozet": "Saf geometrik kompozisyon: kırmızı, sarı, mavi daire-kare-üçgen, ızgara ve döner parçalar.",
+   "palet": {
+    "vurgu": "#E63946",
+    "ikincil": "#FFC300",
+    "zemin": "#F1EDE4",
+    "yazi": "#111111",
+    "soluk": "#1D3557"
+   },
+   "font": {
+    "baslik": "Montserrat",
+    "govde": "Inter"
+   },
+   "agirlik": 800,
+   "kose": 0,
+   "cizgi": 8,
+   "tempo": "orta",
+   "kesim": [
+    1.8,
+    3.2
+   ],
+   "gorsel": [
+    "Daire, kare, üçgen; ana renkler",
+    "Izgara ve asimetrik denge",
+    "Düz renk, doku yok"
+   ],
+   "hareket": [
+    "Parçalar döner ve büyür",
+    "Izgara hücreleri renk değiştirir",
+    "Geometrik döner büyüme geçişi"
+   ],
+   "gecis": [
+    "sekil-perde",
+    "iris",
+    "bolunme",
+    "sil"
+   ],
+   "hazir": [
+    "giris_pop",
+    "egim"
+   ],
+   "motion": [
+    "zemin-nokta-izgara",
+    "kutu-ciz",
+    "grafik-halka",
+    "karsilastirma",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Tasarım, mimari, eğitim, marka kimliği anlatımı.",
+   "kacin": [
+    "Gren ve fırça",
+    "Neon",
+    "Fotoğraf üstüne yoğun efekt"
+   ],
+   "gorsel_prompt": "Bauhaus geometric composition, primary red yellow blue circles squares triangles, asymmetric grid balance, flat colors, off-white background, no text",
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "ikon_cizgi": 15
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.68,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.22,
+       1.2,
+       0.36,
+       1
+      ],
+      "settle": [
+       0.2,
+       1,
+       0.36,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "golge-kukla",
+   "ad": "Gölge kukla",
+   "kategori": "Sanat akımı",
+   "kaynak": "huashu-art-motion 风格配方/34_shadowpuppet.md; library/motion/tema/golge-kukla.css",
+   "lisans": "MIT",
+   "ozet": "Arkadan aydınlatılmış kukla perdesi: yarı saydam deri, perçinli eklem, 10 fps adım, yağ lambası titremesi.",
+   "font": {
+    "baslik": "Playfair Display",
+    "govde": "Inter"
+   },
+   "agirlik": 800,
+   "tempo": "yavas",
+   "kesim": [
+    3.0,
+    5.0
+   ],
+   "gorsel": [
+    "Yarı saydam oyma kukla",
+    "Sıcak arka ışık, perde dokusu",
+    "Perçinli eklem"
+   ],
+   "hareket": [
+    "Çubukla oynatılan sert eklem, bilek savrulması",
+    "10 fps adımlı hareket",
+    "Perde arkasında lamba yanar"
+   ],
+   "gecis": [
+    "perde",
+    "iris",
+    "film_yanigi",
+    "isik",
+    "bolunme"
+   ],
+   "hazir": [
+    "ken_burns",
+    "nabiz"
+   ],
+   "motion": [
+    "duman-pofu",
+    "alinti-karti",
+    "isik-demeti",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "kart/cta-karti"
+   ],
+   "uygun": "Masal, tarih, kültür mirası, dramatik hikâye.",
+   "kacin": [
+    "Arayüz grafiği",
+    "Neon",
+    "Hızlı kesim"
+   ],
+   "gorsel_prompt": "traditional shadow puppet theater, translucent carved leather figures with rivet joints, warm oil lamp backlight on cloth screen, dramatic storytelling, no text",
+   "palet": {
+    "vurgu": "#F2A65A",
+    "ikincil": "#D94E34",
+    "zemin": "#1A110B",
+    "yazi": "#F5E6D3",
+    "soluk": "#2B9EB3"
+   },
+   "kose": 4,
+   "cizgi": 4,
+   "token": {
+    "sekil": {
+     "golge": "sert",
+     "doku": "gren",
+     "ikon_cizgi": 12
+    },
+    "hareket": {
+     "easing": "keskin",
+     "adim_fps": 10,
+     "egri": {
+      "enter": [
+       0.2,
+       1,
+       0.34,
+       1
+      ],
+      "exit": [
+       0.62,
+       0,
+       0.82,
+       0
+      ],
+      "emphasis": [
+       0.26,
+       1.1,
+       0.45,
+       1
+      ],
+      "settle": [
+       0.28,
+       1,
+       0.52,
+       1
+      ],
+      "adim": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "gravur-el-yazmasi",
+   "ad": "Gravür el yazması",
+   "kategori": "Sanat akımı",
+   "kaynak": "library/motion/tema/gravur-el-yazmasi.css; huashu-art-motion 风格配方/05_gothic.md",
+   "lisans": "proje; MIT",
+   "ozet": "Eski harita ve belge dili: parşömen, gravür çizgisi, kırmızı rota, kronoloji.",
+   "font": {
+    "baslik": "EB Garamond",
+    "govde": "EB Garamond"
+   },
+   "agirlik": 700,
+   "tempo": "yavas",
+   "kesim": [
+    3.0,
+    5.0
+   ],
+   "gorsel": [
+    "Parşömen zemin, gravür tarama çizgisi",
+    "Kırmızı mürekkep rota ve işaret",
+    "Serif yazı, süslü başharf"
+   ],
+   "hareket": [
+    "Rota çizgisi kendini çizer",
+    "Sayfa çevirme geçişi",
+    "Yavaş harita kaydırma"
+   ],
+   "gecis": [
+    "murekkep",
+    "perde",
+    "yirtma",
+    "film_yanigi",
+    "kay"
+   ],
+   "hazir": [
+    "ken_burns",
+    "odak_zoom"
+   ],
+   "motion": [
+    "ok-kivrik",
+    "daire-ciz",
+    "zemin-kagit",
+    "alinti-karti",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "kart/cta-karti"
+   ],
+   "uygun": "Tarih belgeseli, harita rotası, kronoloji, kültür.",
+   "kacin": [
+    "Neon ve cam",
+    "Sans dev yazı",
+    "Konfeti"
+   ],
+   "gorsel_prompt": "antique engraved map and manuscript style, parchment texture, fine engraving hatch lines, red ink route lines, ornate serif feel, no text",
+   "palet": {
+    "vurgu": "#B83A2D",
+    "ikincil": "#8A7968",
+    "zemin": "#EFE6D5",
+    "yazi": "#1E1B18",
+    "soluk": "#9E907E"
+   },
+   "kose": 2,
+   "cizgi": 5,
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "doku": "kagit",
+     "ikon_cizgi": 8
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.26,
+       1,
+       0.44,
+       1
+      ],
+      "exit": [
+       0.48,
+       0,
+       0.76,
+       0
+      ],
+      "emphasis": [
+       0.26,
+       1,
+       0.5,
+       1
+      ],
+      "settle": [
+       0.35,
+       1,
+       0.7,
+       1
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "beyaz-tahta",
+   "ad": "Beyaz tahta",
+   "kategori": "Editoryal",
+   "kaynak": "huashu-art-motion (beyaz tahta grameri); library/motion/tema/beyaz-tahta.css",
+   "lisans": "MIT",
+   "ozet": "Beyaz zemin, keçeli kalem çizgisi, mavi vurgu; adım adım çizerek anlatma.",
+   "font": {
+    "baslik": "Caveat",
+    "govde": "Inter"
+   },
+   "agirlik": 700,
+   "tempo": "orta",
+   "kesim": [
+    2.5,
+    4.0
+   ],
+   "gorsel": [
+    "Beyaz zemin, kalın keçeli kalem",
+    "Mavi ana, kırmızı ikincil",
+    "El çizimi ok, kutu, daire"
+   ],
+   "hareket": [
+    "Çizgi kendini çizer",
+    "Kamera çizilen parçaya kayar",
+    "Silme geçişi"
+   ],
+   "gecis": [
+    "sil",
+    "firca-darbesi",
+    "yirtma",
+    "film_yanigi",
+    "kay"
+   ],
+   "hazir": [
+    "odak_zoom",
+    "ken_burns"
+   ],
+   "motion": [
+    "ok-ciz",
+    "daire-ciz",
+    "kutu-ciz",
+    "alt-cizgi",
+    "parantez",
+    "tipografi/kinetik-baslik",
+    "tipografi/bolum-baslik",
+    "tipografi/vurgu-soz",
+    "tipografi/durum-rozeti",
+    "kart/cta-karti"
+   ],
+   "uygun": "Eğitim, kavram açıklama, iş stratejisi, nasıl yapılır.",
+   "kacin": [
+    "Koyu sinematik",
+    "Neon",
+    "Ağır doku"
+   ],
+   "gorsel_prompt": "whiteboard explainer drawing, white background, thick marker strokes, blue and red marker accents, hand-drawn arrows and boxes, no text",
+   "palet": {
+    "vurgu": "#1F5FFF",
+    "ikincil": "#FF4B3E",
+    "zemin": "#FFFFFF",
+    "yazi": "#1A1A1A",
+    "soluk": "#7A7F87"
+   },
+   "kose": 10,
+   "cizgi": 8,
+   "token": {
+    "sekil": {
+     "golge": "yok",
+     "ikon_cizgi": 14
+    },
+    "hareket": {
+     "easing": "keskin",
+     "davranis": "titresim",
+     "egri": {
+      "enter": [
+       0.18,
+       1,
+       0.32,
+       1
+      ],
+      "exit": [
+       0.65,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.26,
+       1.24,
+       0.46,
+       1
+      ],
+      "settle": [
+       0.24,
+       1,
+       0.44,
+       1
+      ]
+     }
+    }
+   }
+  }
+ ]
+}

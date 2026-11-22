@@ -1,0 +1,15 @@
+{
+ "title": "Gazete kupürü çerçevesi: haber, alıntı",
+ "kind": "overlay",
+ "tags": [
+  "cerceve",
+  "gazete",
+  "kupur",
+  "haber"
+ ],
+ "ne_zaman": "Bir haberden, makaleden ya da eski bir kaynaktan alıntı gösterirken; kare görüntü bölgesinin üstüne konur.",
+ "sure": 3.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

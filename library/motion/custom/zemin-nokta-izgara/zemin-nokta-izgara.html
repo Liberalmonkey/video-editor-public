@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Nokta ızgara zemin</title>
+<!-- Proje yapımı arka plan döngüsü (ADR 0036). 6 sn'de tam bir hücre kayar, döngü dikişsiz. Üret: vedit motion kur zemin-nokta-izgara -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.zemin{position:absolute;inset:0;background:var(--zemin);overflow:hidden}
+.izgara{position:absolute;inset:-12vw;background-image:radial-gradient(circle,var(--yazi) .36vw,transparent .42vw);
+  background-size:6vw 6vw;opacity:.32;animation:kay 6s linear infinite}
+@keyframes kay{to{transform:translate(6vw,6vw)}}
+.golge{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 35%,var(--zemin) 100%)}
+</style></head><body>
+<div class="zemin"><div class="izgara"></div><div class="golge"></div></div>
+</body></html>

@@ -1,0 +1,122 @@
+{
+ "_not": "Ekip motoru ön ayarları (ADR 0044). `varsayilan` hangi ön ayarın kullanılacağını söyler; proje ezmesi work/edit/ekip.json. Stüdyo AI paneli Ekip modunda düzenler.",
+ "varsayilan": "karisik",
+ "onayarlar": {
+  "karisik": {
+   "ad": "karisik",
+   "slotlar": {
+    "E1": {
+     "motor": "claude",
+     "model": "claude-opus-5-5",
+     "seviye": "high",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-argon-high",
+     "yedek_seviye": null
+    },
+    "E2": {
+     "motor": "claude",
+     "model": "claude-sonnet-5-5",
+     "seviye": "medium",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-neon-high",
+     "yedek_seviye": null
+    },
+    "E3": {
+     "motor": "claude",
+     "model": "claude-sonnet-5-5",
+     "seviye": "medium",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-neon-high",
+     "yedek_seviye": null
+    },
+    "K1": {
+     "motor": "antigravity",
+     "model": "gemini-4-argon-high",
+     "seviye": null,
+     "yedek_motor": "claude",
+     "yedek_model": "claude-sonnet-5-5",
+     "yedek_seviye": null
+    },
+    "K2": {
+     "motor": "antigravity",
+     "model": "gemini-4-neon-high",
+     "seviye": null,
+     "yedek_motor": "claude",
+     "yedek_model": "claude-sonnet-5-5",
+     "yedek_seviye": null
+    },
+    "K3": {
+     "motor": "antigravity",
+     "model": "gemini-4-neon-xhigh",
+     "seviye": null,
+     "yedek_motor": "claude",
+     "yedek_model": "claude-sonnet-5-5",
+     "yedek_seviye": null
+    }
+   },
+   "bolus": "rol",
+   "tur": 1,
+   "motion": "yogun",
+   "stil": null,
+   "eszamanlilik": 3
+  },
+  "yalniz-claude": {
+   "ad": "yalniz-claude",
+   "slotlar": {
+    "E1": {
+     "motor": "claude",
+     "model": "claude-opus-5-5",
+     "seviye": "medium",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-neon-high",
+     "yedek_seviye": null
+    },
+    "E2": {
+     "motor": "claude",
+     "model": "claude-sonnet-5-5",
+     "seviye": "medium",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-neon-high",
+     "yedek_seviye": null
+    },
+    "E3": {
+     "motor": "claude",
+     "model": "claude-sonnet-5-5",
+     "seviye": "medium",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-neon-high",
+     "yedek_seviye": null
+    },
+    "K1": {
+     "motor": "claude",
+     "model": "claude-sonnet-5-5",
+     "seviye": "medium",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-neon-high",
+     "yedek_seviye": null
+    },
+    "K2": {
+     "motor": "claude",
+     "model": "claude-sonnet-5-5",
+     "seviye": "medium",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-neon-high",
+     "yedek_seviye": null
+    },
+    "K3": {
+     "motor": "claude",
+     "model": "claude-sonnet-5-5",
+     "seviye": "medium",
+     "yedek_motor": "antigravity",
+     "yedek_model": "gemini-4-neon-high",
+     "yedek_seviye": null
+    }
+   },
+   "bolus": "rol",
+   "tur": 3,
+   "motion": "yogun",
+   "stil": null,
+   "eszamanlilik": 3
+  }
+ }
+}

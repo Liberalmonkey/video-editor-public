@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vedit"
+version = "0.1.0"
+description = "AI Video Editor pipeline CLI — ölçüm, kesim, ses, altyazı, build, render, QA (LLM'siz katman)"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.7",
+  "pyyaml>=6.0",
+  "numpy>=1.26",
+  "soundfile>=0.12",
+  "rapidfuzz>=3.6",
+  "requests>=2.31",
+  "faster-whisper>=1.1",
+  "scenedetect>=0.6.4",
+  "opencv-python>=4.9",
+  "fonttools>=4.50",
+  # vedit ritim, senkron, viseme: onset, beat ve ağız şekli (ADR 0039)
+  "librosa>=0.10.2",
+]
+
+[project.optional-dependencies]
+reframe = ["mediapipe>=0.10.14"]
+# vedit pano: HTML panoyu kare kare render (sistem Chrome'u kullanılır)
+boards = ["playwright>=1.49"]
+# NVIDIA GPU transkripsiyonu (ctranslate2 → CUDA 12 cuBLAS + cuDNN 9); sürücü ≥ 528 gerekir
+gpu = ["nvidia-cublas-cu12>=12.4", "nvidia-cudnn-cu12>=9,<10"]
+# vedit studio: yerel kurgu uygulaması (ADR 0021)
+studio = ["fastapi>=0.115", "uvicorn>=0.30", "send2trash>=1.8"]
+# vedit kapak: zeminden özne kesiti (dev-yazi ve seri kalıpları); ilk çalıştırmada ~170 MB model iner (ADR 0027)
+kapak = ["rembg[cpu]>=2.0"]
+# testler: .venvScriptspytest tests
+dev = ["pytest>=8"]
+
+[project.scripts]
+vedit = "vedit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

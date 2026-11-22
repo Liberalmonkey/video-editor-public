@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<!-- Galeri tema kartı (ADR 0039): temanın paletini, yazı tipini, köşe ve çizgi değerini tek karede gösterir. Renkler ve
+     font tema CSS'inden (var(--...)) gelir; vedit galeri kur her tema için 640x360 kare alır. -->
+<style>
+  html, body { margin: 0; width: 100vw; height: 100vh; overflow: hidden; background: var(--zemin, #0B0D12); }
+  /* Düzen body'de değil kapsayıcıda: HyperFrames sayfaya kendi sıfırlamasını uygular (ADR 0051, vedit hf_motion). */
+  .kart { position: absolute; inset: 0; font-family: var(--font, 'Montserrat', sans-serif); color: var(--yazi, #fff); display: grid; grid-template-rows: 1fr auto; padding: 5vh 5vw; box-sizing: border-box; background: var(--zemin, #0B0D12); }
+  .baslik { font-weight: var(--agirlik, 700); font-size: 9.5vh; line-height: 1.02; letter-spacing: -0.01em; }
+  .baslik b { color: var(--vurgu, #FF7A00); font-weight: inherit; }
+  .alt { display: flex; align-items: flex-end; justify-content: space-between; gap: 3vw; }
+  .bant { background: var(--vurgu, #FF7A00); color: var(--zemin, #0B0D12); border-radius: var(--kose, 12px); padding: 1.6vh 2.4vw; font-weight: var(--agirlik, 700); font-size: 4.6vh; }
+  .bant small { display: block; font-size: 2.8vh; opacity: 0.8; font-weight: 500; }
+  .palet { display: flex; gap: 1vw; }
+  .palet i { width: 5.2vh; height: 5.2vh; border-radius: 50%; display: block; border: var(--cizgi, 4px) solid color-mix(in srgb, var(--yazi, #fff) 20%, transparent); box-sizing: border-box; }
+  .cizgi { height: var(--cizgi, 6px); width: 30%; background: var(--ikincil, #FFD400); border-radius: 99px; margin: 3vh 0 0; }
+  .soluk { color: var(--soluk, #8B95A1); font-size: 3.2vh; margin-top: 1.5vh; }
+</style>
+</head>
+<body>
+<div class="kart">
+  <div>
+    <div class="baslik">Hızlı kurgu,<br><b>güçlü anlatım</b></div>
+    <div class="cizgi"></div>
+    <div class="soluk">Şğİıöç 0123 · 48.900 TL</div>
+  </div>
+  <div class="alt">
+    <div class="bant">Ayşe Yılmaz<small>Ürün tasarımcısı</small></div>
+    <div class="palet"><i style="background:var(--vurgu)"></i><i style="background:var(--ikincil)"></i><i style="background:var(--yazi)"></i><i style="background:var(--soluk)"></i></div>
+  </div>
+</div>
+</body>
+</html>

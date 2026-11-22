@@ -1,0 +1,15 @@
+{
+  "ad": "tipografi/kayan-kelime",
+  "tur": "tipografi",
+  "etiketler": ["kelime", "patlama", "kısa", "vurgu", "kinetik", "tipografi"],
+  "ne_zaman": "Tek ya da iki kelimelik hızlı, vurucu bir kavram ekranda keskin bir ritimle patlarken (\"VİRAL\", \"KRİTİK\", \"SIFIR\").",
+  "sure": { "min": 0.8, "varsayilan": 1.4, "max": 3.0 },
+  "giris_sn": 0.3,
+  "cikis_sn": 0.18,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "orta"],
+  "boyut": { "w": 0.78, "h": 0.16 },
+  "en_kucuk_px": 240,
+  "kaynak": null
+}

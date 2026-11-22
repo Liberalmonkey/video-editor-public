@@ -1,0 +1,89 @@
+# Medya (büyük ikili dosyalar)
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.webm
+*.wav
+*.mp3
+*.flac
+
+# Obsidian — kişisel çalışma alanı durumu
+.obsidian/workspace*.json
+.obsidian/cache
+.trash/
+
+# graphify: yeniden üretilebilir, yerelde kalır
+graphify-out/
+
+# Claude Code yerel ayarları
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.venv-ayristir/
+.env
+
+# Node (HyperFrames renderer)
+node_modules/
+
+# Projeler: senaryo ve notlar commit'lenir; medya, görsel ve ara dosyalar hariç
+Projeler/outputs/*/*/work/*
+!Projeler/outputs/*/*/work/edit/
+Projeler/inputs/_referanslar/
+Projeler/inputs/_teleprompter/
+Projeler/**/*.png
+Projeler/**/*.jpg
+Projeler/**/*.jpeg
+Projeler/**/*.webp
+
+# Kütüphane: manifest'ler commit'lenir, ses dosyaları yeniden indirilebilir/üretilebilir
+library/sfx/raw/
+library/sfx/processed/
+library/music/*
+!library/music/manifest.json
+library/motion/*
+!library/motion/manifest.json
+!library/motion/custom/
+*.egg-info/
+
+# OpenMontage şablonu (kendi git deposu, skill-lib ile kuruldu)
+openmontage/
+
+
+# Video Stüdyo derleme çıktısı
+studio/web/dist/
+
+# Yerel mutlak yol içeren üretilmiş dosyalar ve geri alma geçmişi
+Projeler/**/ai-edit.istek.md
+Projeler/**/olaylar.rapor.json
+Projeler/**/kurgu-gecmis/
+
+# Antigravity alt ajan raporları ve günlükleri: yerel, geçici
+/work/agy/
+
+# video-izle skill çıktıları: kareler ve analiz, yerel
+/work/izle/
+
+# Kullanıcının video projeleri (senaryo, altyazı, kurgu) ve üretilen test görselleri repoya girmez
+/Projeler/
+/work/gorsel/*.jpg
+/work/gorsel/*.png
+
+# Galeri önizleme render artıkları (ADR 0039); çıktılar library/galeri/ altında
+/work/galeri/
+
+# Native motion galeri önizlemeleri: `vedit motion kontak` yeniden üretir
+work/motion-galeri/
+
+# Stile özel tekil motion dışa aktarma önbelleği
+studios/*/styles/*/.disa/
+
+# HyperFrames sürüm adayları, duman testi ve motor karşılaştırma çıktıları (ADR 0051): kod yeniden üretir, makineye özel yol taşır
+/work/hf-aday/
+/work/hf-motion/
+/work/hf-native/
+# Oturum devir notları: yerel
+/work/devam-*.md

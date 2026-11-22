@@ -1,0 +1,14 @@
+{
+ "title": "Turuncu-koyu silme geçişi 9:16; ortası (0,4 sn) kesime gelir",
+ "kind": "transition",
+ "tags": [
+  "gecis",
+  "silme",
+  "dikey"
+ ],
+ "ne_zaman": "9:16 videoda konu ya da sahne değişiminde; ortası kesime gelir.",
+ "sure": 0.8,
+ "w": 1080,
+ "h": 1920,
+ "loop": false
+}

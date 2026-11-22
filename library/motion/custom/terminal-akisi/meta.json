@@ -1,0 +1,36 @@
+{
+ "title": "Terminal akışı: daktilo komut ve satır satır çıktılı CLI penceresi",
+ "kind": "overlay",
+ "tags": [
+  "terminal",
+  "cli",
+  "kod",
+  "komut",
+  "daktilo",
+  "konsol",
+  "pencere"
+ ],
+ "ne_zaman": "Terminal komutları, kod çalıştırma veya sistem süreçlerini daktilo yazımı ve satır satır çıktıyla göstermek için.",
+ "sure": 4.5,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "baslik": {
+   "vars": "bash ~ video",
+   "max": 16
+  },
+  "komut": {
+   "vars": "vedit final --hizli --ses",
+   "max": 48
+  },
+  "cikti1": {
+   "vars": "-> Ses miksi ve render tamamlandı",
+   "max": 48
+  },
+  "cikti2": {
+   "vars": "-> 60 fps teslim hazır (1080x1080)",
+   "max": 48
+  }
+ }
+}

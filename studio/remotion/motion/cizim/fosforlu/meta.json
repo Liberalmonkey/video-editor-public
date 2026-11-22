@@ -1,0 +1,15 @@
+{
+  "ad": "cizim/fosforlu",
+  "tur": "cizim",
+  "etiketler": ["fosforlu", "kalem", "bant", "vurgu", "işaretleyici", "el çizimi"],
+  "ne_zaman": "Konuşmacı ekrandaki bir satırın, belgenin ya da başlığın üstünden fosforlu kalemle geçer gibi vurgu yaptığında (\"şu satıra dikkat\", \"altını çiziyorum\", \"özellikle burası\").",
+  "sure": { "min": 0.8, "varsayilan": 1.7, "max": 2.5 },
+  "giris_sn": 0.38,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["hedef", "orta"],
+  "boyut": { "w": 0.58, "h": 0.12 },
+  "en_kucuk_px": 180,
+  "kaynak": null
+}

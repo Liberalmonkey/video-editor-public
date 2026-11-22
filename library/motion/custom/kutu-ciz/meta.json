@@ -1,0 +1,14 @@
+{
+ "title": "El çizimi kutu: bir alanı çerçevele",
+ "kind": "overlay",
+ "tags": [
+  "kutu",
+  "cerceve",
+  "el-cizimi"
+ ],
+ "ne_zaman": "Ekrandaki bir alanı (tablo satırı, ekran görüntüsünde bir bölüm, fiyat etiketi) işaretlerken.",
+ "sure": 2.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

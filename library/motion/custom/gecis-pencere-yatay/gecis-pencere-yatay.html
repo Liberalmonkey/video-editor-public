@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Yuvarlak köşeli pencere geçişi 16:9</title>
+<!-- Saydam geçiş (ADR 0036). Ekran sürenin tam ortasında (0,40 sn) tamamen kapalı: kesim oraya konur.
+     Zaman window.seek(t) ile sürülür; ilk ve son kare saydam. Renkler temadan. -->
+<style>html,body{margin:0;background:transparent;overflow:hidden}canvas{position:absolute;left:0;top:0;width:100vw;height:100vh}</style>
+</head><body><canvas id="c"></canvas><script>
+const D=0.8;
+const c=document.getElementById('c'),x=c.getContext('2d');
+const R=(n,v)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||v;
+const cl=v=>Math.min(1,Math.max(0,v)), ara=(p,a,b)=>cl((p-a)/(b-a)), lerp=(a,b,u)=>a+(b-a)*u;
+const eXIO=u=>u<=0?0:u>=1?1:u<0.5?Math.pow(2,20*u-10)/2:(2-Math.pow(2,-20*u+10))/2;
+const GA=.06,GB=.46,CA=.52,CB=.88;
+let RENK={};
+window.seek=t=>{
+  if(c.width!==innerWidth||c.height!==innerHeight){c.width=innerWidth;c.height=innerHeight}
+  const W=c.width,H=c.height;x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,W,H);
+  RENK={
+    v:R('--vurgu'),
+    i:R('--ikincil'),
+    z:R('--zemin'),
+    y:R('--yazi'),
+    kose:Math.max(12,parseFloat(R('--kose','18px'))||18),
+    cizgi:Math.max(6,parseFloat(R('--cizgi','10px'))||10)
+  };
+  const p=cl(t/D);if(p<=GA||p>=CB)return;ciz(p,W,H);
+};
+
+function rrect(px,py,pw,ph,kr){
+  const r=Math.max(0,Math.min(kr,pw/2,ph/2));
+  x.moveTo(px+r,py);
+  x.lineTo(px+pw-r,py);
+  x.quadraticCurveTo(px+pw,py,px+pw,py+r);
+  x.lineTo(px+pw,py+ph-r);
+  x.quadraticCurveTo(px+pw,py+ph,px+pw-r,py+ph);
+  x.lineTo(px+r,py+ph);
+  x.quadraticCurveTo(px,py+ph,px,py+ph-r);
+  x.lineTo(px,py+r);
+  x.quadraticCurveTo(px,py,px+r,py);
+  x.closePath();
+}
+
+function ciz(p,W,H){
+  const SMAX=1.18;
+  let s;
+  if(p<GB){
+    const u=ara(p,GA,GB);
+    if(u<0.28){
+      s=lerp(SMAX,0.68,eXIO(u/0.28));
+    }else{
+      s=lerp(0.68,0,eXIO((u-0.28)/0.72));
+    }
+  }else if(p<CA){
+    s=0;
+  }else{
+    const u=ara(p,CA,CB);
+    if(u<0.7){
+      s=lerp(0,0.68,eXIO(u/0.7));
+    }else{
+      s=lerp(0.68,SMAX,eXIO((u-0.7)/0.3));
+    }
+  }
+
+  const pw=W*s, ph=H*s;
+  if(pw<=3||ph<=3){
+    x.fillStyle=RENK.z;
+    x.fillRect(0,0,W,H);
+    return;
+  }
+  const px=(W-pw)/2, py=(H-ph)/2;
+  const kr=RENK.kose*2.2*Math.min(1.1,Math.max(0.25,s));
+
+  if(px<=0&&py<=0&&px+pw-kr>=W&&py+ph-kr>=H)return;
+
+  x.beginPath();
+  x.rect(0,0,W,H);
+  rrect(px,py,pw,ph,kr);
+  x.fillStyle=RENK.z;
+  x.fill('evenodd');
+
+  const fw=RENK.cizgi*2.2*Math.min(1.15,Math.max(0.35,s));
+  x.beginPath();
+  rrect(px,py,pw,ph,kr);
+  x.lineJoin='round';
+  x.lineWidth=fw;
+  x.strokeStyle=RENK.v;
+  x.stroke();
+
+  const icOfs=fw*0.55;
+  if(pw>icOfs*2+4&&ph>icOfs*2+4){
+    x.beginPath();
+    rrect(px-icOfs,py-icOfs,pw+icOfs*2,ph+icOfs*2,kr+icOfs*0.8);
+    x.lineWidth=Math.max(3,fw*0.32);
+    x.strokeStyle=RENK.i;
+    x.stroke();
+  }
+}
+window.seek(0);
+</script></body></html>

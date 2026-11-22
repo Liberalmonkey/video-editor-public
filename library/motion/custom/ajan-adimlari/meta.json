@@ -1,0 +1,36 @@
+{
+ "title": "Ajan adımları: dönen göstergeli ve onay tikli AI görev akış kartı",
+ "kind": "overlay",
+ "tags": [
+  "ajan",
+  "adimlar",
+  "yapay-zeka",
+  "ai",
+  "surec",
+  "terminal",
+  "onay"
+ ],
+ "ne_zaman": "Yapay zekâ modeli veya arka plan ajanı çok adımlı bir görevi icra ederken adımları ve sonucu göstermek için.",
+ "sure": 4.5,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "adim1": {
+   "vars": "İçerik taranıyor...",
+   "max": 36
+  },
+  "adim2": {
+   "vars": "Model çalıştırılıyor...",
+   "max": 36
+  },
+  "adim3": {
+   "vars": "Sonuçlar doğrulanıyor...",
+   "max": 36
+  },
+  "sonuc": {
+   "vars": "Kurgu hazırlandı",
+   "max": 36
+  }
+ }
+}

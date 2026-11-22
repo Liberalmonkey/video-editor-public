@@ -1,0 +1,39 @@
+<!--meta
+{"name": "bullet-list", "description": "Başlık + maddeler sırayla belirir (her madde için 'click' SFX ipucu). 'interval' saniye aralıkla ya da 'at' listesiyle seslendirmeye kilitlenir.",
+ "props": {"title": "string", "items": "list*", "interval": "number", "at": "list", "position": "enum(left|center)"},
+ "default_dur": 5.0, "sfx": {"per_item": "click"}, "tags": ["animation", "explainer", "ugc"]}
+-->
+<style>
+.blk-bullet-list { display: flex; flex-direction: column; justify-content: center; gap: calc(var(--u) * 2.6);
+  padding: calc(var(--safe-t) + var(--u)*8) calc(var(--safe-r) + var(--u)*9) calc(var(--safe-b) + var(--u)*8) calc(var(--safe-l) + var(--u)*9); }
+.blk-bullet-list.pos-center { align-items: center; }
+.blk-bullet-list .bl-title { font-size: calc(var(--u) * 6.4); margin-bottom: calc(var(--u) * 1.2); }
+.blk-bullet-list .bl-item { display: flex; align-items: baseline; gap: calc(var(--u) * 2.2); font: 600 calc(var(--u) * 4.4) / 1.25 var(--f-body); max-width: 34ch; }
+.blk-bullet-list .bl-dot { flex: none; width: calc(var(--u) * 1.6); height: calc(var(--u) * 1.6); border-radius: 50%; background: var(--c-accent); }
+.blk-bullet-list .bl-item.done { color: var(--c-muted); }
+</style>
+<markup>
+<div class="blk blk-bullet-list pos-{{position}}"><div class="bl-title t-display mask"><span>{{title}}</span></div><div class="bl-items"></div></div>
+</markup>
+<script>
+HF_BLOCKS["bullet-list"] = function (tl, el, P, T, S) {
+  const box = el.querySelector(".bl-items");
+  const items = (P.items || []).map(function (txt) {
+    const row = document.createElement("div"); row.className = "bl-item";
+    const dot = document.createElement("span"); dot.className = "bl-dot";
+    const t = document.createElement("span"); t.textContent = txt;
+    row.appendChild(dot); row.appendChild(t); box.appendChild(row); return row;
+  });
+  box.style.display = "flex"; box.style.flexDirection = "column"; box.style.gap = "calc(var(--u) * 2.2)";
+  let t0 = T.start;
+  if (P.title) { HF.maskIn(tl, el.querySelector(".bl-title > span"), t0, S); t0 += 0.45; }
+  else el.querySelector(".bl-title").style.display = "none";
+  const step = P.interval || Math.max(0.5, (T.dur - (t0 - T.start) - 0.8) / Math.max(items.length, 1));
+  items.forEach(function (row, i) {
+    const at = P.at && P.at[i] !== undefined ? T.start + Number(P.at[i]) : t0 + i * step;
+    tl.fromTo(row, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.4, ease: S.ease.ui }, at);
+    tl.fromTo(row.querySelector(".bl-dot"), { scale: 0 }, { scale: 1, duration: 0.3, ease: S.ease.overshoot }, at + 0.05);
+  });
+  HF.exit(tl, el, T, S);
+};
+</script>

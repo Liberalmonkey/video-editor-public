@@ -1,0 +1,15 @@
+{
+  "ad": "cizim/alt-cizgi",
+  "tur": "cizim",
+  "etiketler": ["alt çizgi", "fırça", "vurgu", "kelime", "el çizimi"],
+  "ne_zaman": "Konuşmacı tek bir kelimeyi, kavramı ya da anahtar ifadeyi özellikle vurguladığında (\"en kritik nokta\", \"unutma\", \"tam olarak bu\").",
+  "sure": { "min": 0.8, "varsayilan": 1.4, "max": 2.5 },
+  "giris_sn": 0.36,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["hedef", "orta"],
+  "boyut": { "w": 0.6, "h": 0.08 },
+  "en_kucuk_px": 180,
+  "kaynak": null
+}

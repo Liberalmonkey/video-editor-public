@@ -1,0 +1,14 @@
+{
+ "title": "Seçim şeridi: cümlenin önemli kısmının renkli bantla seçilmesi",
+ "kind": "overlay",
+ "tags": ["secim", "serit", "vurgu", "metin", "isaret", "kelime"],
+ "ne_zaman": "Bir cümle içindeki kilit terimi, anahtar mesajı veya sonucu metin seçimi gibi belirginleştirmek için.",
+ "sure": 4.5,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "metin": {"vars": "Yapay zeka tüm kurgu sürecini hızlandırır.", "max": 60},
+  "secilen": {"vars": "tüm kurgu sürecini", "max": 40}
+ }
+}

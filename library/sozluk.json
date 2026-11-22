@@ -1,0 +1,19 @@
+{
+ "_not": "Transkript düzeltme sözlüğü (ADR 0041). isimler: Whisper'a doğru yazım ipucu. duzelt: yanlış ifade -> doğru ifade; büyük-küçük harf ve noktalama yok sayılır. Tek başına gerçek kelime olan anahtar koyma (ör. yalnız 'cloud'). Kullanıcının düzelttiği her ad buraya eklenir.",
+ "isimler": ["Claude", "Claude Code", "Anthropic", "Antigravity", "Gemini", "Codex", "OpenCode", "OpenAI", "ChatGPT", "HyperFrames", "Remotion", "Google Flow", "YouTube", "Instagram", "Reels"],
+ "duzelt": {
+  "cloud code": "Claude Code",
+  "cloud kod": "Claude Code",
+  "clod code": "Claude Code",
+  "klod kod": "Claude Code",
+  "claude kod": "Claude Code",
+  "anti gravity": "Antigravity",
+  "anti-gravity": "Antigravity",
+  "open code": "OpenCode",
+  "open ai": "OpenAI",
+  "chat gpt": "ChatGPT",
+  "çet gpt": "ChatGPT",
+  "hyper frames": "HyperFrames",
+  "you tube": "YouTube"
+ }
+}

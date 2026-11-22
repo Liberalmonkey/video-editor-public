@@ -1,0 +1,15 @@
+{
+  "ad": "tipografi/bolum-baslik",
+  "tur": "tipografi",
+  "etiketler": ["bölüm", "başlık", "kapsül", "numara", "ayrım", "tipografi"],
+  "ne_zaman": "Yeni bir bölüm, örnek, madde ya da aşama başlarken üstte kompakt bölüm kapağı göstermek için.",
+  "sure": { "min": 1.5, "varsayilan": 2.8, "max": 5.0 },
+  "giris_sn": 0.36,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust"],
+  "boyut": { "w": 0.72, "h": 0.11 },
+  "en_kucuk_px": 220,
+  "kaynak": null
+}

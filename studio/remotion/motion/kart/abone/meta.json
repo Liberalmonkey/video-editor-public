@@ -1,0 +1,15 @@
+{
+  "ad": "kart/abone",
+  "tur": "cta",
+  "etiketler": ["abone", "takip", "cta", "düğme", "tıklama"],
+  "ne_zaman": "Konuşmacı izleyiciyi takip etmeye, abone olmaya ya da kanala katılmaya çağırdığında.",
+  "sure": { "min": 1.5, "varsayilan": 2.6, "max": 4.0 },
+  "giris_sn": 0.38,
+  "cikis_sn": 0.22,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["ust", "alt"],
+  "boyut": { "w": 0.58, "h": 0.16 },
+  "en_kucuk_px": 240,
+  "kaynak": null
+}

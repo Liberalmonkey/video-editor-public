@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Zil: sallanır, bildirim</title>
+<!-- Proje yapımı saydam ikon (ADR 0036, 0043). Arka şekil yok: ikonun kendisi --vurgu, ikincil parça --ikincil. Okunurluk yalnız
+#okun filtresi (ince --ikon-kontur dış çizgi, --ikon-golge gölge). Giriş/çıkış stilin easing'i. Zil sallanır; tokmak ikincil renkte salınır. -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px}
+svg *{transform-box:view-box}
+#okun feFlood.k{flood-color:var(--ikon-kontur)}
+#okun feFlood.g{flood-color:var(--ikon-golge)}
+.ikon{filter:url(#okun)}
+.gel{transform-origin:540px 540px;animation:gel .34s var(--ease) both}
+.cik{transform-origin:540px 540px;animation:cik .22s var(--ease-cik) 1.36s both}
+.c{fill:none;stroke:var(--vurgu);stroke-width:34;stroke-linecap:var(--ucu);stroke-linejoin:var(--birlesim)}
+.c2{fill:none;stroke:var(--ikincil);stroke-width:34;stroke-linecap:var(--ucu);stroke-linejoin:var(--birlesim)}
+.d{fill:var(--vurgu)}
+.d2{fill:var(--ikincil)}
+@keyframes gel{from{transform:scale(.62);opacity:0}40%{opacity:1}to{transform:scale(1);opacity:1}}
+@keyframes cik{to{transform:scale(.82);opacity:0}}
+.sal{transform-origin:540px 380px;animation:sal .85s ease-in-out .38s both}
+.dil{transform-origin:540px 600px;animation:dil .85s ease-in-out .42s both}
+@keyframes sal{0%,100%{transform:rotate(0)}15%{transform:rotate(20deg)}35%{transform:rotate(-16deg)}55%{transform:rotate(10deg)}75%{transform:rotate(-5deg)}}
+@keyframes dil{0%,100%{transform:translateX(0)}20%{transform:translateX(-18px)}40%{transform:translateX(16px)}60%{transform:translateX(-9px)}80%{transform:translateX(4px)}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><defs><filter id="okun" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+<feMorphology in="SourceAlpha" operator="dilate" radius="5" result="gen"/><feFlood class="k"/><feComposite in2="gen" operator="in" result="kontur"/>
+<feGaussianBlur in="gen" stdDeviation="7" result="bul"/><feOffset in="bul" dy="7" result="kay"/><feFlood class="g"/><feComposite in2="kay" operator="in" result="golge"/>
+<feMerge><feMergeNode in="golge"/><feMergeNode in="kontur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<g class="ikon"><g class="cik"><g class="gel"><g transform="translate(540 540) scale(1.3) translate(-540 -540)">
+<g class="sal"><path class="c" d="M540 380 V400"/><path class="c" d="M430 625 V515 Q430 410 540 402 Q650 410 650 515 V625 L680 655 H400 Z"/>
+<path class="c2 dil" d="M505 695 Q540 725 575 695"/></g>
+</g></g></g></g></svg>
+</body></html>

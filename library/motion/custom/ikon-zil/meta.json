@@ -1,0 +1,15 @@
+{
+ "title": "Zil: sallanır, bildirim",
+ "kind": "icon",
+ "tags": [
+  "zil",
+  "bildirim",
+  "abone",
+  "hatirlatma"
+ ],
+ "ne_zaman": "Konuşmacı bildirimleri açmayı söylediğinde ya da bir uyarı, hatırlatma geldiğinde.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

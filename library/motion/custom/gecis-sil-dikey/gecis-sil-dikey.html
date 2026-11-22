@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Geçiş silme dikey</title>
+<!-- Proje yapımı saydam geçiş (ADR 0031). Ortası (0,4 sn) kesim anına konur: kare tam kapalıyken alttaki klip değişir.
+     Render: vedit pano <bu dosya> --sure 0.8 --w 1080 --h 1920 -o gecis-sil-dikey.webm -->
+<style>
+/* WHY: motion-denetci 2026-11-19 (P0): eski sürümde .b gecikmesi süreyi aşıyor, eğik kenar 9:16 köşesini açık bırakıyordu.
+   Şerit iki kat geniş, eğim 8°: 0,32-0,44 sn tam kapalı (kesim 0,40 sn), ikisi de 0,76 sn'de ekran dışında. */
+html,body{margin:0;background:transparent;overflow:hidden}
+div{position:absolute;top:-10%;height:120%;width:200%;left:0;transform:translateX(-120%) skewX(-8deg)}
+.a{background:var(--vurgu);animation:ga .8s linear both}
+.b{background:var(--zemin);animation:gb .8s linear both}
+@keyframes ga{0%{transform:translateX(-120%) skewX(-8deg);animation-timing-function:var(--ease)}40%,50%{transform:translateX(-25%) skewX(-8deg);animation-timing-function:var(--ease-cik)}90%,100%{transform:translateX(100%) skewX(-8deg)}}
+@keyframes gb{0%,8%{transform:translateX(-120%) skewX(-8deg);animation-timing-function:var(--ease)}47%,55%{transform:translateX(-25%) skewX(-8deg);animation-timing-function:var(--ease-cik)}95%,100%{transform:translateX(100%) skewX(-8deg)}}
+</style></head><body><div class="a"></div><div class="b"></div></body></html>

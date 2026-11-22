@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Daire çiz</title>
+<!-- Proje yapımı saydam motion (ADR 0031). Render: vedit pano <bu dosya> --sure 2 --w 1080 --h 1080 -o daire-ciz.webm -->
+<style>
+html,body{margin:0;background:transparent}
+svg{position:absolute;inset:0;width:1080px;height:1080px}
+path{fill:none;stroke:var(--vurgu);stroke-width:16;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:ciz .65s cubic-bezier(.45,0,.2,1) .05s both}
+g{animation:sol .3s ease-in 1.7s both}
+@keyframes ciz{to{stroke-dashoffset:0}}
+@keyframes sol{to{opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g>
+<!-- el çizimi: 1,1 tur, yarıçap hafif oynar, uç başlangıcı geçer -->
+<path pathLength="1" d="M760 420 C 700 330, 520 310, 390 350 C 240 400, 170 520, 230 640 C 290 760, 520 790, 690 730 C 850 675, 900 540, 830 440 C 790 380, 700 345, 610 338"/>
+</g></svg>
+</body></html>

@@ -1,0 +1,32 @@
+<!--meta
+{"name": "cta", "description": "Tek eylem çağrısı: hap buton + ok + opsiyonel alt satır. Bir kez nabız atar. Videonun sonunda tek CTA (satış videolarında zorunlu).",
+ "props": {"text": "string*", "sub": "string", "position": "enum(bottom|center)", "icon": "enum(arrow|cart|link|none)"},
+ "default_dur": 3.0, "sfx": {"in": "pop", "extra": [{"at": 0.9, "type": "click", "intensity": "soft"}]}, "tags": ["ugc", "end", "sales", "reels"]}
+-->
+<style>
+.blk-cta { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: calc(var(--u) * 1.8); text-align: center; }
+.blk-cta.pos-bottom { justify-content: flex-end; padding-bottom: calc(var(--safe-b) + var(--u) * 8); }
+.blk-cta .cta-btn { display: flex; align-items: center; gap: calc(var(--u) * 1.6); padding: calc(var(--u) * 2.4) calc(var(--u) * 4.6);
+  background: var(--c-accent); color: var(--c-on-accent); border-radius: 999px; font: 800 calc(var(--u) * 4.6) / 1 var(--f-display);
+  box-shadow: 0 calc(var(--u)*1.4) calc(var(--u)*4) rgba(0,0,0,.35); }
+.blk-cta .cta-ic { width: 1em; height: 1em; }
+.blk-cta .cta-sub { font-size: calc(var(--u) * 3); color: var(--c-fg); opacity: .85; text-shadow: 0 calc(var(--u)*0.3) calc(var(--u)*1) rgba(0,0,0,.6); }
+</style>
+<markup>
+<div class="blk blk-cta pos-{{position}}">
+  <div class="cta-btn"><span>{{text}}</span><svg class="cta-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+  <div class="cta-sub t-body">{{sub}}</div>
+</div>
+</markup>
+<script>
+HF_BLOCKS["cta"] = function (tl, el, P, T, S) {
+  const btn = el.querySelector(".cta-btn"), ic = el.querySelector(".cta-ic"), sub = el.querySelector(".cta-sub");
+  if (P.icon === "none") ic.style.display = "none";
+  if (!P.sub) sub.style.display = "none";
+  HF.pop(tl, btn, T.start, S, { from: 0.8 });
+  tl.fromTo(ic, { x: -6 }, { x: 4, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut" }, T.start + 0.5);
+  tl.to(btn, { scale: 0.95, duration: 0.09, yoyo: true, repeat: 1, ease: S.ease.ui }, T.start + 0.9);
+  HF.fadeUp(tl, sub, T.start + 0.25, S, { y: 10 });
+  HF.exit(tl, el, T, S, { none: T.isLast });
+};
+</script>

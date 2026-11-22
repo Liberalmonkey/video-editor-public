@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Yırtık kâğıt şeridi 16:9</title>
+<!-- Saydam geçiş (ADR 0036). Ekran sürenin tam ortasında (0,45 sn) tamamen kapalı: kesim oraya konur.
+     Zaman window.seek(t) ile sürülür; ilk ve son kare saydam. Renkler temadan. -->
+<style>html,body{margin:0;background:transparent;overflow:hidden}canvas{position:absolute;left:0;top:0;width:100vw;height:100vh}</style>
+</head><body><canvas id="c"></canvas><script>
+const D=0.9;
+const c=document.getElementById('c'),x=c.getContext('2d');
+const R=(n,v)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||v;
+const cl=v=>Math.min(1,Math.max(0,v)), ara=(p,a,b)=>cl((p-a)/(b-a)), lerp=(a,b,u)=>a+(b-a)*u;
+const eO=u=>1-Math.pow(1-u,3), eI=u=>u*u*u, eIO=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
+const eO4=u=>1-Math.pow(1-u,4), eI4=u=>u*u*u*u, eIO2=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+function tohum(s){return()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+// giriş [GA,GB], tam kapalı [GB,CA] (orta dahil), çıkış [CA,CB]; son kareden önce biter
+const GA=.03,GB=.45,CA=.55,CB=.9;
+let RENK={};
+window.seek=t=>{
+  if(c.width!==innerWidth||c.height!==innerHeight){c.width=innerWidth;c.height=innerHeight}
+  const W=c.width,H=c.height;x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,W,H);
+  RENK={v:R('--vurgu'),i:R('--ikincil'),z:R('--zemin'),y:R('--yazi')};
+  const p=cl(t/D);if(p<=0||p>=1)return;ciz(p,W,H,t);
+};
+
+const rnd=tohum(7);const K=60, KEN=[];for(let i=0;i<=K;i++)KEN.push([rnd(),rnd()]);
+function serit(x0,gen,A,W,H,renk){ // x0 sol kenar, gen gövde genişliği, A yırtık genliği
+  const n=K;x.beginPath();
+  for(let i=0;i<=n;i++){const y=lerp(-.02*H,1.02*H,i/n);x.lineTo(x0+gen+A*KEN[i][0]*(.6+.4*KEN[(i*7)%n][1]),y)}
+  for(let i=n;i>=0;i--){const y=lerp(-.02*H,1.02*H,i/n);x.lineTo(x0-A*KEN[(i*3+11)%n][1]*(.6+.4*KEN[i][0]),y)}
+  x.closePath();x.fillStyle=renk;x.fill();
+}
+function ciz(p,W,H){
+  const A=.07*Math.max(W,H)*(W>H?.6:.4), gen=1.3*W, bas=W+A+.08*W, tam=-.18*W, son=-gen-A-.12*W;
+  let x0;
+  if(p<GB)x0=lerp(bas,tam,eO4(ara(p,GA,GB)));
+  else if(p<CA)x0=lerp(tam,tam-.04*W,ara(p,GB,CA));
+  else x0=lerp(tam-.04*W,son,eI(ara(p,CA,CB)));
+  serit(x0-.05*W,gen+.1*W,A,W,H,RENK.v);
+  serit(x0,gen,A*.8,W,H,RENK.z);
+}
+window.seek(0);
+</script></body></html>

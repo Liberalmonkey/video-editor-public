@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Kart yelpaze</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur kart-yelpaze -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.sahne{position:absolute;left:0;top:0;width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;font-family:var(--font)}
+.deste{position:relative;width:300px;height:240px}
+.kart{position:absolute;left:0;top:0;width:300px;height:240px;background:var(--zemin);border-radius:var(--kose,18px);border:2px solid color-mix(in srgb,var(--yazi) 8%,transparent);box-shadow:var(--golge);color:var(--yazi);box-sizing:border-box;padding:26px 28px;transform-origin:50% 90%;display:flex;flex-direction:column;justify-content:space-between}
+.kart-ust{display:flex;justify-content:space-between;align-items:center}
+.no-rozet{font-weight:800;font-size:30px;letter-spacing:.04em;color:var(--vurgu);background:color-mix(in srgb,var(--vurgu) 12%,transparent);padding:4px 12px;border-radius:99px}
+.mini-cizgi{width:36px;height:var(--cizgi,10px);min-height:4px;background:var(--vurgu);border-radius:99px}
+#k2 .no-rozet{color:var(--ikincil);background:color-mix(in srgb,var(--ikincil) 12%,transparent)}
+#k2 .mini-cizgi{background:var(--ikincil)}
+.kart-baslik{font-weight:800;font-size:30px;line-height:1.2;color:var(--yazi);margin-top:auto}
+</style></head><body>
+<div class="sahne" id="sahne">
+ <div class="deste" id="deste">
+  <div class="kart" id="k1">
+   <div class="kart-ust"><span class="no-rozet">01</span><div class="mini-cizgi"></div></div>
+   <div class="kart-baslik" id="b1"></div>
+  </div>
+  <div class="kart" id="k3">
+   <div class="kart-ust"><span class="no-rozet">03</span><div class="mini-cizgi"></div></div>
+   <div class="kart-baslik" id="b3"></div>
+  </div>
+  <div class="kart" id="k2">
+   <div class="kart-ust"><span class="no-rozet">02</span><div class="mini-cizgi"></div></div>
+   <div class="kart-baslik" id="b2"></div>
+  </div>
+ </div>
+</div>
+<script>
+const P = Object.assign({ kart1: "Hızlı Kurgu", kart2: "Yüksek Kalite", kart3: "Sıfır Maliyet" }, window.PARAM);
+const $ = id => document.getElementById(id);
+$("b1").textContent = P.kart1;
+$("b2").textContent = P.kart2;
+$("b3").textContent = P.kart3;
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const easeOutCubic = x => 1 - Math.pow(1 - x, 3);
+const easeInCubic = x => x * x * x;
+// Elastik / yaylanmalı açılma
+const easeOutBack = (x, s = 1.35) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
+
+window.seek = t => {
+  const s = $("sahne"), d = $("deste");
+  const k1 = $("k1"), k2 = $("k2"), k3 = $("k3");
+
+  // sure: 4.5 sn - Son kare boş biter (ADR 0036)
+  if (t <= 0 || t >= 4.4) {
+    s.style.display = "none";
+    return;
+  }
+  s.style.display = "flex";
+
+  // Deste genel giriş: 0.05..0.40
+  const giris = easeOutCubic(clamp((t - 0.05) / 0.35, 0, 1));
+  // Deste genel kapanış: 3.05..3.62
+  const cikis = easeInCubic(clamp((t - 3.95) / 0.4, 0, 1)); // denetim 2026-11-19: son 0,85 sn ölüydü
+
+  d.style.opacity = (giris * (1 - cikis)).toFixed(3);
+  const destScale = (0.85 + 0.15 * giris - 0.15 * cikis).toFixed(3);
+  const destY = ((1 - giris) * 60 + cikis * 60).toFixed(1);
+  d.style.transform = `scale(${destScale}) translateY(${destY}px)`;
+
+  // Yelpaze açılış: 0.45..1.35
+  // Yelpaze toplanış: 2.45..2.98
+  const toplanma = easeInCubic(clamp((t - 3.4) / 0.5, 0, 1));
+
+  // Kart 1 (sol)
+  const acil1 = easeOutBack(clamp((t - 0.45) / 0.75, 0, 1));
+  const fakt1 = Math.max(0, acil1 - toplanma);
+  const r1 = (-8 * fakt1).toFixed(2);
+  const x1 = (-330 * fakt1).toFixed(1); // kart genişliğinden fazla: kartlar çakışmaz
+  const y1 = (18 * fakt1).toFixed(1);
+  k1.style.transform = `translate3d(${x1}px, ${y1}px, 0) rotate(${r1}deg)`;
+  k1.style.zIndex = "1";
+
+  // Kart 2 (orta)
+  const acil2 = easeOutBack(clamp((t - 0.55) / 0.70, 0, 1));
+  const fakt2 = Math.max(0, acil2 - toplanma);
+  const y2 = (-36 * fakt2).toFixed(1);
+  const sc2 = (1 + 0.06 * fakt2).toFixed(3);
+  k2.style.transform = `translate3d(0, ${y2}px, 0) scale(${sc2})`;
+  k2.style.zIndex = "3";
+
+  // Kart 3 (sağ)
+  const acil3 = easeOutBack(clamp((t - 0.65) / 0.75, 0, 1));
+  const fakt3 = Math.max(0, acil3 - toplanma);
+  const r3 = (8 * fakt3).toFixed(2);
+  const x3 = (330 * fakt3).toFixed(1);
+  const y3 = (18 * fakt3).toFixed(1);
+  k3.style.transform = `translate3d(${x3}px, ${y3}px, 0) rotate(${r3}deg)`;
+  k3.style.zIndex = "2";
+};
+
+seek(0);
+</script>
+</body></html>

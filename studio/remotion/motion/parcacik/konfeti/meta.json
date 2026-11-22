@@ -1,0 +1,15 @@
+{
+  "ad": "parcacik/konfeti",
+  "tur": "parcacik",
+  "etiketler": ["konfeti", "kutlama", "başarı", "parçacık", "patlama"],
+  "ne_zaman": "Konuşmacı bir başarıyı, hedefe ulaşmayı, ödülü ya da kutlama anını açıklarken (\"başardık\", \"hedefe ulaştık\", \"sonuç harika\").",
+  "sure": { "min": 0.8, "varsayilan": 1.5, "max": 2.0 },
+  "giris_sn": 0.32,
+  "cikis_sn": 0.22,
+  "hero": false,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["tam"],
+  "boyut": { "w": 1, "h": 1 },
+  "en_kucuk_px": 260,
+  "kaynak": null
+}

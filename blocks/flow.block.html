@@ -1,0 +1,39 @@
+<!--meta
+{"name": "flow", "description": "Süreç/neden-sonuç diyagramı: düğümler sırayla belirir, aralarındaki oklar çizilir. 3–5 düğüm ideal. 'at' ile her düğüm seslendirmeye kilitlenebilir.",
+ "props": {"nodes": "list*", "direction": "enum(row|column)", "at": "list", "highlight": "number"},
+ "default_dur": 5.0, "sfx": {"per_item": "pop"}, "tags": ["animation", "explainer", "diagram"]}
+-->
+<style>
+.blk-flow { display: flex; align-items: center; justify-content: center; padding: calc(var(--safe-t) + var(--u)*8) calc(var(--safe-r) + var(--u)*6) calc(var(--safe-b) + var(--u)*8) calc(var(--safe-l) + var(--u)*6); }
+.blk-flow .fl { display: flex; align-items: center; gap: calc(var(--u) * 1.4); }
+.blk-flow.dir-column .fl { flex-direction: column; }
+.blk-flow .fl-node { padding: calc(var(--u) * 2.2) calc(var(--u) * 3); background: var(--c-surface); border-radius: calc(var(--radius) * 0.8);
+  font: 700 calc(var(--u) * 3.4) / 1.15 var(--f-body); text-align: center; max-width: calc(var(--u) * 26); border: calc(var(--u)*0.3) solid transparent; }
+.blk-flow .fl-node.hl { border-color: var(--c-accent); color: var(--c-accent); }
+.blk-flow .fl-arrow { width: calc(var(--u) * 7); height: calc(var(--u) * 3); flex: none; }
+.blk-flow.dir-column .fl-arrow { transform-origin: 50% 50%; rotate: 90deg; }
+.blk-flow .fl-arrow path { stroke: var(--c-muted); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+<markup>
+<div class="blk blk-flow dir-{{direction}}"><div class="fl"></div></div>
+</markup>
+<script>
+HF_BLOCKS["flow"] = function (tl, el, P, T, S) {
+  const fl = el.querySelector(".fl");
+  const nodes = P.nodes || [];
+  const step = Math.max(0.45, (T.dur - 1.0) / Math.max(nodes.length, 1));
+  nodes.forEach(function (txt, i) {
+    if (i > 0) {
+      fl.insertAdjacentHTML("beforeend", '<svg class="fl-arrow" viewBox="0 0 70 30"><path d="M4 15 H62 M52 6 L64 15 L52 24" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>');
+    }
+    const n = document.createElement("div"); n.className = "fl-node" + (P.highlight === i ? " hl" : ""); n.textContent = txt; fl.appendChild(n);
+  });
+  const nodeEls = fl.querySelectorAll(".fl-node"), arrows = fl.querySelectorAll(".fl-arrow path");
+  nodeEls.forEach(function (n, i) {
+    const at = P.at && P.at[i] !== undefined ? T.start + Number(P.at[i]) : T.start + i * step;
+    if (i > 0) tl.fromTo(arrows[i - 1], { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.3, ease: S.ease.ui }, at - 0.25);
+    HF.pop(tl, n, at, S, { from: 0.85 });
+  });
+  HF.exit(tl, el, T, S);
+};
+</script>

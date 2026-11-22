@@ -1,0 +1,15 @@
+{
+  "ad": "cerceve/tarayici",
+  "tur": "cerceve",
+  "etiketler": ["tarayıcı", "web", "site", "ekran", "çerçeve"],
+  "ne_zaman": "Konuşmacı bir web sitesi, panel ya da masaüstü ekran kaydını tarayıcı penceresi içinde gösterirken (\"siteye girince\", \"ekranda görüyorsunuz\").",
+  "sure": { "min": 1.5, "varsayilan": 3.5, "max": 8.0 },
+  "giris_sn": 0.42,
+  "cikis_sn": 0.24,
+  "hero": true,
+  "en_boy": ["9:16", "16:9", "1:1", "4:5"],
+  "yer": ["orta"],
+  "boyut": { "w": 0.8, "h": 0.6 },
+  "en_kucuk_px": 360,
+  "kaynak": null
+}

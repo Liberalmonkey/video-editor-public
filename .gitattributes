@@ -1,0 +1,13 @@
+# Windows betikleri her zaman CRLF (LF ile .bat dosyalari acilip hemen kapanabiliyor)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Mac betikleri her zaman LF
+*.sh text eol=lf
+*.command text eol=lf
+
+# Yama ikili veri tasir; satir sonu donusumu git apply'i bozar
+*.patch -text
+*.vbs text eol=crlf
+graphify-out/graph.json merge=graphify

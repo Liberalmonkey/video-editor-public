@@ -1,0 +1,14 @@
+{
+ "title": "Kenar ışıltısı: kart çerçevesi etrafında dolaşan parlak ışık huzmesi",
+ "kind": "overlay",
+ "tags": ["kenar", "isilti", "cerceve", "kart", "vurgu", "parilti"],
+ "ne_zaman": "Önemli bir özelliği, duyuruyu veya premium bir bilgiyi dikkat çeken ışıltılı bir kartla vurgulamak için.",
+ "sure": 4.5,
+ "w": 1080,
+ "h": 1080,
+ "loop": false,
+ "param": {
+  "baslik": {"vars": "Öne Çıkan Başlık", "max": 28},
+  "alt": {"vars": "Detaylı açıklama ve alt bilgi metni", "max": 40}
+ }
+}

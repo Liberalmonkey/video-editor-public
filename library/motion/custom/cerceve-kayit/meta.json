@@ -1,0 +1,15 @@
+{
+ "title": "Kayıt vizörü: kamera kaydı havası",
+ "kind": "overlay",
+ "tags": [
+  "cerceve",
+  "kayit",
+  "kamera",
+  "canli"
+ ],
+ "ne_zaman": "Ham çekim, kamera arkası, canlı an ya da 'şu an kaydediyorum' hissi vermek için; 16:9 görüntünün tamamına konur.",
+ "sure": 3.0,
+ "w": 1920,
+ "h": 1080,
+ "loop": false
+}

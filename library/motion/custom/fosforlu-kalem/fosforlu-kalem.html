@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Fosforlu kalem</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur fosforlu-kalem -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.f{fill:none;stroke:var(--ikincil);stroke-width:96;stroke-linecap:butt;opacity:.55;animation:ciz .5s cubic-bezier(.4,0,.2,1) .05s both}
+g{animation:cik .25s ease-in 1.2s both}
+@keyframes cik{to{opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080"><g>
+<path class="f ciz" pathLength="1" d="M200 548 Q 540 532 880 546"/>
+</g></svg>
+</body></html>

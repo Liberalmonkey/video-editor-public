@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Başlık açılışı</title>
+<!-- Proje yapımı motion şablonu (ADR 0036). Üret: vedit motion kur baslik-acilis -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+:root{--u:min(1vw,.9vh)}
+.sahne{position:absolute;left:9vw;right:9vw;top:16vh;font-family:var(--font)}
+.ust{display:inline-block;padding:.5em .9em;background:var(--vurgu);color:var(--vurgu-ustu);border-radius:var(--kose,18px);
+  font-weight:800;font-size:calc(3.6*var(--u));letter-spacing:.06em;transform-origin:left center;animation:ac .35s cubic-bezier(.16,1,.3,1) .05s both,kapa .25s ease-in 2.7s both}
+.satir{overflow:hidden;margin-top:calc(1.6*var(--u))}
+.baslik{display:inline-block;padding:.18em .32em;background:var(--zemin);border-radius:var(--kose,18px);color:var(--yazi);font-weight:var(--agirlik,800);font-size:calc(9.6*var(--u));line-height:1.04;
+  animation:yuksel .5s cubic-bezier(.16,1,.3,1) .22s both,in .3s ease-in 2.65s both}
+.cizgi{height:var(--cizgi,10px);width:calc(26*var(--u));margin-top:calc(2*var(--u));background:var(--vurgu);border-radius:99px;transform-origin:left center;
+  animation:ac .45s cubic-bezier(.16,1,.3,1) .5s both,kapa .25s ease-in 2.6s both}
+@keyframes ac{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+@keyframes kapa{to{transform:scaleX(0);opacity:0}}
+@keyframes yuksel{from{transform:translateY(105%)}to{transform:translateY(0)}}
+@keyframes in{to{transform:translateY(105%)}}
+</style></head><body>
+<div class="sahne"><div class="ust" id="ust"></div><div class="satir"><div class="baslik" id="baslik"></div></div><div class="cizgi"></div></div>
+<script>
+const P = Object.assign({ ust: "YENİ", metin: "Başlık buraya" }, window.PARAM);
+const ust = document.getElementById("ust");
+ust.textContent = P.ust.toLocaleUpperCase("tr-TR");
+if (!P.ust) ust.style.display = "none";
+const b = document.getElementById("baslik");
+b.textContent = P.metin;
+// Uzun başlık kendiliğinden küçülür: 18 karakterden sonra orantılı.
+b.style.fontSize = "calc(" + Math.max(5.2, 9.6 * Math.min(1, 18 / Math.max(1, P.metin.length))) + "*var(--u))";
+</script>
+</body></html>

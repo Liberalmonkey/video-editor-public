@@ -1,0 +1,16 @@
+{
+ "title": "Sıcak ışık sızıntısı geçişi 16:9; ortası (0,50 sn) kesime gelir",
+ "kind": "transition",
+ "tags": [
+  "gecis",
+  "isik",
+  "sicak",
+  "sinematik",
+  "yatay"
+ ],
+ "ne_zaman": "16:9 videoda vlog, anı, seyahat ya da duygusal anlatımda bir sahneden ötekine, zaman ya da mekân değişiminde; sıcak ve sinematik his verir; kesimi klibin ortasına (0,50 sn) koy.",
+ "sure": 1.0,
+ "w": 1920,
+ "h": 1080,
+ "loop": false
+}

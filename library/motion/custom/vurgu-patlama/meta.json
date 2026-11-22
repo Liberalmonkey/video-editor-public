@@ -1,0 +1,14 @@
+{
+ "title": "Işın patlaması: kısa vurgu, zoom anı",
+ "kind": "overlay",
+ "tags": [
+  "patlama",
+  "vurgu",
+  "zoom"
+ ],
+ "ne_zaman": "Punch ya da zoom anında, en güçlü kelimede.",
+ "sure": 0.65,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Odometre sayaç</title>
+<!-- Proje yapımı parametrik motion şablonu (ADR 0036). Sanal saat window.seek ile sürülür. Üret: vedit motion kur odometre-sayac -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:1080px;height:1080px;font-family:var(--font)}
+.sahne{position:absolute;left:100px;top:330px;width:880px;box-sizing:border-box;opacity:0}
+.panel{background:var(--zemin);border-radius:var(--kose,18px);border:2px solid color-mix(in srgb,var(--yazi) 12%,transparent);padding:40px 48px;box-sizing:border-box;box-shadow:var(--golge);text-align:center}
+.etiket{font-size:32px;font-weight:700;color:var(--soluk);letter-spacing:2px;margin-bottom:28px;text-transform:uppercase}
+.sayac-kapsayici{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:color-mix(in srgb,var(--yazi) 3%,transparent);padding:16px 28px;border-radius:14px;border:1.5px solid color-mix(in srgb,var(--yazi) 6%,transparent)}
+.onek,.sonek{font-size:46px;font-weight:800;color:var(--vurgu);line-height:100px;flex:none}
+.onek:empty,.sonek:empty{display:none}
+.rakamlar-grubu{display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.slot{width:56px;height:100px;overflow:hidden;position:relative;background:color-mix(in srgb,var(--zemin) 55%,transparent);border-radius:8px;border:1px solid color-mix(in srgb,var(--yazi) 8%,transparent);box-shadow:inset 0 4px 12px color-mix(in srgb,var(--zemin) 75%,transparent);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 18%,black 82%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,black 18%,black 82%,transparent 100%)}
+.serit{position:absolute;left:0;top:0;width:100%;display:flex;flex-direction:column;align-items:center}
+.sayi-hucre{height:100px;width:100%;display:flex;align-items:center;justify-content:center;font-size:84px;font-weight:800;color:var(--yazi);font-variant-numeric:tabular-nums;font-family:var(--font-rakam);line-height:100px}
+.ayirici{width:22px;height:100px;display:inline-flex;align-items:flex-end;justify-content:center;padding-bottom:14px;box-sizing:border-box;font-size:72px;font-weight:800;color:var(--soluk);line-height:1}
+.alt-vurgu-cizgi{height:max(var(--cizgi,10px),6px);background:var(--vurgu);border-radius:99px;margin-top:28px;transform-origin:center center}
+</style></head><body>
+<div class="sahne" id="sahne">
+ <div class="panel">
+  <div class="etiket" id="etiket"></div>
+  <div class="sayac-kapsayici">
+   <span class="onek" id="onek"></span>
+   <div class="rakamlar-grubu" id="rakamlar"></div>
+   <span class="sonek" id="sonek"></span>
+  </div>
+  <div class="alt-vurgu-cizgi" id="cizgi"></div>
+ </div>
+</div>
+<script>
+const P = Object.assign({
+  hedef: 125000,
+  onek: "",
+  sonek: "",
+  etiket: "Toplam Görüntülenme"
+}, window.PARAM);
+
+const $ = id => document.getElementById(id);
+$("etiket").textContent = String(P.etiket || "").toLocaleUpperCase("tr-TR");
+$("onek").textContent = P.onek || "";
+$("sonek").textContent = P.sonek || "";
+
+// Sayıyı tr-TR formatında ayrıştır
+const hedefSayi = Math.max(0, Math.min(9999999, Math.round(Number(P.hedef) || 0)));
+const formatli = hedefSayi.toLocaleString("tr-TR");
+
+// Basamakları soldan sağa parse et
+const karakterler = formatli.split("");
+const slotVerileri = [];
+
+// Sağdaki rakamların daha çok tur atması kuralı:
+// Önce toplam rakam sayısını bul
+const rakamAdet = karakterler.filter(c => c >= "0" && c <= "9").length;
+let rakamSayaci = 0;
+
+const rakamlarKonteyner = $("rakamlar");
+
+karakterler.forEach(k => {
+  if (k === ".") {
+    const ay = document.createElement("div");
+    ay.className = "ayirici";
+    ay.textContent = ".";
+    rakamlarKonteyner.appendChild(ay);
+  } else {
+    const digit = parseInt(k, 10);
+    // Sağdan kaçıncı rakam (0 = en sağdaki birler basamağı)
+    const sagdanSira = (rakamAdet - 1) - rakamSayaci;
+    rakamSayaci++;
+
+    // Sağdaki basamak daha çok tur atar:
+    // En sağdaki (0): 4 tur (40 adım)
+    // 1: 3 tur
+    // 2: 2 tur
+    // 3: 1 tur
+    // 4+: 0 veya 1 tur
+    const ekstraTur = Math.max(0, 4 - sagdanSira); // WHY: denetim 2026-11-19, ters işaret birler basamağını durduruyordu
+    const toplamAdim = digit + ekstraTur * 10;
+
+    const slot = document.createElement("div");
+    slot.className = "slot";
+    const serit = document.createElement("div");
+    serit.className = "serit";
+
+    // Şeritteki rakamları oluştur: 0..toplamAdim
+    for (let i = 0; i <= toplamAdim; i++) {
+      const hucre = document.createElement("div");
+      hucre.className = "sayi-hucre";
+      hucre.textContent = String(i % 10);
+      serit.appendChild(hucre);
+    }
+
+    slot.appendChild(serit);
+    rakamlarKonteyner.appendChild(slot);
+
+    slotVerileri.push({
+      serit,
+      toplamAdim,
+      sagdanSira
+    });
+  }
+});
+
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const easeOutQuart = x => 1 - Math.pow(1 - x, 4);
+
+window.seek = t => {
+  // Toplam süre 4.0 sn
+  // Giriş: 0.0 - 0.35s
+  // Yuvarlanma: 0.35s - 2.8s
+  // Hedefte bekleme: 2.8s - 3.4s
+  // Çıkış: 3.4s - 3.95s; 3.95+ tamamen boş (saydam)
+  if (t >= 3.95) {
+    $("sahne").style.opacity = "0";
+    return;
+  }
+
+  const gir = easeOut(clamp(t / 0.35, 0, 1));
+  const cik = clamp((t - 3.4) / 0.55, 0, 1);
+  const cikE = cik * cik;
+
+  const sahne = $("sahne");
+  sahne.style.opacity = String(gir * (1 - cikE));
+  const translateYGir = (1 - gir) * 35;
+  const translateYCik = cikE * -25;
+  sahne.style.transform = `translateY(${translateYGir + translateYCik}px) scale(${0.96 + gir * 0.04 - cikE * 0.04})`;
+
+  // Alt vurgu çizgisi animasyonu
+  const cizgiUzat = easeOut(clamp((t - 0.2) / 0.45, 0, 1));
+  $("cizgi").style.transform = `scaleX(${cizgiUzat * (1 - cikE)})`;
+
+  // Yuvarlanma süreci (0.35s - 2.8s)
+  const sayacZamani = clamp((t - 0.35) / 2.45, 0, 1);
+
+  slotVerileri.forEach(s => {
+    // Sağdaki basamakların duruşu biraz daha geç ve zengin olsun
+    // sagdanSira: 0 en sağdaki
+    const gecikmeOrani = (s.sagdanSira / Math.max(1, rakamAdet)) * 0.15;
+    // soldan sağa doğru: soldakiler erken biter (t=2.2s gibi), sağdakiler t=2.7s'ye kadar döner
+    const normalizeT = clamp((sayacZamani - (0.15 - gecikmeOrani)) / (0.85 + gecikmeOrani), 0, 1);
+    const p = easeOutQuart(normalizeT);
+
+    const anlikAdim = p * s.toplamAdim;
+    const pikselY = anlikAdim * 100;
+    s.serit.style.transform = `translateY(-${pikselY}px)`;
+  });
+};
+
+window.seek(0);
+</script>
+</body></html>

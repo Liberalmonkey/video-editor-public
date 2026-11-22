@@ -1,0 +1,15 @@
+{
+ "title": "Ampul: yanar, ışın çıkar",
+ "kind": "icon",
+ "tags": [
+  "fikir",
+  "ampul",
+  "ipucu",
+  "ders"
+ ],
+ "ne_zaman": "Bir fikir, ipucu ya da 'aklıma geldi' anı söylendiğinde.",
+ "sure": 1.6,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}

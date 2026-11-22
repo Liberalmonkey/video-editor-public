@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Köşeli parantez</title>
+<!-- Proje yapımı saydam motion (ADR 0036). Render: vedit motion kur parantez -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden}
+svg{position:absolute;inset:0;width:1080px;height:1080px;overflow:visible}
+.c{fill:none;stroke:var(--vurgu);stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:var(--vurgu)}
+.ciz{stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes ciz{to{stroke-dashoffset:0}}
+.l{animation:gl .45s cubic-bezier(.2,1.25,.4,1) .05s both}
+.r{animation:gr .45s cubic-bezier(.2,1.25,.4,1) .05s both}
+.l>path{animation:cl .3s ease-in 1.55s both}
+.r>path{animation:cr .3s ease-in 1.55s both}
+@keyframes gl{from{transform:translateX(-240px);opacity:0}}
+@keyframes gr{from{transform:translateX(240px);opacity:0}}
+@keyframes cl{to{transform:translateX(-80px);opacity:0}}
+@keyframes cr{to{transform:translateX(80px);opacity:0}}
+</style></head><body>
+<svg viewBox="0 0 1080 1080">
+<g class="l"><path class="c" d="M392 302 L 304 306 Q 296 540 302 776 L 390 780"/></g>
+<g class="r"><path class="c" d="M688 300 L 776 304 Q 786 540 778 774 L 690 778"/></g>
+</svg>
+</body></html>

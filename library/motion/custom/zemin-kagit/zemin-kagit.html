@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Kâğıt dokusu zemin</title>
+<!-- Proje yapımı arka plan döngüsü (ADR 0036). İki eksende 6 sn periyotlu hafif kayma, döngü dikişsiz. Üret: vedit motion kur zemin-kagit -->
+<style>
+html,body{margin:0;background:transparent;overflow:hidden;width:100vw;height:100vh}
+.zemin{position:absolute;inset:0;background:var(--zemin);overflow:hidden}
+.x{position:absolute;inset:-3vw;animation:x 3s cubic-bezier(.37,0,.63,1) infinite alternate}
+.y{position:absolute;inset:0;animation:y 3s cubic-bezier(.37,0,.63,1) -1.5s infinite alternate}
+@keyframes x{from{transform:translateX(-2vw)}to{transform:translateX(2vw)}}
+@keyframes y{from{transform:translateY(-1.5vw)}to{transform:translateY(1.5vw)}}
+svg{position:absolute;inset:0;width:100%;height:100%}
+.golge{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,transparent 50%,color-mix(in srgb,var(--zemin) 30%,transparent) 100%)}
+</style></head><body>
+<div class="zemin">
+ <div class="x"><div class="y">
+  <svg xmlns="http://www.w3.org/2000/svg"><defs><filter id="k" x="0" y="0" width="100%" height="100%">
+   <feTurbulence type="fractalNoise" baseFrequency=".035 .11" numOctaves="4" seed="11"/>
+   <feDiffuseLighting lighting-color="#fff" surfaceScale="4" result="L"><feDistantLight azimuth="45" elevation="58"/></feDiffuseLighting>
+   <!-- Kabartmanın açık yüzü beyaz, gölge yüzü siyah; düz alan saydam kalır, tema zemini değişmez. -->
+   <feColorMatrix in="L" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  3 0 0 0 -2.45" result="A"/>
+   <feColorMatrix in="L" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -3 0 0 0 2.4" result="K"/>
+   <feMerge><feMergeNode in="K"/><feMergeNode in="A"/></feMerge></filter></defs>
+   <rect width="100%" height="100%" filter="url(#k)" opacity=".8"/></svg>
+ </div></div>
+ <div class="golge"></div>
+</div>
+</body></html>

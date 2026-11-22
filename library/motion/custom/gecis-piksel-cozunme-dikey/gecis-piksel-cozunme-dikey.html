@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><link rel="stylesheet" href="../../tema/varsayilan.css"><title>Kare piksel çözünme geçişi 9:16</title>
+<!-- Saydam geçiş (ADR 0036). Ekran sürenin tam ortasında (0,40 sn) tamamen kapalı: kesim oraya konur.
+     Zaman window.seek(t) ile sürülür; ilk ve son kare saydam. Renkler temadan. -->
+<style>html,body{margin:0;background:transparent;overflow:hidden}canvas{position:absolute;left:0;top:0;width:100vw;height:100vh}</style>
+</head><body><canvas id="c"></canvas><script>
+const D=0.8, S=54;
+const c=document.getElementById('c'),x=c.getContext('2d');
+const R=(n,v)=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||v;
+const cl=v=>Math.min(1,Math.max(0,v)), ara=(p,a,b)=>cl((p-a)/(b-a));
+const eIO2=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+function tohum(s){return()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const GA=.06,GB=.46,CA=.53,CB=.86;
+let RENK={}, TABLO=null, TW=0, TH=0;
+
+function tabloKur(W,H){
+  const cols=Math.ceil(W/S), rows=Math.ceil(H/S), N=cols*rows;
+  const rnd=tohum(707);
+  const idx=new Int32Array(N);
+  for(let i=0;i<N;i++)idx[i]=i;
+  for(let i=N-1;i>0;i--){
+    const j=Math.floor(rnd()*(i+1));
+    const tmp=idx[i];idx[i]=idx[j];idx[j]=tmp;
+  }
+  const sira=new Float32Array(N);
+  const vurgu=new Uint8Array(N);
+  for(let k=0;k<N;k++){
+    const h=idx[k];
+    sira[h]=N>1?k/(N-1):0;
+    vurgu[h]=rnd()<0.38?2:(rnd()<0.7?1:0);
+  }
+  TABLO={cols,rows,N,sira,vurgu};
+  TW=W;TH=H;
+}
+
+window.seek=t=>{
+  if(c.width!==innerWidth||c.height!==innerHeight){c.width=innerWidth;c.height=innerHeight}
+  const W=c.width,H=c.height;x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,W,H);
+  if(!TABLO||TW!==W||TH!==H)tabloKur(W,H);
+  RENK={v:R('--vurgu'),i:R('--ikincil'),z:R('--zemin'),y:R('--yazi')};
+  const p=cl(t/D);if(p<=GA||p>=CB)return;ciz(p,W,H);
+};
+
+function ciz(p,W,H){
+  if(p>=GB && p<CA){
+    x.fillStyle=RENK.z;
+    x.fillRect(0,0,W,H);
+    return;
+  }
+  const {cols,rows,sira,vurgu}=TABLO;
+  const kapanis=p<GB;
+  const u=eIO2(kapanis?ara(p,GA,GB):ara(p,CA,CB));
+  const pencere=0.18, yayilim=1-pencere;
+
+  for(let r=0;r<rows;r++){
+    const py=r*S, ph=Math.min(S,H-py);
+    for(let col=0;col<cols;col++){
+      const i=r*cols+col;
+      const px=col*S, pw=Math.min(S,W-px);
+      if(kapanis){
+        const th=sira[i]*yayilim;
+        const loc=cl((u-th)/pencere);
+        if(loc<=0)continue;
+        if(loc>=1){
+          x.fillStyle=RENK.z;
+          x.fillRect(px,py,pw,ph);
+        }else if(loc<0.45 && vurgu[i]>0){
+          x.fillStyle=vurgu[i]===1?RENK.v:RENK.i;
+          x.fillRect(px,py,pw,ph);
+        }else{
+          x.fillStyle=RENK.z;
+          x.fillRect(px,py,pw,ph);
+        }
+      }else{
+        const th=(1-sira[i])*yayilim;
+        const loc=cl((u-th)/pencere);
+        if(loc>=1)continue;
+        if(loc<=0){
+          x.fillStyle=RENK.z;
+          x.fillRect(px,py,pw,ph);
+        }else if(loc>0.55 && vurgu[i]>0){
+          x.fillStyle=vurgu[i]===1?RENK.v:RENK.i;
+          x.fillRect(px,py,pw,ph);
+        }else{
+          x.fillStyle=RENK.z;
+          x.fillRect(px,py,pw,ph);
+        }
+      }
+    }
+  }
+}
+window.seek(0);
+</script></body></html>

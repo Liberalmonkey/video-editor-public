@@ -1,0 +1,14 @@
+{
+ "title": "El çizimi daire: bir öğeyi çevrele",
+ "kind": "overlay",
+ "tags": [
+  "daire",
+  "vurgu",
+  "cevrele"
+ ],
+ "ne_zaman": "Anlatılan öğeyi çevrelemek için: ekran görüntüsünde alan, yüzde bir ayrıntı.",
+ "sure": 2.0,
+ "w": 1080,
+ "h": 1080,
+ "loop": false
+}
