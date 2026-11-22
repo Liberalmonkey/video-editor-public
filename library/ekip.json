@@ -1,11 +1,12 @@
 {
- "_not": "Ekip motoru ön ayarları (ADR 0044). `varsayilan` hangi ön ayarın kullanılacağını söyler; proje ezmesi work/edit/ekip.json. Stüdyo AI paneli Ekip modunda düzenler.",
+ "_not": "Ekip motoru ön ayarları (ADR 0053). `varsayilan` hangi ön ayarın kullanılacağını söyler; proje ezmesi work/edit/ekip.json. Seviye ajan sayısını belirler (low 2E+1K, medium 4E+2K, high 6E+3K, xhigh 8E+4K, max 10E+5K); gruplar orkestratör, editör ve kalite kontrol motorudur, ezme slot bazındadır. Stüdyo AI paneli Edit > Ekip ayarlarından düzenler.",
  "varsayilan": "karisik",
  "onayarlar": {
   "karisik": {
    "ad": "karisik",
-   "slotlar": {
-    "E1": {
+   "ekip_seviye": "medium",
+   "gruplar": {
+    "orkestrator": {
      "motor": "claude",
      "model": "claude-opus-5-5",
      "seviye": "high",
@@ -13,7 +14,7 @@
      "yedek_model": "gemini-4-argon-high",
      "yedek_seviye": null
     },
-    "E2": {
+    "editor": {
      "motor": "claude",
      "model": "claude-sonnet-5-5",
      "seviye": "medium",
@@ -21,49 +22,25 @@
      "yedek_model": "gemini-4-neon-high",
      "yedek_seviye": null
     },
-    "E3": {
-     "motor": "claude",
-     "model": "claude-sonnet-5-5",
-     "seviye": "medium",
-     "yedek_motor": "antigravity",
-     "yedek_model": "gemini-4-neon-high",
-     "yedek_seviye": null
-    },
-    "K1": {
+    "kk": {
      "motor": "antigravity",
      "model": "gemini-4-argon-high",
      "seviye": null,
      "yedek_motor": "claude",
      "yedek_model": "claude-sonnet-5-5",
      "yedek_seviye": null
-    },
-    "K2": {
-     "motor": "antigravity",
-     "model": "gemini-4-neon-high",
-     "seviye": null,
-     "yedek_motor": "claude",
-     "yedek_model": "claude-sonnet-5-5",
-     "yedek_seviye": null
-    },
-    "K3": {
-     "motor": "antigravity",
-     "model": "gemini-4-neon-xhigh",
-     "seviye": null,
-     "yedek_motor": "claude",
-     "yedek_model": "claude-sonnet-5-5",
-     "yedek_seviye": null
     }
    },
-   "bolus": "rol",
-   "tur": 1,
+   "ezme": {},
+   "eszamanlilik": null,
    "motion": "yogun",
-   "stil": null,
-   "eszamanlilik": 3
+   "stil": null
   },
   "yalniz-claude": {
    "ad": "yalniz-claude",
-   "slotlar": {
-    "E1": {
+   "ekip_seviye": "medium",
+   "gruplar": {
+    "orkestrator": {
      "motor": "claude",
      "model": "claude-opus-5-5",
      "seviye": "medium",
@@ -71,7 +48,7 @@
      "yedek_model": "gemini-4-neon-high",
      "yedek_seviye": null
     },
-    "E2": {
+    "editor": {
      "motor": "claude",
      "model": "claude-sonnet-5-5",
      "seviye": "medium",
@@ -79,31 +56,7 @@
      "yedek_model": "gemini-4-neon-high",
      "yedek_seviye": null
     },
-    "E3": {
-     "motor": "claude",
-     "model": "claude-sonnet-5-5",
-     "seviye": "medium",
-     "yedek_motor": "antigravity",
-     "yedek_model": "gemini-4-neon-high",
-     "yedek_seviye": null
-    },
-    "K1": {
-     "motor": "claude",
-     "model": "claude-sonnet-5-5",
-     "seviye": "medium",
-     "yedek_motor": "antigravity",
-     "yedek_model": "gemini-4-neon-high",
-     "yedek_seviye": null
-    },
-    "K2": {
-     "motor": "claude",
-     "model": "claude-sonnet-5-5",
-     "seviye": "medium",
-     "yedek_motor": "antigravity",
-     "yedek_model": "gemini-4-neon-high",
-     "yedek_seviye": null
-    },
-    "K3": {
+    "kk": {
      "motor": "claude",
      "model": "claude-sonnet-5-5",
      "seviye": "medium",
@@ -112,11 +65,10 @@
      "yedek_seviye": null
     }
    },
-   "bolus": "rol",
-   "tur": 3,
+   "ezme": {},
+   "eszamanlilik": null,
    "motion": "yogun",
-   "stil": null,
-   "eszamanlilik": 3
+   "stil": null
   }
  }
 }

@@ -10,13 +10,13 @@ Kullanıcının her düzeltmesi ve kalite kontrolün genelleşmiş bulgusu burad
 - YAPMA: stil açıkça istemedikçe altyazıya kutu, pop, gölge ya da solgun kelime koyma. [K0003 P0] (global)
 
 ## Kadraj
-- YAP: konuşmacı kadrajdaysa kamera alanını boş bırak; okunur hiçbir şey oraya girmesin. [K0004 P1 ×2] (global)
+- YAP: konuşmacı kadrajdaysa kamera alanını boş bırak; okunur hiçbir şey oraya girmesin. [K0004 P1 ×3] (global)
 - YAP: stüdyonun güvenli alanı dışına okunur öğe koyma. [K0005 P1] (global)
 - YAP: okunur yazı 1080p'de en az 28 px. Sığmıyorsa küçültme, kelime kes. [K0006 P1 ×2] (global)
 - YAPMA: gerçek görüntüyü oranını bozarak kırpma. [K0007 P1] (global)
 
 ## Kesim
-- YAP: örnek veya B-roll klipler içinde 0.8 saniyeyi aşan konuşmasız ölü boşlukları ve yüzün kadraj dışına taştığı anları keserek ritmi koru. [K0029 P1 ×5] (global; instagram/1)
+- YAP: örnek veya B-roll klipler içinde 0.8 saniyeyi aşan konuşmasız ölü boşlukları ve yüzün kadraj dışına taştığı anları keserek ritmi koru. [K0029 P1 ×6] (global; instagram/1)
 - YAPMA: ikili diyalog planlarında yüzleri kadraj kenarından kesecek sabit zoom veya sure: 0 değerinde hazır efekt kullanma. [K0030 P1] (global; instagram/1)
 - YAP: konuşan kafa kliplerinde ilk kelimenin Whisper başlangıcı 0.0 sn olsa bile konuşmacının ağzını açmadığı baştaki nefes ve bekleme payını giris zamanını ileri alarak kes. [K0036 P1 ×5] (global; instagram/1)
 - YAPMA: konuşan kafa kliplerini 4.5 saniyeden uzun süre hiçbir ölçek değişimi, hazır efekt veya kesim olmadan durağan bırakma. [K0039 P1] (global; instagram/1)
@@ -37,11 +37,12 @@ Kullanıcının her düzeltmesi ve kalite kontrolün genelleşmiş bulgusu burad
 - YAPMA: konuşan kafa planları arasında yüzleri üst üste bindiren ışık veya erime geçişi kullanma; düz kesim yap. [K0028 P1] (global; instagram/1)
 - YAP: karşılaştırmalı veya çok adımlı kısa videolarda her kademeyi seçili stilin token'ıyla üretilmiş, anahtar kelimeye çapalı kısa bir V2 grafik öğesiyle görsel olarak ayır. [K0037 P1 ×2] (global; instagram/1)
 - YAPMA: videodaki tüm V2 grafiklerini art arda yalnız ikon ailesinden kurma; en geç üçüncü öğede seçili stilin tipografisini gösteren farklı bir bileşen ailesiyle görsel çeşitlilik sağla. [K0045 P1] (global; instagram/1)
+- YAPMA: konuşmacının doğrudan kameraya konuştuğu planda yüzü bulanıklaştıran odak_karart efektiyle tam genişlikli orta kartı aynı anda kullanma. [K0048 P1] (global; instagram/1)
 - YAPMA: ardışık konuşan kafa kliplerinde üç kez üst üste aynı hazır efekti tekrarlama; punch ile zoom_in/odak_zoom arasında çeşitlilik kur. [K0041 P2 ×3] (global; instagram/1)
 
 ## Hareket
 - YAPMA: sahneyi boş açma. İlk karede gerçek bir şey ekranda olsun. [K0011 P1] (global)
-- YAP: öğe kendi kelimesinde girsin. Kelimeden önce değil, en geç 2 sn sonra. [K0012 P1 ×2] (global)
+- YAP: öğe kendi kelimesinde girsin. Kelimeden önce değil, en geç 2 sn sonra. [K0012 P1 ×3] (global)
 - YAPMA: konuşma sürerken ekran 5 sn'den uzun durağan kalmasın. [K0013 P1 ×5] (global)
 
 ## Ses
@@ -72,4 +73,5 @@ Kullanıcının her düzeltmesi ve kalite kontrolün genelleşmiş bulgusu burad
 
 ## Genel
 - YAP: vurgu ikonunu yardımcı fiile değil anlamı taşıyan anahtar kelimeye çapala ve sonraki cümle başlamadan ekrandan çıkar. [K0033 P1 ×2] (global; instagram/1)
+- YAPMA: kademe veya bölüm etiketini örnek B-roll klibinin ortasındaki rastgele bir kelimeye çapalama; kademenin başladığı ilk kelimeye veya geçiş anına çapala. [K0047 P1] (global; instagram/1)
 - YAPMA: ilk kelimesi 0.0 saniyede başlayan konuşmalı klibin girişine iki konuşmacının yüzünü üst üste bindiren geçiş efekti koyma; düz kesim yap. [K0046 P2] (global; instagram/1)

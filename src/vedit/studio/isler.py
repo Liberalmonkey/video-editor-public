@@ -86,8 +86,8 @@ class Istek(BaseModel):
     stem: int | None = None  # ayristir: 2 ya da 4
     bicim: str | None = None  # ses-cikar
     hepsi: bool = False  # ayristir, ses-cikar: girdi klasörünün tamamı
-    ekip: bool = False  # ai-edit: 3 editör + 3 kalite kontrol (ADR 0044)
-    ekip_ayar: dict | None = None  # 6 slot, bölüş, tur; doğrulanıp work/edit/ekip/istek-ayar.json'a yazılır
+    ekip: bool = False  # ai-edit: orkestratör + seviyeli ekip (ADR 0053)
+    ekip_ayar: dict | None = None  # seviye, gruplar, ezme; doğrulanıp work/edit/ekip/istek-ayar.json'a yazılır
 
 
 def arguman(i: Istek) -> list[str]:
@@ -120,7 +120,7 @@ def arguman(i: Istek) -> list[str]:
     if i.komut in ("taslak", "ai-edit") and i.aralik:
         a += ["--aralik", f"{float(i.aralik[0]):.3f}", f"{float(i.aralik[1]):.3f}"]
     if i.komut == "ai-edit" and i.ekip:
-        # WHY: bkz. wiki/decisions/0044-ekip-motoru.md. Slot motor/model canlı listede doğrulanır; tek motor bayrağı yazılmaz.
+        # WHY: bkz. wiki/decisions/0053-seviyeli-ekip-orkestrator.md. Grup ve ezme motor/modeli canlı listede doğrulanır.
         from . import ekip as ekip_api
         ayar = ekip_api.dogrula({**(i.ekip_ayar or {}), **({"stil": i.stil} if i.stil else {}), **({"motion": i.motion} if i.motion else {})})
         f = p.work / "edit" / "ekip" / "istek-ayar.json"

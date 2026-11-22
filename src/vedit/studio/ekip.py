@@ -1,8 +1,8 @@
-"""Stüdyo AI paneli Ekip modu: ön ayarlar, proje ezmesi, canlı durum ve ajan çıktıları.
+"""Stüdyo AI paneli ekip modu: ön ayarlar, proje ezmesi, canlı durum (kapılar, slotlar) ve ajan çıktıları.
 
-WHY: bkz. wiki/decisions/0044-ekip-motoru.md. İş kuyruğu `vedit ai-edit --ekip` başlatır; iç paralellik `ekip.py`'dedir.
-Panel durumu `work/edit/ekip/durum.json`'dan okur; "hepsini durdur" iş iptalidir (süreç ağacı taskkill /T ile kapanır,
-kurgu son birleşen turda kalır).
+WHY: bkz. wiki/decisions/0053-seviyeli-ekip-orkestrator.md. İş kuyruğu `vedit ai-edit --ekip` başlatır; iç paralellik
+`ekip_v3.py`'dedir. Panel durumu `work/edit/ekip/durum.json`'dan okur; "hepsini durdur" iş iptalidir (süreç ağacı
+taskkill /T ile kapanır, kurgu son birleşen kapıda kalır).
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from pydantic import ValidationError
 
 from .. import ekip as ekip_mod
 from .. import motorlar
-from ..ekip_sema import SLOTLAR, EkipAyar
+from ..ekip_sema import SEVIYE, SLOT_DESEN, EkipAyar
 from . import ortak
 
 router = APIRouter()
@@ -32,13 +32,13 @@ def _yaz_global(d: dict) -> None:
 
 
 def dogrula(ayar: dict) -> EkipAyar:
-    """Şema + motor ve model canlı listede mi. Kurulu olmayan motor slotta kabul edilmez."""
+    """Şema + motor ve model canlı listede mi. Kurulu olmayan motor grupta ya da ezmede kabul edilmez."""
     try:
         a = EkipAyar.model_validate(ayar)
     except ValidationError as e:
         raise HTTPException(422, str(e)[:600]) from e
     d = motorlar.durum()
-    for s, sl in a.slotlar.items():
+    for s, sl in [*a.gruplar.items(), *a.ezme.items()]:
         for motor, model, seviye, ek in ((sl.motor, sl.model, sl.seviye, ""), (sl.yedek_motor, sl.yedek_model, sl.yedek_seviye, " yedek")):
             if not motor:
                 continue
@@ -54,7 +54,8 @@ def dogrula(ayar: dict) -> EkipAyar:
 
 @router.get("/api/ekip")
 def ekip_oku():
-    return {"global": _global(), "slotlar": list(SLOTLAR), "varsayilan_ayar": EkipAyar().model_dump()}
+    return {"global": _global(), "seviyeler": {k: {"editor": e, "kk": q} for k, (e, q) in SEVIYE.items()},
+            "varsayilan_ayar": EkipAyar().model_dump()}
 
 
 @router.put("/api/ekip/onayar/{ad}")
@@ -116,17 +117,16 @@ def durum(studyo: str, ad: str):
 
 
 @router.get("/api/ekip/{studyo}/{ad}/cikti/{slot}")
-def cikti(studyo: str, ad: str, slot: str, tur: int | None = None, son: int = 400):
-    if slot not in SLOTLAR:
+def cikti(studyo: str, ad: str, slot: str, son: int = 400):
+    """Slotun en yeni çıktısı: ekip/<kapı klasörü>/<slot>.cikti.txt (orkestratör birden çok kapıda yazar)."""
+    if not SLOT_DESEN.match(slot):
         raise HTTPException(400, "Bilinmeyen slot")
     p = ortak.proje(studyo, ad)
     kok = p.work / "edit" / "ekip"
-    if tur is None:
-        turlar = sorted((int(x.name[4:]) for x in kok.glob("tur-*") if x.name[4:].isdigit()), reverse=True)
-        tur = next((t for t in turlar if (kok / f"tur-{t}" / f"{slot}.cikti.txt").is_file()), None)
-    f = kok / f"tur-{tur}" / f"{slot}.cikti.txt" if tur else None
-    if not f or not f.is_file():
-        return {"tur": tur, "satirlar": []}
+    adaylar = sorted(kok.glob(f"*/{slot}.cikti.txt"), key=lambda f: f.stat().st_mtime) if kok.is_dir() else []
+    if not adaylar:
+        return {"asama": None, "satirlar": []}
+    f = adaylar[-1]
     satirlar = f.read_text(encoding="utf-8", errors="replace").splitlines()[-max(1, min(son, 2000)):]
     meta = f.with_name(f"{slot}.meta.json")
-    return {"tur": tur, "satirlar": satirlar, "meta": json.loads(meta.read_text(encoding="utf-8")) if meta.is_file() else None}
+    return {"asama": f.parent.name, "satirlar": satirlar, "meta": json.loads(meta.read_text(encoding="utf-8")) if meta.is_file() else None}

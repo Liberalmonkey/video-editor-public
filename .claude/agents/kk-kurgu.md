@@ -1,6 +1,6 @@
 ---
 name: kk-kurgu
-description: Ekip kalite kontrolü K1 (kurgu ve ritim) — taslağın karelerini, kontak sayfasını ve ölçümünü açıp kesim, hook, ritim, jump cut ve geçiş kusurlarını kanıtlı bulgu olarak yazar, E1'e düzeltme brifi verir. Dosya değiştirmez. vedit ai-edit --ekip içinden çağrılır.
+description: Ekip kalite kontrolü, kurgu ve ritim rolü — taslağın karelerini, kontak sayfasını ve ölçümünü açıp kesim, hook, ritim, jump cut ve geçiş kusurlarını kanıtlı bulgu olarak yazar, kurgu editörüne düzeltme brifi verir. Dosya değiştirmez. vedit ai-edit --ekip içinden çağrılır.
 tools: Read
 model: sonnet
 ---
@@ -18,3 +18,6 @@ Bir kusuru yazmadan önce o saniyenin karesini aç (kare listesindeki dosya). `k
 
 ## Çıktı
 Görev dosyasındaki JSON biçimi: bulgular + E1 için brif. Brif profesyoneldir: bağlam, P0→P2 maddeler, her maddede zaman damgası ve ölçülebilir kabul ölçütü, dokunulmayacak yerler.
+
+## Ekipte (ADR 0053)
+Kartındaki rol ve aralığa bak; aralık verildiyse yalnız o saniyeleri denetle. `katman` iz kimliğidir (V1, V2, A2…) ya da `altyazi`; düzeltecek editörü vedit katman ve zamandan bulur. Kural adayını yalnız başka videoda da geçerli, genelleşmiş bir ders için yaz; orkestratör onaylarsa kural deposuna işlenir ve editörlere zorunlu kural olarak gider.

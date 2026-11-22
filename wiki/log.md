@@ -95,3 +95,14 @@ Arşiv: [[log.part1]] (2026-10-20 - 2026-11-03), [[log.part2]] (2026-11-03 - 202
 - `kapak_prompt.py`: yapılı brief, agy zemin prompt'u, altı platform için yazılı ve boş zemin master prompt'u. `kapak.py`: video seçimi, elle kare, yüz ve stil referansı, `gelistir`, `gorsel_duzelt` (kırmızı kutu ve geri yapıştırma), `ice_al`, `master`; teslimde master prompt dosyası.
 - `gorsel.agy` model, efor ve zaman aşımı alır; `gorsel.kota` görsel modelini ve kota açılışını loglardan okur. agy görsel modeli seçtirmez (`gemini-3.1-flash-image`).
 - Testler: `test_kapak_prompt.py`, `test_kapak_v2.py`, iş kuyruğu ve API uçları, `yardimci.test.ts`. Sayfalar: [[0052-kapak-is-akisi-v2]], [[2026-11-22-kapak-arastirmasi-v2]], [[0027-kapak-sayfasi]], [[video-studyo]].
+
+## [2026-11-22] code | Seviyeli ekip, orkestratör ve sade AI paneli (ADR 0053)
+- Ekip v3 (`ekip_v3.py`): seviye ajan sayısını belirler (low 2+1 … max 10+5), orkestratör kartları dağıtır, kapılar G0-G7 paralel işi bağlar. Kural kapısı `kural_uyum`'u ve deterministik denetimi ölçer, triyaj QC kural adayını depoya işleyip doğrular.
+- Eski turlu motor (`--ekip-v1`), 6 slot şeması, Bölüş ve Tur kaldırıldı; `library/ekip.json` ve eski proje ayarları gruplara göçer. `zaman_araliklari` kısa videoda sıfır uzunlukta dilim üretmiyor.
+- Stüdyo AI paneli Edit/Sohbet sekmeli: seviye segmenti, katlanır ekip ayarları, kapı adımları ve ajan kartları (`studio/web/src/paneller/ai/`). `/cikti/{slot}` v2'den beri boş dönen dosya düzeni düzeltildi.
+- Rol dosyaları: yeni `ekip-orkestrator`, `kk-genel`, `kk-kural`, `kk-izleyici`; editör ve QC rolleri görev kartına göre güncellendi.
+- Sayfalar: [[0053-seviyeli-ekip-orkestrator]], [[0048-ekip-motoru-v2]] (superseded).
+
+## [2026-11-22] code | HyperFrames render işçisi boş belleğe göre
+- `hf_kurgu.isci_sec`: boş RAM 3 GB altında 1, 6 GB altında 2 işçi, üstünde otomatik (4). Açık `isci` ve `VEDIT_HF_ISCI` kazanır. Render satırı seçilen işçiyi ve boş belleği yazar.
+- Neden: `instagram/1` ekip koşusu (low) G3 taslak render'ında bellek doldu ve Claude Code arka plan işini öldürdü (15,8 GB makine). Test `tests/test_hf_kurgu.py`. Sayfa: [[0053-seviyeli-ekip-orkestrator]].

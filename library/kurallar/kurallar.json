@@ -58,7 +58,7 @@
    "kaynak": "kullanici",
    "kanit": [],
    "durum": "aktif",
-   "tekrar": 2,
+   "tekrar": 3,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -178,7 +178,7 @@
    "kaynak": "kullanici",
    "kanit": [],
    "durum": "aktif",
-   "tekrar": 2,
+   "tekrar": 3,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -509,7 +509,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 5,
+   "tekrar": 6,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -892,6 +892,50 @@
    "tekrar": 1,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
+  },
+  {
+   "id": "K0047",
+   "metin": "YAPMA: kademe veya bölüm etiketini örnek B-roll klibinin ortasındaki rastgele bir kelimeye çapalama; kademenin başladığı ilk kelimeye veya geçiş anına çapala.",
+   "neden": "1. kademeyi ayırması gereken m_d1 (tipografi/kayan-kelime: 'İZLENMEZ / KÖTÜ KADEME') yanlış kaynağa (inputs_1_mp4 kelime 4: 'Her') çapalandığı için 1. kademenin girişinde değil, örnek saat reklamının ",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "genel",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 5.28,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0006.0.jpg",
+     "not": "1. kademeyi ayırması gereken m_d1 (tipografi/kayan-kelime: 'İZLENMEZ / KÖTÜ KADEME') yanlış kaynağa (inputs_1_mp4 kelime 4: 'Her') çapalandığı için 1. kademenin girişinde değil, örnek saat reklamının ortasında (5.28-6.88 sn) oyuncunun göğsü ve odak nesnesi olan saatin üstünde çıkıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-22",
+   "guncelleme": "2026-11-22"
+  },
+  {
+   "id": "K0048",
+   "metin": "YAPMA: konuşmacının doğrudan kameraya konuştuğu planda yüzü bulanıklaştıran odak_karart efektiyle tam genişlikli orta kartı aynı anda kullanma.",
+   "neden": "m_zirve (tipografi/vurgu-soz: 'ARTIK ÖNEMLİ OLAN / ÜRÜN -> HİKÂYE') 3.40 sn boyunca konuşmacının çene, ağız altı, mikrofon ve göğüs bölgesini dev bir kutuyla kapatıyor; aynı anda V1'deki odak_karart k",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "renk",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/1",
+     "zaman": 30.02,
+     "kare": "Projeler/outputs/instagram/1/work/edit/ekip/qc/izle/kare_0031.5.jpg",
+     "not": "m_zirve (tipografi/vurgu-soz: 'ARTIK ÖNEMLİ OLAN / ÜRÜN -> HİKÂYE') 3.40 sn boyunca konuşmacının çene, ağız altı, mikrofon ve göğüs bölgesini dev bir kutuyla kapatıyor; aynı anda V1'deki odak_karart konuşmacı konuşurken yüzünü bulanıklaştırıp karartarak 'sade grafik' isteğine ve kamera alanı kuralına aykırı görüntü oluşturuyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-22",
+   "guncelleme": "2026-11-22"
   }
  ]
 }

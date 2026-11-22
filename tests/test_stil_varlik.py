@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from vedit import aiedit, cli, ekip_v2, hizli, karakter, kurgu, kurgu_kalite, motion_ice, native_motion, paths, stil, stil_varlik
+from vedit import aiedit, cli, ekip_v3, hizli, karakter, kurgu, kurgu_kalite, motion_ice, native_motion, paths, stil, stil_varlik
 from vedit.schemas import Kurgu
 
 
@@ -188,7 +188,7 @@ def test_kurgu_stil_koku_hazirla_screen_ve_uyumsuzluk_uyarisi(ortam, tmp_path, m
     assert (p.work / "public" / "dis" / "rozet.json").is_file()
 
 
-def test_secki_yalniz_bunlar_aiedit_ve_ekip_v2(ortam, tmp_path):
+def test_secki_yalniz_bunlar_aiedit_ve_ekip(ortam, tmp_path):
     tum_native = sorted(native_motion.kayitlar())
     assert len(tum_native) >= 2
     secilen = [tum_native[0]]
@@ -210,8 +210,8 @@ def test_secki_yalniz_bunlar_aiedit_ve_ekip_v2(ortam, tmp_path):
     stil.sec(p, "stil-a")
     k = kurgu.bos("instagram")
 
-    # ekip_v2 E2 paketi yalnız seçili native bileşeni içerir, diğerlerini içermez
-    paket_metni = ekip_v2.paket(p, k, "E2", {"surum": 2}, p.work / "edit" / "ekip")
+    # ekip grafik editörünün paketi yalnız seçili native bileşeni içerir, diğerlerini içermez
+    paket_metni = ekip_v3.paket(p, k, "E2", {"surum": 3}, p.work / "edit" / "ekip")
     assert f"`{secilen[0]}`" in paket_metni
     assert f"`{tum_native[1]}`" not in paket_metni
     assert "Seçili Stilin Özel Varlıkları" in paket_metni

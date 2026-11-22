@@ -513,10 +513,10 @@ def cmd_final(a):
 def cmd_ai_edit(a):
     from . import aiedit, hizli
     if a.ekip:
-        # WHY: bkz. wiki/decisions/0044-ekip-motoru.md. --ekip yoksa eski tek ajan akışı aynen çalışır.
+        # WHY: bkz. wiki/decisions/0053-seviyeli-ekip-orkestrator.md. --ekip yoksa tek ajan akışı aynen çalışır.
         from . import ekip
         p = hizli.bul(a.ref)
-        ayar = ekip.ayar_yukle(p, Path(a.ekip_dosyasi) if a.ekip_dosyasi else None, bolus=a.bolus, tur=a.tur,
+        ayar = ekip.ayar_yukle(p, Path(a.ekip_dosyasi) if a.ekip_dosyasi else None, ekip_seviye=a.seviye,
                                motion=a.motion if a.motion != "yogun" else None, stil=a.stil)
         if a.sifirdan:
             from . import kurgu
@@ -527,13 +527,10 @@ def cmd_ai_edit(a):
                 (g / f"{kurgu.oku(p.work).rev:06d}-sifirdan.json").write_text(f.read_text(encoding="utf-8"), encoding="utf-8")
                 f.unlink()
         final_ek = {"platform": a.platform, "ad": a.ad, "yenile": a.yenile, **_teslim_ayari(a)}
-        if a.ekip_v1:
-            ekip.calistir(p, ayar, notu=a.notu, final=a.final, final_ek=final_ek)
-            return
-        # WHY: bkz. wiki/decisions/0048-ekip-motoru-v2.md. Sabit akış: sözleşme, paralel düzen, birleştirme, tek QC, tek düzeltme.
-        from . import ekip_v2
-        o = ekip_v2.calistir(p, ayar, notu=a.notu, tekrar_denetle=a.tekrar_denetle)
-        print(f"Ekip v2: {o['sure_sn']} sn · rapor work/edit/ai-edit.rapor.md")
+        # Kapılı akış: plan, paralel düzen, kural kapısı, birleştirme, QC, triyaj ve kural, düzeltme, son.
+        from . import ekip_v3
+        o = ekip_v3.calistir(p, ayar, notu=a.notu, tekrar_denetle=a.tekrar_denetle)
+        print(f"Ekip v3 ({o['seviye']}): {o['sure_sn']} sn · rapor work/edit/ai-edit.rapor.md")
         if a.final:
             if any(b["onem"] == "P0" for b in o["bulgular"]) or o["son_denetim"]["hata"]:
                 print("  ! Açık P0 bulgusu ya da denetim hatası var: teslim kullanıcı kararı (ADR 0015). --final atlandı.")
@@ -1168,12 +1165,11 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--motion", default="yogun", choices=["az", "orta", "yogun"], help="motion grafik yoğunluğu (ADR 0036)")
     sp.add_argument("--aralik", nargs=2, type=float, metavar=("BAS", "SON"), help="yalnız bu sekans aralığını (sn) düzelt; dışı değişmez")
     sp.add_argument("--final", action="store_true", help="taslaktan sonra final render")
-    sp.add_argument("--ekip", action="store_true", help="3 editör + 3 kalite kontrol ajanı (ekip v2, ADR 0048: sözleşme, paralel, tek QC, tek düzeltme)")
-    sp.add_argument("--ekip-v1", action="store_true", help="eski turlu ekip motoru (ADR 0044)")
-    sp.add_argument("--tekrar-denetle", action="store_true", help="ekip v2: düzeltmeden sonra ikinci QC paketi (yalnız istenirse)")
-    sp.add_argument("--bolus", choices=["rol", "zaman"], help="ekip: rol (kesim/grafik/ses) ya da 3 zaman aralığı")
-    sp.add_argument("--tur", type=int, help="ekip: en çok tur (varsayılan 3)")
-    sp.add_argument("--ekip-dosyasi", help="ekip ayarı JSON (6 slot); yoksa work/edit/ekip.json, sonra library/ekip.json")
+    sp.add_argument("--ekip", action="store_true", help="orkestratör + seviyeli editör ve kalite kontrol ekibi (ADR 0053, kapılı paralel akış)")
+    sp.add_argument("--seviye", choices=["low", "medium", "high", "xhigh", "max"],
+                    help="ekip seviyesi: low 2E+1K, medium 4E+2K, high 6E+3K, xhigh 8E+4K, max 10E+5K (yoksa ön ayar)")
+    sp.add_argument("--tekrar-denetle", action="store_true", help="ekip: düzeltmeden sonra ikinci QC paketi (yalnız istenirse)")
+    sp.add_argument("--ekip-dosyasi", help="ekip ayarı JSON; yoksa work/edit/ekip.json, sonra library/ekip.json")
     sp.add_argument("--sifirdan", action="store_true", help="ekip: mevcut kurguyu geçmişe bırakıp girdiden yeniden kur")
     sp.add_argument("--platform", choices=["youtube", "reels", "ugc"])
     sp.add_argument("--ad", help="teslim dosyası adı (--final)")

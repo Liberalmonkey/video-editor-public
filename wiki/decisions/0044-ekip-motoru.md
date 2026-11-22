@@ -10,7 +10,7 @@ sources: []
 
 # ADR 0044: Ekip motoru
 
-> [!note] Güncellendi 2026-11-20: yerini [[0048-ekip-motoru-v2]] aldı; bu akış `--ekip-v1` ile çalışır.
+> [!note] Güncellendi 2026-11-20: yerini [[0048-ekip-motoru-v2]] aldı. 2026-11-22: turlu akış ve `--ekip-v1` kaldırıldı ([[0053-seviyeli-ekip-orkestrator]]).
 
 ## Bağlam
 [[0028-ai-edit|ADR 0028]]'deki `vedit ai-edit` tek ajanla tek geçişte kurgu yazıyordu. Ek turlar yalnız şema hatası ve motion yoğunluğu içindi; kimse taslağı izlemiyordu. `instagram/1` editinde koyu zeminde okunmayan yeşil vurgu, stile aykırı turuncu altyazı ve şablon görünümlü grafikler yayına kadar fark edilmedi. Kullanıcı kesim, grafik ve ses için ayrı editörler, her birinin işini izleyen ayrı kalite kontrol ajanları ve slot başına motor ve model seçimi istedi.

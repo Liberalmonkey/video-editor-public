@@ -190,15 +190,61 @@ def hazirla(p, props: Path, *, olcek: float = 1.0, pencere: tuple[float, float] 
     return proje
 
 
+def bos_bellek_gb() -> float | None:
+    """Boş fiziksel bellek (GB). Windows'ta GlobalMemoryStatusEx, Linux'ta /proc/meminfo; okunamazsa None."""
+    try:
+        if os.name == "nt":
+            import ctypes
+
+            class _Durum(ctypes.Structure):
+                _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong), ("ullTotalPhys", ctypes.c_ulonglong),
+                            ("ullAvailPhys", ctypes.c_ulonglong), ("ullTotalPageFile", ctypes.c_ulonglong),
+                            ("ullAvailPageFile", ctypes.c_ulonglong), ("ullTotalVirtual", ctypes.c_ulonglong),
+                            ("ullAvailVirtual", ctypes.c_ulonglong), ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
+
+            d = _Durum()
+            d.dwLength = ctypes.sizeof(_Durum)
+            if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(d)):
+                return None
+            return d.ullAvailPhys / 2**30
+        for satir in Path("/proc/meminfo").read_text().splitlines():
+            if satir.startswith("MemAvailable:"):
+                return int(satir.split()[1]) / 2**20
+    except (OSError, AttributeError, ValueError):
+        return None
+    return None
+
+
+# Boş belleğe göre işçi: (eşik GB, işçi). Eşiğin altındaysa o işçi sayısı; hepsinin üstünde 0 (HyperFrames otomatik, 4).
+BELLEK_ISCI = ((3.0, 1), (6.0, 2))
+
+
+def isci_sec(istenen: int = 0, bos: float | None = None) -> int:
+    """Render işçi sayısı. Açık istek (isci > 0) ya da VEDIT_HF_ISCI ortam değişkeni kazanır; yoksa boş belleğe göre."""
+    # WHY: instagram/1 ekip koşusu (2026-11-22) G3 taslak render'ında bellek doldu (15,8 GB makine, ~5,8 GB boş);
+    # 4 işçi 4 headless Chrome açıyor, aynı anda ekip ajanları da bellekte. Bellek darken işçi azalır, render yavaşlar ama düşmez.
+    if istenen:
+        return istenen
+    if (ortam := os.environ.get("VEDIT_HF_ISCI", "").strip()).isdigit():
+        return int(ortam)
+    bos = bos_bellek_gb() if bos is None else bos
+    if bos is None:
+        return 0
+    return next((n for esik, n in BELLEK_ISCI if bos < esik), 0)
+
+
 def render(p, props: Path, cikti: Path, *, kalite: str = "draft", aralik: tuple[float, float] | None = None,
            fps: int | None = None, olcek: float = 1.0, crf: int | None = None, isci: int = 0) -> Path:
     proje = hazirla(p, props, olcek=olcek, pencere=aralik)
     cikti.parent.mkdir(parents=True, exist_ok=True)
-    print(f"  HyperFrames render · {kalite}" + (f" · ölçek {olcek:g}" if olcek != 1 else "")
-          + (f" · {aralik[0]:g}-{aralik[1]:g} sn" if aralik else ""), flush=True)
-    t0 = time.time()
     # WHY: ölçüldü (instagram/1, 2026-11-22): otomatik işçi (4) en hızlısı; 8 işçi bellek yüzünden 1,8 kat yavaş.
-    # isci: 0 otomatik; bellek darken (karşılaştırma aracı) 2.
+    # isci: 0 otomatik; bellek darsa isci_sec 2'ye ya da 1'e düşürür.
+    bos = bos_bellek_gb()
+    isci = isci_sec(isci, bos)
+    print(f"  HyperFrames render · {kalite}" + (f" · ölçek {olcek:g}" if olcek != 1 else "")
+          + (f" · {aralik[0]:g}-{aralik[1]:g} sn" if aralik else "")
+          + f" · işçi {isci or 'otomatik'}" + (f" (boş bellek {bos:.1f} GB)" if bos is not None else ""), flush=True)
+    t0 = time.time()
     hf.render(proje, cikti, quality=kalite, fps=fps, workers=isci, crf=crf)
     print(f"  HyperFrames bitti · {time.time() - t0:.0f} sn", flush=True)
     return cikti

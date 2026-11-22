@@ -1,15 +1,16 @@
-"""Ekip motoru (ADR 0044): sahiplik reddi, birleştirme, bulgu şeması, zaman bölüşü, yedek motor ve tur döngüsü.
+"""Ekip motoru v3 (ADR 0053): ayar ve göç, zaman bölüşü, bulgu şeması ve seviyeli, kapılı uçtan uca akış.
 
-Ajanlar, hazirla, taslak ve izleme taklit edilir; gerçek motor çağrılmaz.
+Ajanlar, hazirla, taslak ve izleme taklit edilir; gerçek motor çağrılmaz. Kural deposu geçici klasördedir.
 """
 import json
 import re
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
-from vedit import aiedit, ekip, ff, hizli, kurgu, paths
-from vedit.ekip_sema import EkipAyar, Parca, Slot
+from vedit import aiedit, ekip, ekip_v3, ff, hizli, kural, kurgu, paths
+from vedit.ekip_sema import SEVIYE, EkipAyar, Slot
 
 
 @pytest.fixture
@@ -51,35 +52,13 @@ def proje(tmp_path, monkeypatch):
 
 
 def _ayar(**ek):
-    sl = {s: Slot(motor="claude", model="m", yedek_motor="antigravity", yedek_model="y") for s in ("E1", "E2", "E3", "K1", "K2", "K3")}
-    return EkipAyar(slotlar=sl, **ek)
+    sl = Slot(motor="claude", model="m", yedek_motor="antigravity", yedek_model="y")
+    return EkipAyar(gruplar={"orkestrator": sl, "editor": sl, "kk": sl}, **ek)
 
 
 def _hazir(proje):
     hizli.hazirla(proje)
     return aiedit._kurgu_hazirla(proje)
-
-
-def test_sahiplik_disi_klip_reddedilir(proje):
-    k = _hazir(proje)
-    kap = ekip.kapsamlar(k, _ayar(), None)
-    yabanci = Parca(klipler=[{"id": "x1", "iz": "V2", "bas": 1, "sure": 1, "tur": "metin", "metin": "a"}])
-    assert ekip.sahiplik_hatalari("E1", yabanci, kap["E1"])
-    assert ekip.sahiplik_hatalari("E2", Parca(altyazi={"acik": False}), kap["E2"])
-    with pytest.raises(SystemExit, match="sahipliğin dışında"):
-        ekip.birlestir(k, {"E1": yabanci}, kap)
-
-
-def test_birlestirme_parcalari_uygular_ve_kaynagi_korur(proje):
-    k = _hazir(proje)
-    kap = ekip.kapsamlar(k, _ayar(), None)
-    e2 = Parca(klipler=[{"id": "g1", "iz": "V2", "bas": 1.0, "sure": 1.5, "tur": "metin", "metin": "Merhaba"}])
-    e3 = Parca(motion_tema="varsayilan")
-    yeni = ekip.birlestir(k, {"E2": e2, "E3": e3}, kap)
-    assert any(c.id == "g1" for c in yeni.klipler) and [c.id for c in yeni.klipler if c.iz == "V1"] == [c.id for c in k.klipler if c.iz == "V1"]
-    kid = next(iter(k.kaynaklar))
-    with pytest.raises(SystemExit, match="mevcut kaynak"):
-        ekip.birlestir(k, {"E2": Parca(kaynaklar={kid: {"yol": "inputs:baska.mp4", "sure": 1, "ses": False}})}, kap)
 
 
 def test_zaman_bolusu_kelime_arasina_duser(proje):
@@ -104,100 +83,116 @@ def test_json_cikar_ve_bulgu_dogrulama(tmp_path):
     assert ekip.bulgu_dogrula({"bulgular": [{"id": "X"}]}, "K2")[0] is None
 
 
-def test_ayar_katmanlari(proje, tmp_path, monkeypatch):
+def test_ayar_katmanlari_ve_eski_on_ayar_gocu(proje, tmp_path, monkeypatch):
     g = tmp_path / "ekip.json"
-    g.write_text(json.dumps({"varsayilan": "a", "onayarlar": {"a": {"tur": 2}}}), encoding="utf-8")
+    eski = {s: {"motor": "claude", "model": f"m-{s}"} for s in ("E1", "E2", "E3", "K1", "K2", "K3")}
+    g.write_text(json.dumps({"varsayilan": "a", "onayarlar": {"a": {"slotlar": eski, "bolus": "zaman", "tur": 2, "eszamanlilik": 6}}}),
+                 encoding="utf-8")
     monkeypatch.setattr(ekip, "GLOBAL", g)
+    a = ekip.ayar_yukle(proje)
+    assert (a.gruplar["orkestrator"].model, a.gruplar["editor"].model, a.gruplar["kk"].model) == ("m-E1", "m-E2", "m-K1"), "6 slot gruplara göçer"
     (proje.work / "edit").mkdir(parents=True, exist_ok=True)
-    (proje.work / "edit" / "ekip.json").write_text(json.dumps({"bolus": "zaman"}), encoding="utf-8")
-    a = ekip.ayar_yukle(proje, tur=4)
-    assert (a.tur, a.bolus) == (4, "zaman")
+    (proje.work / "edit" / "ekip.json").write_text(json.dumps({"ekip_seviye": "high"}), encoding="utf-8")
+    assert ekip.ayar_yukle(proje).ekip_seviye == "high"
+    a = ekip.ayar_yukle(proje, ekip_seviye="max", eszamanlilik=None)
+    assert a.ekip_seviye == "max" and a.slotlar() == ["O", *[f"E{i}" for i in range(1, 11)], *[f"K{i}" for i in range(1, 6)]]
+    assert a.es() == 6, "eski ön ayarın eşzamanlılığı korunur"
     with pytest.raises(Exception):
-        EkipAyar(slotlar={"E1": Slot(motor="claude")})
+        EkipAyar(gruplar={"editor": Slot(motor="claude")})
+    with pytest.raises(Exception):
+        EkipAyar(ezme={"E11": Slot(motor="claude")})
+    assert EkipAyar(ezme={"E3": Slot(motor="codex")}).slot("E3").motor == "codex"
 
 
-def _sahte_ekip(proje, kayit: list, *, bozuk_e2_ilk: bool = False, k_turu: dict | None = None):
-    """Rolü istem dosyasından bulan sahte ajan. Editör parça yazar, K turuna göre bulgu döner."""
+KURAL_METNI = "YAPMA: grafiği konuşmacının yüzünün üstüne koyma."
+ADAY = "YAPMA: grafiği altyazı bandının üstüne koyma, bandın dışında tut."
+
+
+def _kural_deposu(tmp_path, monkeypatch):
+    monkeypatch.setattr(kural, "paths", SimpleNamespace(LIBRARY=tmp_path / "lib", ROOT=paths.ROOT, rel=paths.rel))
+    d = kural.Depo()
+    kural.ekle(d, KURAL_METNI, hedef_rol="E2", onem="P0", kategori="grafik")
+    kural.kaydet(d)
+    return d.kurallar[0].id
+
+
+def _sahte_ekip(proje, kayit: list):
+    """Kapı klasöründen ve istemden rolü bulan sahte ajan.
+    Plan: varsayılan dağıtımı aynen döndürür. Kapıda grafik editörünü bir kez düzeltmeye yollar. QC bir P1 ve kural adayı yazar."""
     def ajan(slot, istem, mod, yol, *, yedek=False):
         f = Path(re.search(r"Read the file (.+?\.istem\.md)", istem).group(1))
-        rol = f.name.split(".")[0]
-        tur = int(f.parent.name.split("-")[1])
-        kayit.append((tur, rol, yedek))
-        meta = {"motor": slot.yedek_motor if yedek else slot.motor, "sure": 0.1}
+        rol, asama = f.name.split(".")[0], f.parent.name
+        metin = f.read_text(encoding="utf-8")
+        kayit.append((asama, rol))
+        meta = {"motor": slot.motor, "sure": 0.1, "token": {"input_tokens": 10}}
+        if rol == "O" and asama == "plan":
+            v = json.loads(re.search(r"Varsayılan dağıtım.*?```json\n(.+?)\n```", metin, re.S).group(1))
+            return True, json.dumps({"hook": {"bas": 0, "son": 2, "neden": "soru"}, **v, "gerekce": "istek dengeli"}), meta
+        if rol == "O" and asama == "kapi":
+            grafik = sorted(set(re.findall(r"### (E\d+) · [^\n]*Grafik", metin)), key=lambda s: int(s[1:]))
+            return True, json.dumps({"kararlar": [{"slot": grafik[0], "karar": "duzelt", "brif": "kural_uyum yaz"}]}), meta
+        if rol == "O" and asama == "triyaj":
+            ids = re.findall(r'"id": "(K\d-\d{3})"', metin)
+            return True, json.dumps({"kabul": ids, "red": [], "kural_onay": ids}), meta
         if rol.startswith("E"):
-            cikti = f.with_name(f"{rol}.json")
-            k = kurgu.oku(proje.work)
-            if rol == "E1":
-                pr = {"klipler": [c.model_dump() for c in k.klipler if c.iz == "V1"], "isaretler": [{"t": 0, "ad": "Giriş"}]}
-            elif rol == "E2":
-                if bozuk_e2_ilk and not yedek:
-                    cikti.write_text("{bozuk", encoding="utf-8")
-                    return True, "", meta
-                pr = {"klipler": [{"id": f"g{tur}", "iz": "V2", "bas": 1.0, "sure": 2.0, "tur": "metin", "metin": "Merhaba"}]}
-            else:
-                pr = {"klipler": [], "motion_tema": "varsayilan"}
-            cikti.write_text(json.dumps(pr), encoding="utf-8")
-            return True, "", meta
+            zorunlu = re.findall(r"^- \[(K\d{4}) P\d\]", metin.split("## Zorunlu kurallar")[1].split("##")[0], re.M)
+            ar = re.search(r"- Aralık: ([\d.]+)–([\d.]+) sn", metin)
+            grafik = re.search(r"- Katmanlar: [^\n]*Grafik", metin) is not None
+            ilk_dilim = ar is None or float(ar.group(1)) <= 1.0 < float(ar.group(2))
+            y = {"ekle": [], "rapor": "tamam"}
+            # Kapıdan önce grafik editörleri uyumu unutur; kapı düzeltmesinde yazar.
+            if not (grafik and asama == "duzen"):
+                y["kural_uyum"] = [{"id": i, "nasil": "yüzden uzak"} for i in zorunlu]
+            if grafik and asama in ("duzen", "kapi") and ilk_dilim:
+                y["ekle"] = [{"id": "g1", "iz": "V2", "tur": "metin", "bas": 1.0, "sure": 1.5, "metin": "Merhaba"}]
+            if asama == "duzelt":
+                y = {"guncelle": [{"id": "g1", "bas": 1.2}], "kural_uyum": [{"id": i, "nasil": "x"} for i in zorunlu]}
+            return True, json.dumps(y), meta
         kare = next((f.parent / "izle").glob("*.jpg"))
-        bl = (k_turu or {}).get((tur, rol), [])
-        return True, "```json\n" + json.dumps({"bulgular": [{"id": f"{rol}-001", "hedef": "E2", "onem": o, "zaman": [1, 2], "katman": "V2",
-                                                            "kategori": "stil", "kanit": str(kare), "sorun": "renk", "beklenen": "token"} for o in bl],
-                                               "brif": "brif"}) + "\n```", meta
+        return True, "```json\n" + json.dumps({"bulgular": [{"id": f"{rol}-001", "onem": "P1", "zaman": [1, 2], "katman": "V2",
+                                                            "kategori": "okunurluk", "kanit": str(kare), "sorun": "altyazıyla çakışıyor",
+                                                            "beklenen": "bant dışında", "kural_adayi": ADAY}], "brif": "b"}) + "\n```", meta
     return ajan
 
 
-def test_tur_dongusu_p1_kapaninca_durur(proje, monkeypatch):
-    kayit = []
-    monkeypatch.setattr(ekip, "ajan", _sahte_ekip(proje, kayit, k_turu={(1, "K2"): ["P1"]}))
-    s = ekip.calistir(proje, _ayar(tur=3))
-    assert len(s["turlar"]) == 2 and not s["acik"] and len(s["kapanan"]) == 1
-    tur2 = {r for t, r, _ in kayit if t == 2}
-    assert "E2" in tur2 and "E1" not in tur2, "düzeltme turunda yalnız bulgusu olan editör çalışır"
-    # E1, E2/E3'ten önce çalışır
-    tur1 = [r for t, r, _ in kayit if t == 1]
-    assert tur1.index("E1") < tur1.index("E2") and tur1.index("E1") < tur1.index("E3")
-    rapor = (proje.work / "edit" / "ai-edit.rapor.md").read_text(encoding="utf-8")
-    assert "## Turlar" in rapor and "Kapanan bulgular (1)" in rapor
+@pytest.mark.parametrize("seviye", ["low", "high", "max"])
+def test_seviyeli_kapili_akis(proje, tmp_path, monkeypatch, seviye):
+    k0 = _kural_deposu(tmp_path, monkeypatch)
+    kayit: list = []
+    monkeypatch.setattr(ekip, "ajan", _sahte_ekip(proje, kayit))
+    monkeypatch.setattr(ekip_v3, "parcali_render", lambda p, a: p.work / "renders" / "taslak.mp4")
+    o = ekip_v3.calistir(proje, _ayar(ekip_seviye=seviye), notu="hızlı tempo")
+    ne, nk = SEVIYE[seviye]
+    assert [r for a, r in kayit if r == "O"] == ["O"] * 3, "orkestratör her seviyede tam üç kez: plan, kapı, triyaj"
+    assert sorted({r for a, r in kayit if a == "duzen"}) == sorted(f"E{i}" for i in range(1, ne + 1)), "seviyenin bütün editörleri"
+    assert sorted({r for a, r in kayit if a == "qc"}) == sorted(f"K{i}" for i in range(1, nk + 1)), "seviyenin bütün kalite kontrolleri"
+    assert o["dagitim"] == "orkestrator" and not o["plan_hata"]
+    grafikciler = [g["slot"] for g in o["plan"]["gorevler"] if "grafik" in g["katmanlar"]]
+    assert {r for a, r in kayit if a == "kapi" and r != "O"} == set(grafikciler), "uyumu eksik her editör kapıda düzeltmeye gider"
+    assert all(k0 in o["zorunlu"][s] for s in grafikciler), "P0 kural grafik kartlarına zorunlu atanır"
+    assert not o["kural_ihlal"], f"düzeltmeden sonra kural kapısı temiz: {o['kural_ihlal']}"
+    assert o["kural_dogrulama"]["dogrulanan"] and not o["kural_dogrulama"]["dogrulanamayan"], "QC kuralı depoya işlendi ve doğrulandı"
+    assert kural.bul_benzer(kural.yukle(), ADAY) is not None
+    assert o["duzeltilen"] == [grafikciler[0]], "V2 1-2 sn bulgusu o dilimin grafik editörüne gider"
     d = json.loads((proje.work / "edit" / "ekip" / "durum.json").read_text(encoding="utf-8"))
-    assert d["bitti"] and d["acik"]["P1"] == 0
+    assert [x["id"] for x in d["kapilar"]] == [f"G{i}" for i in range(8)]
+    assert all(x["durum"] == "gecti" for x in d["kapilar"]), d["kapilar"]
+    assert d["bitti"] and d["kurallar"]["dogrulanan"] >= 1
+    assert "ekip v3" in (proje.work / "edit" / "ai-edit.rapor.md").read_text(encoding="utf-8")
 
 
-def test_bozuk_parca_yedek_motora_gecer(proje, monkeypatch):
-    kayit = []
-    monkeypatch.setattr(ekip, "ajan", _sahte_ekip(proje, kayit, bozuk_e2_ilk=True))
-    ekip.calistir(proje, _ayar(tur=1))
-    e2 = [y for t, r, y in kayit if r == "E2"]
-    assert e2 == [False, False, True], "bir yeniden deneme, sonra yedek motor"
-    assert any(c.id == "g1" for c in kurgu.oku(proje.work).klipler)
-
-
-def test_hic_birlesmeyen_parca_kurguyu_bozmaz(proje, monkeypatch):
-    kayit = []
-    ajan = _sahte_ekip(proje, kayit, bozuk_e2_ilk=True)
-
-    def hep_bozuk(slot, istem, mod, yol, *, yedek=False):
-        if "E2.istem" in istem:
-            Path(re.search(r"Read the file (.+?)E2\.istem\.md", istem).group(1) + "E2.json").write_text("{bozuk", encoding="utf-8")
-            return True, "", {"sure": 0}
-        return ajan(slot, istem, mod, yol, yedek=yedek)
-
-    monkeypatch.setattr(ekip, "ajan", hep_bozuk)
-    s = ekip.calistir(proje, _ayar(tur=1))
-    assert any("E2 birleşmedi" in n for n in s["turlar"][0]["notlar"])
-    k = kurgu.oku(proje.work)
-    assert not any(c.iz == "V2" for c in k.klipler) and k.isaretler, "E1 birleşti, bozuk E2 birleşmedi"
-
-
-def test_yanit_vermeyen_denetci_bulgusu_kapanmaz(proje, monkeypatch):
-    kayit = []
-    temel = _sahte_ekip(proje, kayit, k_turu={(1, "K2"): ["P1"]})
+def test_gecersiz_plan_varsayilan_dagitima_duser(proje, tmp_path, monkeypatch):
+    _kural_deposu(tmp_path, monkeypatch)
+    kayit: list = []
+    sahte = _sahte_ekip(proje, kayit)
 
     def ajan(slot, istem, mod, yol, *, yedek=False):
-        if "tur-2" in istem and "K2.istem" in istem:
-            return False, "", {"hata": "kota", "sure": 0}
-        return temel(slot, istem, mod, yol, yedek=yedek)
+        if Path(re.search(r"Read the file (.+?\.istem\.md)", istem).group(1)).parent.name == "plan":
+            iki_kurgu = [{"slot": "E1", "katmanlar": ["kurgu"]}, {"slot": "E2", "katmanlar": ["kurgu", "grafik", "sfx", "muzik", "stil"]}]
+            return True, json.dumps({"gorevler": iki_kurgu, "kk_gorevler": [{"slot": "K1", "rol": "genel"}]}), {"sure": 1}
+        return sahte(slot, istem, mod, yol, yedek=yedek)
 
     monkeypatch.setattr(ekip, "ajan", ajan)
-    s = ekip.calistir(proje, _ayar(tur=2))
-    assert not s["kapanan"] and s["acik"] and s["acik"][0]["denetlenmedi"]
-    assert "denetlenmedi" in (proje.work / "edit" / "ai-edit.rapor.md").read_text(encoding="utf-8")
+    monkeypatch.setattr(ekip_v3, "parcali_render", lambda p, a: p.work / "renders" / "taslak.mp4")
+    o = ekip_v3.calistir(proje, _ayar(ekip_seviye="low"))
+    assert o["dagitim"] == "varsayilan" and any("kurgu bölünmez" in h for h in o["plan_hata"])

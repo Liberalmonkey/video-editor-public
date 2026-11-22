@@ -1,16 +1,19 @@
 ---
 type: decision
 title: "Ekip motoru v2: sözleşme, paralel düzenleme, çapa eşleme, deterministik birleştirme, tek QC"
-status: accepted
+status: superseded
 tags: [adr, ai-edit, ajan, ekip, token]
 created: 2026-11-20
-updated: 2026-11-20
+updated: 2026-11-22
 sources: []
 ---
 
 # ADR 0048: Ekip motoru v2
 
-> [!note] [[0044-ekip-motoru]]'nün yerini alır. Eski akış `vedit ai-edit --ekip --ekip-v1` ile çalışır.
+> [!note] Güncellendi 2026-11-22
+> Yerini [[0053-seviyeli-ekip-orkestrator]] aldı: seviyeli ekip, orkestratör, kapılar. Eski turlu akış (`--ekip-v1`) kaldırıldı. Sözleşme, çapa eşleme ve deterministik birleştirme kuralları v3'te aynen geçerlidir.
+
+> [!note] [[0044-ekip-motoru]]'nün yerini alır.
 
 ## Bağlam
 v1'de E1 önce çalışıyor, E2 ve E3 sonra geliyor, en çok üç tam tur dönülüyordu. Her editör bütün manifestleri, kurguyu ve kuralları okuyordu.

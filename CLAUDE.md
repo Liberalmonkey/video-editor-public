@@ -3,14 +3,15 @@
 Claude Code içinde, terminalden çalışan AI video stüdyosu: YouTube animasyon (10–15 dk), UGC (ürün/satış), Instagram Reels; TR + EN; yalnız ücretsiz kaynaklar. Kullanıcıyla **Türkçe** konuş.
 
 ## Video üretmek
-Her istek `uretim-hatti` skill'iyle başlar (ADR 0017). Kısa yol: `vedit hazirla` → `kes` → `taslak` (düzeltme döngüsü) → `final` (tek tam render: ses, teslim, denetim) → `kaizen` + `duzen`. Araç: `.venv/Scripts/vedit`. Platform reçetesi ve taslak kapısı `viral-kurgu` (ADR 0018). Stüdyo'dan tek adım: `vedit ai-edit <proje>` kurguyu ajana yazdırır, doğrular, taslak alır; `--final` ile teslim eder, `--aralik BAS SON` yalnız o aralığı düzeltir, videosuz projede görüntüyü sahnelerle kurar (ADR 0028). Stüdyo'da AI panelinde isteği yaz, stili seç, "AI ile editle". Ekip motoru v2 (ADR 0048): `vedit ai-edit <proje> --ekip [--tekrar-denetle]`. Akış sabittir:
-1. Sözleşme.
-2. E1, E2 ve E3 aynı anda kendi katmanına yama yazar; olaylar kelimeye çapalanır, E1 kesimi değişince vedit yeniden eşler.
-3. Deterministik birleştirme.
-4. K1-K3 bir kez paralel denetler.
-5. Yalnız P0/P1 sahibi bir kez düzeltir; etkilenen aralık yeniden render edilir.
+Her istek `uretim-hatti` skill'iyle başlar (ADR 0017). Kısa yol: `vedit hazirla` → `kes` → `taslak` (düzeltme döngüsü) → `final` (tek tam render: ses, teslim, denetim) → `kaizen` + `duzen`. Araç: `.venv/Scripts/vedit`. Platform reçetesi ve taslak kapısı `viral-kurgu` (ADR 0018). Stüdyo'dan tek adım: `vedit ai-edit <proje>` kurguyu ajana yazdırır, doğrular, taslak alır; `--final` ile teslim eder, `--aralik BAS SON` yalnız o aralığı düzeltir, videosuz projede görüntüyü sahnelerle kurar (ADR 0028). Stüdyo'da AI panelinde isteği yaz, stili seç, "AI ile editle". Seviyeli ekip (ADR 0053): `vedit ai-edit <proje> --ekip [--seviye low|medium|high|xhigh|max] [--tekrar-denetle]`. Seviye ajan sayısıdır: low 2 editör + 1 kalite kontrol, medium 4+2, high 6+3, xhigh 8+4, max 10+5. Her seviyede bir orkestratör çalışır. Akış kapılıdır, paralel işler kapıda buluşur:
+1. G0 plan: orkestratör hook'u yazar, işi görev kartlarına (katman × zaman dilimi) dağıtır, karta zorunlu kural atar.
+2. G1 düzen: editörler aynı anda yalnız kendi kartına yama yazar; olaylar kelimeye çapalanır.
+3. G2 kural kapısı: `kural_uyum` ve deterministik denetim; eksik uyum ya da orkestratörün düzelt kararı bir kez paralel düzeltilir.
+4. G3 deterministik birleştirme ve taslak. G4 kalite kontroller bir kez paralel denetler.
+5. G5 orkestratör bulguyu ayıklar, kural adayını onaylar; vedit depoya işler ve depoda olduğunu doğrular.
+6. G6 yalnız P0/P1 sahibi yeni kurallarla bir kez düzeltir. G7 son denetim.
 
-Eski turlu akış `--ekip-v1`. Slot ayarı `library/ekip.json` (ön ayar), `work/edit/ekip.json` (proje); Stüdyo AI panelinde "Ekip modu".
+Ayar `library/ekip.json` (ön ayar: seviye, orkestratör/editör/kalite kontrol motoru, slot ezmesi), `work/edit/ekip.json` (proje). Stüdyo AI paneli iki sekmedir: Edit (istek, Tek ajan | Ekip, seviye, katlanır ekip ayarları, kapı ve ajan kartları) ve Sohbet.
 
 **Akış (ADR 0020, 0021):** Terminal hattı sürer; isteğe bağlı yerel kurgu uygulaması `vedit studio`. `work/edit/kurgu.json` varsa tek kaynak odur: `sahne.mjs` çalışmaz, `olaylar.json` ondan üretilir, düzeltme ona yazılır. Kullanıcı her şeyi `Projeler/inputs/<stüdyo>/<proje>/` altına koyar ve terminalden editi ister; editlenmiş video `Projeler/outputs/<stüdyo>/<proje>/` altından teslim edilir. Birden çok videoda sıra doğal dosya adı sırasıdır. Her teslimle birlikte platforma göre açıklama ve hashtag `yayin.md` (`viral-kurgu`). Görüntü girdileri değişmediyse `vedit final` motor render'ını atlar (`--yenile` zorlar).
 

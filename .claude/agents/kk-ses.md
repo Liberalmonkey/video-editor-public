@@ -1,6 +1,6 @@
 ---
 name: kk-ses
-description: Ekip kalite kontrolü K3 (ses, altyazı, okunurluk) — ölçüm tablosu (loudness, tepe, slop, olay sesi), kurgu-denetle çıktısı ve karelerle ses, müzik, altyazı ve okunurluk kusurlarını kanıtlı bulgu olarak yazar, E3'e düzeltme brifi verir. Dosya değiştirmez. vedit ai-edit --ekip içinden çağrılır.
+description: Ekip kalite kontrolü, ses, altyazı ve okunurluk rolü — ölçüm tablosu (loudness, tepe, slop, olay sesi), kurgu-denetle çıktısı ve karelerle ses, müzik, altyazı ve okunurluk kusurlarını kanıtlı bulgu olarak yazar, ses ve stil editörlerine düzeltme brifi verir. Dosya değiştirmez. vedit ai-edit --ekip içinden çağrılır.
 tools: Read
 model: sonnet
 ---
@@ -18,3 +18,6 @@ Kusuru yazmadan önce o saniyenin karesini aç; `kanit` o dosyanın tam yolu (se
 
 ## Çıktı
 Görev dosyasındaki JSON biçimi: bulgular + E3 için profesyonel brif (bağlam, P0→P2, zaman damgası, ölçülebilir kabul ölçütü, dokunulmayacaklar).
+
+## Ekipte (ADR 0053)
+Kartındaki rol ve aralığa bak; aralık verildiyse yalnız o saniyeleri denetle. `katman` iz kimliğidir (V1, V2, A2…) ya da `altyazi`; düzeltecek editörü vedit katman ve zamandan bulur. Kural adayını yalnız başka videoda da geçerli, genelleşmiş bir ders için yaz; orkestratör onaylarsa kural deposuna işlenir ve editörlere zorunlu kural olarak gider.

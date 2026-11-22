@@ -52,7 +52,7 @@ Format: `- [[sayfa]] — tek satır özet`
 - [[0045-native-motion]] — tema token'ına bağlı native Remotion grafikleri, orta noktalı geçişler, yüzden kaçan yerleşim, alfa (proxy) düzeltmesi
 - [[0046-dis-varlik-ve-lisans]] — `vedit motion ice-al`: zorunlu lisans kaydı, alfa yöntemi tespiti, Lottie tema boyası, yayin.md atfı
 - [[0047-kural-deposu]] — kurallar.json ve Kurallar sayfası; QC kural adayı, mezar taşı, rol başına teslim; checks.md üretilir
-- [[0048-ekip-motoru-v2]] — sözleşme, paralel düzen, çapa eşleme, deterministik birleştirme, tek QC, tek düzeltme
+- [[0048-ekip-motoru-v2]] — sözleşme, paralel düzen, çapa eşleme, deterministik birleştirme, tek QC, tek düzeltme (yerini 0053 aldı)
 - [[0049-yapim-ekibi]] — Claude mimar ve entegratör, agy Gemini 4 Neon sözleşmeye karşı kod ve inceleme yazar
 - [[0050-hyperframes-birincil-motor]] — HyperFrames 0.9.77 birincil motor, Remotion ikinci plan; sanat-yonetimi skill'i; Stüdyo hızlı açılış
 - [[0051-uctan-uca-hyperframes]] — Tek derleyici (kurgu → HyperFrames), çift motor geçişi, otomatik güncelleme + duman testi
@@ -68,6 +68,7 @@ Format: `- [[sayfa]] — tek satır özet`
 - [[0028-ai-edit]] — AI edit: Final öncesi kurguyu ajan yazar, vedit doğrular ve render eder (`vedit ai-edit`) (accepted, 2026-11-12)
 - [[0027-kapak-sayfasi]] — Kapak sayfası: YouTube ve Instagram, Antigravity ile 1-5 aday, iki platform skill'i (accepted, 2026-11-09)
 - [[0052-kapak-is-akisi-v2]] — Kapak v2: video seç, fikri geliştir, agy modeli, bölgesel görsel düzeltme, master prompt, dış görsel (accepted, 2026-11-22)
+- [[0053-seviyeli-ekip-orkestrator]] — seviyeli ekip (low 2+1 … max 10+5), orkestratör, kapılı paralel akış, kural uyumu ve kural işleme güvencesi, sade AI paneli (accepted, 2026-11-22)
 - [[0026-arayuzde-ajan]] — Video Stüdyo AI paneli: Claude Code ya da Antigravity, model seçimi arayüzde (accepted, 2026-11-08)
 - [[0023-coklu-ajan]] — Antigravity CLI ve Codex kopyaları tek kaynaktan üretilir (accepted, 2026-11-05)
 - [[0022-av-ayirma-metre-yatay]] — Görüntü ve sesi ayırma, canlı metre, 16:9 sahne şablonları (accepted, 2026-11-05)
