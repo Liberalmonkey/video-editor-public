@@ -1,0 +1,7 @@
+[shell_environment_policy]
+inherit = "core"
+
+[shell_environment_policy.set]
+HYPERFRAMES_NO_TELEMETRY = "1"
+DO_NOT_TRACK = "1"
+HYPERFRAMES_SKIP_SKILLS = "1"

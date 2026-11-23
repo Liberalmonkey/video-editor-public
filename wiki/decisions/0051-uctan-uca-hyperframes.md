@@ -28,7 +28,8 @@ Kullanıcının kararları:
   3. Duman paketi `tests/hf_duman/` (lint, boyut, süre, alfa, altın kareye fark).
   4. Geçerse `package.json`, `node_modules`, skill'ler ve `skills-lock.json` güncellenir, `wiki/log.md`'ye `setup` satırı düşer. Kalırsa eski sürüm kalır.
   - Geri alma: `--geri`.
-  - Tetikler: Stüdyo açılışında günde bir; isteğe bağlı haftalık görev `scripts/hf_guncelle_gorev.ps1`.
+  - Tetikler (2026-11-23'ten beri): haftada bir, Cuma 13:00. Stüdyo açıkken 10 dakikada bir pencereye bakar (kaçırılan pencere ilk boş anda); Görev Zamanlayıcı `scripts/hf_guncelle_gorev.ps1` aynı saatte `vedit hf-guncelle --bekle 240` koşar. `deneme.kilit` ikisinin aynı anda kurmasını önler.
+  - Çalışan iş varken güncellenmez: Stüdyo kuyruğunda iş ya da `vedit` (Stüdyo hariç), ffmpeg, HyperFrames/Remotion node süreci varsa kontrol ve sabitleme ertelenir (`hf_guncel.mesgul`). Sabitleme sırasında `kuruluyor.kilit` yazılır, Stüdyo kuyruğu kilit kalkana kadar yeni iş başlatmaz. Elle `vedit hf-guncelle` iş varken sabitlemez, bildirir. Neden: Pazartesi 10:00 görevi ekip edit'inin taslak render'ı sürerken `node_modules`'u değiştirdi, iş düştü ve panel G3'te asılı kaldı; ekip artık çökünce `durum.json`'a hata ve kalan kapıyı yazar.
   - Stüdyo başlığında `HF <sürüm>` rozeti (`/api/hf/durum`). Sabit sürüm tek yerde, `package.json` (`hf.surum()`).
 - **Tek derleyici (`studio/hf/derle.ts`):** render props'u (`kurgu.render.json`) HyperFrames kompozisyonuna çevirir. Saf TypeScript olduğu için önizlemede (tarayıcı, `srcdoc`) ve render'da (`studio/hf/cli.ts`, vite-node) aynı kod çalışır.
   - Medya HyperFrames klibidir: zaman, kırpma, hız ve ses motordadır.

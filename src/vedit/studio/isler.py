@@ -391,6 +391,12 @@ class Kuyruk:
             is_ = self._q.get()
             if is_.durum == "iptal":
                 continue
+            from .. import hf_guncel
+            while hf_guncel.kilitli() and not is_.iptal:  # WHY: HyperFrames kökü değişirken render başlamasın (ADR 0051)
+                time.sleep(2)
+            if is_.iptal:
+                is_.durum = "iptal"
+                continue
             is_.durum, is_.baslangic = "calisiyor", time.time()
             try:
                 self._calistir(is_)

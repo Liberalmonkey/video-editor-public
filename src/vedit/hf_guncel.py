@@ -6,6 +6,12 @@ ve `tests/hf_duman/` ile denenir; yalnız geçerse repo kökündeki sabit sürü
 
 Durum dosyası `work/hf-aday/durum.json`: mevcut, en yeni, son kontrol, son deneme ve sonucu. Stüdyo `/api/hf/durum` ile
 okur.
+
+Zamanlama: haftada bir, Cuma 13:00 (yerel saat). Stüdyo açıkken her 10 dakikada pencerenin gelip gelmediğine bakar;
+pencere kaçırıldıysa (Stüdyo kapalıydı) ilk boş anda çalışır. Çalışan bir edit/render varken (Stüdyo kuyruğu ya da
+terminalden `vedit`, ffmpeg, HyperFrames/Remotion) güncelleme ertelenir; kök sürüm değişirken `kuruluyor.kilit` yazılır,
+Stüdyo kuyruğu kilit kalkana kadar yeni iş başlatmaz. WHY: 2026-11-23'te günlük güncelleme, ekip edit'inin taslak
+render'ı sürerken node_modules'u değiştirdi ve işi düşürdü.
 """
 
 from __future__ import annotations
@@ -15,7 +21,7 @@ import os
 import shutil
 import subprocess
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from . import ff, hf, hf_grafik, paths
@@ -26,7 +32,11 @@ ONCEKI = ADAY / "onceki.json"
 DUMAN = paths.ROOT / "tests" / "hf_duman"
 PAKET = paths.ROOT / "package.json"
 SKILLER = ("hyperframes", "hyperframes-cli", "hyperframes-registry", "remotion-to-hyperframes")
-GUN = 24 * 3600
+HAFTA_GUNU, SAAT, DAKIKA = 4, 13, 0  # Cuma 13:00 (Pazartesi = 0)
+YOKLAMA = 600  # Stüdyo zamanlayıcısının bakma aralığı, saniye
+BEKLE_SINIR = 4 * 3600  # sabitlemeden önce boş anı en çok bu kadar bekler
+KILIT = ADAY / "kuruluyor.kilit"  # kök sürüm değişirken: Stüdyo kuyruğu yeni iş başlatmaz
+DENEME = ADAY / "deneme.kilit"  # bir aday denemesi sürerken: ikinci deneme başlamaz
 FARK_ESIGI = 8.0  # 0-255 ortalama mutlak piksel farkı; yazı tipi yumuşatması 2-3 civarı oynar
 SESSIZ = {"HYPERFRAMES_NO_TELEMETRY": "1", "DO_NOT_TRACK": "1", "HYPERFRAMES_SKIP_SKILLS": "1",
           "HYPERFRAMES_NO_UPDATE_CHECK": "1", "DISABLE_TELEMETRY": "1"}
@@ -73,16 +83,93 @@ def en_yeni() -> str:
     return v
 
 
+def son_pencere(simdi: datetime | None = None) -> datetime:
+    """`simdi`den önceki (ya da ona eşit) en son Cuma 13:00."""
+    simdi = simdi or datetime.now()
+    p = simdi.replace(hour=SAAT, minute=DAKIKA, second=0, microsecond=0) - timedelta(days=(simdi.weekday() - HAFTA_GUNU) % 7)
+    return p if p <= simdi else p - timedelta(days=7)
+
+
+def sonraki_pencere(simdi: datetime | None = None) -> datetime:
+    return son_pencere(simdi) + timedelta(days=7)
+
+
+def vakti_geldi(d: dict | None = None, simdi: datetime | None = None) -> bool:
+    """Son kontrol en son Cuma 13:00 penceresinden önceyse sıra gelmiştir."""
+    d = durum_oku() if d is None else d
+    return d.get("son_kontrol_ts", 0) < son_pencere(simdi).timestamp()
+
+
+def _surecler() -> list[tuple[int, str, str]]:
+    """(pid, ad, komut satırı) listesi. Windows'ta CIM, diğerinde ps."""
+    if os.name == "nt":
+        ps = ("Get-CimInstance Win32_Process -Filter \"Name='python.exe' or Name='vedit.exe' or Name='node.exe' "
+              "or Name='ffmpeg.exe'\" | ForEach-Object { \"$($_.ProcessId)`t$($_.Name)`t$($_.CommandLine)\" }")
+        r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", ps], capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=60)
+        satirlar = r.stdout.splitlines()
+    else:
+        r = subprocess.run(["ps", "-eo", "pid=,comm=,args="], capture_output=True, text=True, timeout=60)
+        satirlar = ["\t".join(x.strip().split(None, 2)) for x in r.stdout.splitlines() if x.strip()]
+    out = []
+    for x in satirlar:
+        parca = x.split("\t", 2)
+        if len(parca) == 3 and parca[0].strip().isdigit():
+            out.append((int(parca[0]), parca[1].strip().lower(), parca[2]))
+    return out
+
+
+def _is_sureci_mi(ad: str, komut: str) -> bool:
+    k = komut.lower().replace("\\", "/")
+    if "ffmpeg" in ad:
+        return True
+    if "node" in ad:
+        return "hyperframes" in k or "remotion" in k
+    if "vedit" not in k:
+        return False
+    # Stüdyo sunucusunun kendisi ve güncelleme komutu iş sayılmaz
+    return not any(x in k for x in ("vedit.studio", "vedit studio", "vedit.exe studio", "vedit.exe\" studio", "hf-guncelle"))
+
+
+def mesgul() -> list[str]:
+    """Çalışan edit/render işleri (kısa açıklama). Boş liste: güncelleme güvenli."""
+    neden = []
+    try:
+        from .studio import isler  # WHY: Stüdyo içinden çağrıldığında kuyruktaki iş de sayılır
+        for q in (isler.kuyruk, isler.ajan):
+            neden += [f"Stüdyo işi: {i.baslik}" for i in (q.isler if q else []) if i.durum in ("sirada", "calisiyor")]
+    except Exception:
+        pass
+    try:
+        ben = os.getpid()
+        neden += [f"{ad} {pid}" for pid, ad, komut in _surecler() if pid != ben and _is_sureci_mi(ad, komut)]
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return neden
+
+
+def _bosta_bekle(sinir: float) -> list[str]:
+    """Çalışan iş bitene kadar bekler. Dönüş: süre dolduysa hâlâ çalışanlar, boşsa []."""
+    son = time.time() + sinir
+    while True:
+        m = mesgul()
+        if not m or time.time() >= son:
+            return m
+        _durum_yaz(bekliyor=f"çalışan iş bitince: {', '.join(m[:3])}")
+        time.sleep(60)
+
+
 def kontrol(*, zorla: bool = False) -> dict:
-    """Yeni sürüm var mı. Ağ ister; `zorla` yoksa günde en çok bir kez sorar."""
+    """Yeni sürüm var mı. Ağ ister; `zorla` yoksa haftada bir (Cuma 13:00 penceresi) sorar."""
     d = durum_oku()
-    if not zorla and time.time() - d.get("son_kontrol_ts", 0) < GUN:
-        return _durum_yaz()
+    if not zorla and not vakti_geldi(d):
+        return _durum_yaz(sonraki=sonraki_pencere().isoformat(timespec="minutes"))
     try:
         v = en_yeni()
     except (RuntimeError, OSError, subprocess.TimeoutExpired) as e:
         return _durum_yaz(son_kontrol_ts=time.time(), hata=str(e)[:300])
     return _durum_yaz(en_yeni=v, son_kontrol_ts=time.time(), son_kontrol=datetime.now().isoformat(timespec="seconds"),
+                      sonraki=sonraki_pencere().isoformat(timespec="minutes"), bekliyor=None,
                       yeni_var=_surum_anahtari(v) > _surum_anahtari(hf.surum()), hata=None)
 
 
@@ -225,8 +312,26 @@ def _log(satir: str) -> None:
         pass
 
 
-def kur(surum: str | None = None, *, skill: bool = True) -> dict:
-    """Aday sürümü kurar, duman testinden geçirir, geçerse sabitler. Rapor `work/hf-aday/<sürüm>/rapor.md`."""
+def kur(surum: str | None = None, *, skill: bool = True, bekle: float = BEKLE_SINIR) -> dict:
+    """Aday sürümü kurar, duman testinden geçirir, geçerse sabitler. Rapor `work/hf-aday/<sürüm>/rapor.md`.
+
+    Sabitlemeden önce çalışan iş bitene kadar en çok `bekle` saniye bekler; süre dolarsa sabitlemez ve son_deneme
+    yazmaz, böylece sonraki yoklama yeniden dener."""
+    # WHY: Stüdyo zamanlayıcısı ile Görev Zamanlayıcı aynı anda kurmasın (ikisi de Cuma 13:00)
+    try:
+        if time.time() - DENEME.stat().st_mtime < 6 * 3600:
+            return _durum_yaz(bekliyor="başka bir güncelleme denemesi sürüyor")
+    except OSError:
+        pass
+    DENEME.parent.mkdir(parents=True, exist_ok=True)
+    DENEME.write_text(str(os.getpid()), encoding="utf-8")
+    try:
+        return _kur(surum, skill=skill, bekle=bekle)
+    finally:
+        DENEME.unlink(missing_ok=True)
+
+
+def _kur(surum: str | None, *, skill: bool, bekle: float) -> dict:
     v = surum or kontrol(zorla=True).get("en_yeni")
     if not v:
         return _durum_yaz(son_deneme={"hata": "en yeni sürüm okunamadı"})
@@ -245,9 +350,19 @@ def kur(surum: str | None = None, *, skill: bool = True) -> dict:
                  for s in sonuc]
     kurulan = []
     if gecti:
+        kalan = _bosta_bekle(bekle)
+        if kalan:
+            rapor.parent.mkdir(parents=True, exist_ok=True)
+            rapor.write_text("\n".join(satirlar + ["", f"Ertelendi, çalışan iş: {', '.join(kalan[:3])}."]) + "\n", encoding="utf-8")
+            return _durum_yaz(bekliyor=f"{v} duman testini geçti; çalışan iş bitince sabitlenecek: {', '.join(kalan[:3])}")
         try:
-            _sabitle(v)
-            kurulan = _skilleri_guncelle(v) if skill else []
+            KILIT.parent.mkdir(parents=True, exist_ok=True)
+            KILIT.write_text(datetime.now().isoformat(timespec="seconds"), encoding="utf-8")
+            try:
+                _sabitle(v)
+                kurulan = _skilleri_guncelle(v) if skill else []
+            finally:
+                KILIT.unlink(missing_ok=True)
             satirlar += ["", f"Sabitlendi: {v}. Skill'ler: {', '.join(kurulan) or 'değişmedi'}."]
             _log(f"## [{datetime.now():%Y-%m-%d}] setup | HyperFrames {v}\n- `vedit hf-guncelle`: duman testi geçti, "
                  f"{ONCEKI.exists() and json.loads(ONCEKI.read_text(encoding='utf-8'))['surum']} → {v}. Rapor `work/hf-aday/{v}/rapor.md`.")
@@ -256,8 +371,8 @@ def kur(surum: str | None = None, *, skill: bool = True) -> dict:
             satirlar += ["", f"Sabitleme başarısız: {e}"]
     rapor.parent.mkdir(parents=True, exist_ok=True)
     rapor.write_text("\n".join(satirlar) + "\n", encoding="utf-8")
-    return _durum_yaz(son_deneme={"surum": v, "gecti": gecti, "rapor": paths.rel(rapor), "skiller": kurulan,
-                                  "zaman": datetime.now().isoformat(timespec="seconds")})
+    return _durum_yaz(bekliyor=None, son_deneme={"surum": v, "gecti": gecti, "rapor": paths.rel(rapor), "skiller": kurulan,
+                                                 "zaman": datetime.now().isoformat(timespec="seconds")})
 
 
 def geri() -> dict:
@@ -269,8 +384,37 @@ def geri() -> dict:
     return _durum_yaz(son_deneme={"surum": v, "gecti": True, "not": "geri alındı"})
 
 
-def arka_plan() -> None:
-    """Stüdyo açılışında: günde bir kontrol; yeni sürüm varsa aday denemesi (kök yalnız geçerse değişir)."""
-    d = kontrol()
+def kilitli() -> bool:
+    """Kök sürüm değişiyor mu. Bayat kilit (1 saatten eski, süreç çöktü) yok sayılır."""
+    try:
+        return time.time() - KILIT.stat().st_mtime < 3600
+    except OSError:
+        return False
+
+
+def bir_tur() -> dict:
+    """Zamanlayıcının bir yoklaması: pencere geldiyse ve iş yoksa kontrol; yeni sürüm denenmediyse aday denemesi."""
+    d = durum_oku()
+    if vakti_geldi(d):
+        m = mesgul()
+        if m:
+            return _durum_yaz(bekliyor=f"haftalık kontrol, çalışan iş bitince: {', '.join(m[:3])}")
+        d = kontrol(zorla=True)
     if d.get("yeni_var") and (d.get("son_deneme") or {}).get("surum") != d.get("en_yeni"):
-        kur()
+        if mesgul():
+            return d
+        return kur()
+    return d
+
+
+def arka_plan() -> None:
+    """Stüdyo açıkken döner: her `YOKLAMA` saniyede bir tur (haftada bir Cuma 13:00; iş varken ertelenir)."""
+    while True:
+        try:
+            bir_tur()
+        except Exception as e:  # WHY: zamanlayıcı ölmesin; hata durum dosyasında görünsün
+            try:
+                _durum_yaz(hata=str(e)[:300])
+            except OSError:
+                pass
+        time.sleep(YOKLAMA)

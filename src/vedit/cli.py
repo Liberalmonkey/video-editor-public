@@ -388,7 +388,8 @@ def cmd_hf_guncelle(a):
     elif a.kontrol:
         d = hf_guncel.kontrol(zorla=True)
     else:
-        d = hf_guncel.kur(a.surum, skill=not a.skill_yok)
+        # elle: çalışan iş varsa sabitlemez, bildirir; Görev Zamanlayıcı `--bekle` ile iş bitene kadar bekler
+        d = hf_guncel.kur(a.surum, skill=not a.skill_yok, bekle=a.bekle * 60)
     print(json.dumps(d, ensure_ascii=False, indent=1))
 
 
@@ -1042,6 +1043,8 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--geri", action="store_true", help="bir önceki sabit sürüme dön")
     sp.add_argument("--surum", help="belirli sürümü dene (boşsa en yeni)")
     sp.add_argument("--skill-yok", action="store_true", help="skill'leri güncelleme")
+    sp.add_argument("--bekle", type=float, default=0, metavar="DAKIKA",
+                    help="çalışan edit/render varsa sabitlemeden önce en çok bu kadar bekle (varsayılan 0: bekleme, ertele)")
     sp = P("hf", cmd_hf, "HyperFrames grafikleri (ADR 0050): liste, kur = kompozisyonu saydam webm'e üret", project_arg=False)
     sp.add_argument("is_", metavar="liste|kur", choices=["liste", "kur"])
     sp.add_argument("ref", nargs="?", help="proje: <stüdyo>/<proje> (boşsa yalnız kütüphane)")

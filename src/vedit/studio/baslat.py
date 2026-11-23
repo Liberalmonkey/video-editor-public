@@ -113,11 +113,11 @@ def _motorlari_isit() -> None:
         motorlar.durum()
     except Exception:  # WHY: ısıtma başarısızsa panel ilk istekte yeniden dener
         pass
-    try:  # HyperFrames güncellemesi: günde bir kontrol, yeni sürüm aday klasörde denenir (ADR 0051)
+    try:  # HyperFrames güncellemesi: haftada bir (Cuma 13:00), iş varken ertelenir; sonsuz döngü (ADR 0051)
         from .. import hf_guncel
         hf_guncel.arka_plan()
     except Exception as e:
-        print(f"HyperFrames güncelleme denetimi atlandı: {e}", flush=True)
+        print(f"HyperFrames güncelleme zamanlayıcısı durdu: {e}", flush=True)
 
 
 def calistir(*, port: int = 8765, ac: bool = True) -> None:

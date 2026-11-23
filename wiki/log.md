@@ -106,3 +106,11 @@ Arşiv: [[log.part1]] (2026-10-20 - 2026-11-03), [[log.part2]] (2026-11-03 - 202
 ## [2026-11-22] code | HyperFrames render işçisi boş belleğe göre
 - `hf_kurgu.isci_sec`: boş RAM 3 GB altında 1, 6 GB altında 2 işçi, üstünde otomatik (4). Açık `isci` ve `VEDIT_HF_ISCI` kazanır. Render satırı seçilen işçiyi ve boş belleği yazar.
 - Neden: `instagram/1` ekip koşusu (low) G3 taslak render'ında bellek doldu ve Claude Code arka plan işini öldürdü (15,8 GB makine). Test `tests/test_hf_kurgu.py`. Sayfa: [[0053-seviyeli-ekip-orkestrator]].
+
+## [2026-11-23] setup | HyperFrames 0.9.84
+- `vedit hf-guncelle`: duman testi geçti, 0.9.80 → 0.9.84. Rapor `work/hf-aday/0.9.84/rapor.md`.
+
+## [2026-11-23] code | HyperFrames güncellemesi haftalık ve işi bekler
+- Sorun: `vedit-hf-guncelle` görevi (Pazartesi 10:00) `instagram/reel-video` ekip koşusunun G3 taslak render'ı sürerken 0.9.80 → 0.9.84 sabitledi; render düştü, `durum.json` G3'te asılı kaldı.
+- `hf_guncel`: zamanlama Cuma 13:00 (`son_pencere`, `vakti_geldi`), Stüdyo zamanlayıcısı 10 dakikada bir `bir_tur`; `mesgul()` Stüdyo kuyruğunu ve `vedit`/ffmpeg/HyperFrames/Remotion süreçlerini tarar, iş varsa erteler; sabitleme öncesi `_bosta_bekle`, sırasında `kuruluyor.kilit` (kuyruk bekler), `deneme.kilit` çift denemeyi önler. CLI `--bekle DAKIKA`; görev betiği Cuma 13:00 + `--bekle 240` ile yeniden kaydedildi.
+- `ekip_v3.calistir`: çökünce açık kapıyı `kaldi` yapar, `hata` ve `asama` yazar. Test `tests/test_hf_guncel.py`. Sayfa: [[0051-uctan-uca-hyperframes]].

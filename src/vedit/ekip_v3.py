@@ -1087,6 +1087,19 @@ def calistir(p, ayar: EkipAyar, *, notu: str | None = None, final: bool = False,
     kok.mkdir(parents=True, exist_ok=True)
     (kok / "pano.json").unlink(missing_ok=True)
     durum = ekip.Durum(kok, ayar, KAPILAR)
+    try:
+        return _akis(p, ayar, kok, durum, notu=notu, final=final, tekrar_denetle=tekrar_denetle)
+    except BaseException as e:
+        # WHY: çöken iş panelde açık kapıda asılı kalmasın; hata ve kapı durum dosyasına yazılır (2026-11-23 olayı)
+        acik = [k for k in durum.d.get("kapilar", []) if k.get("durum") == "acik"]
+        for k in acik:
+            k["durum"], k["not"] = "kaldi", f"hata: {type(e).__name__}"
+        durum.ayarla(hata=f"{type(e).__name__}: {str(e)[-400:]}", asama=f"Hata ({acik[0]['ad']})" if acik else "Hata",
+                     bitti=True, bitis=time.time())
+        raise
+
+
+def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool, tekrar_denetle: bool) -> dict:
     t0 = time.time()
     if not aiedit._hazir_mi(p):
         hizli.hazirla(p)
