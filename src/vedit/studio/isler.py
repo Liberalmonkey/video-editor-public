@@ -451,7 +451,15 @@ def _bul(iid: int) -> Is:
 def is_ekle(i: Istek):
     args = arguman(i)
     baslik = f"stil-uret · {i.studyo}/{i.stil}" if i.komut == "stil-uret" else f"{i.komut} · {i.studyo}/{i.ad}" if i.ad and i.komut != "duzen" else i.komut
-    return _k().ekle(i.komut, baslik, args).ozet()
+    # WHY: rozet çalışan işin motorunu gösterir; ekip işinde motor yoktu, rozet tek ajan seçimini (claude) gösteriyordu.
+    # Ekipte "ekip" + seviye yazılır; rozet çalışan slotları ekip durumundan okur.
+    if i.komut == "ai-edit" and i.ekip:
+        ek = {"motor": "ekip", "model": (i.ekip_ayar or {}).get("ekip_seviye")}
+    elif i.komut in ("ai-edit", "stil-uret") and i.motor:
+        ek = {"motor": i.motor, "model": i.model}
+    else:
+        ek = {}
+    return _k().ekle(i.komut, baslik, args, **ek).ozet()
 
 
 @router.get("/api/isler")

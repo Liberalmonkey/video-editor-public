@@ -5,7 +5,7 @@ import { slotSirasi, sn, tokenEtiketi, type EkipDurum, type SlotDurumAdi } from 
 // Ekip ilerlemesi: kapı adımları (G0–G7), ajan kartları, açık bulgu ve kural sayısı; karta tıklayınca o ajanın günlüğü.
 // Canlı durum iş sürerken yoklanır; bittiğinde son koşu görünür kalır (ADR 0053).
 
-const DURUM_ADI: Record<SlotDurumAdi, string> = { bekliyor: "bekliyor", calisiyor: "çalışıyor", bitti: "bitti", hata: "hata", yedek: "yedekte" };
+const DURUM_ADI: Record<SlotDurumAdi, string> = { bekliyor: "bekliyor", calisiyor: "çalışıyor", bitti: "bitti", hata: "hata", yedek: "yedekte", atlandi: "atlandı" };
 
 export const EkipIlerleme: React.FC<{ yol: string; calisanId?: number }> = ({ yol, calisanId }) => {
   const [durum, setDurum] = useState<EkipDurum | null>(null);
@@ -44,7 +44,7 @@ export const EkipIlerleme: React.FC<{ yol: string; calisanId?: number }> = ({ yo
         ))}
       </ol>
       <div className="ekip-ozet" role="status">
-        <span><b>{durum.bitti ? "Bitti" : durum.asama}</b>{durum.dagitim ? ` · ${durum.dagitim === "orkestrator" ? "orkestratör dağıttı" : "varsayılan dağıtım"}` : ""}</span>
+        <span><b>{durum.bitti ? "Bitti" : durum.asama}</b>{durum.dagitim ? ` · ${durum.dagitim === "orkestrator" ? "orkestratör dağıttı" : durum.dagitim === "hizli" ? "hızlı (orkestratörsüz)" : "varsayılan dağıtım"}` : ""}</span>
         <span>Açık <b className={durum.acik.P0 ? "hata-yazi" : ""}>P0 {durum.acik.P0}</b> · P1 {durum.acik.P1} · P2 {durum.acik.P2}</span>
         {kr && <span title="Atanan zorunlu kural, işlenen yeni kural, depoda doğrulanan">Kural: atanan {kr.atanan} · yeni {kr.yeni} · doğrulanan {kr.dogrulanan}
           {kr.uyum_eksik ? <b className="hata-yazi"> · uyum eksik {kr.uyum_eksik}</b> : null}

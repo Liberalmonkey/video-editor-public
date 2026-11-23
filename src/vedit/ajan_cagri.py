@@ -18,8 +18,15 @@ MOTORLAR = tuple(motorlar.MOTORLAR)
 
 
 def komut(istek: str, motor: str, model: str | None, oturum: str | None) -> list[str]:
-    """Düzenle modunda tam komut; model yoksa motorun kendi varsayılanı."""
-    return motorlar.komut(motor, istek, model, "duzenle", oturum)
+    """Düzenle modunda tam komut; model yoksa motorun kendi varsayılanı.
+
+    Claude'da MCP sunucuları ve slash komutları yüklenmez (ADR 0054): ajan yalnız dosya okur ve yazar, 15 MCP sunucusunun ve
+    151 komutun araç tanımı her istekte boşa token ve süre harcıyordu. Araçlar ve oturum sürdürme (--resume) korunur."""
+    k = motorlar.komut(motor, istek, model, "duzenle", oturum)
+    if motor == "claude":
+        i = k.index("-p")
+        k = [*k[:i], "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--disable-slash-commands", *k[i:]]
+    return k
 
 
 def calistir(istek: str, *, motor: str = "claude", model: str | None = None, oturum: str | None = None) -> tuple[str, str | None]:

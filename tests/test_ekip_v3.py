@@ -144,6 +144,18 @@ def test_bilinmeyen_alt_alan_atilir_oge_kalir():
     assert dusen == ["E3:mz.ses.seviye"] and y.ekle[0]["ses"]["seviye"] == 0.3
 
 
+def test_bozuk_ic_alan_atilir_oge_kalir():
+    # arvelior-hiz (ADR 0054): E4 müziğin kazanç zarfını [t, v] çifti yazdı; müzik klibi bütünüyle düşüyordu.
+    dusen = []
+    y = Yama(kaynaklar={"m": {"yol": "library:music/m.mp3", "sure": 60}},
+             ekle=[{"id": "mz", "iz": "A2", "tur": "ses", "bas": 0, "sure": 9, "kaynak": "m",
+                    "ses": {"duck": True, "kf": [[0.0, 1.0], [8.0, 0.0]]}}])
+    k = ekip_v3.yama_uygula(_k(), "E3", y, dusen)
+    mz = next(c for c in k.klipler if c.id == "mz")
+    assert mz.ses.duck is True and mz.ses.kf == []
+    assert dusen == ["E3:mz.ses.kf"]
+
+
 def test_sozlesme_kelime_dizinleri(monkeypatch):
     monkeypatch.setattr(ekip_v3.yuz_bolge, "model_var", lambda: False)
     monkeypatch.setattr(ekip_v3.kurgu, "etkin_tema", lambda p, t: "varsayilan")
@@ -251,3 +263,49 @@ def test_kural_kapisi_eksik_uyumu_ve_reddi_sahibine_yazar(monkeypatch):
     assert any(x.startswith("kural_uyum eksik: K0001") for x in ihlal["E2"])
     assert any("renk stilde yok" in x for x in ihlal["E2"]), "denetim mesajındaki klip kimliği sahibine gider"
     assert any(x.startswith("yama reddedildi") for x in ihlal["E3"]) and not genel
+
+
+def test_oto_duzelt_zoom_yogunlugu_ve_kisa_grafik():
+    """ADR 0054: render'dan önce kodla düzeltilen kusurlar. Eşik slop'tan gelir: dakikada en çok 6 zoom/punch olayı."""
+    from vedit import native_motion, slop
+    klipler = [{"id": f"v{i}", "iz": "V1", "tur": "video", "bas": i * 3.0, "sure": 3.0, "kaynak": "a",
+                "hazir": [{"ad": "punch", "t": 0.5}, {"ad": "el_kamerasi"}]} for i in range(10)]
+    ad = next(a for a, r in native_motion.kayitlar().items() if (r["meta"].get("sure") or {}).get("min", 0) >= 1.0)
+    alt = native_motion.kayitlar()[ad]["meta"]["sure"]["min"]
+    klipler += [{"id": "g1", "iz": "V2", "tur": "motion", "bas": 4.0, "sure": 0.4, "bilesen": {"ad": ad, "param": {}}},
+                {"id": "g2", "iz": "V2", "tur": "motion", "bas": 20.0, "sure": 0.4, "bilesen": {"ad": ad, "param": {}}},
+                {"id": "g3", "iz": "V2", "tur": "motion", "bas": 20.6, "sure": 1.0, "bilesen": {"ad": ad, "param": {}}}]
+    k = Kurgu.model_validate({"sekans": {"w": 1080, "h": 1920, "fps": 30}, "kaynaklar": {"a": {"yol": "inputs:a.mp4", "sure": 30}},
+                              "izler": [{"id": "V2", "tur": "video"}, {"id": "V1", "tur": "video"}], "klipler": klipler})
+    out = ekip_v3.oto_duzelt(k)
+    by = {c.id: c for c in k.klipler}
+    punch = [c.id for c in k.klipler if any(e.get("ad") == "punch" for e in c.hazir)]
+    assert len(punch) == int(slop.OLAY_YOGUN_DAKIKA * 30 / 60), out
+    assert all(any(e.get("ad") == "el_kamerasi" for e in by[f"v{i}"].hazir) for i in range(10)), "sessiz efekt dokunulmaz"
+    assert by["g1"].sure == pytest.approx(alt), "kısa grafik sınırına uzar"
+    assert by["g2"].sure == pytest.approx(0.6), "sonraki klibe taşmadan uzar"
+    assert any("zoom/punch" in x for x in out)
+
+
+def test_slop_bulgulari_k9_bicimi(tmp_path):
+    import json
+    (tmp_path / "olcum.json").write_text(json.dumps({"slop": {"bulgular": [
+        {"kod": "OLAY_YOGUN", "seviye": "P1", "bas": None, "bit": None, "kanit": "dakikada 19 zoom"},
+        {"kod": "SES_OLU_HAVA", "seviye": "P1", "bas": 3.0, "bit": 4.5, "kanit": "1.5 sn sessizlik"},
+        {"kod": "PALET", "seviye": "P2", "bas": 0, "bit": 1, "kanit": "x"}]}}), encoding="utf-8")
+    b = ekip_v3.slop_bulgulari(tmp_path, 30.0)
+    assert [x["kategori"] for x in b] == ["ritim", "ses"] and b[0]["zaman"] == [0.0, 30.0] and b[1]["zaman"] == [3.0, 4.5]
+    assert all(x["katman"] == "V1" and x["onem"] == "P1" for x in b), "P2 girmez, bulgu kurgu sahibine gider"
+
+
+def test_rol_metni_frontmatter_atar_ve_paketler_dosya_okutmaz(monkeypatch):
+    m = ekip_v3.rol_metni(["editor-kurgu", "editor-kurgu", "yok-boyle-rol"])
+    assert m and not m.startswith("---") and "tools:" not in m.split("\n")[0]
+    assert "\n\n" not in m[:3]
+    from vedit.ekip_sema import EkipAyar
+    k = _k()
+    p = type("P", (), {"work": __import__("pathlib").Path("yok"), "studyo": "instagram", "ad": "x"})()
+    monkeypatch.setattr(ekip_v3.kural, "yukle", lambda: ekip_v3.kural.Depo())
+    metin = ekip_v3.plan_paketi(p, k, EkipAyar(), None, ekip_v3.varsayilan_dagitim("medium", k))
+    assert "oku" not in metin.split("## Kullanıcı isteği")[0].replace("okuma", ""), "orkestratör rol dosyası okumaya yollanmaz"
+    assert "(transkript yok)" in metin, "digest istemin içinde"

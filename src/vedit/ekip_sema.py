@@ -7,9 +7,9 @@ geçmeyen birleşmez. Seviye editör ve kalite kontrol sayısını sabitler; iş
 from __future__ import annotations
 
 import re
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, field_validator, model_validator
 
 # ---------------------------------------------------------------- seviye ve roller
 
@@ -57,6 +57,14 @@ def kontroller(seviye: str) -> list[str]:
     return [f"K{i}" for i in range(1, SEVIYE[seviye][1] + 1)]
 
 
+def Kirp(n: int):
+    """En çok n karakterlik serbest metin; uzunsa kırpılır, reddedilmez.
+
+    WHY: reel-video (2026-11-23) G2'de E3'ün düzeltme yaması tek pano mesajı 318 karakter olduğu için bütünüyle reddedildi;
+    düzeltme sessizce kayboldu. Ajan metni veridir; fazla uzun not yamanın, planın ya da triyajın tamamını düşürmemeli."""
+    return Annotated[str, BeforeValidator(lambda v: v[:n] if isinstance(v, str) else v), Field(max_length=n)]
+
+
 def grup(slot: str) -> str:
     return "orkestrator" if slot == ORKESTRATOR else "editor" if slot.startswith("E") else "kk"
 
@@ -93,6 +101,8 @@ class EkipAyar(_M):
     eszamanlilik: int | None = Field(default=None, ge=1, le=15)  # None: editör sayısı
     motion: Literal["az", "orta", "yogun"] = "yogun"
     stil: str | None = None
+    # ADR 0054: low seviye, orkestratör çağrısı yok (varsayılan dağıtım, deterministik kural kapısı, triyajsız), render yalnız gerekince
+    hizli: bool = False
 
     @model_validator(mode="before")
     @classmethod
@@ -154,7 +164,7 @@ class Gorev(_M):
     slot: str = Field(pattern=r"^E(10|[1-9])$")
     katmanlar: list[Katman] = Field(min_length=1)
     aralik: list[float] | None = Field(default=None, min_length=2, max_length=2)
-    odak: str = Field(default="", max_length=600)
+    odak: Kirp(600) = ""
     kurallar: list[str] = []  # kural id (K0012); P0'ları vedit kendisi ekler
 
     @field_validator("kurallar")
@@ -167,39 +177,39 @@ class KkGorev(_M):
     slot: str = Field(pattern=r"^K[1-5]$")
     rol: KkRol
     aralik: list[float] | None = Field(default=None, min_length=2, max_length=2)
-    odak: str = Field(default="", max_length=600)
+    odak: Kirp(600) = ""
 
 
 class Plan(_M):
     hook: dict[str, Any] | None = None  # {"bas", "son", "neden"}
     gorevler: list[Gorev] = []
     kk_gorevler: list[KkGorev] = []
-    gerekce: str = Field(default="", max_length=1500)
+    gerekce: Kirp(1500) = ""
 
 
 class KapiKarari(_M):
     slot: str = Field(pattern=r"^E(10|[1-9])$")
     karar: Literal["kabul", "duzelt"]
-    brif: str = Field(default="", max_length=1500)
+    brif: Kirp(1500) = ""
 
 
 class KapiCikti(_M):
     kararlar: list[KapiKarari] = []
-    not_: str = Field(default="", max_length=800, alias="not")
+    not_: Kirp(800) = Field(default="", alias="not")
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
 
 class Red(_M):
     id: str
-    neden: str = Field(default="", max_length=300)
+    neden: Kirp(300) = ""
 
 
 class Triyaj(_M):
     kabul: list[str] = []      # bulgu id
     red: list[Red] = []        # yanlış pozitif
     kural_onay: list[str] = []  # kural adayı onaylanan bulgu id'leri
-    not_: str = Field(default="", max_length=800, alias="not")
+    not_: Kirp(800) = Field(default="", alias="not")
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -232,13 +242,13 @@ class Mesaj(_M):
     """Pano mesajı (ADR 0048): en çok iki satır; ajan yalnız kendi aralığına değen mesajları görür."""
     tip: Literal["claim", "constraint", "request", "done"]
     aralik: list[float] = Field(min_length=2, max_length=2)
-    metin: str = Field(max_length=240)
+    metin: Kirp(240)
     kimden: str = ""  # vedit doldurur
 
 
 class KuralUyum(_M):
     id: str = Field(pattern=r"^K\d{4}$")
-    nasil: str = Field(default="", max_length=300)
+    nasil: Kirp(300) = ""
 
 
 class Yama(_M):
@@ -255,7 +265,7 @@ class Yama(_M):
     hf: dict[str, str] = {}
     pano: list[Mesaj] = []
     kural_uyum: list[KuralUyum] = []  # ADR 0053: kartın zorunlu kurallarına nasıl uyduğu
-    rapor: str = Field(default="", max_length=1500)
+    rapor: Kirp(1500) = ""
 
 
 class KontrolCikti(_M):

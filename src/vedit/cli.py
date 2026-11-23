@@ -513,12 +513,12 @@ def cmd_final(a):
 
 def cmd_ai_edit(a):
     from . import aiedit, hizli
-    if a.ekip:
+    if a.ekip or a.hizli:  # --hizli ekibi de açar (ADR 0054)
         # WHY: bkz. wiki/decisions/0053-seviyeli-ekip-orkestrator.md. --ekip yoksa tek ajan akışı aynen çalışır.
         from . import ekip
         p = hizli.bul(a.ref)
         ayar = ekip.ayar_yukle(p, Path(a.ekip_dosyasi) if a.ekip_dosyasi else None, ekip_seviye=a.seviye,
-                               motion=a.motion if a.motion != "yogun" else None, stil=a.stil)
+                               motion=a.motion if a.motion != "yogun" else None, stil=a.stil, hizli=True if a.hizli else None)
         if a.sifirdan:
             from . import kurgu
             f = kurgu.yol(p.work)
@@ -530,8 +530,10 @@ def cmd_ai_edit(a):
         final_ek = {"platform": a.platform, "ad": a.ad, "yenile": a.yenile, **_teslim_ayari(a)}
         # Kapılı akış: plan, paralel düzen, kural kapısı, birleştirme, QC, triyaj ve kural, düzeltme, son.
         from . import ekip_v3
-        o = ekip_v3.calistir(p, ayar, notu=a.notu, tekrar_denetle=a.tekrar_denetle)
-        print(f"Ekip v3 ({o['seviye']}): {o['sure_sn']} sn · rapor work/edit/ai-edit.rapor.md")
+        o = ekip_v3.calistir(p, ayar, notu=a.notu, final=a.final, tekrar_denetle=a.tekrar_denetle)
+        print(f"Ekip v3 ({o['seviye']}{', hızlı' if o.get('hizli') else ''}): {o['sure_sn']} sn · rapor work/edit/ai-edit.rapor.md")
+        if o.get("taslak_eski") and not a.final:
+            print("  taslak.mp4 düzeltmeden önceki hâl; Stüdyo önizlemesi güncel. Videoyu görmek için: vedit taslak " + a.ref)
         if a.final:
             if any(b["onem"] == "P0" for b in o["bulgular"]) or o["son_denetim"]["hata"]:
                 print("  ! Açık P0 bulgusu ya da denetim hatası var: teslim kullanıcı kararı (ADR 0015). --final atlandı.")
@@ -1172,6 +1174,8 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--seviye", choices=["low", "medium", "high", "xhigh", "max"],
                     help="ekip seviyesi: low 2E+1K, medium 4E+2K, high 6E+3K, xhigh 8E+4K, max 10E+5K (yoksa ön ayar)")
     sp.add_argument("--tekrar-denetle", action="store_true", help="ekip: düzeltmeden sonra ikinci QC paketi (yalnız istenirse)")
+    sp.add_argument("--hizli", action="store_true",
+                    help="ekip: hızlı ön ayar (ADR 0054): 2 editör + 1 QC, orkestratör çağrısı yok, render yalnız gerekince")
     sp.add_argument("--ekip-dosyasi", help="ekip ayarı JSON; yoksa work/edit/ekip.json, sonra library/ekip.json")
     sp.add_argument("--sifirdan", action="store_true", help="ekip: mevcut kurguyu geçmişe bırakıp girdiden yeniden kur")
     sp.add_argument("--platform", choices=["youtube", "reels", "ugc"])

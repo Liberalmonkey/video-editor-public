@@ -344,6 +344,11 @@ def _kurgu_hazirla(p: hizli.Proje) -> Kurgu:
                 degisti = True
     if not vardi:
         return kurgu.yaz(p.work, k)
+    from .ekip_v3 import iz_cakisma_coz  # döngüsel içe aktarma: ekip_v3 bu modülü kullanır
+    if iz_cakisma_coz(k)[0]:
+        # WHY: önceki bir koşunun bıraktığı iz çakışması her yeni editi aynı denetim hatasıyla düşürüyordu (reel-video 2026-11-23).
+        print("  Kurguda üst üste binen klipler ayrıldı.", flush=True)
+        return kurgu.yaz(p.work, k)
     if degisti:
         # WHY: mevcut kurguda yalnız eksik kelimeler tamamlandıysa ajan öncesi fazladan rev/geçmiş oluşmasın.
         kurgu._atomik(f, k.model_dump_json(indent=1, exclude_defaults=False))

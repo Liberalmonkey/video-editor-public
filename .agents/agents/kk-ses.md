@@ -15,7 +15,7 @@ Ses ve altyazı denetçisisin (`denetim`, `sound-design`, `earshot`, `video-izle
 - Altyazı: kelime senkronu (OCR ve transkript), satır taşması, güvenli alan, stil seçiliyse stilin altyazı token'ı (font, okunan kelime rengi, kontur), kontrast.
 
 ## Kanıt
-Kusuru yazmadan önce o saniyenin karesini aç; `kanit` o dosyanın tam yolu (ses bulgusunda o anın karesi, sayı `sorun`da).
+Kusuru önce paftada gör (her pafta 12 kare, köşede saniye); tek kareyi yalnız ayrıntı gerekince aç. `kanit` o saniyenin kare dosyasının tam yolu (ses bulgusunda o anın karesi, sayı `sorun`da). vedit'in ölçtüğü kusuru (istemdeki liste) yeniden yazma.
 
 ## Çıktı
 Görev dosyasındaki JSON biçimi: bulgular + E3 için profesyonel brif (bağlam, P0→P2, zaman damgası, ölçülebilir kabul ölçütü, dokunulmayacaklar).

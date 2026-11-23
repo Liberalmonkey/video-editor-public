@@ -80,7 +80,15 @@ def test_json_cikar_ve_bulgu_dogrulama(tmp_path):
     o = ekip.json_cikar(metin)
     c, dus = ekip.bulgu_dogrula(o, "K2")
     assert [b.id for b in c.bulgular] == ["K2-001"] and dus and c.brif == "# Brif"
-    assert ekip.bulgu_dogrula({"bulgular": [{"id": "X"}]}, "K2")[0] is None
+    c, dus = ekip.bulgu_dogrula({"bulgular": [{"id": "X"}]}, "K2")
+    assert c.bulgular == [] and dus, "bozuk bulgu tek başına düşer"
+    assert ekip.bulgu_dogrula({"bulgular": "yok"}, "K2")[0] is None
+    # Bir bozuk bulgu ötekileri düşürmez; ek alan atılır, kalıba uymayan isteğe bağlı alan boşalır, kimlik slota göre numaralanır.
+    iyi = {"onem": "P1", "zaman": [1, 2], "katman": "V2", "kategori": "stil", "kanit": str(kare), "sorun": "s", "beklenen": "b"}
+    c, dus = ekip.bulgu_dogrula({"bulgular": [{**iyi, "id": "K1-001", "klip": "c3", "hedef": "E11", "kural_adayi": "YAP:\n kısa ama  geçerli emir"},
+                                              {**iyi, "id": "K2-001", "kategori": "kurgu"}, {**iyi, "id": "K2-001"}]}, "K2")
+    assert [b.id for b in c.bulgular] == ["K2-001", "K2-003"] and len(dus) == 1
+    assert c.bulgular[0].hedef is None and c.bulgular[0].kural_adayi == "YAP: kısa ama geçerli emir"
 
 
 def test_ayar_katmanlari_ve_eski_on_ayar_gocu(proje, tmp_path, monkeypatch):
@@ -106,6 +114,7 @@ def test_ayar_katmanlari_ve_eski_on_ayar_gocu(proje, tmp_path, monkeypatch):
 
 KURAL_METNI = "YAPMA: grafiği konuşmacının yüzünün üstüne koyma."
 ADAY = "YAPMA: grafiği altyazı bandının üstüne koyma, bandın dışında tut."
+ADAY_SES = "YAP: altyazı kelimesini sesteki kelimeyle aynı karede göster."
 
 
 def _kural_deposu(tmp_path, monkeypatch):
@@ -119,7 +128,7 @@ def _kural_deposu(tmp_path, monkeypatch):
 def _sahte_ekip(proje, kayit: list):
     """Kapı klasöründen ve istemden rolü bulan sahte ajan.
     Plan: varsayılan dağıtımı aynen döndürür. Kapıda grafik editörünü bir kez düzeltmeye yollar. QC bir P1 ve kural adayı yazar."""
-    def ajan(slot, istem, mod, yol, *, yedek=False):
+    def ajan(slot, istem, mod, yol, *, yedek=False, **_):
         f = Path(re.search(r"Read the file (.+?\.istem\.md)", istem).group(1))
         rol, asama = f.name.split(".")[0], f.parent.name
         metin = f.read_text(encoding="utf-8")
@@ -149,13 +158,17 @@ def _sahte_ekip(proje, kayit: list):
                 y = {"guncelle": [{"id": "g1", "bas": 1.2}], "kural_uyum": [{"id": i, "nasil": "x"} for i in zorunlu]}
             return True, json.dumps(y), meta
         kare = next((f.parent / "izle").glob("*.jpg"))
+        # İkinci bulgu ses-stil slotuna gider (medium'da E4): kural deposuna rol sınıfı (E3) olarak yazılmalı.
         return True, "```json\n" + json.dumps({"bulgular": [{"id": f"{rol}-001", "onem": "P1", "zaman": [1, 2], "katman": "V2",
                                                             "kategori": "okunurluk", "kanit": str(kare), "sorun": "altyazıyla çakışıyor",
-                                                            "beklenen": "bant dışında", "kural_adayi": ADAY}], "brif": "b"}) + "\n```", meta
+                                                            "beklenen": "bant dışında", "kural_adayi": ADAY},
+                                                           {"id": f"{rol}-002", "onem": "P2", "zaman": [3, 4], "katman": "altyazi",
+                                                            "kategori": "ses", "kanit": str(kare), "sorun": "altyazı geç düşüyor",
+                                                            "beklenen": "kelimeyle aynı kare", "kural_adayi": ADAY_SES}], "brif": "b"}) + "\n```", meta
     return ajan
 
 
-@pytest.mark.parametrize("seviye", ["low", "high", "max"])
+@pytest.mark.parametrize("seviye", ["low", "medium", "high", "max"])
 def test_seviyeli_kapili_akis(proje, tmp_path, monkeypatch, seviye):
     k0 = _kural_deposu(tmp_path, monkeypatch)
     kayit: list = []
@@ -173,6 +186,8 @@ def test_seviyeli_kapili_akis(proje, tmp_path, monkeypatch, seviye):
     assert not o["kural_ihlal"], f"düzeltmeden sonra kural kapısı temiz: {o['kural_ihlal']}"
     assert o["kural_dogrulama"]["dogrulanan"] and not o["kural_dogrulama"]["dogrulanamayan"], "QC kuralı depoya işlendi ve doğrulandı"
     assert kural.bul_benzer(kural.yukle(), ADAY) is not None
+    ses = kural.bul_benzer(kural.yukle(), ADAY_SES)
+    assert ses is not None and ses.hedef_rol == "E3", "ses-stil slotunun adayı depoya rol sınıfıyla (E3) yazılır, slotla değil"
     assert o["duzeltilen"] == [grafikciler[0]], "V2 1-2 sn bulgusu o dilimin grafik editörüne gider"
     d = json.loads((proje.work / "edit" / "ekip" / "durum.json").read_text(encoding="utf-8"))
     assert [x["id"] for x in d["kapilar"]] == [f"G{i}" for i in range(8)]
@@ -186,7 +201,7 @@ def test_gecersiz_plan_varsayilan_dagitima_duser(proje, tmp_path, monkeypatch):
     kayit: list = []
     sahte = _sahte_ekip(proje, kayit)
 
-    def ajan(slot, istem, mod, yol, *, yedek=False):
+    def ajan(slot, istem, mod, yol, *, yedek=False, **_):
         if Path(re.search(r"Read the file (.+?\.istem\.md)", istem).group(1)).parent.name == "plan":
             iki_kurgu = [{"slot": "E1", "katmanlar": ["kurgu"]}, {"slot": "E2", "katmanlar": ["kurgu", "grafik", "sfx", "muzik", "stil"]}]
             return True, json.dumps({"gorevler": iki_kurgu, "kk_gorevler": [{"slot": "K1", "rol": "genel"}]}), {"sure": 1}
@@ -196,3 +211,177 @@ def test_gecersiz_plan_varsayilan_dagitima_duser(proje, tmp_path, monkeypatch):
     monkeypatch.setattr(ekip_v3, "parcali_render", lambda p, a: p.work / "renders" / "taslak.mp4")
     o = ekip_v3.calistir(proje, _ayar(ekip_seviye="low"))
     assert o["dagitim"] == "varsayilan" and any("kurgu bölünmez" in h for h in o["plan_hata"])
+
+
+def test_slot_kural_rolu_ve_qc_isle(tmp_path, monkeypatch):
+    """G5 hatası (reel-video, medium): QC hedefi slot (E4) idi, depo rol sınıfı (E1-E3) bekler; ValidationError triyajı düşürürdü."""
+    from vedit.ekip_sema import Gorev
+    a = ekip_v3.Atama([Gorev(slot="E1", katmanlar=["kurgu"]), Gorev(slot="E2", katmanlar=["grafik"]),
+                       Gorev(slot="E3", katmanlar=["grafik"]), Gorev(slot="E4", katmanlar=["sfx", "muzik", "stil"]),
+                       Gorev(slot="E5", katmanlar=["kurgu", "grafik"])])
+    assert [a.kural_rolu(s) for s in ("E1", "E2", "E3", "E4", "E5", None, "E9")] == ["E1", "E2", "E2", "E3", "hepsi", "hepsi", "hepsi"]
+    assert a.kural_rolu("E5", "grafik") == "E2" and a.kural_rolu("E5", "stil") == "hepsi", "karışık slotta bulgu katmanı seçer, slotta olmayan sınıf seçmez"
+    _kural_deposu(tmp_path, monkeypatch)
+    s = kural.qc_isle([{"id": "K1-001", "hedef": "E4", "onem": "P1", "kategori": "ses", "sorun": "x", "kural_adayi": ADAY_SES},
+                       {"id": "K1-002", "hedef": None, "onem": "P2", "kategori": "stil", "sorun": "y", "kural_adayi": ADAY}], proje="i/p")
+    d = kural.yukle()
+    assert len(s["yeni"]) == 2 and all(kural._ara(d, i).hedef_rol == "hepsi" for i in s["yeni"]), "geçersiz hedef çökertmez, hepsi olur"
+
+
+def test_max_dayaniklilik(tmp_path):
+    """Max seviye: uzun ajan metni kırpılır, paralel grafik editörlerinin kompozisyon adı çakışmaz,
+    pano paralel yazımda mesaj kaybetmez, ajan eşzamanlılığı boş belleğe sığar."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from vedit.ekip_sema import Gorev, Mesaj, Yama
+    y = Yama.model_validate({"pano": [{"tip": "done", "aralik": [0, 1], "metin": "x" * 318}], "rapor": "r" * 2000})
+    assert len(y.pano[0].metin) == 240 and len(y.rapor) == 1500, "uzun not yamayı düşürmez (reel-video E3)"
+
+    at = ekip_v3.Atama([Gorev(slot="E1", katmanlar=["kurgu"]),
+                        *[Gorev(slot=f"E{i}", katmanlar=["grafik"], aralik=[i - 2.0, i - 1.0]) for i in range(2, 7)]])
+    html = '<div data-composition-id="x"></div>'
+    y = Yama(ekle=[{"id": "g1", "iz": "V2", "tur": "motion", "hf": {"ad": "baslik"}}], hf={"baslik": html, "kart-e3": html})
+    y = ekip_v3.hf_ad_ayir("E3", y, at)
+    assert set(y.hf) == {"baslik-e3", "kart-e3"} and y.ekle[0]["hf"]["ad"] == "baslik-e3"
+    tek = ekip_v3.Atama([Gorev(slot="E1", katmanlar=["kurgu"]), Gorev(slot="E2", katmanlar=["grafik"])])
+    assert set(ekip_v3.hf_ad_ayir("E2", Yama(hf={"baslik": html}), tek).hf) == {"baslik"}, "tek grafik editöründe ad değişmez"
+
+    def yaz(i):
+        ekip_v3.pano_ekle(tmp_path, f"E{i % 10 + 1}", [Mesaj(tip="claim", aralik=[0, 1], metin=f"m{i}")])
+        return ekip_v3.pano_oku(tmp_path, "E0")
+    with ThreadPoolExecutor(10) as h:
+        list(h.map(yaz, range(60)))
+    assert len(json.loads((tmp_path / "pano.json").read_text(encoding="utf-8"))) == 60, "paralel pano yazımı mesaj kaybetmez"
+
+    ay = EkipAyar(ekip_seviye="max")
+    assert ekip_v3.ajan_eszamanlilik(ay, bos=20.0) == 10
+    assert ekip_v3.ajan_eszamanlilik(ay, bos=5.0) == 3 and ekip_v3.ajan_eszamanlilik(ay, bos=1.0) == 2
+    assert ekip_v3.ajan_eszamanlilik(EkipAyar(ekip_seviye="max", eszamanlilik=8), bos=1.0) == 8, "açık ayar kazanır"
+
+
+def test_triyaj_cozumlenemezse_aday_islenmez(proje, tmp_path, monkeypatch):
+    _kural_deposu(tmp_path, monkeypatch)
+    kayit: list = []
+    asil = _sahte_ekip(proje, kayit)
+
+    def ajan(slot, istem, mod, yol, *, yedek=False, **_):
+        ok, yanit, meta = asil(slot, istem, mod, yol, yedek=yedek)
+        return (ok, "anlaşılmaz yanıt", meta) if kayit[-1] == ("triyaj", "O") else (ok, yanit, meta)
+    monkeypatch.setattr(ekip, "ajan", ajan)
+    monkeypatch.setattr(ekip_v3, "parcali_render", lambda p, a: p.work / "renders" / "taslak.mp4")
+    o = ekip_v3.calistir(proje, _ayar(ekip_seviye="max"), notu="hızlı tempo")
+    assert kural.bul_benzer(kural.yukle(), ADAY) is None, "orkestratör onaylamadan aday depoya girmez"
+    assert "triyaj çözümlenemedi" in o["kapilar"]["G5"]
+
+
+def test_iz_cakisma_coz_kirpar_ya_da_tasir():
+    """Aynı izde üst üste binen grafik: küçük örtüşmede önceki kısalır, büyükte başka ize taşınır; denetim temiz kalır."""
+    from vedit.schemas import Klip, Kurgu, KurguIz
+    k = Kurgu(izler=[KurguIz(id="V3", tur="video"), KurguIz(id="V1", tur="video"), KurguIz(id="A2", tur="ses")],
+              klipler=[Klip(id="a", iz="V3", tur="metin", bas=32.29, sure=2.65), Klip(id="b", iz="V3", tur="metin", bas=34.83, sure=2.3),
+                       Klip(id="c", iz="V3", tur="metin", bas=40.0, sure=3.0), Klip(id="d", iz="V3", tur="metin", bas=41.0, sure=2.0)])
+    degisen, bulgu = ekip_v3.iz_cakisma_coz(k)
+    by = {c.id: c for c in k.klipler}
+    assert by["a"].sure == pytest.approx(2.54) and by["a"].iz == "V3"
+    assert by["d"].iz not in ("V3", "V1") and by["c"].sure == 3.0
+    assert [i.id for i in k.izler][0] == by["d"].iz  # yeni görüntü izi en üstte
+    assert {"a", "d"} <= set(degisen) and len(bulgu) == 1
+    for iz in k.izler:
+        sira = sorted((c for c in k.klipler if c.iz == iz.id), key=lambda c: c.bas)
+        assert all(b.bas >= a.bas + a.sure - 1e-3 for a, b in zip(sira, sira[1:]))
+
+
+def _sayac(proje, monkeypatch):
+    """hizli.taslak ve parcali_render çağrılarını sayar (ADR 0054: render yalnız gerekince)."""
+    sayi = {"taslak": 0, "parca": 0}
+    asil = hizli.taslak
+
+    def taslak(prj, **k):
+        sayi["taslak"] += 1
+        return asil(prj, **k)
+
+    def parca(p, a):
+        sayi["parca"] += 1
+        return p.work / "renders" / "taslak.mp4"
+    monkeypatch.setattr(hizli, "taslak", taslak)
+    monkeypatch.setattr(ekip_v3, "parcali_render", parca)
+    return sayi
+
+
+def test_hizli_on_ayar_orkestratorsuz(proje, tmp_path, monkeypatch):
+    """--hizli: low (2E+1K), orkestratör hiç çağrılmaz, kural adayı onaysız depoya girmez, düzeltmeden sonra render yok."""
+    _kural_deposu(tmp_path, monkeypatch)
+    kayit: list = []
+    monkeypatch.setattr(ekip, "ajan", _sahte_ekip(proje, kayit))
+    sayi = _sayac(proje, monkeypatch)
+    o = ekip_v3.calistir(proje, _ayar(ekip_seviye="max", hizli=True), notu="hızlı tempo")
+    assert o["seviye"] == "low" and o["hizli"] and o["dagitim"] == "hizli"
+    assert not [r for a, r in kayit if r == "O"], "orkestratör çağrılmaz"
+    assert sorted({r for a, r in kayit if a == "duzen"}) == ["E1", "E2"] and sorted({r for a, r in kayit if a == "qc"}) == ["K1"]
+    assert kural.bul_benzer(kural.yukle(), ADAY) is None, "onaysız aday depoya girmez"
+    assert o["duzeltilen"], "P1 bulgusu yine düzeltilir"
+    assert sayi == {"taslak": 1, "parca": 0} and o["taslak_eski"], "G6'dan sonra render alınmaz"
+    assert "atlandı (hızlı)" in o["kapilar"]["G0"] and "deterministik" in o["kapilar"]["G2"]
+
+
+def test_temiz_kural_kapisinda_orkestrator_beklenmez(proje, tmp_path, monkeypatch):
+    """Editörler kurala uyunca G2'de O çağrılmaz: plan + triyaj = 2 çağrı. --tekrar-denetle düzeltilen videoyu render eder."""
+    _kural_deposu(tmp_path, monkeypatch)
+    kayit: list = []
+    asil = _sahte_ekip(proje, kayit)
+
+    def ajan(slot, istem, mod, yol, *, yedek=False, **_):
+        ok, yanit, meta = asil(slot, istem, mod, yol, yedek=yedek)
+        asama, rol = kayit[-1]
+        if rol.startswith("E") and asama == "duzen":  # grafik editörü de ilk seferde uyumu yazar
+            y = json.loads(yanit)
+            metin = Path(re.search(r"Read the file (.+?\.istem\.md)", istem).group(1)).read_text(encoding="utf-8")
+            z = re.findall(r"^- \[(K\d{4}) P\d\]", metin.split("## Zorunlu kurallar")[1].split("##")[0], re.M)
+            y["kural_uyum"] = [{"id": i, "nasil": "x"} for i in z]
+            yanit = json.dumps(y)
+        return ok, yanit, meta
+    monkeypatch.setattr(ekip, "ajan", ajan)
+    sayi = _sayac(proje, monkeypatch)
+    o = ekip_v3.calistir(proje, _ayar(ekip_seviye="medium"), tekrar_denetle=True)
+    assert [a for a, r in kayit if r == "O"] == ["plan", "triyaj"], kayit
+    assert "orkestratör çağrılmadı" in o["kapilar"]["G2"]
+    assert sayi["parca"] == 1 and not o["taslak_eski"], "ikinci QC için düzeltilen aralık render edilir"
+
+
+def test_yalin_claude_komutu_ve_stdin(tmp_path, monkeypatch):
+    """ADR 0054: ekip Claude'u araçsız, MCP'siz, ayar kaynaksız çalıştırır; istem stdin'den, rol sistem isteminden."""
+    from vedit import motorlar
+    monkeypatch.setattr(motorlar, "bas", lambda m: ["claude.exe"])
+    k = motorlar.yalin_komut("m", "medium", sistem="ROL", araclar="", dizinler=(tmp_path,))
+    for bayrak in ("--strict-mcp-config", "--disable-slash-commands", "--no-session-persistence", "--append-system-prompt"):
+        assert bayrak in k
+    assert k[k.index("--tools") + 1] == "" and k[k.index("--setting-sources") + 1] == "" and k[k.index("--effort") + 1] == "medium"
+    assert "--add-dir" in k and k[1] == "-p" and "--bare" not in k
+
+    # Sahte "claude": stdin'i okur, stream-json sonuç satırı basar.
+    betik = tmp_path / "sahte.py"
+    betik.write_text("import sys,json\nt=sys.stdin.buffer.read().decode('utf-8')\nprint(json.dumps({'type':'result','result':'ALDIM:'+str(len(t)),"
+                     "'usage':{'input_tokens':3}}))\n", encoding="utf-8")
+    import sys
+    monkeypatch.setattr(motorlar, "yalin_komut", lambda *a, **kw: [sys.executable, str(betik)])
+    monkeypatch.setattr(motorlar, "YALIN_KOK", tmp_path / "kok")
+    sl = Slot(motor="claude", model="m")
+    metin = "ğüşİ " * 20000  # Windows komut satırı sınırını (32k) aşan istem
+    ok, yanit, meta = ekip.ajan(sl, "Read the file x", "plan", tmp_path / "O", metin=metin, sistem="ROL")
+    assert ok and yanit == f"ALDIM:{len(metin)}" and meta["yalin"]
+
+
+def test_pafta_kareleri_toplar(tmp_path):
+    from PIL import Image
+    kareler = []
+    for i in range(14):
+        f = tmp_path / f"kare_{i * 1.5:06.1f}.jpg"
+        Image.new("RGB", (540, 960), (i * 15, 40, 90)).save(f)
+        kareler.append((i * 1.5, f))
+    (tmp_path / "pafta-9.jpg").write_bytes(b"eski")
+    paftalar = ekip.pafta_yap(kareler, tmp_path)
+    assert [f.name for f in paftalar] == ["pafta-1.jpg", "pafta-2.jpg"] and not (tmp_path / "pafta-9.jpg").exists()
+    with Image.open(paftalar[0]) as im:
+        assert im.size == (4 * 270, 3 * 480)
+    with Image.open(paftalar[1]) as im:
+        assert im.size == (4 * 270, 480), "2 kare tek satır"

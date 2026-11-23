@@ -488,6 +488,7 @@ a.dugme { color: inherit; text-decoration: none; }
 .ajan-kart.bitti { border-left-color: var(--iyi); }
 .ajan-kart.hata { border-left-color: var(--hata); }
 .ajan-kart.yedek { border-left-color: var(--uyari); }
+.ajan-kart.atlandi { opacity: 0.55; border-left-style: dashed; }
 .kart-ust { display: flex; align-items: center; gap: 5px; }
 .kart-ust b { color: var(--y1); font-size: 12px; }
 .kart-nokta { width: 6px; height: 6px; border-radius: 50%; background: var(--y3); }

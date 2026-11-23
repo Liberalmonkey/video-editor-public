@@ -14,7 +14,7 @@ import tempfile
 import unicodedata
 from datetime import date
 from pathlib import Path
-from typing import Literal
+from typing import Literal, get_args
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -226,6 +226,11 @@ def kapi_onerileri(d: Depo) -> list[Kural]:
 _QC_KATEGORI = {"stil": "renk", "okunurluk": "grafik", "ritim": "kesim", "ses": "ses", "teknik": "teknik", "tutarlilik": "genel"}
 
 
+def _rol(v) -> str:
+    """QC hedefi rol sınıfı değilse (ör. seviyeli ekipte E4 slotu ya da boş) hepsi: tek aday bütün triyajı düşürmesin."""
+    return v if v in get_args(Rol) else "hepsi"
+
+
 def qc_isle(bulgular: list[dict], *, proje: str, kaynak_kok: str = "") -> dict:
     """QC bulgularını kural deposuna işler: aday → yeni ya da tekrar (mezar taşı düşer); kural_id → ihlal sayımı.
 
@@ -241,7 +246,7 @@ def qc_isle(bulgular: list[dict], *, proje: str, kaynak_kok: str = "") -> dict:
             continue
         kanit = Kanit(proje=proje, zaman=(b.get("zaman") or [None])[0], kare=b.get("kanit"), **{"not": b.get("sorun")})
         k, ne = aday_ekle(d, aday, kaynak=f"kk:{b['id'][:2]}", kanit=kanit, kategori=_QC_KATEGORI.get(b.get("kategori"), "genel"),
-                          hedef_rol=b.get("hedef", "hepsi"), onem=b.get("onem", "P1"), neden=b.get("sorun", "")[:200])
+                          hedef_rol=_rol(b.get("hedef")), onem=b.get("onem", "P1"), neden=b.get("sorun", "")[:200])
         if ne == "mezar":
             sonuc["mezar"].append(aday)
         else:

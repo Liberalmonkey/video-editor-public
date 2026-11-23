@@ -59,14 +59,18 @@ def hatalar(c) -> list[str]:
     return h
 
 
-def sure_uyarisi(c) -> str | None:
+def sure_siniri(c) -> tuple[float | None, float | None]:
+    """Native bileşenin (en az, en çok) süresi: meta `sure.min/max`, yoksa türün sınırı. Bilinmeyen bileşen: (None, None)."""
     k = kayitlar().get(c.bilesen.ad) if c.bilesen else None
     if not k:
-        return None
-    tur = k["meta"].get("tur")
-    alt, ust = SURE_SINIRI.get(tur, (None, None))
+        return None, None
+    alt, ust = SURE_SINIRI.get(k["meta"].get("tur"), (None, None))
     m = k["meta"].get("sure") or {}
-    alt, ust = m.get("min", alt), m.get("max", ust)
+    return m.get("min", alt), m.get("max", ust)
+
+
+def sure_uyarisi(c) -> str | None:
+    alt, ust = sure_siniri(c)
     if alt is not None and c.sure < alt - 1e-3:
         return f"{c.id}: {c.bilesen.ad} {c.sure:.2f} sn kısa (en az {alt} sn; okunamaz)"
     if ust is not None and c.sure > ust + 1e-3:

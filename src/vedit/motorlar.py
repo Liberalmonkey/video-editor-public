@@ -325,6 +325,27 @@ def komut(motor: str, istem: str, model: str | None, mod: str = "duzenle", oturu
     return [*b, *arg]
 
 
+# WHY: bkz. wiki/decisions/0054-hizli-edit.md. Ekip ajanı proje kökünde başlayınca her çağrı 269 araç, 15 MCP sunucusu,
+# 151 slash komutu, CLAUDE.md ve plugin hook'larını yüklüyordu (çağrı başı ~45k token taban) ve istemi araçla okuyup 1-2 tur
+# fazla dönüyordu. Yalın çağrıda istem stdin'den gelir, rol sistem istemine eklenir, araç ve ayar kaynağı yoktur (~4k taban).
+# `--bare` kullanılmaz: yalnız ANTHROPIC_API_KEY okur, abonelik girişini (OAuth) okumaz.
+YALIN_KOK = Path(os.environ.get("LOCALAPPDATA") or Path.home()) / "vedit" / "ajan"
+
+
+def yalin_komut(model: str | None, seviye: str | None = None, *, sistem: str | None = None, araclar: str = "",
+                dizinler: tuple = ()) -> list[str]:
+    """Ekip çağrısı için yalın Claude komutu. İstem stdin'den okunur; `araclar` boşsa hiç araç yoktur (QC için "Read")."""
+    b = bas("claude")
+    if not b:
+        raise SystemExit(f"{MOTORLAR['claude'].ad} kurulu değil. {MOTORLAR['claude'].kurulum}")
+    return [*b, "-p", *(["--model", model] if model else []), *seviye_arg("claude", seviye),
+            "--output-format", "stream-json", "--verbose", "--tools", araclar,
+            "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--disable-slash-commands",
+            "--setting-sources", "", "--no-session-persistence",
+            *(["--append-system-prompt", sistem] if sistem else []),
+            *[x for d in dizinler for x in ("--add-dir", str(d))]]
+
+
 def _surum(b: list[str]) -> str:
     try:
         cikti = _calistir(b, "--version", timeout=20).strip().splitlines()

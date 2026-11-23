@@ -16,13 +16,14 @@ export interface Slot { motor: string; model?: string | null; seviye?: string | 
 export interface EkipAyar {
   ad: string; ekip_seviye: Seviye; gruplar: Record<Grup, Slot>; ezme: Record<string, Slot>;
   eszamanlilik?: number | null; motion: string; stil?: string | null;
+  hizli?: boolean; // ADR 0054: low, orkestratörsüz, render yalnız gerekince
 }
-export type SlotDurumAdi = "bekliyor" | "calisiyor" | "bitti" | "hata" | "yedek";
+export type SlotDurumAdi = "bekliyor" | "calisiyor" | "bitti" | "hata" | "yedek" | "atlandi";
 export interface SlotDurum { durum: SlotDurumAdi; rol?: string; aralik?: [number, number] | null; motor: string; model?: string | null; sure?: number | null; token?: number | null; tahmini?: boolean }
 export type KapiDurumAdi = "bekliyor" | "acik" | "gecti" | "kaldi";
 export interface Kapi { id: string; ad: string; durum: KapiDurumAdi; not: string }
 export interface EkipDurum {
-  yok?: boolean; seviye: Seviye; asama: string; bitti: boolean; dagitim?: "orkestrator" | "varsayilan" | null;
+  yok?: boolean; seviye: Seviye; asama: string; bitti: boolean; dagitim?: "orkestrator" | "varsayilan" | "hizli" | null;
   acik: { P0: number; P1: number; P2: number };
   kurallar?: { atanan: number; uyum_eksik: number; yeni: number; tekrar: number; dogrulanan: number; dogrulanamayan: number };
   kapilar: Kapi[]; slotlar: Record<string, SlotDurum>;
@@ -34,6 +35,7 @@ export const slotlar = (s: Seviye) => ["O", ...editorSlotlari(s), ...kkSlotlari(
 export const grup = (slot: string): Grup => (slot === "O" ? "orkestrator" : slot.startsWith("E") ? "editor" : "kk");
 export const slotAyari = (a: EkipAyar, slot: string): Slot => a.ezme?.[slot] ?? a.gruplar[grup(slot)];
 export const seviyeOzet = (s: Seviye) => `${SEVIYE[s].editor} editör · ${SEVIYE[s].kk} kalite kontrol · orkestratör`;
+export const HIZLI_OZET = `${SEVIYE.low.editor} editör · ${SEVIYE.low.kk} kalite kontrol · orkestratörsüz`;
 
 // Slot sırası: O, E1..E10, K1..K5 (sözlük sırası E10'u E2'den önce koyardı).
 export const slotSirasi = (a: string, b: string) => {

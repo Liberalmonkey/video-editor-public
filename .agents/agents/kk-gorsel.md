@@ -18,7 +18,7 @@ Motion ve stil denetçisisin (`denetim`, `motion-design`, `sanat-yonetimi`, `vid
 - **HyperFrames grafikleri (ADR 0050):** `hf` klibinde siyah kutu (alfa kaybı), token dışı renk ya da font, Türkçe harfte yedek yazı tipi var mı. Varsa P1.
 
 ## Kanıt
-Kusuru yazmadan önce o saniyenin karesini aç; `kanit` o dosyanın tam yolu.
+Kusuru önce paftada gör (her pafta 12 kare, köşede saniye); tek kareyi yalnız ayrıntı gerekince aç. `kanit` o saniyenin kare dosyasının tam yolu (kare listesinden).
 
 ## Çıktı
 Görev dosyasındaki JSON biçimi: bulgular + E2 için profesyonel brif (bağlam, P0→P2, zaman damgası, ölçülebilir kabul ölçütü, dokunulmayacaklar).

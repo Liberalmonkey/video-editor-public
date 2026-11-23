@@ -12,6 +12,7 @@ import os
 import re
 import shutil
 import tempfile
+import time
 import uuid
 from pathlib import Path
 
@@ -56,7 +57,17 @@ def _atomik(hedef: Path, metin: str) -> None:
     hedef.parent.mkdir(parents=True, exist_ok=True)
     gecici = hedef.with_name(f".{hedef.name}.{uuid.uuid4().hex[:8]}.tmp")
     gecici.write_text(metin, encoding="utf-8")
-    os.replace(gecici, hedef)
+    # WHY: Windows'ta hedefi o an okuyan süreç varsa (Stüdyo durum.json ve kurgu.json'u yoklar) os.replace
+    # PermissionError verir; ekip akışı bu yüzden düşmesin, okuma bitene kadar kısa aralıkla yeniden denenir.
+    for deneme in range(40):
+        try:
+            os.replace(gecici, hedef)
+            return
+        except PermissionError:
+            if deneme == 39:
+                gecici.unlink(missing_ok=True)
+                raise
+            time.sleep(0.05)
 
 
 def yaz(work: Path, k: Kurgu, *, beklenen_rev: int | None = None) -> Kurgu:

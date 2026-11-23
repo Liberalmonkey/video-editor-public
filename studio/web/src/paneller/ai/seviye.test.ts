@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import type { MotorDurum } from "../../depo";
 import { motorSebebi } from "./MotorModel";
-import { grup, SEVIYE, SEVIYELER, seviyeOzet, slotAyari, slotlar, slotSirasi, type EkipAyar } from "./seviye";
+import { grup, HIZLI_OZET, SEVIYE, SEVIYELER, seviyeOzet, slotAyari, slotlar, slotSirasi, type EkipAyar } from "./seviye";
 
 test("seviye tablosu: low 2+1, medium 4+2, high 6+3, xhigh 8+4, max 10+5; her seviyede bir orkestratör", () => {
   expect(SEVIYELER.map((s) => [SEVIYE[s].editor, SEVIYE[s].kk])).toEqual([[2, 1], [4, 2], [6, 3], [8, 4], [10, 5]]);
@@ -26,4 +26,11 @@ test("kurulu olmayan ya da uyarılı motor sebebiyle görünür, hazır motor bo
   expect(motorSebebi({ ...hazir, kurulu: false, kurulum: "npm i" })).toContain("kurulu değil");
   expect(motorSebebi({ ...hazir, hata: "Model listesi boş; giriş yapıldı mı?" })).toContain("giriş");
   expect(motorSebebi(undefined)).toBe("taranıyor");
+});
+
+test("hızlı ön ayar low ekibini orkestratörsüz özetler (ADR 0054)", () => {
+  expect(HIZLI_OZET).toBe("2 editör · 1 kalite kontrol · orkestratörsüz");
+  const a: EkipAyar = { ad: "x", ekip_seviye: "max", motion: "yogun", ezme: {}, hizli: true,
+    gruplar: { orkestrator: { motor: "claude" }, editor: { motor: "claude" }, kk: { motor: "antigravity" } } };
+  expect(slotlar(a.hizli ? "low" : a.ekip_seviye).filter((s) => !(a.hizli && s === "O"))).toEqual(["E1", "E2", "K1"]);
 });

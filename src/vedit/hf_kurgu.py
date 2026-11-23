@@ -20,7 +20,6 @@ from pathlib import Path
 from . import hf, hf_grafik, motion, paths
 
 STUDIO = paths.ROOT / "studio"
-AYAR = paths.LIBRARY / "hf_motor.json"
 
 
 def _vite_node() -> list[str]:
@@ -138,7 +137,8 @@ def tema_css(tema: str | Path | None) -> str:
 
 def ayar() -> dict:
     try:
-        return json.loads(AYAR.read_text(encoding="utf-8"))
+        # Yol çağrı anında çözülür: modül yüklenirken bağlanınca kütüphane yolu değişse de (test, taşınmış kök) eskisi okunuyordu.
+        return json.loads((paths.LIBRARY / "hf_motor.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {"oto_hf": False}
 

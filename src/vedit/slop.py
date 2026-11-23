@@ -22,6 +22,8 @@ from . import ff
 
 KISA_SURE = 120.0     # bu süreye kadar Reels/UGC eşikleri
 OLCUM_FPS = 4
+OLAY_YOGUN_DAKIKA = 6  # dakikada en çok zoom/punch olayı; üstü OLAY_YOGUN (ekip_v3.oto_duzelt aynı eşiği kullanır)
+ZOOM_ROLLERI = ("zoom_in", "zoom_out", "punch_in")
 W, H = 96, 54
 DURGUN = 0.15         # kareler arası ortalama fark (0-255); altı "kıpırdamıyor"
 SUZULME = 2.0         # üstü artık yavaş kamera hareketi sayılmaz
@@ -204,7 +206,7 @@ def olay_analizi(spec: dict, sure: float) -> list[dict]:
     fps = float(spec.get("fps") or 30)
     olaylar = sorted(spec.get("olaylar", []), key=lambda o: olay_ani(o, fps))
     out = []
-    zoomlar = [olay_ani(o, fps) for o in olaylar if str(o.get("tur")) in ("zoom_in", "zoom_out", "punch_in")]
+    zoomlar = [olay_ani(o, fps) for o in olaylar if str(o.get("tur")) in ZOOM_ROLLERI]
     if len(zoomlar) >= 6:
         ara = np.diff(zoomlar)
         cv = float(np.std(ara) / max(np.mean(ara), 0.01))
@@ -215,7 +217,7 @@ def olay_analizi(spec: dict, sure: float) -> list[dict]:
         en = max(set(gecis), key=gecis.count)
         if gecis.count(en) / len(gecis) >= 0.8:
             out.append(bulgu("OLAY_TEK_TUR", "P2", None, None, f"{len(gecis)} geçişin {gecis.count(en)} tanesi '{en}'"))
-    if sure > 0 and len(zoomlar) / (sure / 60) > 6:
+    if sure > 0 and len(zoomlar) / (sure / 60) > OLAY_YOGUN_DAKIKA:
         out.append(bulgu("OLAY_YOGUN", "P1", None, None, f"dakikada {len(zoomlar) / (sure / 60):.1f} zoom"))
     return out
 

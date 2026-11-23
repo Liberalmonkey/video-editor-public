@@ -619,6 +619,16 @@ def kaizen(p: Proje, *, yaz: bool = True) -> str:
     enyavas = " · ".join(f"{k} {sum(v) / 60:.1f} dk" for k, v in sira[:3])
     satir = (f"- {dt.date.today().isoformat()} · {p.ad} · araç {toplam:.1f} dk · taslak {len(top.get('taslak', []))} · "
              f"final {len(top.get('final', []))} · en yavaş: {enyavas}")
+    # Ekip koşusu varsa en yavaş kapısı (ADR 0054): ai-edit'in içindeki darboğaz görünsün.
+    oz = p.work / "edit" / "ekip" / "ozet.json"
+    if oz.exists():
+        try:
+            ks = {k: v for k, v in (json.loads(oz.read_text(encoding="utf-8")).get("kapi_sure") or {}).items() if v}
+        except ValueError:
+            ks = {}
+        if ks:
+            k = max(ks, key=ks.get)
+            satir += f" · ekip en yavaş kapı: {k} {ks[k] / 60:.1f} dk"
     for k, v in sira:
         print(f"{k:12} {len(v):3}x  {sum(v) / 60:6.1f} dk")
     for k, sn in sorted(alt.items(), key=lambda kv: -kv[1]):

@@ -73,7 +73,7 @@
    "kaynak": "kullanici",
    "kanit": [],
    "durum": "aktif",
-   "tekrar": 1,
+   "tekrar": 2,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -88,7 +88,7 @@
    "kaynak": "kullanici",
    "kanit": [],
    "durum": "aktif",
-   "tekrar": 2,
+   "tekrar": 3,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -178,7 +178,7 @@
    "kaynak": "kullanici",
    "kanit": [],
    "durum": "aktif",
-   "tekrar": 3,
+   "tekrar": 5,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -193,7 +193,7 @@
    "kaynak": "kullanici",
    "kanit": [],
    "durum": "aktif",
-   "tekrar": 5,
+   "tekrar": 6,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -322,7 +322,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 1,
+   "tekrar": 2,
    "olusturma": "2026-11-05",
    "guncelleme": "2026-11-05"
   },
@@ -443,7 +443,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 3,
+   "tekrar": 5,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-21"
   },
@@ -465,7 +465,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 2,
+   "tekrar": 3,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -487,7 +487,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 1,
+   "tekrar": 3,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -509,7 +509,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 6,
+   "tekrar": 8,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -531,7 +531,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 1,
+   "tekrar": 2,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -553,7 +553,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 1,
+   "tekrar": 3,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -669,7 +669,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 5,
+   "tekrar": 7,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -801,7 +801,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 3,
+   "tekrar": 6,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -845,7 +845,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 1,
+   "tekrar": 4,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -911,7 +911,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 1,
+   "tekrar": 2,
    "olusturma": "2026-11-22",
    "guncelleme": "2026-11-22"
   },
@@ -936,6 +936,292 @@
    "tekrar": 1,
    "olusturma": "2026-11-22",
    "guncelleme": "2026-11-22"
+  },
+  {
+   "id": "K0049",
+   "metin": "YAPMA: hazır zoom efektinin otomatik sesini aynı 0.4 saniye içindeki başka bir rol sesinin üstüne bindirme.",
+   "neden": "olaylar.json'da 2.00 sn'de 'hata' rol sesi (0.6 sn) ile 2.02 sn'de v1yorum001'in hizli_zoom efektinin otomatik zoom_in sesi üst üste biniyor; iki ses arasında 0.02 sn var. 2.85 sn'deki gecis sesiyle b",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "ses",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/reel-video",
+     "zaman": 1.95,
+     "kare": "Projeler/outputs/instagram/reel-video/work/edit/ekip/qc/kontak.jpg",
+     "not": "olaylar.json'da 2.00 sn'de 'hata' rol sesi (0.6 sn) ile 2.02 sn'de v1yorum001'in hizli_zoom efektinin otomatik zoom_in sesi üst üste biniyor; iki ses arasında 0.02 sn var. 2.85 sn'deki gecis sesiyle birlikte 0.85 sn içinde üç ses çalıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 3,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0050",
+   "metin": "YAP: kullanıcı yumuşak geçiş istediğinde stil token'ının gecis listesinden kırbaç ve zoom kırbaç yerine sil ya da panjur seç.",
+   "neden": "v1yorum002 girişindeki zoom_kirbac geçişi karede ağır bulanıklık, koyu vinyet ve yaklaşık 1.5 kat ölçek üretiyor. Yüz kadrajı dolduruyor, saç üst kenara dayanıyor. Üstüne gecis_guclu/orta sesi çalıyor",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "renk",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/reel-video",
+     "zaman": 13.44,
+     "kare": "Projeler/outputs/instagram/reel-video/work/edit/ekip/qc/izle/opt_scene_007.jpg",
+     "not": "v1yorum002 girişindeki zoom_kirbac geçişi karede ağır bulanıklık, koyu vinyet ve yaklaşık 1.5 kat ölçek üretiyor. Yüz kadrajı dolduruyor, saç üst kenara dayanıyor. Üstüne gecis_guclu/orta sesi çalıyor. Kullanıcı 'yumuşak geçiş' istedi; bu ise sert bir kırbaç geçişi."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0051",
+   "metin": "YAPMA: aynı konuşan kafa kaynağında 0.3 saniyeden kısa boşluk atmak için kesim yapma; klipleri birleştir ya da kesimde belirgin ölçek değişimi kur.",
+   "neden": "v1yorum003 (kaynak 0.73–4.22) ile v1yorum003b (kaynak 4.32–9.05) aynı kaynaktan, aynı açıyla art arda geliyor ve arada yalnız 0.10 sn atılmış. Önceki klip zoom_in efektiyle 1.04 ölçekte bitiyor, sonra",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/reel-video",
+     "zaman": 29.9,
+     "kare": "Projeler/outputs/instagram/reel-video/work/edit/ekip/qc/izle/opt_scene_012.jpg",
+     "not": "v1yorum003 (kaynak 0.73–4.22) ile v1yorum003b (kaynak 4.32–9.05) aynı kaynaktan, aynı açıyla art arda geliyor ve arada yalnız 0.10 sn atılmış. Önceki klip zoom_in efektiyle 1.04 ölçekte bitiyor, sonraki 1.00'da başlıyor. Ortaya %4'lük geri zıplayan, kör bir jump cut çıkıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0052",
+   "metin": "YAP: çip ya da etiket metni kutuya sığmıyorsa kutuyu genişlet ya da daha kısa söz seç; metni üç noktayla kesme.",
+   "neden": "v2e2cip01 kart/cip 'KLİŞE REKLAM' 'KLİŞE REKL…' olarak kesilmiş. Ayrıca saat yakın çekiminde kadranın tam ortasına oturuyor ve ürünün (ARVELIOR kadranı) üstünü kapatıyor.",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/reel-video",
+     "zaman": 11.299,
+     "kare": "Projeler/outputs/instagram/reel-video/work/edit/ekip/qc/kontak.jpg",
+     "not": "v2e2cip01 kart/cip 'KLİŞE REKLAM' 'KLİŞE REKL…' olarak kesilmiş. Ayrıca saat yakın çekiminde kadranın tam ortasına oturuyor ve ürünün (ARVELIOR kadranı) üstünü kapatıyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0053",
+   "metin": "YAP: slayt ve kart giriş sesini bağlı grafiğin ilk görünür karesine ±1 kare içinde koy; grafiği olmayan kelimeye slayt sesi bağlama.",
+   "neden": "a2slayt001 'karşılaştırma kartı giriyor' notuyla 30.15 sn'de ('Çünkü' kelimesinde) çalıyor, ama o anda V3'e giren bir grafik yok. Kart (e3hikaye01) 32.19 sn'de sessiz giriyor. Ses de 30.10'daki jump c",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "ses",
+   "onem": "P2",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/reel-video",
+     "zaman": 30.15,
+     "kare": "Projeler/outputs/instagram/reel-video/work/edit/ekip/qc/izle/opt_scene_012.jpg",
+     "not": "a2slayt001 'karşılaştırma kartı giriyor' notuyla 30.15 sn'de ('Çünkü' kelimesinde) çalıyor, ama o anda V3'e giren bir grafik yok. Kart (e3hikaye01) 32.19 sn'de sessiz giriyor. Ses de 30.10'daki jump cut'ın üstüne düşüyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0054",
+   "metin": "YAPMA: her V1 klibinin girişine otomatik zoom veya punch koyup aşırı zoom yoğunluğu üretme.",
+   "neden": "olcum.json slop ölçümü P1 OLAY_YOGUN (dakikada 19.2 zoom) veriyor. kurgu.json'da 53.1 sn boyunca 13 V1 klibinin tamamında t=0.0 başlangıç hareketi dahil toplam 26 adet hazir zoom/punch (punch, zoom_in",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior",
+     "zaman": 0.0,
+     "kare": "Projeler/outputs/instagram/arvelior/work/edit/ekip/qc/izle/kare_0043.5.jpg",
+     "not": "olcum.json slop ölçümü P1 OLAY_YOGUN (dakikada 19.2 zoom) veriyor. kurgu.json'da 53.1 sn boyunca 13 V1 klibinin tamamında t=0.0 başlangıç hareketi dahil toplam 26 adet hazir zoom/punch (punch, zoom_in, odak_zoom) yer alıyor; sürekli kadraj pompalanması ve olaylar.json'da 17 otomatik zoom/punch sesi oluşuyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0055",
+   "metin": "YAPMA: konuşan kafa kliplerinde varsayılan ölçeği yüksek ve geri dönmeyen odak_zoom efektini kullanma.",
+   "neden": "efd7b787fd (13.65–23.50 sn, inputs_2_mp4) ve 1e8a4d5be7 (23.50–27.70 sn, inputs_2_2_mp4) kliplerinde sabit zoom 1.03 üstüne varsayılan ölçeği 1.4 ve geri_don=false olan odak_zoom ile 1.14 ölçekli punc",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "genel",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior",
+     "zaman": 16.35,
+     "kare": "Projeler/outputs/instagram/arvelior/work/edit/ekip/qc/izle/kare_0022.5.jpg",
+     "not": "efd7b787fd (13.65–23.50 sn, inputs_2_mp4) ve 1e8a4d5be7 (23.50–27.70 sn, inputs_2_2_mp4) kliplerinde sabit zoom 1.03 üstüne varsayılan ölçeği 1.4 ve geri_don=false olan odak_zoom ile 1.14 ölçekli punch uygulanmış. kare_0016.5.jpg, kare_0022.5.jpg ve kare_0027.0.jpg karelerinde konuşmacıların saçı, alnı ve kaşları kadrajın üst kenarından kesilmiş."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0056",
+   "metin": "YAPMA: aynı konuşmacının ardışık konuşan kafa planları arasında yüzü bölen dikey veya yatay sil geçişi koyma; düz kesim yap.",
+   "neden": "Aynı konuşan kafa sunucunun ardışık iki planı olan 5781b3f5f2 (3.3.mp4) ile 402bea166e (4.mp4) arasında gecis_giris={tur:'sil', sure:0.5, yon:'yukari'} uygulanmış. kare_0045.0.jpg karesinde önceki kli",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "teknik",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior",
+     "zaman": 44.9,
+     "kare": "Projeler/outputs/instagram/arvelior/work/edit/ekip/qc/izle/kare_0045.0.jpg",
+     "not": "Aynı konuşan kafa sunucunun ardışık iki planı olan 5781b3f5f2 (3.3.mp4) ile 402bea166e (4.mp4) arasında gecis_giris={tur:'sil', sure:0.5, yon:'yukari'} uygulanmış. kare_0045.0.jpg karesinde önceki klibin yakınlaştırılmış alnı yeni klibin başının üstünde asılı duran bölünmüş çift kafa görüntüsü oluşturuyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 3,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0057",
+   "metin": "YAPMA: elde gösterilen ürün veya odak nesnesi kadrajdayken tipografi kutusunu ürünün üstüne yerleştirme; temiz üst boşluğu seç.",
+   "neden": "g_e2_05 (tipografi/kayan-kelime, 'TASARIM', yer: 'oto') konuşmacının kameraya yaklaştırıp tanıttığı odak ürün olan saatin kadranını doğrudan kapatıyor ve gömülü altyazı bandının ('çok hoşuma gitti.') ",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P0",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior-hiz",
+     "zaman": 18.19,
+     "kare": "Projeler/outputs/instagram/arvelior-hiz/work/edit/ekip/qc/izle/kare_0019.5.jpg",
+     "not": "g_e2_05 (tipografi/kayan-kelime, 'TASARIM', yer: 'oto') konuşmacının kameraya yaklaştırıp tanıttığı odak ürün olan saatin kadranını doğrudan kapatıyor ve gömülü altyazı bandının ('çok hoşuma gitti.') hemen üstüne biniyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 2,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0058",
+   "metin": "YAPMA: ilk kelimesi 0.00 sn'de başlayan ve başında nefes boşluğu olmayan kliplerde giris değerini 0.00 üstüne çıkarıp ilk kelimeyi altyazıdan düşürme.",
+   "neden": "b68d84444e (inputs_3_mp4, bas 28.40 sn) klibinde ilk kelime 'Bugün' (kaynak 0.00–0.34 sn) iken giris: 0.08 verildiği için 'Bugün' altyazı eşlemesinden düşüyor; 28.5 sn karesinde görüntü araç içi çift ",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "grafik",
+   "onem": "P1",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior-hiz",
+     "zaman": 28.4,
+     "kare": "Projeler/outputs/instagram/arvelior-hiz/work/edit/ekip/qc/izle/kare_0028.5.jpg",
+     "not": "b68d84444e (inputs_3_mp4, bas 28.40 sn) klibinde ilk kelime 'Bugün' (kaynak 0.00–0.34 sn) iken giris: 0.08 verildiği için 'Bugün' altyazı eşlemesinden düşüyor; 28.5 sn karesinde görüntü araç içi çift sahnesine geçmiş olmasına rağmen önceki konuşmacının 'izlenir.' altyazısı ekranda kalıyor. Aynı biçimde e1514616bf (inputs_1_mp4, bas 0.00, giris: 0.08) klibinde ilk kelime 'Gerçek' (0.00–0.62 sn) de 0.0 sn açılış karesinden düşmüş."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0059",
+   "metin": "YAP: hareket hızı yavaşlatılmış stillerde metin giriş animasyonunu anahtar kelimeden yeterince kare önce başlat ki kelime söylenirken boş zemin kutusu değil okunur metin görünsün.",
+   "neden": "g_e2_03 (tipografi/kayan-kelime, 'ZAMANSIZ') 'zamansız' kelimesinin söylendiği 6.0 sn karesinde giriş animasyonu (sure_kat: 1.2) tamamlanmadığı için yalnızca metinsiz boş koyu bir dikdörtgen olarak gö",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior-hiz",
+     "zaman": 5.87,
+     "kare": "Projeler/outputs/instagram/arvelior-hiz/work/edit/ekip/qc/izle/kare_0006.0.jpg",
+     "not": "g_e2_03 (tipografi/kayan-kelime, 'ZAMANSIZ') 'zamansız' kelimesinin söylendiği 6.0 sn karesinde giriş animasyonu (sure_kat: 1.2) tamamlanmadığı için yalnızca metinsiz boş koyu bir dikdörtgen olarak görünüyor; ayrıca konuşmacının bardak tutan elinin hemen üstüne düşüyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0060",
+   "metin": "YAP: numaralı kademe etiketlerini tüm videoda aynı güvenli üst konumda ve aynı ölçekte sabitle; sahneden sahneye konum ve boyut zıplatma.",
+   "neden": "g_e2_04 (tipografi/bolum-baslik, '02 AZ İZLENİR', yer: 'oto') Instagram Reels üst güvenli alanının dışında (y ≈ %6, üst kenara ve konuşmacının saçına yapışık) duruyor; 13.5 sn'deki '01 İZLENMEZ' etike",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "grafik",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior-hiz",
+     "zaman": 25.5,
+     "kare": "Projeler/outputs/instagram/arvelior-hiz/work/edit/ekip/qc/izle/kare_0027.0.jpg",
+     "not": "g_e2_04 (tipografi/bolum-baslik, '02 AZ İZLENİR', yer: 'oto') Instagram Reels üst güvenli alanının dışında (y ≈ %6, üst kenara ve konuşmacının saçına yapışık) duruyor; 13.5 sn'deki '01 İZLENMEZ' etiketine (y ≈ %12) kıyasla hem konumu sağa kayıyor hem metin yüksekliği küçülerek 1080p'de ~20 px düzeyine (28 px sınırının altına) düşüyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0061",
+   "metin": "YAP: kapanışta izleyiciye doğrudan eylem çağrısı yapılan bölümde son 2–3 saniyeye seçili stilin token'larıyla uyumlu, yüz ve altyazıdan uzak bir CTA kartı ekle.",
+   "neden": "g_e2_08 47.50 sn'de bittikten sonra kapanışa (52.98 sn) kadar 5.48 sn boyunca tek konuşmacı planında hiçbir V2 grafiği yok ve konuşmacı açıkça eylem çağrısı ('yorumlara yazın. Ben de videosunu çekeyim",
+   "kapsam": "global",
+   "hedef_rol": "E2",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kk:K2",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior-hiz",
+     "zaman": 47.5,
+     "kare": "Projeler/outputs/instagram/arvelior-hiz/work/edit/ekip/qc/izle/kare_0051.0.jpg",
+     "not": "g_e2_08 47.50 sn'de bittikten sonra kapanışa (52.98 sn) kadar 5.48 sn boyunca tek konuşmacı planında hiçbir V2 grafiği yok ve konuşmacı açıkça eylem çağrısı ('yorumlara yazın. Ben de videosunu çekeyim.') yapmasına rağmen anlatı hiyerarşisinin kapanış çağrısı kartı (kart/cta-karti) eksik."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-23",
+   "guncelleme": "2026-11-23"
   }
  ]
 }

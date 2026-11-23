@@ -114,3 +114,27 @@ Arşiv: [[log.part1]] (2026-10-20 - 2026-11-03), [[log.part2]] (2026-11-03 - 202
 - Sorun: `vedit-hf-guncelle` görevi (Pazartesi 10:00) `instagram/reel-video` ekip koşusunun G3 taslak render'ı sürerken 0.9.80 → 0.9.84 sabitledi; render düştü, `durum.json` G3'te asılı kaldı.
 - `hf_guncel`: zamanlama Cuma 13:00 (`son_pencere`, `vakti_geldi`), Stüdyo zamanlayıcısı 10 dakikada bir `bir_tur`; `mesgul()` Stüdyo kuyruğunu ve `vedit`/ffmpeg/HyperFrames/Remotion süreçlerini tarar, iş varsa erteler; sabitleme öncesi `_bosta_bekle`, sırasında `kuruluyor.kilit` (kuyruk bekler), `deneme.kilit` çift denemeyi önler. CLI `--bekle DAKIKA`; görev betiği Cuma 13:00 + `--bekle 240` ile yeniden kaydedildi.
 - `ekip_v3.calistir`: çökünce açık kapıyı `kaldi` yapar, `hata` ve `asama` yazar. Test `tests/test_hf_guncel.py`. Sayfa: [[0051-uctan-uca-hyperframes]].
+
+## [2026-11-23] code | G5 kural adayı slotu rol sınıfına çevirir
+- Sorun: `instagram/reel-video` ekip koşusu (medium) G5'te düştü: `ValidationError ... hedef_rol Input should be 'E1', 'E2', 'E3' or 'hepsi' [input_value='E4']`. QC bulgusunun `hedef`i slottu (medium'da ses-stil editörü E4), `kural.qc_isle` onu doğrudan `Kural.hedef_rol`'a yazıyordu; depo rol sınıfı (E1-E3) bekler. Low'da slotlar E1-E2 olduğu için görünmüyordu; test medium'u ve E3 üstü hedefi hiç denemiyordu.
+- `ekip_v3`: `Atama.kural_rolu(slot, katman)` ve ortak `bulgu_sinifi`; G5 adayı rol sınıfıyla depoya işler, bulgunun slot hedefi G6 için değişmez. `kural.qc_isle`: geçersiz hedef `hepsi` olur, tek aday triyajı düşürmez.
+- Test `tests/test_ekip.py`: seviyeli akışa `medium` ve ses-stil slotuna giden ikinci kural adayı; `test_slot_kural_rolu_ve_qc_isle`. Sayfa: [[0053-seviyeli-ekip-orkestrator]].
+
+## [2026-11-23] code | Ekip max seviye dayanıklılığı
+- Kayıtlı koşu çıktıları şemadan yeniden geçirildi: reel-video G2'de E3'ün kapı düzeltmesi `pano.0.metin:string_too_long` ile bütünüyle reddedilmiş, kapı yine "düzeltilen: E3" yazmıştı.
+- `ekip_sema.Kirp`: serbest metin kırpılır, reddedilmez. `ekip.bulgu_dogrula` bulgu bulgu doğrular ve kimliği slota göre numaralar. G2 notu gerçek düzeltmeyi sayar. G5 triyajı çözümlenemezse aday depoya girmez. `hf_ad_ayir` paralel grafik editörlerinin kompozisyon adını ayırır. Pano kilitli ve atomik. `ajan_eszamanlilik` boş belleğe göre. `kurgu._atomik` Windows'ta `PermissionError`'da yeniden dener.
+- `hf_kurgu.ayar` `hf_motor.json` yolunu çağrı anında çözer; `test_hf_onizleme_native_ve_sahne` tam pakette sıraya bağlı düşüyordu.
+- Test `tests/test_ekip.py` (`test_max_dayaniklilik`, `test_triyaj_cozumlenemezse_aday_islenmez`, bulgu doğrulama). Sayfa: [[0053-seviyeli-ekip-orkestrator]].
+
+## [2026-11-23] code | Ekip birleştirmesinde iz çakışması ve ekip rozeti
+- Sorun: `instagram/reel-video` ekip koşusu (medium) G3'te düştü: `V3: e3hikaye01 ile e3bolum03 çakışıyor (34.830 sn)`. E1'in kesimi sonrası çapalar yeniden eşlenince E3'ün iki grafiği 0,11 sn üst üste bindi. Birleşen kurgu denetimden geçmeden diske yazıldığı için Stüdyo önizlemesi ve sonraki her edit aynı hatayla düşüyordu.
+- `ekip_v3.iz_cakisma_coz`: `birlestir` sonunda aynı izdeki örtüşmeyi çözer (küçükse önceki klip kısalır, büyükse sonraki boş ya da yeni ize taşınır, sahibine bulgu). G3 denetimi geçmeyen birleşimi yazmaz; G6 bozuk düzeltmeyi düşürür. `aiedit._kurgu_hazirla` diskteki eski çakışmayı da onarır; reel-video kurgusu rev 101'de temizlendi.
+- Üst rozet ekip koşusunda tek ajan seçimini (claude) gösteriyordu. İş kuyruğu ekip işine `motor: ekip` yazar; rozet çalışan slotları ekip durumundan okur. Slot kartı yedekte gerçek yedek motoru gösterir.
+- Test `tests/test_ekip.py::test_iz_cakisma_coz_kirpar_ya_da_tasir`. Sayfa: [[0053-seviyeli-ekip-orkestrator]].
+
+## [2026-11-23] code | Hızlı edit: yalın ajan çağrısı, QC paftası, koşullu orkestratör ve render
+- Ölçüm (instagram/arvelior, medium): eski koşu 20,8 dk. Her ajan 269 araç, 15 MCP sunucusu, CLAUDE.md ve hook yüklüyordu; QC 53 kareyi tek tek okuyordu; G6 render'ı kullanılmıyordu.
+- `motorlar.yalin_komut` + `ekip.ajan(metin=…)`: istem stdin'den, rol sistem isteminden, araç ve ayar kaynağı yok. Editör çağrısı 1 tur, ~12k token. `ekip.pafta_yap`: QC 12'lik paftalardan okur; metin girdileri ve `kurgu_ozeti` istemde.
+- G2'de O yalnız ihlal varsa; G6'dan sonra render yalnız ikinci QC gerekince. `oto_duzelt` zoom yoğunluğunu ve kısa grafik süresini render'dan önce düzeltir. Bozuk iç içe alan öğeyi düşürmez.
+- Yeni koşu (aynı istek, kopya proje): medium 13,4 dk. `--hizli` (low, orkestratörsüz) 15,3 dk: iki editöre yığılan iş G1 ve G6'yı uzattı. En büyük kalem hâlâ QC (agy, ~5 dk).
+- Sayfalar: [[0054-hizli-edit]], [[0053-seviyeli-ekip-orkestrator]].

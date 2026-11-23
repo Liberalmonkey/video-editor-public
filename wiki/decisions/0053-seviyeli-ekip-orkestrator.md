@@ -4,7 +4,7 @@ title: "Seviyeli ekip ve orkestratör: 2-10 editör, 1-5 kalite kontrol, kapıl�
 status: accepted
 tags: [adr, ai-edit, ajan, ekip, orkestrator, kural, studio]
 created: 2026-11-22
-updated: 2026-11-22
+updated: 2026-11-23
 sources: ["[[0048-ekip-motoru-v2]]", "[[0047-kural-deposu]]", "[[0044-ekip-motoru]]"]
 ---
 
@@ -52,6 +52,7 @@ Seviye yalnız ajan sayısını belirler. Her seviyede ayrıca bir orkestratör 
 - Sahibi katman sınıfı ve klibin taban zaman çizelgesindeki başlangıcı belirler.
 - Başka katmana yazan yama düşer. Aralık dışına eklenen öğe ise tek başına düşer.
 - Kural deposundaki `hedef_rol` rol sınıfı olarak kalır: E1 kurgu, E2 grafik, E3 ses ve stil.
+- Slot ve rol sınıfı ayrıdır. QC bulgusunun `hedef`i slottur (E1..E10) ve G6 düzeltmesine gider. Depoya giden kural adayı `Atama.kural_rolu` ile rol sınıfına çevrilir: slot tek sınıf taşıyorsa o, birden çok sınıf taşıyorsa bulgunun katman sınıfı, yine belirsizse `hepsi`. `kural.qc_isle` geçersiz rolü `hepsi` yapar.
 
 Varsayılan dağıtım (orkestratörün planı geçersizse):
 
@@ -96,6 +97,23 @@ Her kapı bir bariyerdir: paralel işler orada buluşur. Durum `work/edit/ekip/d
   - Altta son edit özeti ve geri al.
 - **Sohbet sekmesi:** motor, model, mod, günlük ve mesaj kutusu.
 
+### Dayanıklılık (2026-11-23)
+Büyük seviyede (max: 10 editör, 5 kalite kontrol) ajan çıktısı daha çok, iş daha paraleldir. Şu kurallar o yüzden geçerlidir:
+- Serbest metin (pano mesajı, rapor, brif, odak, gerekçe, red nedeni, not) sınırı aşarsa kırpılır, çıktı reddedilmez (`ekip_sema.Kirp`). reel-video koşusunda E3'ün kapı düzeltmesi tek bir 318 karakterlik pano mesajı yüzünden bütünüyle düşmüştü.
+- Kalite kontrol çıktısı bulgu bulgu doğrulanır. Bozuk bulgu tek başına düşer; bilinmeyen alan atılır; kalıba uymayan `hedef`, `kural_id`, `kural_adayi` boşaltılır; kimlik `<slot>-NNN` değilse ya da tekrar ediyorsa yeniden numaralanır.
+- G2 notu yalnız düzeltmesi gerçekten gelen editörü "düzeltilen" sayar; gelmeyeni ayrıca yazar.
+- G5 triyajı çözümlenemezse kural adayı depoya işlenmez (onay orkestratörün).
+- Birden çok grafik editörü varken yeni HyperFrames kompozisyon adına slot eki konur (`baslik-e3`); paralel editörler birbirinin dosyasını ezmez.
+- Pano kilitli ve atomik yazılır. `kurgu._atomik` Windows'ta hedefi o an okuyan süreç varken kısa aralıkla yeniden dener (Stüdyo `durum.json`'u yoklar).
+- Ajan eşzamanlılığı: açık `eszamanlilik` kazanır; yoksa editör sayısı, boş belleğe sığacak kadar (ajan başına 0,8 GB, 2 GB pay, en az 2).
+
+### Hız (2026-11-23)
+[[0054-hizli-edit]] bu akışı hızlandırır, kapıların anlamını değiştirmez:
+- G2'de O yalnız ihlal, sahipsiz uyarı ya da yanıtsız editör varsa çağrılır.
+- G6'dan sonra render yalnız ikinci QC gerekirse alınır.
+- QC kareleri paftadan okur.
+- `--hizli` O'yu hiç çağırmaz.
+
 ## Sonuçlar
 - CLI: `vedit ai-edit <proje> --ekip [--seviye low|medium|high|xhigh|max] [--tekrar-denetle]`. `--ekip-v1`, `--bolus` ve `--tur` kaldırıldı.
 - Rol dosyaları:
@@ -112,8 +130,7 @@ Her kapı bir bariyerdir: paralel işler orada buluşur. Durum `work/edit/ekip/d
   - Bulgu dilim sahibine gider.
   - Sekiz kapının hepsi geçer.
 
-> [!question] Çıkarım
-> Kurgu kesimi değiştikten sonra dilim sınırları yeniden eşlenmez. G6'da sahiplik güncel zaman çizelgesinden hesaplanır, kartın aralık metni ise tabanı gösterir. Gerçek koşuda sorun çıkarsa sınırlar `capa.sekans_zamani` ile taşınmalı.
+- Kurgu kesimi sonrası çapalar yeniden eşlenince aynı izde klipler üst üste binebilir (reel-video, 2026-11-23: G3 düştü, bozuk kurgu diske yazıldı). `iz_cakisma_coz` birleştirmenin sonunda çalışır: 0,6 sn'ye kadar örtüşmede önceki klip kısalır, fazlasında sonraki boş ya da yeni ize taşınır ve sahibine bulgu gider. Denetimi geçmeyen birleşim diske yazılmaz, G6'da düzeltme düşer ve G3 sürümü kalır. Ekip koşusunda üst rozet çalışan slotları ve gerçek motorlarını gösterir.
 
 ## Ölçüm
 `instagram/1`, seviye `low`, ön ayar `karisik`, istek "hızlı tempolu, sade grafik", 2026-11-22:

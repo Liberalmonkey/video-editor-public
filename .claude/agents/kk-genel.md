@@ -13,7 +13,7 @@ Tek kişilik kalite kontrolsün (`denetim`, `usta-editor`, `motion-design`, `sou
 3. Ses ve okunurluk: ölçüm dosyasındaki loudness ve tepe; 0,4 sn'de birden çok ses; müzik konuşmayı örtüyor mu; altyazı okunuyor mu.
 
 ## Kanıt
-Kusuru yazmadan önce o saniyenin karesini aç; `kanit` açtığın dosyanın tam yolu. Ses bulgusu ölçüm dosyasındaki bir sayıya dayanır. Görmediğin ve ölçmediğin şeyi yazma.
+Kusuru önce paftada gör (her pafta 12 kare, köşede saniye); tek kareyi yalnız ayrıntı gerekince aç. `kanit` o saniyenin kare dosyasının tam yolu (kare listesinden). Ses bulgusu ölçüm dosyasındaki bir sayıya dayanır. Görmediğin ve ölçmediğin şeyi yazma.
 
 ## Çıktı
 Görev dosyasındaki JSON biçimi: bulgular + brif. P0 yayına giremez, P1 düzeltilmeli, P2 küçük iyileştirme. Bulgu sayısını şişirme: en ağır on bulgu yeter.

@@ -81,7 +81,7 @@ export const EditSekmesi: React.FC = () => {
   const tekGunluk = !ekipModu && sonEdit ? gunlukler[sonEdit.id] ?? [] : [];
   useEffect(() => { const k = gunlukKutu.current; if (k) k.scrollTop = k.scrollHeight; }, [tekGunluk.length]);
 
-  const eksik = useMemo(() => (ayar ? slotlar(ayar.ekip_seviye).filter((s) => !ajanDurum?.[slotAyari(ayar, s).motor]?.kurulu) : []), [ayar, ajanDurum]);
+  const eksik = useMemo(() => (ayar ? slotlar(ayar.hizli ? "low" : ayar.ekip_seviye).filter((s) => !(ayar.hizli && s === "O") && !ajanDurum?.[slotAyari(ayar, s).motor]?.kurulu) : []), [ayar, ajanDurum]);
   const hazir = ekipModu ? !!ayar && !eksik.length : !!motor?.kurulu;
   const neden = !aktif ? "Önce bir proje aç" : ekipModu ? (eksik.length ? `Kurulu olmayan motor: ${eksik.join(", ")}` : "")
     : motor?.kurulu ? "" : `${motor?.ad ?? ajan.motor} kurulu değil`;
@@ -157,7 +157,8 @@ export const EditSekmesi: React.FC = () => {
           {!ekipModu && <MotorSatiri />}
           {ekipModu && ayar && (
             <>
-              <SeviyeSecici deger={ayar.ekip_seviye} sec={(s: Seviye) => setAyar({ ...ayar, ekip_seviye: s })} kilitli={!!calisan} />
+              <SeviyeSecici deger={ayar.ekip_seviye} sec={(s: Seviye) => setAyar({ ...ayar, ekip_seviye: s })} kilitli={!!calisan}
+                hizli={!!ayar.hizli} hizliSec={(h) => setAyar({ ...ayar, hizli: h })} />
               <details className="ai-cekmece">
                 <summary><Settings2 size={13} /> Ekip ayarları <span className="ipucu">modeller, yedek, ön ayar{ayar.ad ? ` · ${ayar.ad}` : ""}</span></summary>
                 <EkipAyarlari ayar={ayar} setAyar={setAyar} durum={ajanDurum} onayarlar={onayarlar} varsayilan={varsayilan} projeVar={!!aktif}

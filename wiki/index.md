@@ -69,6 +69,7 @@ Format: `- [[sayfa]] — tek satır özet`
 - [[0027-kapak-sayfasi]] — Kapak sayfası: YouTube ve Instagram, Antigravity ile 1-5 aday, iki platform skill'i (accepted, 2026-11-09)
 - [[0052-kapak-is-akisi-v2]] — Kapak v2: video seç, fikri geliştir, agy modeli, bölgesel görsel düzeltme, master prompt, dış görsel (accepted, 2026-11-22)
 - [[0053-seviyeli-ekip-orkestrator]] — seviyeli ekip (low 2+1 … max 10+5), orkestratör, kapılı paralel akış, kural uyumu ve kural işleme güvencesi, sade AI paneli (accepted, 2026-11-22)
+- [[0054-hizli-edit]] — yalın ajan çağrısı, pafta ile QC, koşullu orkestratör ve render, deterministik ön düzeltme, `--hizli` ön ayarı (accepted, 2026-11-23)
 - [[0026-arayuzde-ajan]] — Video Stüdyo AI paneli: Claude Code ya da Antigravity, model seçimi arayüzde (accepted, 2026-11-08)
 - [[0023-coklu-ajan]] — Antigravity CLI ve Codex kopyaları tek kaynaktan üretilir (accepted, 2026-11-05)
 - [[0022-av-ayirma-metre-yatay]] — Görüntü ve sesi ayırma, canlı metre, 16:9 sahne şablonları (accepted, 2026-11-05)
