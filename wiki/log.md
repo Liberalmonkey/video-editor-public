@@ -11,101 +11,7 @@ updated: 2026-10-20
 Sadece sona ekleme yapılır. Başlık formatı: `## [YYYY-MM-DD] <işlem> | <başlık>`
 Son girdiler: `grep "^## \[" wiki/log.md | tail -5`
 Bölünme: dosya 150 satırı aşınca en eski girdiler `log.partN.md` olarak arşivlenir, içerik eksilmez. Tüm girdiler: `grep -h "^## \[" wiki/log.part*.md wiki/log.md`
-Arşiv: [[log.part1]] (2026-10-20 - 2026-11-03), [[log.part2]] (2026-11-03 - 2026-11-05), [[log.part3]] (2026-11-08 - 2026-11-12), [[log.part4]] (2026-11-12), [[log.part5]] (2026-11-13 - 2026-11-15), [[log.part6]] (2026-11-15 - 2026-11-17)
-
-## [2026-11-18] code | Stil silme, hazır stil kataloğu, videoya göre motion teması
-- Stil panelinde çöp kutusu: paket, referanslar ve projedeki seçim birlikte silinir (`stil.sil`, `DELETE /api/stil/{s}/{ad}`). [[0042-stil-katalogu-ve-video-temasi]]
-- "Hazır stiller" sekmesi: OpenMontage, huashu-art-motion, bang-motion ve tema kütüphanesinden 31 stil (anime, çizgi film, modern motion, editoryal, kurumsal, sinematik, retro, sanat akımı); `library/stiller/katalog.json`, `vedit stil-katalog liste|kur|ekle`.
-- Turuncu kalktı: sabit motion klipleri render anında etkin temayla yeniden üretilir; tema sırası açık tema > stil > `vedit tema-cikar` proje teması > varsayilan. Açık turuncu `turuncu` teması.
-- Doğrulandı: pytest (yeni `test_tema`, `test_stil_katalog`), arayüz tip denetimi, üç klip iki temada render edilip karede renk değişimi görüldü.
-
-## [2026-11-19] code | Stile bağlı tema token'ları (ADR 0043)
-- [[0043-stile-bagli-tema-tokenlari]]: katalog kartı tek kaynak; `tema_token.py` 31 stil için CSS + JSON yazar (renk, font, şekil, hareket, altyazı), kontrast ölçülür. `piksel-8bit` kendi teması (Pixelify Sans, VT323 rakam, köşe 0, sert gölge, 8 fps adım, piksel raster); `editoryal-acik` kanonik ad.
-- Bağlanan yollar: `MotionMetin.tsx`, `Kurgu.tsx`, `FizikSahne.tsx`, SplitReel (`temaUygula`), motion HTML (yedek renk ve Montserrat kalktı), panolar (`vedit pano --tema`), Stüdyo önizlemesi. Paketten tema: `paket-ugc-ornek-marka`.
-- Altyazı: stil seçiliyse stilin token'ı, değilse ADR 0014 (ADR 0014'e not). `kurgu-denetle` STIL_DISI_RENK; ai-edit klip rengi yazdırmaz.
-- Doğrulandı: `tests/test_tema_token.py`, `tests/test_sabit_renk.py`, tüm pytest, arayüz tip denetimi; üç şablon iki stilde render edilip karede karşılaştırıldı.
-
-
-## [2026-11-19] code | Ekip motoru, ikonlar, motion denetimi (ADR 0044)
-- [[0044-ekip-motoru]]: `vedit ai-edit --ekip`; E1 kesim önce, E2 grafik ve E3 ses/stil paralel, K1-K3 salt okunur denetler, P0/P1 kalmayınca durur; yanıt vermeyen denetçinin bulgusu açık kalır. Stüdyo AI panelinde Ekip modu (6 slot, ön ayar, canlı durum, hepsini durdur).
-- İkonlar arka şekilsiz yeniden çizildi (`tests/test_ikon_alfa.py`); `motion-denetci` (agy, 3 paralel görev) 114 kaydı denetledi: 14 P0 ve 10 P1 düzeltildi, 6 P1 açık (`work/agy/motion-denetim/`). Stil kartları `vedit stil-katalog kart`.
-- `instagram/1` ekiple iki stilde editlendi: `piksel-8bit` 3 tur, 15 bulgu kapandı, 2 P1 açık; `temiz-kurumsal` 3 tur, kota bitince (agy 429, Claude 5 saat sınırı) K2/K3 son turlarda çalışmadı. Karşılaştırma `work/edit/karsilastirma-piksel-vs-temiz.jpg`.
-
-## [2026-11-20] code | Native motion, varlık içe aktarma, kural deposu, ekip motoru v2 (ADR 0045-0049)
-- [[0045-native-motion]]: 55 native Remotion bileşeni tema token'ına bağlı. Native karşılığı onaylanan HTML kayıtları `library/motion/arsiv/`'e taşındı (Stüdyo Arşiv sekmesi), AI edit onları seçmez, eski kurgular render olur. [[0046-dis-varlik-ve-lisans]]: `vedit motion ice-al`, lisans zorunlu. [[0047-kural-deposu]]: `library/kurallar/kurallar.json`, Kurallar sayfası, mezar taşı. [[0049-yapim-ekibi]]: yapım ekibi kartları.
-- [[0048-ekip-motoru-v2]]: sözleşme, paralel E1-E3, deterministik birleştirme, tek QC, tek düzeltme. `instagram/1` iki stilde yalnız native setle yeniden editlendi. Token v1'e göre %50 (`temiz-kurumsal`) ve %70 (`piksel-8bit`) az. Duvar saati 7836 sn yerine 1108 sn, 5481 sn yerine 849 sn.
-- Ölçüm koşularında bulunan birleştirme kusurları kapatıldı. Tek bozuk öğe artık bütün katmanı düşürmüyor. `bas` ve `sure` çapadan ya da meta'dan geliyor. Sekans V1 ile bitiyor. İkon başladığı çekimi aşmıyor. Sözleşme kelime dizinlerini taşıyor. Native yerleşim klip boyunca görünen yüzlere bakıyor.
-- Açık bulgu: yakın planda konfeti yüze biniyor (`temiz-kurumsal` 36 sn).
-
-## [2026-11-22] decision | HyperFrames birincil motor (ADR 0050)
-- [[0050-hyperframes-birincil-motor]]: kullanıcı karma geçişi seçti. Yeni grafik, animasyon ve sahne HyperFrames kompozisyonu; timeline ve gerçek çekim birleştirmesi Remotion'da kalır.
-- Dağıtım izni olmayan üçüncü taraf sanat yönetimi skill'i ve bütün izleri kullanıcı kararıyla silindi (log ve `raw/` dahil); yerine kendi `sanat-yonetimi` skill'imiz.
-
-## [2026-11-22] code | HyperFrames 0.9.77, hf klibi, Stüdyo hızlı açılış
-- `hyperframes` 0.9.77, upstream `hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `remotion-to-hyperframes` skill'leri; eski parçalı set silindi. Telemetri proje env'inde kapalı.
-- Yeni: `src/vedit/hf_grafik.py`, `vedit hf liste|kur`, klipte `hf: {ad, param, tema}`, `library/motion/hf/SOZLESME.md`, `library/motion/hf/alt-bant/`. Test: `tests/test_hf_grafik.py`. Saydam webm, değişken ve Türkçe glif render karesinde doğrulandı.
-- Stüdyo: `src/vedit/studio/baslat.py` (erken soket, pencere hemen), `src/vedit/tembel.py`, tek Python süreçli `studio.bat`, tembel paneller ve kütüphane parçaları, `ff.probe_ob`. Sunucu ilk isteğe yaklaşık 0,9 sn'de yanıt veriyor; soğuk açılış ölçülmedi.
-
-## [2026-11-22] setup | HyperFrames 0.9.78
-- `vedit hf-guncelle`: duman testi geçti, 0.9.77 → 0.9.78. Rapor `work/hf-aday/0.9.78/rapor.md`.
-
-## [2026-11-22] decision | Uçtan uca HyperFrames (ADR 0051)
-- [[0051-uctan-uca-hyperframes]]: kullanıcı edit, motion ve stilin tamamen HyperFrames'e geçmesini, Remotion'un son çare kalmasını ve güncellemelerin otomatik + duman testiyle alınmasını istedi; geçiş çift motorlu ve aşamalı.
-
-## [2026-11-22] code | HyperFrames güncelleme sistemi ve derleyici iskeleti
-- `vedit hf-guncelle` (`src/vedit/hf_guncel.py`), `tests/hf_duman/`, `/api/hf/durum`, Stüdyo `HF` rozeti, `scripts/hf_guncelle_gorev.ps1`. İlk canlı koşu 0.9.77 → 0.9.78, duman farkı 0,0.
-- `studio/hf/derle.ts`, `calisma.ts`, `cli.ts`, `zaman.ts`; `src/vedit/hf_kurgu.py` motor seçimi; kurguda `motor` alanı; taslak, final ve parçalı render seçimle. Test: `studio/hf/derle.test.ts`, `tests/test_hf_guncel.py`.
-- `instagram/1` 9-14 sn: HyperFrames ve Remotion kareleri aynı; hız kapısı kapalı (5 sn için 78 sn).
-
-## [2026-11-22] code | HyperFrames hız kapısı, altyazı ve orta noktalı geçişler (ADR 0051)
-- Derleyiciye `olcek` (taslak yarım ölçek) ve `pencere` (aralık ve parça render'ında yalnız pencereye değen klipler). Tam taslak 132 sn (Remotion 101), 5 sn aralık 87 sn'den 34 sn'ye; `library/hf_motor.json` `oto_hf: true`.
-- `studio/hf/altyazi.ts` (ADR 0014/0043) ve `studio/hf/gecis.ts` (12 orta noktalı geçiş). `instagram/1` karelerinde iki motor eşleşti. Testler `studio/hf/derle.test.ts`.
-
-## [2026-11-22] code | HyperFrames React adası: metin grafikleri ve sahneler (ADR 0051)
-- `studio/hf/ada.tsx` (ayrı paket `hf/ada.js`, yalnız ada varsa yüklenir) ve `studio/hf/remotion-taklit.tsx`: `MotionMetin` türleri ve SplitReel sahneleri aynı React bileşenleriyle, Remotion'un kare bağlamı taklit edilerek her karede `flushSync` ile çizilir. Saf yardımcılar gerçek `remotion` paketinden.
-- Bölünmüş düzen: `layoutP` (`studio/hf/zaman.ts`), konuşmacı paneli, altyazı konumu (`altyaziKonum`). `desteklenmeyen` listesinden metin, görsel vurgu ve sahneler çıktı; fizik ve karakter kaldı.
-- `instagram/reel-video` motoru artık HyperFrames. 0-4,6 sn ve sentetik sahne testinde (stat bölünmüş, text, hook) kareler Remotion'la aynı; video karesi en çok bir kaynak karesi (24 fps kaynak) farklı.
-
-## [2026-11-22] code | Native motion bileşenleri HyperFrames'te (ADR 0051)
-- 60 native bileşen `library/motion/hf/<aile>-<ad>/sahne.html` olarak taşındı; çekirdek `studio/hf/native/cekirdek.ts` (`window.HFN`), `akisHesapla` (`studio/remotion/motion/cekirdek/zaman.ts`). Derleyici yerleşimi seçip sahneyi alt kompozisyon olarak bağlar; `desteklenmeyen` yalnız taşınmamış bileşeni listeler.
-- Doğrulama aracı `scripts/hf_native_karsilastir.py` (gruplu, sıralı, kalıcı sonuç, `--eksik`, `--onayla`); 60/60 geçti. Testler `tests/test_hf_native.py`, `studio/hf/derle.test.ts`.
-- `instagram/1` motoru HyperFrames. agy betiğine kota/limit yedeği eklendi (Neon, sonra Sonnet 5.5).
-
-## [2026-11-22] code | Stüdyo önizlemesi HyperFrames oynatıcısında (ADR 0051)
-- Program monitörü `<hyperframes-player>`; derleyici tarayıcıda (`studio/web/src/zaman/hfOnizleme.ts`), oynatıcı soyutlaması motor bağımsız (`zaman/oynatici.ts`), motor rozeti. Paketler `studio/hf/paketle.ts` (render ve `npm run build` ortak).
-- Sunucu: `/api/hf/onizleme`, `/hfs/...` sahne kopyası, önizleme `tema.css`, kurgu yanıtında yüz bölgeleri. `ses.kf` HyperFrames ses zarfıyla. React adasında SplitReel font yükleyicisi taklitle değişti (404 veriyordu).
-- Doğrulama: instagram/1 ve reel-video Stüdyo'da HyperFrames'le; oynatma, kare adımı, yeniden derlemede konum korunması, yerleşim render'la aynı. Testler `tests/test_studio_kurgu_api.py`, `studio/hf/derle.test.ts`.
-
-## [2026-11-22] code | Motion ve stil bölümleri HyperFrames'te (ADR 0051)
-- Motion kayıtları (`library/motion/custom`) `vedit hf_motion` ile üretilir: kayıt HTML'i değişmeden HyperFrames projesine sarılır, CSS animasyonları WAAPI'ye çevrilip tek sürücüyle zamanlanır (adımlı zaman, `son_tam`, piksel stil korunur). 35 etkin kayıt Playwright çıktısıyla birebir (`scripts/hf_motion_karsilastir.py`, `work/hf-motion/sonuc.json`).
-- `vedit motion kontak` HyperFrames sahne bağlamaları ve `hyperframes snapshot` ile (`studio/hf/kontak.ts`); Galeri tema kartı ve stil kataloğu önizlemeleri HyperFrames'ten. Tema kartının düzeni kapsayıcıya taşındı.
-- `tema-cikar` tam token yazar (JSON + `css_metni`); eskiden 5 renk yazıyor, öteki değişkenler turuncu yedeğe düşüyordu. motion-tasarimci, E2 ve ai-edit yeni grafiği HyperFrames kompozisyonu olarak ister.
-- Bulunan tuzaklar: HyperFrames `CSSAnimation`'ı kendi saatiyle sürer; `getKeyframes()` örtük uç kareyi açık kareye çevirir; `"İ".lower()` iki karakterdir.
-
-## [2026-11-22] code | Fizik ve karakter ön render; uçtan uca HyperFrames belgeleri (ADR 0051)
-- `hf_kurgu.on_render`: fizik/karakter klibi Remotion'da saydam webm'e alınıp HyperFrames'e video klibi olarak gömülür (önbellekli). Stüdyo önizlemesi bu projelerde Remotion. Test `studio/hf/derle.test.ts`.
-- Göreli çıktı yolu hatası: `hf.render`, `hf.render_saydam` ve `hizli._remotion` yolları mutlak yapar (araçlar kendi klasöründe çalışıyordu).
-- CLAUDE.md, `uretim-hatti`, `sahne-motoru`, `motion-design`, motion-tasarimci, motion-gelistirici, E2 ve ai-edit güncellendi.
-
-## [2026-11-22] setup | HyperFrames 0.9.80
-- `vedit hf-guncelle`: duman testi geçti, 0.9.78 → 0.9.80. Rapor `work/hf-aday/0.9.80/rapor.md`.
-
-## [2026-11-22] code | Kapak iş akışı v2 (ADR 0052)
-- Stüdyo Kapak alanı 5 adım oldu: Video, Fikir ve prompt, Üret, Düzelt, Master prompt ve teslim (`studio/web/src/paneller/kapak/`).
-- `kapak_prompt.py`: yapılı brief, agy zemin prompt'u, altı platform için yazılı ve boş zemin master prompt'u. `kapak.py`: video seçimi, elle kare, yüz ve stil referansı, `gelistir`, `gorsel_duzelt` (kırmızı kutu ve geri yapıştırma), `ice_al`, `master`; teslimde master prompt dosyası.
-- `gorsel.agy` model, efor ve zaman aşımı alır; `gorsel.kota` görsel modelini ve kota açılışını loglardan okur. agy görsel modeli seçtirmez (`gemini-3.1-flash-image`).
-- Testler: `test_kapak_prompt.py`, `test_kapak_v2.py`, iş kuyruğu ve API uçları, `yardimci.test.ts`. Sayfalar: [[0052-kapak-is-akisi-v2]], [[2026-11-22-kapak-arastirmasi-v2]], [[0027-kapak-sayfasi]], [[video-studyo]].
-
-## [2026-11-22] code | Seviyeli ekip, orkestratör ve sade AI paneli (ADR 0053)
-- Ekip v3 (`ekip_v3.py`): seviye ajan sayısını belirler (low 2+1 … max 10+5), orkestratör kartları dağıtır, kapılar G0-G7 paralel işi bağlar. Kural kapısı `kural_uyum`'u ve deterministik denetimi ölçer, triyaj QC kural adayını depoya işleyip doğrular.
-- Eski turlu motor (`--ekip-v1`), 6 slot şeması, Bölüş ve Tur kaldırıldı; `library/ekip.json` ve eski proje ayarları gruplara göçer. `zaman_araliklari` kısa videoda sıfır uzunlukta dilim üretmiyor.
-- Stüdyo AI paneli Edit/Sohbet sekmeli: seviye segmenti, katlanır ekip ayarları, kapı adımları ve ajan kartları (`studio/web/src/paneller/ai/`). `/cikti/{slot}` v2'den beri boş dönen dosya düzeni düzeltildi.
-- Rol dosyaları: yeni `ekip-orkestrator`, `kk-genel`, `kk-kural`, `kk-izleyici`; editör ve QC rolleri görev kartına göre güncellendi.
-- Sayfalar: [[0053-seviyeli-ekip-orkestrator]], [[0048-ekip-motoru-v2]] (superseded).
-
-## [2026-11-22] code | HyperFrames render işçisi boş belleğe göre
-- `hf_kurgu.isci_sec`: boş RAM 3 GB altında 1, 6 GB altında 2 işçi, üstünde otomatik (4). Açık `isci` ve `VEDIT_HF_ISCI` kazanır. Render satırı seçilen işçiyi ve boş belleği yazar.
-- Neden: `instagram/1` ekip koşusu (low) G3 taslak render'ında bellek doldu ve Claude Code arka plan işini öldürdü (15,8 GB makine). Test `tests/test_hf_kurgu.py`. Sayfa: [[0053-seviyeli-ekip-orkestrator]].
+Arşiv: [[log.part1]] (2026-10-20 - 2026-11-03), [[log.part2]] (2026-11-03 - 2026-11-05), [[log.part3]] (2026-11-08 - 2026-11-12), [[log.part4]] (2026-11-12), [[log.part5]] (2026-11-13 - 2026-11-15), [[log.part6]] (2026-11-15 - 2026-11-17), [[log.part7]] (2026-11-18 - 2026-11-22)
 
 ## [2026-11-23] setup | HyperFrames 0.9.84
 - `vedit hf-guncelle`: duman testi geçti, 0.9.80 → 0.9.84. Rapor `work/hf-aday/0.9.84/rapor.md`.
@@ -138,3 +44,70 @@ Arşiv: [[log.part1]] (2026-10-20 - 2026-11-03), [[log.part2]] (2026-11-03 - 202
 - G2'de O yalnız ihlal varsa; G6'dan sonra render yalnız ikinci QC gerekince. `oto_duzelt` zoom yoğunluğunu ve kısa grafik süresini render'dan önce düzeltir. Bozuk iç içe alan öğeyi düşürmez.
 - Yeni koşu (aynı istek, kopya proje): medium 13,4 dk. `--hizli` (low, orkestratörsüz) 15,3 dk: iki editöre yığılan iş G1 ve G6'yı uzattı. En büyük kalem hâlâ QC (agy, ~5 dk).
 - Sayfalar: [[0054-hizli-edit]], [[0053-seviyeli-ekip-orkestrator]].
+
+## [2026-11-23] code | Teslimde yayın metni
+- İstek: Teslim sayfasında her video için platforma göre profesyonel başlık, açıklama ve hashtag. Varsayılan Claude Opus 5.5; Codex, Antigravity ve OpenCode da seçilebilir.
+- `vedit yayin` (`src/vedit/yayin.py`): SRT'den kanıt paketi, ajan `work/yayin/<video>.json` yazar, vedit reçeteye göre doğrular (bir düzeltme turu), `yayin.md`'ye video başına işaretli blok yazar. Atıf bölümü ve elle yazılmış metin korunur.
+- Reçete `library/yayin/platformlar.json` (reels, youtube, shorts, tiktok, linkedin; sınırlar 2026-11-23'te doğrulandı). Stüdyo Teslim alanında "Yayın metni" paneli: motor, model, seviye, platform, video başına üret, düzenle, kopyala, kaydet.
+- Test `tests/test_yayin.py`, `YayinPaneli.test.ts`. Sayfa: [[0055-teslimde-yayin-metni]].
+
+## [2026-11-23] code | Stillerim kart ızgarası
+- Stillerim, Hazır stiller gibi kapaklı kart ızgarası; kapak katalog önizlemesi, ilk görsel referans ya da token paleti (`stil.kapak_yolu`, `/api/stil/{stüdyo}/{ad}/kapak`). Sayfa: [[0029-stil-paneli]].
+
+## [2026-11-24] code | Kapak özelliği kaldırıldı
+- `vedit kapak`, `teslim --kapak-kare`, Stüdyo Kapak alanı (Alt+4) ve `/api/kapak/*`, `export.covers`, `kapak-youtube` ve `kapak-instagram` skill'leri, `library/kapak/stiller/`, `rembg` extra'sı ve kapak testleri silindi.
+- `library/kapak/sablon.html` `library/gorsel/sablon.html`'e, font tablosu `pano.FONTLAR`'a taşındı; `gorsel-uret` ve `vedit pano -o x.jpg` çalışmaya devam eder.
+- Stil kartı önizlemesi (`stil.kapak_yolu`) kapak özelliği değildir, kaldı. Sayfalar: [[0056-kapak-kaldirildi]], [[0027-kapak-sayfasi]], [[0052-kapak-is-akisi-v2]] (superseded), [[video-studyo]].
+
+## [2026-11-24] code | Her makinede hız
+- Program monitörünün Remotion yolu tembel parça (`RemotionMonitor.tsx`); Vite preload yardımcısı, `lottie-web` ve `react-reconciler` doğru parçada: ilk yükte JS 2706 → 890 KB, FCP 696 → 474 ms.
+- `vedit` CLI `project`'i tembel yükler (`import vedit.cli` 272 → 90 ms); kütüphane listesi oturumda bir kez iner; yoklamalar gizli pencerede durur.
+- Ölü fonksiyonlar ve importlar silindi; `jsonschema` bağımlılığa eklendi (yalnız rembg dolaylı kuruyordu); rembg zinciri `.venv`'den kaldırıldı. Ölçüm aracı `scripts/hiz_olc.py`. Sayfa: [[0057-her-makinede-hiz]].
+
+## [2026-11-25] code | Hızlı ve kaliteli edit
+- Ölçüm (instagram/arvelior-swarm, 53 sn, aynı istek): `--ekip --hizli` 672 → 419 sn, kurgu-denetle uyarısı 1 → 0, slop 0, QC P0/P1 0/5. 240 sn hedefi tutmadı; kalite seçildi (G1 ~110, G6 ~150 sn kalıyor).
+- Tema kilidi denetimi `tema_denetim.py` (ajan kompozisyonu ve şablon parametresi); Claude QC görselleri stream-json ile tek turda; QC render'ı 15 fps önbellekli; OCR en çok 5 sn; motion ön üretimi; G2 sert ihlal paralel.
+- Hızlı modda QC zaman dilimine bölünür (G4 154 → 69 sn). Tekrar uyarıları klip id'si taşır, geçiş tekrarı kodla düzelir, G6 uyarı kapısı düzeltmenin doğurduğu uyarıyı sahibine bir kez yollar.
+- E1'i low seviyede çalıştırmak kazanç getirmedi (G1'i E2 bekliyor), uygulanmadı. Sayfalar: [[0058-hizli-ve-kaliteli-edit]], [[0054-hizli-edit]].
+
+## [2026-11-25] code | Swarm edit
+- Sabit seviye tablosu ajan tavanına döndü: orkestratör tavan içinde ajan sayısını, kartları ve her ajanın motor/modelini seçer; kurgu editörü plana paralel başlar. CLI `--suru`, `--orkestrator`, `--en-cok`; `--ekip --seviye` çalışmaya devam eder.
+- Stüdyo AI paneli "Tek ajan | Swarm": orkestratör modeli, en çok ajan, canlı kartlarda model.
+- Ölçüm koşuları üç eski açığı gösterdi (id'siz yama öğesi, tek bozuk grafiğin G3'ü durdurması, `gecis_giris` kısa yazımı); üçü de düzeltildi. agy (Gemini 4 Neon) kod incelemesinin 12 bulgusu uygulandı.
+- arvelior-swarm: eski medium 778 sn → swarm 692 sn, uyarı 2 = 2, slop 0. Sayfalar: [[0059-swarm-edit]], [[0053-seviyeli-ekip-orkestrator]] ve [[0054-hizli-edit]] (superseded).
+
+## [2026-11-25] code | Proxy ve master conform
+- `vekil.py`: ağır kaynağa (4K, HEVC, 10-bit, HDR, VFR, 50+ Mbps) önizleme ve taslak proxy'si; `vedit hazirla` paralel üretir, `vedit vekil` durumu gösterir. Taslak ve QC proxy'yi bağlar; final ve master orijinali bağlar, conform kapısı proxy sızıntısında durur.
+- Master ön ayarı: kayıpsız 4:4:4 ara render, H.265 Main10, kaynağa eşle. Teslim zscale ile renk ve kroma dönüşümü yapar (dither'lı); SSIM/PSNR (isteğe bağlı VMAF) `work/renders/kalite.json`. Stüdyo Teslim paneli ön ayar, kaynağa eşle, proxy ve sadakat satırını gösterir.
+- Sentetik 4K ölçüm: SSIM 0,9972, VMAF 97,54, 1/1 klip orijinal. 2160p ölçeği hâlâ Remotion'a düşüyor (sonraki iş). Sayfalar: [[0060-proxy-master-conform]], [[0035-teslim-ayarlari]].
+
+## [2026-11-25] code | Kasa ve Keşif
+- Hibrit kütüphane: Motion sekmesi Kasam (varsayılan) · Keşif (18 şablon + dış) · Arşiv (96, silinmez). Timeline'da sağ tık "Kütüphaneye kaydet" şablonu, kompozisyonu, bileşeni ve ses efektini niyetiyle `library/kasa/`'ya yazar; AI edit kataloğu önce Kasam'ı gösterir.
+- Kilitli varlık 423 + "Kilidi kaldır ve sil" onayı; toplu silme; galeride kodla tanımlı öğe gizlenir.
+- `onizleme.py`: alfa kaplamasıyla kare seçimi, sınır kutusuna kırpım, geçişte dama zemin; `vedit motion onizleme` 114 kaydı yeniledi (Zil, silme geçişi, şablonlar okunur). Sayfalar: [[0061-kasa-ve-kesif]], [[0012-kutuphane-kit]], [[0036-motion-kutuphanesi-ve-ajanlar]].
+
+## [2026-11-25] code | Modern HyperFrames motion mimarisi ve 24 yeni şablon
+- `studio/hf/` + `hf_grafik.py` + `app.py`: özel `hf` kompozisyonları çevrimdışı WebM olmadan doğrudan `data-composition-src` ile canlı gömülür; `data-sound-cues` `+1 kare` senkron SFX üretir; `HFN.yayCoz` ve `HFN.yonBulaniklik` eklendi.
+- `tema_token.py`: `tema.css` v2 (`--*-rgb`, `--yuzey-cam`, `--kenar-ince`, `--yukselti-golge`, `--izgara-desen`, `--ease-enter/exit/emphasis/settle`). `stil_katalog.py` `hf_grafik.adlar()` tanır; 5 yeni referans stil (`saas-izgara`, `kod-hud`, `beyaz-tahta-pro`, `editoryal-belgesel`, `urun-lansman`, toplam 36 stil).
+- `gecis.ts`, `zaman.ts`, `hazirEfekt.ts`, `ritim.py`: 4-düzen (`diyagram-pip`, `ekran-pip`), 2 sürekli-dünya kamera (`ekran_odak`, `dunya_kaydir`), 5 optik geçiş (`tikla_iris`, `buton_zoom`, `kart_dunyaya`, `bulanik_takas`, `dip_kesim`) ve `ritim.bpm_izgara()`.
+- `library/motion/hf/`: 4 paralel yapım ajanıyla 6 ailede 24 yeni deterministik, Türkçe glifli, `16:9`/`9:16` uyumlu HyperFrames şablonu. `ekip_v3.py`, `kurgu_kalite.py`, `editor-grafik.md`, `ekip-orkestrator.md`: G0.5 Motion Brifi, komşu dilim hafızası, `YUZ_USTU_KART` ve determinizm kapısı. Test: `tests/test_hf_motion_kalite.py`. Sayfa: [[0062-modern-hyperframes-motion-mimarisi]].
+
+## [2026-11-25] code | GSAP eklentileri, three.js 3D sahneler ve yönetmen katmanı
+- `scripts/gsap_paketle.py` + `library/vendor/gsap/`: `gsap.min.js` artık çekirdek + SplitText, DrawSVG, MorphSVG, MotionPath, Physics2D, CustomEase ve tema eğrileri (`giris`, `cikis`, `vurgu`, `oturma`). ScrambleText, CustomWiggle, EasePack tohumsuz rastgele yüzünden alınmadı.
+- `studio/hf/uc/uc.ts` → `library/vendor/uc.js` (`window.HFUC`): saydam WebGL, ışık, alfa koruyan seçici bloom, `hf-seek` sürücüsü, katmanlı ekstrüde yazı. `hf_grafik.canli_mi`, `kurgu.motion_bagla`, `paketle.ts`: 3D canlı gömülmez, önbellekli WebM. `kurgu_kalite`: `THREE.Clock`/`setAnimationLoop` kapısı, `UC_FAZLA`, `UC_ART_ARDA`.
+- 22 yeni şablon (10 `uc-*`, 12 GSAP eklentili; 21'i agy paralel ajanlarıyla, Claude kare denetimiyle). Stil kataloğuna `motion_kisilik`, motion brifine beş bölüm ve iplik öğe, `editor-grafik` yeni aileler. Skill'ler: gsap-*, threejs-* (elle), `hf-gsap-uc`. Test: `tests/test_hf_uc.py`. Sayfa: [[0063-gsap-eklentileri-ve-threejs-hf]], [[2026-11-25-motion-kaynaklari]].
+
+## [2026-11-26] code | Yaratıcı yön kapısı (G0.5), şablondan özerkliğe 1. adım
+- Denetim: kurgu kararları sabit şablon eşlemesine (`aiedit.MOTION_KURALLARI`, `ekip_v3.paket`, `editor-grafik`), 4 sn yoğunluk kotasına ve zorunlu tariflere bağlıydı; videoya özgü yaratıcı fikir hiçbir yerde yazılmıyordu, `motion-brief.json` okunuyor ama yazılmıyordu. Sekiz adımlı plan onaylandı.
+- `src/vedit/yaratici.py` + `ekip_sema.YaraticiBrif`: `work/edit/yaratici-brif.json` (tez, metafor, iplik, enerji eğrisi, imza anları, ses, riskler, yasak klişeler); gevşek şema, isteğe damga, `kilit`. Swarm'da plan çağrısında (`plan_paketi(brif_iste=)`), hızlıda E1'e paralel tek çağrı, tek ajanda kurgudan önce; brif bütün editör paketlerine girer. Test: `tests/test_yaratici.py`. Sayfa: [[0064-yaratici-yon]].
+
+## [2026-11-26] code | Şablondan özerkliğe 2-7. adımlar (agy paralel ajanlarıyla)
+- Dört agy ajanı paralel çalıştı (Hydrogen: `aiedit.py`+`kurgu.py`, `ekip_v3.py`+`ekip_sema.py`; Neon: ajan rolleri, skill'ler); Claude dosya kapsamını, farkı ve testleri denetledi. Sabit bileşen eşlemesi kaldırıldı, yoğunluk brifin enerji eğrisine bağlandı (`ENERJI_CARPAN`), zorunlu tarifler araç kutusuna çevrildi, editöre `oz_denetim`, QC'ye `etki` kategorisi ve `uretim_puani`, `ZORUNLU_EN_COK` 12 → 8. Kural deposunda 7 kopya/çatışan kural pasife alındı, K0063 ve K0064 birleşik kural eklendi (etkin 62 → 57). Test: `tests/test_enerji.py`, `tests/test_etki.py`, `tests/test_motion.py`. Sayfa: [[0064-yaratici-yon]].
+
+## [2026-11-26] code | Müzik öncülü yapı (8. adım) ve yaratıcı yön pilotu
+- `src/vedit/muzik_once.py`: parça editörlerden önce LLM çağrısı olmadan seçilir (brifin ses fikri, enerji, süre), ritmi bir kez ölçülür (`work/ritim-muzik/`, git dışı); tempo, 8 beatlik cümle başları ve enerji yükselişleri sözleşmeyle bütün editörlere gider. Test: `tests/test_muzik_once.py`.
+- Pilot `instagram/pilot-yaratici` (videosuz test senaryosu, tek ajan; gerçek projeler diskte yok): brif somut, match cut ve iplik öğe karelerde doğrulandı. Önceden var olan iki kusur bulundu: canlı gömülen `kamera-crash-zoom` boş çıkıyor (P0), 47 HF şablonunun 46'sı 16:9 tanımlı ve 9:16'da küçük kalıyor (P1). Sayfa: [[0064-yaratici-yon]].
+
+## [2026-11-26] code | HyperFrames canlı gömme düzeltmesi ve 46 şablonun dikey düzeni
+- Kök neden: 42 şablon kökü `document.getElementById("root")` ile arıyordu; canlı gömmede null ya da yabancı kök dönüyordu (pilot doruğu boştu). Bileşenin kök kuralı sarmalı ezip yüksekliği sıfırlıyordu. 46 şablon 16:9 tanımlıydı, 9:16'da okunmuyordu.
+- `hf_grafik.kok_sorgusu_cevir` + `paketle.ts`, kaplama kuralı, `hf_grafik.uret(sekans=)`, `hf_grafik.ayni_yon` (yönü uymayan şablon canlı değil sekans boyutunda WebM: `kurgu.motion_bagla`, `derle.ts`), `scripts/hf_dikey_kontak.py`, 9:16 katalogda `yalniz_yatay` süzgeci ve `HF_YALNIZ_YATAY` uyarısı, dikey kural kapısı testi. 46 şablonun dikey düzenini beş agy ajanı (Hydrogen, Neon) yazdı, Claude kontak sayfalarıyla denetledi. Sayfa: [[hf-canli-gomme-ve-dikey-duzen]].

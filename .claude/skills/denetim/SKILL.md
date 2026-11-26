@@ -1,6 +1,6 @@
 ---
 name: denetim
-description: Video kalite denetiminin tek yeri — vedit denetim ölçümleri, 10 maddelik rubrik, P0/P1/P2 düzeltme listesi ve AI slop denetimi (zaman damgası + öneri, kullanıcı onayı olmadan değiştirmez). Taslak ya da final render sonrası ve teslimden önce her zaman kullan; "AI slop", "yapay duruyor", "AI yapmış gibi", "şablon gibi", "ucuz görünüyor", "ruhsuz", "render QA", "kontrol et" dendiğinde kullan.
+description: Video kalite denetiminin tek yeri — vedit denetim ölçümleri, 12 maddelik rubrik (özgünlük ve brif uyumu dahil), P0/P1/P2 düzeltme listesi, QC etki ekseni ve AI slop denetimi (zaman damgası + öneri, kullanıcı onayı olmadan değiştirmez). Taslak ya da final render sonrası ve teslimden önce her zaman kullan; "AI slop", "yapay duruyor", "AI yapmış gibi", "şablon gibi", "ucuz görünüyor", "ruhsuz", "render QA", "kontrol et" dendiğinde kullan.
 ---
 
 # Denetim
@@ -39,8 +39,10 @@ OpenMontage / olay sesli çıktıda ek olarak `<olaylar>.rapor.json` oku: `uyari
 8. Renk (palet, tek accent, kontrast, çekimler arası tutarlılık)
 9. Okunabilirlik (≥ 1.2 sn, sessizde anlaşılır)
 10. Ses (konuşma net, müzik altta, SFX olaya bağlı)
+11. Özgünlük ve akılda kalan an (imza anı teslim edildi mi, şablon gibi mi)
+12. Brif uyumu (tez, enerji eğrisi, yasak klişe; yaratıcı brif yoksa bu madde atlanır)
 
-Ayrıca zaman damgalı: "AI şablonu" anları, aceleye gelen anlar, ölü zaman (> 0.5 sn).
+Ayrıca zaman damgalı: "AI şablonu" anları, aceleye gelen anlar, ölü zaman (> 0.5 sn). Ortalama ve aşağıdaki "hâlâ < 8" kuralı 12 madde üzerinden çalışır (brif yoksa 11 madde).
 
 ## 4. Düzeltme listesi (`qa/critique.md`)
 ```
@@ -62,8 +64,12 @@ Aynı hata iki projede tekrarlanırsa kalıcı çöz (blok varsayılanı, stil t
 - Animasyon ve motion işlerinde `sanat-yonetimi` klişe testi uygulanır: 0., 1., 3., 6., 10. saniye ve son kare, `sanat-yonetimi/references/klise-listesi.md`. Puanı `qa/critique.md`'ye yaz.
 - Altyazı karesinde okunan kelime turuncu, gerisi beyaz, kontur siyah mı bak. `vedit qa` stil dışını uyarır.
 
-## 7. AI slop (ADR 0015)
+## 7. AI slop ve etki ekseni (ADR 0015, 0064)
 Bu denetim temizlendikten sonra slop adımı çalışır: `references/slop.md`. "AI şablonu" anları ayrıntısıyla orada aranır; burada yalnız rubrik puanı verilir.
+
+Kalite kontrol çıktısında "doğru ama sıradan" kurguyu yakalamak için `etki` bulgu kategorisi ve `uretim_puani` alanı kullanılır:
+- **`etki` kategorisi:** sıradanlık, imza anının teslim edilmemesi, enerji eğrisinin hissedilmemesi, yasak klişe kullanımı ya da zayıf hook durumlarında açılır. Her `etki` bulgusu zaman damgası, kare kanıtı ve brif maddesine bağlı somut bir `beklenen` ölçütü taşır; kanıtsız zevk tartışması triyajda reddedilir.
+- **`uretim_puani`:** `{"hook": 1-5, "imza_ani": 1-5, "brif_uyumu": 1-5, "ozgunluk": 1-5, "ritim_enerji": 1-5}` biçiminde isteğe bağlı üretim puanı verir (eksik anahtar serbesttir).
 
 ## 8. Teslim kodlaması ve ölçüm (ADR 0016)
 Onaydan sonra son adım `vedit teslim <video> --platform <youtube|reels|ugc> -o <çıktı>`. Renk ya da piksel biçimi hatası teslimi durdurur; düşük bitrate uyarısında karede detay kaybına bak. Ölçüm çıktısı uzunsa `render-qc` ajanına ver. Ses denetimi `sound-design` skill'indeki earshot bölümündedir.

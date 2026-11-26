@@ -5,8 +5,11 @@
 import type { Gecis, Yon } from "../remotion/tipler";
 import { bezier } from "./bezier";
 
-export const ORTA_GECIS = ["sil", "kay", "saat", "iris", "kirbac", "isik", "piksel", "zoom_kirbac", "film_yanigi", "bolunme", "bozulma", "yirtma"];
-const IKI_YONLU = ["kay", "kirbac", "zoom_kirbac", "bozulma"];
+export const ORTA_GECIS = [
+  "sil", "kay", "saat", "iris", "kirbac", "isik", "piksel", "zoom_kirbac", "film_yanigi", "bolunme", "bozulma", "yirtma",
+  "tikla_iris", "buton_zoom", "kart_dunyaya", "bulanik_takas", "dip_kesim",
+];
+const IKI_YONLU = ["kay", "kirbac", "zoom_kirbac", "bozulma", "buton_zoom", "bulanik_takas", "dip_kesim"];
 const ACILIS = bezier(0.22, 0.8, 0.36, 1);
 const KIS = bezier(0.65, 0, 0.35, 1);
 const YERLES = bezier(0.16, 1, 0.3, 1);
@@ -203,6 +206,64 @@ export const gecisStil = (g: Gecis, ilerleme: number, yon: "entering" | "exiting
           + `stroke-width="${kalin * 2.2}" stroke-linejoin="round" style="filter:blur(${kalin}px);opacity:${tepe}"/><path d="${d}" fill="none" `
           + `stroke="${rgba(renk.zemin, 0.92)}" stroke-width="${kalin}" stroke-linejoin="round" opacity="${0.9 * tepe}"/></svg>`;
       }
+      return s;
+    }
+    case "tikla_iris": {
+      if (yon === "exiting") return s;
+      const a = ACILIS(p);
+      const [cx, cy] = ({ sol: [28, 52], sag: [72, 52], yukari: [50, 32], asagi: [50, 68] } as const)[g.yon ?? "sag"];
+      const maks = Math.hypot(w, h);
+      const r = maks * a;
+      s.clipPath = `circle(${r.toFixed(1)}px at ${cx}% ${cy}%)`;
+      if (tepe > 0.02) {
+        s.katman = `<div style="position:absolute;left:${cx}%;top:${cy}%;width:${(r * 2).toFixed(1)}px;height:${(r * 2).toFixed(1)}px;border-radius:50%;transform:translate(-50%,-50%);border:3px solid ${rgba(renk.vurgu, 0.85 * tepe)};box-shadow:0 0 24px ${rgba(renk.vurgu, 0.45 * tepe)}"></div>`;
+      }
+      return s;
+    }
+    case "buton_zoom": {
+      if (yon === "exiting") {
+        const z = 1 + 1.45 * HIZLAN(p);
+        s.transform = `scale(${z.toFixed(4)})`;
+        const bul = HIZLAN(p) * 14;
+        if (bul > 0.3) s.filter = `blur(${bul.toFixed(2)}px)`;
+        s.opacity = String(Math.max(0, 1 - HIZLAN(p) * 1.15));
+        return s;
+      }
+      const y = YERLES(p);
+      s.transform = `scale(${(0.78 + 0.22 * y).toFixed(4)})`;
+      const bul = (1 - y) * 10;
+      if (bul > 0.25) s.filter = `blur(${bul.toFixed(2)}px)`;
+      s.opacity = String(Math.min(1, ACILIS(p) * 1.15));
+      if (tepe > 0.02) s.katman = tam(`mix-blend-mode:screen;opacity:${0.26 * tepe};background:radial-gradient(circle at 50% 50%, ${rgba(renk.vurgu, 0.7)}, transparent 68%)`);
+      return s;
+    }
+    case "kart_dunyaya": {
+      if (yon === "exiting") return s;
+      const a = YERLES(p), kenarX = (1 - a) * 18, kenarY = (1 - a) * 20, kose = (1 - a) * 32;
+      s.clipPath = `inset(${kenarY.toFixed(2)}% ${kenarX.toFixed(2)}% round ${kose.toFixed(1)}px)`;
+      s.transform = `scale(${(0.92 + 0.08 * a).toFixed(4)})`;
+      if (tepe > 0.02) {
+        s.katman = `<div style="position:absolute;inset:${kenarY.toFixed(2)}% ${kenarX.toFixed(2)}%;border-radius:${kose.toFixed(1)}px;border:2px solid ${rgba(renk.vurgu, 0.75 * tepe)};box-shadow:0 0 28px ${rgba(renk.vurgu, 0.35 * tepe)}"></div>`;
+      }
+      return s;
+    }
+    case "bulanik_takas": {
+      if (yon === "exiting") {
+        const hiz = KIS(p);
+        s.filter = `blur(${(hiz * 10).toFixed(2)}px)`;
+        s.opacity = String((1 - hiz).toFixed(4));
+        return s;
+      }
+      const y = YERLES(p);
+      s.filter = `blur(${((1 - y) * 10).toFixed(2)}px)`;
+      s.transform = `scale(${(1.03 - 0.03 * y).toFixed(4)})`;
+      s.opacity = String(y.toFixed(4));
+      return s;
+    }
+    case "dip_kesim": {
+      const kar = 1 - 0.44 * tepe;
+      s.filter = `brightness(${kar.toFixed(3)})`;
+      s.opacity = yon === "exiting" ? (p < 0.5 ? "1" : "0") : (p >= 0.5 ? "1" : "0");
       return s;
     }
   }

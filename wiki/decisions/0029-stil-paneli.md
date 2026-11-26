@@ -4,7 +4,7 @@ title: "Stil paneli: referanstan STYLE.md üretimi ve projeye stil seçimi"
 status: accepted
 tags: [adr, stil, style-pack, studio, referans]
 created: 2026-11-12
-updated: 2026-11-18
+updated: 2026-11-23
 sources: []
 ---
 
@@ -30,6 +30,9 @@ Kullanıcı Video Stüdyo'da bir stil bölümü istedi (2026-11-12): referans g�
 
 > [!note] Güncellendi 2026-11-18
 > Stil silme, hazır stil kataloğu ve `tokens.json → motion_tema` bağı eklendi: [[0042-stil-katalogu-ve-video-temasi]].
+
+> [!note] Güncellendi 2026-11-23
+> Stillerim sekmesi, Hazır stiller gibi 9:16 kart ızgarasıdır. Kapak sırası: katalog önizlemesi, ilk görsel referans, yoksa `tokens.json` paletiyle yer tutucu (`stil.kapak_yolu`, `GET /api/stil/{stüdyo}/{ad}/kapak`). Silme seçili stilin detay çubuğundadır.
 
 ## İlgili kod
 - `src/vedit/stil.py`, `src/vedit/reference.py` (`analyze_file`), `src/vedit/cli.py` (`cmd_stil_uret`)

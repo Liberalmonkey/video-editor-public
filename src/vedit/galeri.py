@@ -56,10 +56,12 @@ def ogeler() -> list[dict]:
     for e in (json.loads(man.read_text(encoding="utf-8")).get("entries", []) if man.exists() else []):
         dosya = paths.ROOT / e["file"] if e.get("file") else None
         poster = dosya.parent / "poster.jpg" if dosya else None
+        dongu = dosya.parent / "onizleme.mp4" if dosya else None  # ADR 0061: alfa kırpımlı döngü, tam tuval webm'den okunur
         cikti.append({"tur": "motion", "id": e["id"], "title": (e.get("title") or e["id"]).split(":")[0], "kind": e.get("kind"),
                       "ne_zaman": e.get("ne_zaman", ""), "sablon": bool(e.get("param")), "file": e.get("file"),
-                      "poster_url": _url(poster) if poster else None, "video_url": _url(dosya) if dosya else None,
-                      "tags": e.get("tags", [])})
+                      "poster_url": _url(poster) if poster else None,
+                      "video_url": (_url(dongu) if dongu and dongu.exists() else None) or (_url(dosya) if dosya else None),
+                      "tags": e.get("tags", []), "eski": (e.get("site") == "custom" and not e.get("param")) or bool(e.get("arsiv"))})
     for ad, t in fizik.presetler().items():
         cikti.append({"tur": "fizik", "id": ad, "title": t["title"], "ne_zaman": t["ne_zaman"], "sure": t["sure"],
                       "param": t["param"], **_onizleme("fizik", ad)})
@@ -72,6 +74,12 @@ def ogeler() -> list[dict]:
     for ad, t in hazir_efekt.katalog().items():
         cikti.append({"tur": "hazir", "id": ad, "title": ad.replace("_", " "), "ne_zaman": t.get("ne_zaman", ""),
                       "amac": t.get("amac", ""), **_onizleme("hazir", ad)})
+    # WHY: bkz. wiki/decisions/0061-kasa-ve-kesif.md. Kodla tanımlı öğe silinemez, gizlenir; arayüz varsayılan olarak gizlemez
+    # yalnız işaretler, "Gizlenenleri göster" kapalıyken süzer.
+    from . import kasa
+    g = kasa.gizli()
+    for o in cikti:
+        o["gizli"] = f"{o['tur']}:{o['id']}" in g
     return cikti
 
 
@@ -124,13 +132,6 @@ def _parcala(video: Path, adlar: list[str], hedef: Path, poster_an: float) -> No
         ff.ffmpeg("-y", "-ss", f"{bas:.3f}", "-t", f"{ONIZLEME_SURE:.3f}", "-i", str(video), "-an", "-c:v", "libx264", "-preset", "veryfast",
                   "-crf", "26", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(hedef / f"{ad}.mp4"))
         ff.ffmpeg("-y", "-ss", f"{bas + poster_an:.3f}", "-i", str(video), "-frames:v", "1", "-q:v", "3", str(hedef / f"{ad}.jpg"))
-
-
-def _gecici_proje(is_klasor: Path):
-    """fizik.bagla / bake için yalnız `work` yolu gereken sahte proje."""
-    class P:
-        work = is_klasor
-    return P()
 
 
 def _fizik_verisi(is_klasor: Path, preset: str, param: dict, isik: str | None = None) -> tuple[dict, Path]:

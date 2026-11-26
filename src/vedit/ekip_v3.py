@@ -18,9 +18,7 @@ from __future__ import annotations
 
 import copy
 import json
-import os
 import re
-import subprocess
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -28,9 +26,10 @@ from pathlib import Path
 
 from pydantic import BaseModel, ValidationError
 
-from . import aiedit, capa, ekip, ff, hizli, kural, kurgu, kurgu_kalite, native_motion, paths, tema_token, yuz_bolge
+from . import (aiedit, capa, ekip, hizli, kural, kurgu, kurgu_kalite, muzik_once, native_motion, paths, suru, tema_denetim, tema_token,
+               yaratici, yuz_bolge)
 from .ekip_sema import (BOLUNMEZ, EDITOR_ROL_DOSYASI, KATMAN_ADI, KATMAN_TANIM, KATMANLAR, KK_ALAN, KK_KURAL_ROLU, KK_ROL_ADI,
-                        KK_ROL_DOSYASI, KURAL_ROLU, ORKESTRATOR, SEVIYE, EkipAyar, Gorev, KapiCikti, KkGorev, Mesaj, Plan,
+                        KK_ROL_DOSYASI, KURAL_ROLU, ORKESTRATOR, SEVIYE, EkipAyar, Gorev, KapiCikti, KkGorev, KontrolCikti, Mesaj, Plan,
                         Triyaj, Yama, editorler, kontroller)
 from .schemas import Kurgu
 
@@ -39,7 +38,7 @@ KAPILAR = [("G0", "Plan"), ("G1", "Düzen"), ("G2", "Kural kapısı"), ("G3", "B
            ("G6", "Düzeltme"), ("G7", "Son")]
 O_ROL = ("ekip-orkestrator",)
 QC_TEK_KARE = 6  # QC'nin paftadan sonra açacağı en çok tek kare (ADR 0054)
-ZORUNLU_EN_COK = 12  # karta atanan kural sayısı üst sınırı (P0'lar her zaman girer)
+ZORUNLU_EN_COK = 8  # karta atanan kural sayısı üst sınırı (P0'lar her zaman girer; WHY: bkz. wiki/decisions/0064-yaratici-yon.md)
 
 
 def _no(slot: str) -> int:
@@ -157,6 +156,15 @@ def hf_hatalari(rol: str, y: Yama, atama: Atama | None = None) -> list[str]:
             h.append(f"{rol}: geçersiz kompozisyon adı '{ad}'")
         elif len(html.encode("utf-8")) > HF_EN_BUYUK or "data-composition-id" not in html:
             h.append(f"{rol}: {ad} geçerli bir HyperFrames kompozisyonu değil (data-composition-id yok ya da çok büyük)")
+        elif v := tema_denetim.ihlaller(html, kaynak=ad):
+            # WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md. Ajanın kendi kompozisyonu stilin token'ını okur (ADR 0043).
+            h.append(f"{rol}: {tema_denetim.mesaj(v)}")
+        elif det := [m for d, m in kurgu_kalite._YASAK_DETERMINIZM if d.search(html)]:
+            h.append(f"{rol}: {ad} determinizm ihlali: {'; '.join(det[:3])}")
+    for c in [*y.ekle, *y.guncelle]:
+        for alan in ("hf", "sablon"):
+            if isinstance(c, dict) and isinstance(c.get(alan), dict) and (v := tema_denetim.param_ihlalleri(c[alan].get("param"), kaynak=str(c.get("id")))):
+                h.append(f"{rol}: {tema_denetim.mesaj(v)}")
     return h
 
 
@@ -212,6 +220,8 @@ def yama_hatalari(k: Kurgu, rol: str, y: Yama, atama: Atama | None = None) -> tu
     benim = set(atama.katmanlar(rol))
     h, disari = [], []
     for c in y.ekle:
+        if not isinstance(c, dict) or not c.get("id"):
+            continue  # id'siz öğe yamayı düşürmez; yama_uygula öğeyi düşürür (ADR 0059)
         if c.get("id") in var:
             h.append(f"{rol}: {c.get('id')} zaten var (ekle değil guncelle)")
         sinif = katman_sinifi(k, c.get("iz", ""), c)
@@ -224,6 +234,8 @@ def yama_hatalari(k: Kurgu, rol: str, y: Yama, atama: Atama | None = None) -> tu
         if t is not None and atama.katman_sahibi(sinif, t) != rol:
             disari.append(c.get("id"))
     for g in y.guncelle:
+        if not isinstance(g, dict) or not g.get("id"):
+            continue
         c = var.get(g.get("id"))
         if c is None:
             h.append(f"{rol}: güncellenecek {g.get('id')} yok")
@@ -267,7 +279,13 @@ def yama_uygula(k: Kurgu, rol: str, y: Yama, dusen: list[str] | None = None, ata
     h, disari = yama_hatalari(k, rol, y, atama)
     if h:
         raise SystemExit("; ".join(h))
-    ekle = [c for c in copy.deepcopy(list(y.ekle)) if c.get("id") not in disari]
+    # WHY: bkz. wiki/decisions/0059-swarm-edit.md. id'siz öğe (g4 koşusu, E4: `baslangic` alanlı ses olayları) birleştirmeyi
+    # KeyError ile çökertiyordu; öğe düşer, kapı sahibine düzeltme yollar.
+    idsiz = [c for c in y.ekle if not isinstance(c, dict) or not c.get("id")]
+    ekle = [c for c in copy.deepcopy(list(y.ekle)) if isinstance(c, dict) and c.get("id") and c.get("id") not in disari]
+    idsiz += [g for g in y.guncelle if not isinstance(g, dict) or not g.get("id")]
+    if idsiz and dusen is not None:
+        dusen += [f"{rol}:id'siz öğe ({str(c.get('tur') if isinstance(c, dict) else c)[:20]})" for c in idsiz]
     for c in ekle:
         if "bas" not in c and c.get("capa"):
             if (b := _capa_bas(k, c)) is not None:
@@ -289,7 +307,7 @@ def yama_uygula(k: Kurgu, rol: str, y: Yama, dusen: list[str] | None = None, ata
                 c.setdefault("sure", 2.0)
             elif c.get("olay"):
                 c["sure"] = 0.3  # olaysesi: klip süresi yalnız görsel işarettir
-    gun = {g["id"]: g for g in copy.deepcopy(list(y.guncelle))}
+    gun = {g["id"]: g for g in copy.deepcopy(list(y.guncelle)) if isinstance(g, dict) and g.get("id")}
     kaynaklar = dict(y.kaynaklar)
     if dusen is not None:
         dusen += [f"{rol}:{a}" for a in yabanci] + [f"{rol}:{a}(aralık dışı)" for a in disari]
@@ -317,13 +335,13 @@ def _dogrula(k: Kurgu, rol: str, y: Yama, ekle: list[dict], gun: dict, kaynaklar
         ek_id = {c.get("id") for c in ekle}
         for loc in fazla:
             c = d["klipler"][loc[1]]
-            hedef = next((x for x in ekle if x.get("id") == c["id"]), None) if c["id"] in ek_id else gun.get(c["id"])
+            hedef = next((x for x in ekle if x.get("id") == c.get("id")), None) if c.get("id") in ek_id else gun.get(c.get("id"))
             if hedef is None:
                 continue
             for anahtar in loc[2:-1]:
                 hedef = hedef.get(anahtar) if isinstance(hedef, dict) else None
             if isinstance(hedef, dict) and hedef.pop(loc[-1], None) is not None and dusen is not None:
-                dusen.append(f"{rol}:{c['id']}." + ".".join(str(x) for x in loc[2:]))
+                dusen.append(f"{rol}:{c.get('id')}." + ".".join(str(x) for x in loc[2:]))
         d = _kurgu_dict(k, y, ekle, gun, kaynaklar)
         try:
             return Kurgu.model_validate(d)
@@ -333,7 +351,7 @@ def _dogrula(k: Kurgu, rol: str, y: Yama, ekle: list[dict], gun: dict, kaynaklar
     for er in hata.errors():
         loc = er.get("loc", ())
         if len(loc) >= 2 and loc[0] == "klipler" and isinstance(loc[1], int):
-            kotu_klip.add(d["klipler"][loc[1]]["id"] if loc[1] < len(d["klipler"]) else None)
+            kotu_klip.add(d["klipler"][loc[1]].get("id") if loc[1] < len(d["klipler"]) else None)
         elif len(loc) >= 2 and loc[0] == "kaynaklar" and loc[1] in kaynaklar:
             kotu_kay.add(loc[1])
     if not kotu_klip and not kotu_kay:
@@ -456,6 +474,24 @@ def oto_duzelt(k: Kurgu) -> list[str]:
             else:
                 k.klipler = [x for x in k.klipler if x is not c]
         out.append(f"zoom/punch olayı {once} → {len(olaylar)} (dakikada en çok {slop.OLAY_YOGUN_DAKIKA}; kümelenenler silindi)")
+
+    # 3) Art arda üçüncü aynı geçiş (kurgu_kalite GECIS_TEKRAR): uyarının önerisi uygulanır, yön çevrilir; geçiş yumuşak kalır.
+    # WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md. Düzeltme turları seriyi editörler arasında bölüyor, uyarı
+    # kimsede kalmıyordu (hizlic: 1 → 4 uyarı). Efekt tekrarı (EFEKT_TEKRAR) kodla silinmez: hangi vurgunun gideceği
+    # kurgu kararıdır; uyarı klip id'siyle sahibine gider.
+    gorunur = sorted((c for c in k.klipler if c.iz not in gizli), key=lambda c: c.bas)
+    ters = {"sol": "sag", "sag": "sol", "yukari": "asagi", "asagi": "yukari"}
+    seri, onceki = 0, None
+    for c in gorunur:
+        if not c.gecis_giris:
+            continue
+        ad = (c.gecis_giris.tur, c.gecis_giris.yon)
+        seri = seri + 1 if ad == onceki else 1
+        if seri == kurgu_kalite.ART_ARDA:
+            c.gecis_giris.yon = ters[c.gecis_giris.yon]
+            out.append(f"{c.id}: art arda {seri}. {ad[0]}/{ad[1]} geçişi → {ad[0]}/{c.gecis_giris.yon}")
+            ad, seri = (c.gecis_giris.tur, c.gecis_giris.yon), 1
+        onceki = ad
     return out
 
 
@@ -654,6 +690,27 @@ def varsayilan_dagitim(seviye: str, k: Kurgu) -> Plan:
     return Plan(gorevler=gorevler, kk_gorevler=kk, gerekce="varsayılan dağıtım")
 
 
+HIZLI_QC_UZUN = 90.0  # sn; hızlı modda bu süreden kısa video iki, uzun video üç QC dilimine bölünür (ADR 0058)
+
+
+def hizli_kk(k: Kurgu) -> list[KkGorev]:
+    """Hızlı mod QC kartları: tek genel QC yerine zaman dilimi başına bir genel QC, paralel.
+
+    WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md. Tek QC bütün paftaları okuyup 12-18k token düşünüyordu (G4'ün
+    134 sn'si); dilim başına ajan daha az görsel okur, aynı anda biter. Dilim sınırı kelime arasıdır (zaman_araliklari)."""
+    n = 2 if _bitis(k) < HIZLI_QC_UZUN else 3
+    return [KkGorev(slot=f"K{i + 1}", rol="genel", aralik=[round(a, 2), round(b, 2)])
+            for i, (a, b) in enumerate(ekip.zaman_araliklari(k, n))]
+
+
+def pafta_sec(girdi: dict, aralik: list[float] | None, pay: float = 1.5) -> list:
+    """Aralığa değen paftalar (sınırdaki geçişi iki taraf da görsün diye bir kare payıyla). Zaman yoksa hepsi."""
+    paftalar, zaman = girdi.get("_paftalar") or [], girdi.get("_pafta_zaman")
+    if not aralik or not zaman or len(zaman) != len(paftalar):
+        return list(paftalar)
+    return [f for f, (a, b) in zip(paftalar, zaman) if b >= aralik[0] - pay and a <= aralik[1] + pay]
+
+
 def plan_dogrula(plan: Plan, seviye: str, son: float) -> list[str]:
     """Seviye sayıları, tek kurgu sahibi, her katman × zamanın tam bir editörde olması, QC alanlarının kapsanması."""
     h = []
@@ -662,6 +719,12 @@ def plan_dogrula(plan: Plan, seviye: str, son: float) -> list[str]:
         h.append(f"editör slotları {', '.join(e)} olmalı")
     if sorted(g.slot for g in plan.kk_gorevler) != sorted(kk):
         h.append(f"kalite kontrol slotları {', '.join(kk)} olmalı")
+    return h + kapsam_hatalari(plan, son)
+
+
+def kapsam_hatalari(plan: Plan, son: float) -> list[str]:
+    """Tek kurgu sahibi, her katman × zamanın tam bir editörde olması, QC alanlarının kapsanması (seviye ve swarm ortak)."""
+    h: list[str] = []
     pay = 0.06
     for katman in KATMANLAR:
         kartlar = sorted((g for g in plan.gorevler if katman in g.katmanlar), key=lambda g: (g.aralik or [0, 0])[0])
@@ -781,7 +844,8 @@ SABIT = """## Çıktı (yalnız bu JSON, başka metin yok)
  "kaynaklar": {"<yeni kaynak id>": {"yol": "library:music/<klasör>/<dosya>.mp3", "sure": <sn>}}, "isaretler": null, "altyazi": null, "motion_tema": null, "hook": null, "hf": {},
  "pano": [{"tip": "claim|constraint|request|done", "aralik": [a, b], "metin": "<en çok 2 satır>"}],
  "kural_uyum": [{"id": "K0012", "nasil": "<bu kurala nasıl uydun, tek satır>"}],
- "rapor": "<ne yaptın, zaman damgalı, en çok 10 satır>"}
+ "rapor": "<ne yaptın, zaman damgalı, en çok 10 satır>",
+ "oz_denetim": "<imza anı nasıl teslim edildi, en zayıf an ve neden, taşınan brif maddesi; en çok 4 satır>"}
 ```
 Kurallar:
 - Yalnız kartındaki katmana ve aralığa yaz. Başka katmandaki klibe dokunursan yaman birleşmez; aralığın dışına eklediğin öğe düşer.
@@ -849,6 +913,113 @@ def _muzik_katalogu() -> str:
     return "\n".join(sat) or "- (lisanslı müzik kaydı yok)"
 
 
+def _motion_brif_ozeti(p, stil_ad: str | None) -> str:
+    """G0.5 Yönetmen Motion Brifi (ADR 0062): work/edit/motion-brief.json varsa o, yoksa stil kartından otomatik sentez."""
+    brif_f = p.work / "edit" / "motion-brief.json"
+    if brif_f.is_file():
+        try:
+            veri = json.loads(brif_f.read_text(encoding="utf-8"))
+            return "## G0.5 Yönetmen Motion Brifi (work/edit/motion-brief.json)\n```json\n" + json.dumps(veri, ensure_ascii=False)[:2400] + "\n```"
+        except (OSError, ValueError):
+            pass
+    ybrif = yaratici.oku(p.work)  # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
+    if ybrif and (ybrif.iplik or ybrif.metafor):
+        parca = []
+        if ybrif.metafor:
+            parca.append(f"görsel metafor: {ybrif.metafor}")
+        if ybrif.iplik:
+            parca.append(f"iplik öğe: {ybrif.iplik}")
+        yon_satir = "- Brif yönü (ADR 0064): " + "; ".join(parca) + ". Her hareket ekranda zaten olan bir öğeden doğar."
+    else:
+        yon_satir = (
+            "- Brif beş bölüm (ADR 0063): girdi, yön (tek **iplik öğe** tüm grafikleri bağlar + yasak listesi), yapı (beat başına görsel değişim), "
+            "kurulum (kare yalnız t'den, ölçülen vuruşa kilit), tuzaklar. Her hareket ekranda zaten olan bir öğeden doğar."
+        )
+    satir = [
+        "## G0.5 Sanat Yönetimi & Motion Brifi (ADR 0062)",
+        "- 4-Düzen disiplini (yüzün üstüne ağır kart basma): `konusmaci` ↔ `diyagram-pip` ↔ `ekran-pip` ↔ `tam-kanit`.",
+        "- Anti-Slop yasakları: her öğeye aynı `power2.out`, iniş sonrası boşta sallanan başlık, rastgele ikon serpme, sabit renk/font.",
+        "- Giriş 0.35-0.6 sn (`expo.out`/`power4.out`), çıkış girişten %40-50 kısa (`power2.in`); her metin ≥ 0.5 sn + 0.3 sn/kelime.",
+        yon_satir,
+        "- Eğri adları her kompozisyonda hazır: `giris`, `cikis`, `vurgu`, `oturma` (stil token'ından). GSAP eklentileri: SplitText, drawSVG, morphSVG, motionPath, physics2D.",
+        "- 3D (`uc-*`, three.js): videoda en çok 2, art arda değil; yalnız açılış, kapanış, ürün ya da açıklayan simülasyon anında.",
+    ]
+    if stil_ad:
+        from . import stil_katalog
+        try:
+            kart = stil_katalog.bul(stil_ad)
+            if kart.get("gorsel"):
+                satir.append(f"- Stil ({kart['ad']}) görsel dili: " + "; ".join(kart["gorsel"][:3]))
+            if kart.get("hareket"):
+                satir.append("- Stil hareket dili: " + "; ".join(kart["hareket"][:3]))
+            if kart.get("motion_kisilik"):
+                satir.append(f"- Hareket kişiliği: `{kart['motion_kisilik']}` (motion-design references/yonetmen-katmani.md §2)")
+            if kart.get("motion"):
+                satir.append("- Öncelikli motion şablonları: " + ", ".join(f"`{m}`" for m in kart["motion"][:8]))
+            if kart.get("kacin"):
+                satir.append("- Bu stilde kaçın: " + "; ".join(kart["kacin"][:4]))
+        except SystemExit:
+            pass
+    return "\n".join(satir)
+
+
+def _stil_ozeti(p) -> str:
+    """Hızlı moddaki brif çağrısı için seçili stilin kısa görsel ve hareket dili (ADR 0064)."""
+    from . import stil as stil_mod
+    try:
+        ad = stil_mod.secili_adi(p)
+    except SystemExit:
+        ad = None
+    if not ad:
+        return ""
+    sat = [f"- Seçili stil `{ad}` (renk, font ve eğri token'dan gelir; brif onları değiştirmez)"]
+    try:
+        from . import stil_katalog
+        kart = stil_katalog.bul(ad)
+    except SystemExit:
+        return sat[0]
+    for alan, baslik in (("gorsel", "Görsel dil"), ("hareket", "Hareket dili"), ("kacin", "Kaçın")):
+        if kart.get(alan):
+            sat.append(f"- {baslik}: " + "; ".join(kart[alan][:3]))
+    if kart.get("motion_kisilik"):
+        sat.append(f"- Hareket kişiliği: `{kart['motion_kisilik']}`")
+    return "\n".join(sat)
+
+
+def _komsu_grafikler(k: Kurgu, aralik: tuple[float, float] | None) -> str:
+    """Komşu zaman dilimlerindeki sınır grafikleri: dilim sınırında MOTION_ART_ARDA tekrarını önler."""
+    if not aralik:
+        return ""
+    a, b = aralik
+    gr = []
+    for c in sorted(k.klipler, key=lambda x: x.bas):
+        if c.tur != "motion":
+            continue
+        ad = (c.bilesen.ad if c.bilesen else None) or (f"hf:{c.hf['ad']}" if c.hf else None) or (c.sablon or {}).get("ad")
+        if ad:
+            gr.append((c.bas, ad, c.id))
+    once = [x for x in gr if x[0] < a][-2:]
+    sonra = [x for x in gr if x[0] >= b][:2]
+    if not once and not sonra:
+        return ""
+    sat = ["## Komşu dilim sınır grafikleri (aynı bileşeni art arda koyma)"]
+    if once:
+        sat.append("- Önceki dilim sonu: " + ", ".join(f"{t:.1f}s `{ad}` ({cid})" for t, ad, cid in once))
+    if sonra:
+        sat.append("- Sonraki dilim başı: " + ", ".join(f"{t:.1f}s `{ad}` ({cid})" for t, ad, cid in sonra))
+    return "\n".join(sat)
+
+
+_HF_TOKEN_OZETI = (
+    "## HyperFrames sözleşme & tema.css v2 token özeti (özel y.hf yazarken zorunlu)\n"
+    "- Kök: `background:none`, `<link rel=\"stylesheet\" href=\"tema.css\">`, `data-composition-variables`, tek paused `gsap.timeline({paused:true})` -> `window.__timelines[\"main\"] = tl`.\n"
+    "- Sabit renk/font YASAK; yalnız token kullan: `--vurgu`, `--ikincil`, `--zemin`, `--yazi`, `--soluk`, `--olumlu`, `--olumsuz`, "
+    "`--vurgu-rgb`, `--zemin-rgb`, `--yazi-rgb`, `--yuzey-cam`, `--kenar-ince`, `--yukselti-golge`, `--izgara-desen`, "
+    "`--ease-enter`, `--ease-exit`, `--ease-emphasis`, `--ease-settle`, `--font`, `--font-govde`, `--font-mono`, `--font-rakam`, `--kose`.\n"
+    "- Yasak: `Math.random`, `Date.now`, `requestAnimationFrame`, `setTimeout`, CSS `@keyframes`/`transition`, `repeat:-1`."
+)
+
+
 def _istek_metni(istek: str | None) -> str:
     return " ".join((istek or "").split()) or "(özel istek yok: seçili stile ve videoya göre en iyi edit)"
 
@@ -886,43 +1057,70 @@ def paket(p, k: Kurgu, rol: str, soz: dict, kok: Path, atama: Atama | None = Non
     if "grafik" in katmanlar:
         izinli_native = set(depo.secili_native) if (depo and depo.yalniz_bunlar) else None
         katalog_satirlari = native_motion.katalog_ozeti(izinli=izinli_native)
+        kasa_metin = aiedit._kasa_bolumu() if izinli_native is None else ""
+        komsu_metin = _komsu_grafikler(k, tuple(g.aralik) if g.aralik else None)
         sabit += [
-            aiedit._hf_katalogu(p.work),  # birincil motor (ADR 0050)
+            _motion_brif_ozeti(p, stil_ad),
+            *([kasa_metin] if kasa_metin else []),
+            aiedit._hf_katalogu(p.work, (k.sekans.w, k.sekans.h)),  # birincil motor (ADR 0050, 0062 — canlı gömme)
+            _HF_TOKEN_OZETI,
             "## Native grafik kataloğu (HyperFrames karşılığı yoksa; yalnız bunlar)", *(katalog_satirlari or ["- (yalniz_bunlar aktif, seçili native bileşen yok)"]),
-            "## Anlatı hiyerarşisi (rastgele ikon serpme YASAK)",
-            "- Hook (0–3 sn): `tipografi/kinetik-baslik` (vurgu kelimesi patlar)\n"
-            "- Bölüm / örnek ayrımları: `tipografi/bolum-baslik` (üst kapsül: `01 · KLASİK REKLAM`)\n"
-            "- Değerlendirme / sonuç / metrik anları: `tipografi/durum-rozeti` veya `veri/*`\n"
-            "- Zirve fikir / tezat anı: `tipografi/vurgu-soz` (~~eski~~ → **yeni**, gerekirse `odak_karart: true`) veya `veri/karsilastirma`\n"
-            "- Kısa vurucu kelime: `tipografi/kayan-kelime`\n"
-            "- Kapanış çağrısı: `kart/cta-karti`\n"
-            "- İkonlar (`ikon/*`) yalnız 1–1.3 sn'lik seyrek destekçidir: grafik kliplerinin en çok %30'u ikon olabilir; konuşmacının yüzünü ve odak nesnesini/ürünü kapatma.",
+            *([komsu_metin] if komsu_metin else []),
+            # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
+            "## Grafik ilkeleri",
+            "- Bileşeni katalogdaki \"Ne zaman\" satırına, yaratıcı brifin görsel metaforuna, iplik öğesine ve enerji eğrisine göre seç; "
+            "ezber şablonla doldurma.\n"
+            "- Aralığına düşen imza anını kendi bileşen ya da özel kompozisyon seçiminle teslim et; sakin enerji dilimlerini bilinçli olarak boş bırakabilirsin.\n"
+            "- İkonlar (`ikon/*`) yalnız seyrek destekçidir ve grafik kliplerinin en çok %30'u olabilir.\n"
+            "- Tam-yüz konuşmacının üstüne ağır kart koyma; dört düzen arasında dolaş (`konusmaci` / `diyagram-pip` / `ekran-pip` / `tam-kanit`).\n"
+            "- Bileşen ve kompozisyon seçimini raporda gerekçelendir.",
             "## Kesim geçişleri (kurgu editörünün; yalnız bilgi)", gecis_listesi,
         ]
     if any(x in katmanlar for x in ("sfx", "muzik", "stil")):
         from . import olaysesi
         sabit += [
             "## Ses rolleri (dosya seçme, rol yaz; olaysesi seçer)", ", ".join(sorted({*olaysesi.ROLLER, *olaysesi.KOMBOLAR})),
+            # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
             "## Yönetmenlik kuralları (ses ve stil)",
-            "- Her bölüm açılışında (`acilis`, `vurgu_guclu`), geçişte ve önemli grafik girişinde katmanlı, kulağı yormayan gerçek SFX rol olayı kullan (sentetik yok; orta noktalı V1 geçişinin ve sesli hazır efektin sesi kendiliğinden gelir, aynı yere ikinci geçiş sesi koyma).\n"
-            "- Hikâye ve duygu anlarında müzikte dinamik nefes/ducking (`ses.duck: true`, gerekirse `ses.kf`) kur.\n"
+            "- Ses efekti bölüm açılışı (`acilis`, `vurgu_guclu`), geçiş ve önemli grafik girişi için birer adaydır ve enerji eğrisini izler; "
+            "sessizlik de bilinçli bir seçimdir (sentetik yok; orta noktalı V1 geçişinin ve sesli hazır efektin sesi kendiliğinden gelir, aynı yere ikinci geçiş sesi koyma).\n"
+            "- Hikâye ve duygu anlarında müzikte dinamik nefes ve ducking (`ses.duck: true`, gerekirse `ses.kf`) kur; doruk öncesi nefes boşaltmak güçlü kontrast üretir.\n"
             "- Biçim: `\"ses\": {\"gain_db\": -12, \"duck\": true, \"kf\": [{\"t\": 0.0, \"v\": -12}, {\"t\": 48.9, \"v\": -30, \"ease\": \"yumusak\"}]}`; "
             "`kf.t` klibin başından sn, `kf.v` dB. Müzik klibi `{\"tur\": \"ses\", \"iz\": \"A3\", \"kaynak\": \"<id>\", \"olay\": {\"muzik\": true}}`.",
         ]
     if "muzik" in katmanlar:
         sabit += ["## Müzik kütüphanesi (yalnız bunlar; `kaynaklar`a bu yolla ekle)", _muzik_katalogu()]
     if "kurgu" in katmanlar:
+        stil_kurgu_ek = ""
+        if stil_ad:
+            from . import stil_katalog
+            try:
+                sk = stil_katalog.bul(stil_ad)
+                par = []
+                if sk.get("gecis"):
+                    par.append("izinli geçişler (`gecis`): " + ", ".join(f"`{x}`" for x in sk["gecis"]))
+                if sk.get("kacin"):
+                    par.append("kaçın (`kacin`): " + "; ".join(sk["kacin"][:4]))
+                if par:
+                    stil_kurgu_ek = f"\n- Seçili stil (`{stil_ad}`) bağlayıcıdır — " + " | ".join(par) + "."
+            except SystemExit:
+                pass
         sabit += [
             "## Geçiş türleri (orta noktası kesimde, sesi kendiliğinden)", gecis_listesi,
+            # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
             "## Yönetmenlik kuralları (kurgu)",
-            "- 0.4 sn üstü ölü boşlukları, dolgu ve tekrarları kelime sınırında kırp.\n"
-            "- Konuşan kafada durağanlığı kırmak için `el_kamerasi` + `hizli_zoom` / `punch` çeşitliliği kur.\n"
-            "- Bölüm geçişlerinde seçili stile uygun `zoom_kirbac`, `film_yanigi`, `bolunme`, `yirtma`, `bozulma` (veya stilin `gecis` listesi) kullan.\n"
-            "- Büyük tipografi zirvelerinde arka planı sakinleştirmek için `odak_karart` hazır efektini kullan.",
+            "- 0,4 saniye üstü ölü boşlukları, dolgu ve tekrarları kelime sınırında kırp (bilinçli dramatik sessizlik anları hariç).\n"
+            "- Konuşan kafada yalnız durağanlık 4,5 saniyeyi geçerse `punch`, `el_kamerasi` veya `hizli_zoom` araçlarını değerlendir; her konuşan klibe otomatik koyma.\n"
+            "- `odak_karart` aracını yalnız tipografi ekranda tek başına durmalıysa ve arka planı sakinleştirmek gerekiyorsa kullan.\n"
+            "- Geçiş anlam değişimini söyler; kesimlerin %90'ı düz kesim kalır, videoda en çok 2–3 geçiş ailesi seçilir ve seçili stilin `gecis` listesi ile `kacin` listesi bağlayıcıdır."
+            + stil_kurgu_ek
+            + "\n- Yaratıcı yetki: match cut, hız rampası (`hiz`), J/L cut, pattern interrupt ve sessizlik sonrası vuruş araçlarını içerik ve brif gerektirdikçe kullan; zaman dilimin başına en az bir bilinçli yaratıcı karar ver ve bunu raporda ve `oz_denetim` içinde gerekçelendir.",
             aiedit._hazir_katalogu(),
         ]
     kendi = [c.model_dump(exclude_defaults=True) for c in k.klipler if atama.sahip(k, c) == rol]
     degisken = ["## Kullanıcı isteği", _istek_metni(istek),
+                *yaratici.ekip_bolumu(yaratici.gecerli(p.work, istek)),  # ADR 0064: G0.5 brif bütün editörlere
+                *([m] if (m := muzik_once.metin(soz.get("muzik_once"))) else []),  # ADR 0064 adım 8: müzik öncülü
                 "## Görev kartın (orkestratör)", f"- Katmanlar: {', '.join(KATMAN_ADI[x] for x in katmanlar)}", f"- Aralık: {aralik}",
                 *([f"- Odak: {g.odak}"] if g.odak else []),
                 "## Zorunlu kurallar (her biri için kural_uyum yaz)", *(_kural_metinleri(zorunlu or [], d) or ["- (yok)"]),
@@ -951,17 +1149,30 @@ def _o_basi(baslik: str) -> list[str]:
             "Yanıtın tamamı tek JSON nesnesi."]
 
 
-def plan_paketi(p, k: Kurgu, ayar: EkipAyar, istek: str | None, varsayilan: Plan) -> str:
+def plan_paketi(p, k: Kurgu, ayar: EkipAyar, istek: str | None, varsayilan: Plan, *, suru_bolumu: list[str] | None = None,
+                brif_iste: bool = False) -> str:
+    """Orkestratörün plan istemi. `suru_bolumu` (ADR 0059): sabit seviye sayıları yerine ajan bütçesi ve seçilebilir modeller;
+    hook'u E1 seçtiği için çıktıda hook yok, kartlarda motor/model/seviye var."""
     ne, nk = SEVIYE[ayar.ekip_seviye]
     son = _bitis(k)
     d = kural.yukle()
     etkin = kural.secim(d, rol="hepsi", **_kapsam(p))
     v1 = [c for c in k.klipler if c.iz == "V1"]
+    if suru_bolumu:
+        cikti = ('{"gorevler": [{"slot": "E1", "katmanlar": ["kurgu"], "aralik": null, "odak": "", "kurallar": ["K0003"]},\n'
+                 '              {"slot": "E2", "katmanlar": ["grafik"], "aralik": [0, 20.5], "odak": "<en çok 3 satır>", "kurallar": [], '
+                 '"motor": "claude|antigravity|codex|opencode|null", "model": "<listeden ya da null>", "seviye": "medium|null"}],\n'
+                 ' "kk_gorevler": [{"slot": "K1", "rol": "kurgu|gorsel|ses|kurgu-ses|genel|kural|izleyici", "aralik": null, "odak": "", '
+                 '"motor": null, "model": null}],\n')
+    else:
+        cikti = ('{"hook": {"bas": <sn>, "son": <sn>, "neden": "<tek satır>"},\n'
+                 ' "gorevler": [{"slot": "E1", "katmanlar": ["kurgu"], "aralik": null, "odak": "<en çok 3 satır: isteğe göre ne yapacak>", "kurallar": ["K0003"]}],\n'
+                 ' "kk_gorevler": [{"slot": "K1", "rol": "kurgu|gorsel|ses|kurgu-ses|genel|kural|izleyici", "aralik": null, "odak": ""}],\n')
     return "\n\n".join([
         *_o_basi("plan (G0)"),
         "## Kullanıcı isteği", _istek_metni(istek),
-        "## Seviye", f"`{ayar.ekip_seviye}`: {ne} editör ({', '.join(editorler(ayar.ekip_seviye))}), {nk} kalite kontrol "
-        f"({', '.join(kontroller(ayar.ekip_seviye))}). Sayılar sabittir; işi sen dağıtırsın.",
+        *(suru_bolumu or ["## Seviye", f"`{ayar.ekip_seviye}`: {ne} editör ({', '.join(editorler(ayar.ekip_seviye))}), {nk} kalite kontrol "
+                          f"({', '.join(kontroller(ayar.ekip_seviye))}). Sayılar sabittir; işi sen dağıtırsın."]),
         "## Katmanlar", *[f"- `{x}`: {KATMAN_TANIM[x]}" + (" (bölünmez: tek editör, aralık null)" if x in BOLUNMEZ else " (zaman dilimlerine bölünebilir)")
                           for x in KATMANLAR],
         "## Kalite kontrol rolleri", *[f"- `{r}`: {KK_ROL_ADI[r]}" for r in KK_ROL_ADI],
@@ -970,11 +1181,11 @@ def plan_paketi(p, k: Kurgu, ayar: EkipAyar, istek: str | None, varsayilan: Plan
         "## Etkin kurallar (id, önem, rol)", *([f"- [{x.id} {x.onem} {x.hedef_rol}] {x.metin}" for x in etkin] or ["- (yok)"]),
         "## Varsayılan dağıtım (istek özel bir ağırlık istemiyorsa bunu temel al)", "```json",
         varsayilan.model_dump_json(include={"gorevler", "kk_gorevler"}), "```",
-        "## Çıktı", "```json\n"
-        '{"hook": {"bas": <sn>, "son": <sn>, "neden": "<tek satır>"},\n'
-        ' "gorevler": [{"slot": "E1", "katmanlar": ["kurgu"], "aralik": null, "odak": "<en çok 3 satır: isteğe göre ne yapacak>", "kurallar": ["K0003"]}],\n'
-        ' "kk_gorevler": [{"slot": "K1", "rol": "kurgu|gorsel|ses|kurgu-ses|genel|kural|izleyici", "aralik": null, "odak": ""}],\n'
-        ' "gerekce": "<dağıtımın nedeni, en çok 5 satır>"}\n```',
+        # ADR 0064: brif yoksa (ya da istek değiştiyse) orkestratör yaratıcı yönü aynı yanıtta yazar; ek çağrı yok.
+        *(yaratici.plan_bolumu() if brif_iste else []),
+        "## Çıktı", "```json\n" + cikti
+        + (' "yaratici_brif": ' + yaratici.CIKTI_ORNEGI.replace("\n", "\n  ") + ",\n" if brif_iste else "")
+        + ' "gerekce": "<dağıtımın (ve model seçiminin) nedeni, en çok 5 satır>"}\n```',
         "Kurallar:\n"
         f"- Her katman × zaman tam bir editörde olur. Bölünen katmanda aralıklar 0–{son:.2f} sn'yi boşluksuz ve örtüşmesiz kapsar; "
         "kartın aralığı kartın bütün katmanlarına uygulanır. Kurgu ve stil bölünmez.\n"
@@ -991,6 +1202,9 @@ def _yama_ozeti(y: Yama) -> list[str]:
         ne = ((c.get("bilesen") or {}).get("ad") or (c.get("hf") or {}).get("ad") or (c.get("olay") or {}).get("tur")
               or (c.get("metin") or "")[:30] or c.get("tur"))
         sat.append(f"  - + {c.get('id')} {c.get('iz')} {c.get('tur')} @{c.get('bas', 'çapa')} {ne}")
+    # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
+    if y.oz_denetim and y.oz_denetim.strip():
+        sat.append("- Öz denetim: " + " ".join(y.oz_denetim.split())[:200])
     return sat
 
 
@@ -1022,6 +1236,9 @@ def triyaj_paketi(istek: str | None, bulgular: list[dict], atama: Atama) -> str:
         "## Çıktı", '```json\n{"kabul": ["K1-001"], "red": [{"id": "K2-003", "neden": "<neden yanlış pozitif>"}], '
         '"kural_onay": ["<kural_adayi onaylanan bulgu id>"], "not": ""}\n```',
         "Ölçüt:\n- Kanıtı ve ölçülebilir beklentisi olan bulgu kabul edilir; isteğe aykırı ya da kanıtsız bulgu reddedilir.\n"
+        # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
+        "- `etki` bulgusu zaman damgası, kare kanıtı ve brif maddesine (ya da kullanıcı isteğine) bağlı somut beklenti taşıyorsa kabul edilir; "
+        "yalnız zevk tartışmasıysa reddedilir.\n"
         "- Kural adayı genelleşmiş, projeye özgü olmayan, tek emir satırıysa onaylanır; onaylanan aday kural deposuna işlenir ve "
         "düzeltmede editörlere zorunlu kural olarak gider.",
     ]) + "\n"
@@ -1084,13 +1301,31 @@ def kontrol_istemi(p, kg: KkGorev, girdi: dict, atama: Atama, istek: str | None)
         for r in KK_KURAL_ROLU.get(kg.rol, ["hepsi"]):
             sat += kural.paket(d, rol=r, **kap).splitlines()
         kurallar = "\n".join(dict.fromkeys(sat))
+    ybrif = yaratici.oku(p.work)  # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
+    if ybrif is not None:
+        olcut_kaynagi = "yaratıcı brife"
+        olcut_detay = ("imza anı teslim edildi mi, enerji eğrisi (sakin ve doruk bölümler) hissediliyor mu, "
+                       "brifteki yasak klişelerden biri kullanılmış mı, ")
+    else:
+        olcut_kaynagi = "kullanıcı isteğine"
+        olcut_detay = ("ana fikir ya da doruk anı teslim edildi mi, enerji ve ritim değişimi hissediliyor mu, "
+                       "tekrarlayan şablon klişeleri var mı, ")
     satir = [
         f"# Kalite kontrol {kg.slot}: {KK_ROL_ADI[kg.rol]}",
         "Rol tanımın sistem isteminde (ya da bu metnin sonunda). Hiçbir dosyayı değiştirme.",
         "## Kullanıcı isteği", _istek_metni(istek),
+        *(["## Yaratıcı brif", yaratici.metin(ybrif)] if ybrif is not None else []),
+        "## Üretim değeri",
+        f"Taslağı yalnız kusur için değil, {olcut_kaynagi} karşı da oku: {olcut_detay}"
+        "hook ilk saniyelerde kaydırmayı durduruyor mu? Kendine \"bu video şablon gibi mi, yoksa bu içeriğe özgü bir iş mi?\" sorusunu sor.\n"
+        "- Sıradanlık, eksik imza anı, düz enerji, yasak klişe ya da zayıf hook görürsen `etki` kategorisinde bulgu yaz; "
+        "`kanit` yine paftadaki karenin tam yolu, `beklenen` brif maddesine (brif yoksa kullanıcı isteğine) bağlı somut ölçüt olsun.\n"
+        "- Yanıt JSON'una 1–5 arası `uretim_puani` ekle (`hook`, `imza_ani`, `brif_uyumu`, `ozgunluk`, `ritim_enerji`).",
         *(["## Bakacağın aralık", f"Yalnız {kg.aralik[0]:.1f}–{kg.aralik[1]:.1f} sn."] if kg.aralik else []),
         *(["## Orkestratörün odağı", kg.odak] if kg.odak else []),
-        *(["## Önce paftaları aç (her biri 12 kare, köşede saniye)", *[f"- `{Path(f).resolve()}`" for f in girdi["_paftalar"]],
+        # Claude'da paftalar mesaja görsel olarak eklidir (ADR 0058); öteki motorlar yoldan açar.
+        *(["## Önce paftalara bak (her biri 12 kare, köşede saniye; mesajda görsel olarak ekliyse ondan, değilse bu yollardan aç)",
+           *[f"- `{Path(f).resolve()}`" for f in girdi["_paftalar"]],
            f"Tek kareyi yalnız ayrıntı gerektiğinde aç, en çok {QC_TEK_KARE}. Kareleri tek tek gezme; pafta yeter."]
           if girdi.get("_paftalar") else []),
         *(["## vedit'in ölçtükleri (zaten bulgu; tekrar yazma, yalnız gözle görülen kusura bak)", *[f"- {x}" for x in girdi["_vedit"]]]
@@ -1116,8 +1351,9 @@ def kontrol_istemi(p, kg: KkGorev, girdi: dict, atama: Atama, istek: str | None)
         "## Etkin kurallar (bunlara göre denetle)", kurallar or "- (yok)",
         "## Yanıt", "Yanıtın sonunda tek bir ```json bloğu ver, başka JSON verme:",
         '```json\n{"bulgular": [{"id": "' + kg.slot + '-001", "hedef": "E1", "onem": "P1", "zaman": [12.4, 13.1], "katman": "V1", '
-        '"kategori": "stil|okunurluk|ritim|ses|teknik|tutarlilik", "kanit": "<kare yolu>", "sorun": "", "beklenen": "", '
+        '"kategori": "stil|okunurluk|ritim|ses|teknik|tutarlilik|etki", "kanit": "<kare yolu>", "sorun": "", "beklenen": "", '
         '"kural_id": "K0012 | null", "kural_adayi": "YAPMA: ... | null"}],\n'
+        ' "uretim_puani": {"hook": 4, "imza_ani": 2, "brif_uyumu": 3, "ozgunluk": 3, "ritim_enerji": 4},\n'
         ' "brif": "<düzeltme brifi, markdown: bağlam, P0→P2 maddeler, her maddede zaman damgası ve ölçülebilir kabul ölçütü, dokunulmayacaklar>"}\n```',
     ]
     f = girdi["_kok"] / f"{kg.slot}.istem.md"
@@ -1165,6 +1401,66 @@ def kural_denetimi(p, taban: Kurgu, yamalar: dict[str, Yama], atama: Atama, zoru
         if not kim:
             genel.append(h[:300])
     return {s: v for s, v in ihlal.items() if v}, genel
+
+
+def _uyari_anahtari(u: dict) -> tuple[str, str]:
+    return u["kod"], u.get("klip") or u["kanit"]
+
+
+def yeni_uyarilar(p, once: Kurgu | None, sonra: Kurgu, atama: Atama, adaylar) -> dict[str, list[str]]:
+    """`sonra`da olup `once`de olmayan kurgu_kalite uyarıları, slot başına metin olarak (`once` None: hepsi).
+
+    Sahip adaylar (bu turda yama yazanlar) içinden klip id'siyle bulunur; bulunamazsa bütün adaylara gider: uyarıyı
+    bu turun yamalarından biri doğurdu. WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md (G6 uyarı kapısı)."""
+    adaylar = sorted(set(adaylar), key=_no)
+    if not adaylar:
+        return {}
+    t = tema_token.oku(kurgu.etkin_tema(p, sonra.motion_tema))
+    eski = {_uyari_anahtari(u) for u in kurgu_kalite.uyarilar(once, t, p=p)} if once is not None else set()
+    sahipler = {c.id: s for c in sonra.klipler if (s := atama.sahip(sonra, c))}
+    out: dict[str, list[str]] = {}
+    for u in kurgu_kalite.uyarilar(sonra, t, p=p):
+        if _uyari_anahtari(u) in eski:
+            continue
+        kim = [s for s in _klip_sahipleri(u["kanit"], sahipler) if s in adaylar] or adaylar
+        for s in kim:
+            out.setdefault(s, []).append(f"Uyarı kapısı ({u['bas']:.2f} sn {u['kod']}): {u['kanit']}. {u['oneri']}. "
+                                         + ("Bu uyarıyı senin düzeltmen doğurdu; bulgu düzeltmesini koru, uyarıyı gider." if once is not None
+                                            else "Senin klibin; bulgularla birlikte bunu da gider."))
+    return out
+
+
+def _hata_klipleri(h: str, ids) -> list[str]:
+    """Denetim satırının yapısal klip kimlikleri: `<id>: ...` başı ya da `<iz>: <a> ile <b> çakışıyor`. Serbest metin taranmaz:
+    geçerli değer listeleri (ör. `hook`, `vurgu`) aynı adlı sağlıklı klibi düşürmesin."""
+    if m := re.match(r"^\S+: (\S+) ile (\S+) çakışıyor", h):
+        return [x for x in m.groups() if x in ids]
+    m = re.match(r"^([^:\s]+):", h)
+    return [m.group(1)] if m and m.group(1) in ids else []
+
+
+def render_kurtar(p, k: Kurgu, hatalar: list[str], atama: Atama, br: dict) -> list[str]:
+    """Render'ı bozan hata yalnız belli kurgu dışı kliplerdeyse o klipler düşer, kalan hata döner (boşsa kurgu temiz).
+
+    WHY: bkz. wiki/decisions/0059-swarm-edit.md. g4b koşusunda tek rozetin parametre tipi (`seviye: 'yuksek'`) G3'te bütün
+    edit'i durdurdu. Kurgu katmanı (V1, konuşma sesi) düşürülmez: hata orada ya da klipsizse eski davranış (durdur) sürer.
+    Düşen klip sahibine P1 bulgusu olarak gider (G4 birleştirici, K9), G6'da doğru biçimde yeniden eklenebilir."""
+    ids = {c.id: c for c in k.klipler}
+    esle = {h: _hata_klipleri(h, ids) for h in hatalar}
+    kotu = {x for v in esle.values() for x in v}
+    if not kotu or not all(esle.values()) or any(katman_sinifi(k, ids[x].iz, ids[x]) == "kurgu" for x in kotu):
+        return hatalar
+    sahip = {x: atama.sahip(k, ids[x]) for x in kotu}
+    k.klipler = [c for c in k.klipler if c.id not in kotu]
+    if kurgu.denetle(p, k):
+        k.klipler = sorted([*k.klipler, *(ids[x] for x in kotu)], key=lambda c: c.bas)
+        return hatalar
+    for x in sorted(kotu):
+        c, neden = ids[x], next(h for h, v in esle.items() if x in v)
+        br["dusen"].append(f"{sahip[x]}:{x}(render hatası)")
+        br.setdefault("render_bulgu", []).append({"hedef": sahip[x], "klip": x, "iz": c.iz, "zaman": [round(c.bas, 2), round(c.bas + c.sure, 2)],
+                                                  "sorun": f"render hatası yüzünden düştü: {neden[:200]}"})
+    return []
 
 
 # ---------------------------------------------------------------- QC birleştirici
@@ -1249,60 +1545,10 @@ def token_ozeti(meta: dict, istem_metni: str, cikti_metni: str, gorsel: int = 0)
 
 # ---------------------------------------------------------------- render
 
-def parcali_render(p, araliklar: list[tuple[float, float]], *, es: int = 2) -> Path:
-    """Etkilenen aralıkları paralel render eder ve mevcut taslağa ekler (taslak çözünürlüğü, veryfast)."""
-    taslak = p.work / "renders" / "taslak.mp4"
-    if not taslak.exists() or not araliklar:
-        return hizli.taslak(p)
-    props = hizli._props(p)
-    hizli._public_hazirla(p)
-    fps = kurgu.oku(p.work).sekans.fps
-    kok = p.work / "renders" / "parca"
-    kok.mkdir(parents=True, exist_ok=True)
-
-    from . import hf_kurgu
-    motor, neden = hf_kurgu.motor_sec(p, props)  # WHY: ADR 0051; motor bir kez seçilir, proje bir kez derlenir
-    print(f"  Motor: {'HyperFrames' if motor == 'hf' else 'Remotion'} ({neden})", flush=True)
-
-    def bir(i_ab):
-        i, (a, b) = i_ab
-        out = kok / f"p{i}.mp4"
-        if motor == "hf":
-            hf_kurgu.render(p, props, out, kalite="draft", aralik=(a, b), olcek=0.5)
-        else:
-            hizli._remotion(props, p.work / "public", out, "--image-format=jpeg", "--x264-preset=veryfast", "--crf=23", "--scale=0.5",
-                            f"--frames={int(a * fps)}-{int(b * fps) - 1}")
-        return out
-
-    # HyperFrames parçaları sırayla: her parça work/public'e kendi pencereli derlemesini yazar (ADR 0051).
-    with ThreadPoolExecutor(max_workers=1 if motor == "hf" else es) as h:
-        parcalar = list(h.map(bir, enumerate(sorted(araliklar))))
-    # Eski taslağın aralık dışı bölümleri + yeni parçalar; sınırda yeniden kodlama (taslak kalitesi yeter).
-    tv = ff.probe(taslak).get("video") or {}
-    tw, th = tv.get("width", 540), tv.get("height", 960)
-    girdiler, filtre, n = ["-i", str(taslak)], [], 0
-    sinir = [0.0] + [x for ab in sorted(araliklar) for x in ab] + [float(ff.probe(taslak)["duration"])]
-    for j, (a, b) in enumerate(zip(sinir[::2], sinir[1::2])):
-        if b - a > 1 / fps:
-            filtre.append(f"[0:v]trim={a}:{b},setpts=PTS-STARTPTS[v{n}];[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS[a{n}]")
-            n += 1
-        if j < len(parcalar):
-            girdiler += ["-i", str(parcalar[j])]
-            # Parça başka motordan ya da ölçekten gelebilir: taslağın boyutuna eşitlenir (ADR 0051).
-            filtre.append(f"[{len(girdiler) // 2 - 1}:v]scale={tw}:{th},setsar=1,setpts=PTS-STARTPTS[v{n}];[{len(girdiler) // 2 - 1}:a]asetpts=PTS-STARTPTS[a{n}]")
-            n += 1
-    zincir = ";".join(filtre) + ";" + "".join(f"[v{i}][a{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=1[v][a]"
-    yeni = p.work / "renders" / "taslak.yeni.mp4"
-    subprocess.run(["ffmpeg", "-v", "error", "-y", *girdiler, "-filter_complex", zincir, "-map", "[v]", "-map", "[a]",
-                    "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-c:a", "aac", str(yeni)], check=True)
-    os.replace(yeni, taslak)
-    return taslak
-
-
 # ---------------------------------------------------------------- ajan çağrısı ve çıktı çözümleme
 
 def _cagir(p, ayar: EkipAyar, rol: str, metin: str, kok: Path, mod: str, durum, *, roller=(), araclar: str = "",
-           dizinler: tuple = ()) -> tuple[str, dict]:
+           dizinler: tuple = (), gorseller: list[Path] | None = None) -> tuple[str, dict]:
     """Tek ajan çağrısı: istem dosyası + yanıt; bir yeniden deneme, sonra yedek motor. (yanıt, ölçüm).
 
     Claude yalın çağrılır (ADR 0054): metin stdin'den, rol tanımı sistem isteminden. Dosyayı okuyan motorlar (agy) için
@@ -1322,7 +1568,7 @@ def _cagir(p, ayar: EkipAyar, rol: str, metin: str, kok: Path, mod: str, durum, 
         durum.slot(rol, durum="yedek" if yedek else "calisiyor", cikti=str(kok / f"{rol}.cikti.txt"),
                    motor=sl.yedek_motor if yedek else sl.motor, model=sl.yedek_model if yedek else sl.model)
         ok, yanit, meta = ekip.ajan(sl, istem, mod, kok / rol, yedek=yedek, metin=metin, sistem=sistem or None,
-                                    araclar=araclar, dizinler=dizinler)
+                                    araclar=araclar, dizinler=dizinler, gorseller=gorseller)
         gorsel = 30 if rol.startswith("K") else 0
         meta.update(deneme=deneme, **token_ozeti(meta, metin, yanit, gorsel))
         # WHY: v1 ölçümünde 5-8 sn ve 0 token biten Claude slotları başarılı sayılıyordu (sessiz başarısızlık).
@@ -1370,6 +1616,49 @@ def _yama_cikar(metin: str) -> Yama | None:
     return _sema(metin, Yama, ("ekle", "guncelle", "sil", "hook", "kural_uyum"))
 
 
+class OnUretim:
+    """Editörün yaması gelir gelmez motion webm'lerini arka planda üretir; G3'teki bağlama önbellekten okur.
+
+    WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md. HyperFrames ve şablon webm'i dosya adındaki özetle önbelleklidir
+    (`hf_grafik.uret`, `motion.sablon_uret`); editörler LLM beklerken CPU boştur, render seri yolda G3'e yığılıyordu.
+    Hata yutulur: bağlama aynı işi yeniden dener ve kendi hata yolunu (`_bagla`) izler."""
+
+    def __init__(self, p, k: Kurgu, es: int = 2):
+        self.p, self.k, self.havuz, self.isler, self.kilit = p, k, ThreadPoolExecutor(max_workers=es), {}, threading.Lock()
+
+    def _uret(self, alan: str, d: dict) -> None:
+        from . import hf_grafik, motion
+        tema = kurgu.etkin_tema(self.p, d.get("tema") or self.k.motion_tema)
+        hedef = self.p.work / "public" / "motion"
+        if alan == "hf":
+            hf_grafik.uret(d["ad"], d.get("param"), tema, self.p.work, hedef, sekans=(self.k.sekans.w, self.k.sekans.h))
+        else:
+            motion.sablon_uret(d["ad"], d.get("param"), tema, hedef, sekans=(self.k.sekans.w, self.k.sekans.h))
+
+    def ekle(self, y: Yama) -> None:
+        for c in [*y.ekle, *y.guncelle]:
+            for alan in ("hf", "sablon"):
+                d = c.get(alan) if isinstance(c, dict) else None
+                if not isinstance(d, dict) or not d.get("ad"):
+                    continue
+                anahtar = (alan, json.dumps(d, sort_keys=True, ensure_ascii=False))
+                with self.kilit:
+                    if anahtar not in self.isler:
+                        self.isler[anahtar] = self.havuz.submit(self._uret, alan, dict(d))
+
+    def bekle(self) -> int:
+        """Bitenlerin sayısı; hata sayılmaz (bağlama kendisi dener)."""
+        n = 0
+        for f in list(self.isler.values()):
+            try:
+                f.result()
+                n += 1
+            except Exception:  # noqa: BLE001 - ön üretim en iyi çaba
+                pass
+        self.havuz.shutdown(wait=False)
+        return n
+
+
 def _bagla(p, k: Kurgu) -> None:
     """motion_bagla; render edilemeyen grafik (bilinmeyen hf adı, alfasız çıktı) ekip akışını düşürmez, klip çıkarılır."""
     try:
@@ -1412,6 +1701,31 @@ def ajan_eszamanlilik(ayar: EkipAyar, bos: float | None = None) -> int:
     return max(2, min(ayar.es(), int((bos - BELLEK_PAY_GB) / AJAN_BELLEK_GB)))
 
 
+def _uretim_puani_cikar(o: dict | None) -> dict[str, int] | None:
+    """Ham QC JSON sözlüğünden üretim puanını çıkarır ve KontrolCikti ile doğrular (ekip.bulgu_dogrula düşürdüğü için).
+
+    WHY: bkz. wiki/decisions/0064-yaratici-yon.md."""
+    if not isinstance(o, dict) or "uretim_puani" not in o:
+        return None
+    return KontrolCikti.model_validate({"uretim_puani": o.get("uretim_puani")}).uretim_puani
+
+
+def _uretim_puani_ort(puanlar: list[dict[str, int] | None]) -> dict[str, float] | None:
+    """QC kartlarının üretim puanlarından anahtar başına ortalama; geçerli puan yoksa None.
+
+    WHY: bkz. wiki/decisions/0064-yaratici-yon.md."""
+    topla: dict[str, list[int]] = {}
+    for p in puanlar:
+        if not isinstance(p, dict):
+            continue
+        for k, v in p.items():
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                topla.setdefault(k, []).append(v)
+    if not topla:
+        return None
+    return {k: round(sum(v) / len(v), 2) for k, v in topla.items()}
+
+
 def calistir(p, ayar: EkipAyar, *, notu: str | None = None, final: bool = False, tekrar_denetle: bool = False) -> dict:
     kok = p.work / "edit" / "ekip"
     kok.mkdir(parents=True, exist_ok=True)
@@ -1447,60 +1761,125 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
     if es < ayar.es():
         print(f"  Ajan eşzamanlılığı {ayar.es()} → {es} (boş bellek az)", flush=True)
     havuz = ThreadPoolExecutor(max_workers=es)
+    on_uretim = OnUretim(p, k)
+    try:
+        return _akis_govde(p, ayar, kok, durum, notu=notu, final=final, tekrar_denetle=tekrar_denetle, t0=t0, k=k, once=once,
+                           olcum=olcum, kapilar=kapilar, ritim=ritim, havuz=havuz, on_uretim=on_uretim)
+    finally:
+        # WHY: bkz. wiki/decisions/0059-swarm-edit.md. Hata yolunda bekleyen editörler başlamasın; plana paralel E1 ve
+        # süren çağrılar arka planda biter ama yeni iş açılmaz.
+        havuz.shutdown(wait=False, cancel_futures=True)
+
+
+def _akis_govde(p, ayar: EkipAyar, kok: Path, durum, *, notu, final, tekrar_denetle, t0, k, once, olcum, kapilar, ritim, havuz,
+                on_uretim) -> dict:
 
     def kapi(kid: str, d: str, not_: str = ""):
         kapilar[kid] = f"{d}{' · ' + not_ if not_ else ''}"
         durum.kapi(kid, d, not_)
 
-    # G0 plan: orkestratör hook, görev kartları ve zorunlu kurallar yazar
+    # G0 plan. Swarm (ADR 0059): orkestratör ajan sayısını (tavan içinde), kartları ve her ajanın modelini seçer.
+    # Kurgu editörü (E1) plandan bağımsızdır (bölünmez, tam aralık): plan çağrısıyla aynı anda başlar, hook'u o seçer.
     kapi("G0", "acik")
     durum.slot(ORKESTRATOR, rol="Orkestratör")
-    varsayilan = varsayilan_dagitim(ayar.ekip_seviye, k)
-    if ayar.hizli:
-        # Hızlı: orkestratör çağrılmaz; varsayılan dağıtım, hook kurgu editörünündür (ADR 0054).
-        plan, plan_hata = varsayilan, []
-        durum.slot(ORKESTRATOR, durum="atlandi")
-    else:
-        yanit, meta = _cagir(p, ayar, ORKESTRATOR, plan_paketi(p, k, ayar, notu, varsayilan), kok / "plan", "plan", durum, roller=O_ROL)
-        olcum["plan/O"] = meta
-        plan = _sema(yanit, Plan, ("gorevler", "hook"))
-        plan_hata = plan_dogrula(plan, ayar.ekip_seviye, _bitis(k)) if plan else ["plan çözümlenemedi"]
-    dagitim = "hizli" if ayar.hizli else "orkestrator" if not plan_hata else "varsayilan"
-    if plan_hata:
-        hook = plan.hook if plan else None
-        plan = varsayilan.model_copy(update={"hook": hook})
-    atama = Atama(plan.gorevler)
+    son_sn = _bitis(k)
+    boy = "low" if ayar.hizli else suru.varsayilan_boy(son_sn, ayar.tavan())
+    varsayilan = varsayilan_dagitim(boy, k)
+    atama = Atama(varsayilan.gorevler)
     depo = kural.yukle()
-    zorunlu = {g.slot: zorunlu_kurallar(p, g, depo, doldur=dagitim != "orkestrator") for g in plan.gorevler}
-    for g in plan.gorevler:
-        durum.slot(g.slot, rol=", ".join(KATMAN_ADI[x] for x in g.katmanlar), aralik=g.aralik)
-    kk_kart = {g.slot: g for g in plan.kk_gorevler}
-    for g in plan.kk_gorevler:
-        durum.slot(g.slot, rol=KK_ROL_ADI[g.rol], aralik=g.aralik)
-    durum.ayarla(dagitim=dagitim, kurallar={**durum.d["kurallar"], "atanan": sum(len(v) for v in zorunlu.values())})
-    kapi("G0", "gecti", "orkestratör dağıttı" if dagitim == "orkestrator" else "atlandı (hızlı): varsayılan dağıtım" if dagitim == "hizli"
-         else f"varsayılan dağıtım ({'; '.join(plan_hata)[:200]})")
-    soz = sozlesme(p, k, plan.hook, ritim)
+    zorunlu = {g.slot: zorunlu_kurallar(p, g, depo, doldur=True) for g in varsayilan.gorevler}
+    soz = sozlesme(p, k, None, ritim)
+    # WHY: bkz. wiki/decisions/0064-yaratici-yon.md (adım 8). Parça editörlerden önce seçilir; LLM çağrısı yok, analiz önbellekli.
+    if muzik := muzik_once.hazirla(p, yaratici.gecerli(p.work, notu), notu, son_sn):
+        soz["muzik_once"] = muzik
     (kok / "sozlesme.json").write_text(json.dumps(soz, ensure_ascii=False, indent=1), encoding="utf-8")
-    (kok / "plan.json").write_text(plan.model_dump_json(indent=1), encoding="utf-8")
 
-    def editor(rol: str, kdir: Path, *, bulgular=None, kisitlar=None, onceki=None, zor=None, taban=None):
-        yanit, meta = _cagir(p, ayar, rol, paket(p, taban or k, rol, soz, kok, atama, istek=notu, zorunlu=zor or zorunlu.get(rol),
-                                                 bulgular=bulgular, kisitlar=kisitlar, onceki=onceki), kdir, "duzenle", durum,
-                             roller=editor_rolleri(atama, rol))
+    def editor(rol: str, kdir: Path, *, bulgular=None, kisitlar=None, onceki=None, zor=None, taban=None, anlik=None):
+        # anlik: (ayar, atama, zorunlu) sabit görüntüsü. E1 plana paralel çalışırken ana iş parçacığı bu adları yeniden
+        # bağlar; E1 başladığı andaki görüntüyle biter (ADR 0059).
+        ayar_, atama_, zorunlu_ = anlik or (ayar, atama, zorunlu)
+        yanit, meta = _cagir(p, ayar_, rol, paket(p, taban or k, rol, soz, kok, atama_, istek=notu, zorunlu=zor or zorunlu_.get(rol),
+                                                  bulgular=bulgular, kisitlar=kisitlar, onceki=onceki), kdir, "duzenle", durum,
+                             roller=editor_rolleri(atama_, rol))
         olcum[f"{kdir.name}/{rol}"] = meta
         y = _yama_cikar(yanit)
         if y and y.hf:
-            y = hf_ad_ayir(rol, y, atama)
+            y = hf_ad_ayir(rol, y, atama_)
         if y and y.pano:
             pano_ekle(kok, rol, y.pano)
         if y and y.hf:
-            hf_yaz(p, rol, y, atama)  # kompozisyon klipten önce diskte olmalı: birleştirmede denetlenir (ADR 0050)
+            hf_yaz(p, rol, y, atama_)  # kompozisyon klipten önce diskte olmalı: birleştirmede denetlenir (ADR 0050)
+        if y and not hf_hatalari(rol, y, atama_):
+            on_uretim.ekle(y)
         return rol, y
 
-    # G1 düzen: bütün editörler aynı anda
+    # G0.5 yaratıcı brif (ADR 0064): aynı istekle yazılmış ya da kilitli brif yeniden kullanılır. E1 plana paralel başladığı
+    # için ilk turda yalnız var olan brifi görür; düzeltme turları yeni brifi görür.
+    brif = yaratici.gecerli(p.work, notu)
+    brif_durum = "var" if brif else "yok"
+    e1 = atama.kurgu_sahibi()
+    durum.slot(e1, rol=KATMAN_ADI["kurgu"], aralik=None)
+    e1_is = havuz.submit(editor, e1, kok / "duzen", anlik=(ayar, atama, dict(zorunlu)))
+    modeller: dict[str, list[str]] = {}
+    if ayar.hizli:
+        # Hızlı: orkestratör plan yapmaz; varsayılan dağıtım (ADR 0054). Brif yoksa E1 çalışırken tek kısa çağrıyla yazılır.
+        plan, plan_hata = varsayilan, []
+        if brif is None:
+            yanit, meta = _cagir(p, ayar, ORKESTRATOR, yaratici.paket(notu, _digest(p), sure=son_sn, studyo=p.studyo,
+                                                                       stil=_stil_ozeti(p)),
+                                 kok / "brif", "plan", durum, roller=O_ROL)
+            olcum["brif/O"] = meta
+            brif = yaratici.yaz(p.work, _nesne(yanit, ("tez",)), notu)
+            brif_durum = "yeni" if brif else "geçersiz"
+        else:
+            durum.slot(ORKESTRATOR, durum="atlandi")
+    else:
+        try:
+            modeller = suru.model_listesi()
+        except Exception as e:  # noqa: BLE001 - model listesi yoksa orkestratör grup ayarıyla dağıtır
+            print(f"  Model listesi alınamadı ({str(e)[:120]}); kartlar grup ayarıyla çalışır", flush=True)
+        bolum = suru.plan_bolumu(ayar, modeller, ayar.slot(e1))
+        yanit, meta = _cagir(p, ayar, ORKESTRATOR, plan_paketi(p, k, ayar, notu, varsayilan, suru_bolumu=bolum, brif_iste=brif is None),
+                             kok / "plan", "plan", durum, roller=O_ROL)
+        olcum["plan/O"] = meta
+        plan = _sema(yanit, Plan, ("gorevler", "kk_gorevler"))
+        if brif is None:
+            # Plan geçersiz olsa da brif ayrıca kurtarılır: biri ötekini düşürmez.
+            brif = yaratici.yaz(p.work, (_nesne(yanit, ("yaratici_brif",)) or {}).get("yaratici_brif"), notu)
+            brif_durum = "yeni" if brif else "geçersiz"
+        plan_hata = suru.plan_dogrula(plan, ayar.tavan(), son_sn, modeller or None) if plan else ["plan çözümlenemedi"]
+    dagitim = "hizli" if ayar.hizli else "orkestrator" if not plan_hata else "varsayilan"
+    if plan_hata:
+        plan = varsayilan
+    plan = plan.model_copy(update={"hook": None})
+    # Model listesi yoksa kart seçimi doğrulanamaz: uygulanmaz, grup ayarı çalışır.
+    if dagitim == "orkestrator" and modeller and (ez := suru.ezme(plan, ayar, modeller)):
+        ayar = ayar.model_copy(update={"ezme": {**ayar.ezme, **ez}})
+    atama = Atama(plan.gorevler)
+    zorunlu = {g.slot: (zorunlu[g.slot] if g.slot == e1 else zorunlu_kurallar(p, g, depo, doldur=dagitim != "orkestrator"))
+               for g in plan.gorevler}
+    gecerli = {ORKESTRATOR, *atama.gorevler, *(g.slot for g in plan.kk_gorevler)}
+    durum.daralt(gecerli)
+    for g in [*plan.gorevler, *plan.kk_gorevler]:
+        sl = ayar.slot(g.slot)
+        rol = ", ".join(KATMAN_ADI[x] for x in g.katmanlar) if isinstance(g, Gorev) else KK_ROL_ADI[g.rol]
+        durum.slot(g.slot, rol=rol, aralik=g.aralik, **({} if g.slot == e1 else {"motor": sl.motor, "model": sl.model, "seviye": sl.seviye}))
+    kk_kart = {g.slot: g for g in plan.kk_gorevler}
+    durum.ayarla(dagitim=dagitim, en_cok=None if ayar.hizli else ayar.tavan(),
+                 kurallar={**durum.d["kurallar"], "atanan": sum(len(v) for v in zorunlu.values())})
+    ne, nk = len(plan.gorevler), len(plan.kk_gorevler)
+    kapi("G0", "gecti", (f"orkestratör dağıttı: {ne} editör + {nk} QC (tavan {ayar.tavan()})" if dagitim == "orkestrator"
+                         else "atlandı (hızlı): varsayılan dağıtım" if dagitim == "hizli"
+                         else f"varsayılan dağıtım {boy} ({'; '.join(plan_hata)[:200]})") + f" · yaratıcı brif {brif_durum}")
+    (kok / "plan.json").write_text(plan.model_dump_json(indent=1), encoding="utf-8")
+
+    # G1 düzen: E1 zaten çalışıyor; öteki editörler aynı anda
     kapi("G1", "acik")
-    yamalar = {r: y for r, y in havuz.map(lambda r: editor(r, kok / "duzen"), atama.gorevler) if y is not None}
+    otekiler = [r for r in atama.gorevler if r != e1]
+    if e1_is.done() and e1_is.exception():
+        raise e1_is.exception()  # E1 G0'da düştüyse öteki editörler boşa çalışmasın
+    sonuclar = [*havuz.map(lambda r: editor(r, kok / "duzen"), otekiler), e1_is.result()]
+    yamalar = {r: y for r, y in sorted(sonuclar, key=lambda x: _no(x[0])) if y is not None}
     eksik_yanit = [r for r in atama.gorevler if r not in yamalar]
     kapi("G1", "gecti" if not eksik_yanit else "kaldi", f"yanıtsız: {', '.join(eksik_yanit)}" if eksik_yanit else f"{len(yamalar)} yama")
 
@@ -1510,27 +1889,36 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
     karar = None
     # WHY: ADR 0054. Deterministik kapı temizse O'nun kararı beklenmez (arvelior: her koşuda 52 sn seri bekleme).
     o_kapi = not ayar.hizli and bool(ihlal or genel or eksik_yanit)
+
+    def kapi_duzelt(r, brif: str = ""):
+        kis = [*([brif] if brif else []), *ihlal.get(r, [])]
+        return editor(r, kok / "kapi", kisitlar=kis, onceki=yamalar.get(r))
+    # Sert ihlal (eksik kural_uyum, reddedilen yama, yanıtsız editör) orkestratörün kabulüyle geçmez. WHY: ADR 0058; bu yüzden
+    # düzeltmesi O'nun kararı beklenmeden başlar (medium: kapı çağrısı 51 sn, düzeltmeler ardından seri).
+    sert = sorted({s for s, v in ihlal.items() if any(x.startswith(("kural_uyum eksik", "yama reddedildi")) for x in v)}
+                  | set(eksik_yanit), key=_no)
+    erken = {r: havuz.submit(kapi_duzelt, r) for r in sert}
     if o_kapi:
         yanit, meta = _cagir(p, ayar, ORKESTRATOR, kapi_paketi(notu, atama, yamalar, zorunlu, ihlal, genel), kok / "kapi", "plan", durum,
                              roller=O_ROL)
         olcum["kapi/O"] = meta
         karar = _sema(yanit, KapiCikti, ("kararlar",))
-    duzelt = {x.slot: x.brif for x in (karar.kararlar if karar else []) if x.karar == "duzelt" and x.slot in atama.gorevler}
-    # Sert ihlal (eksik kural_uyum, reddedilen yama, yanıtsız editör) orkestratörün kabulüyle geçmez; yanıt yoksa bütün ihlaller.
-    sert = {s for s, v in ihlal.items() if karar is None or any(x.startswith(("kural_uyum eksik", "yama reddedildi")) for x in v)}
-    duzelt.update({s: duzelt.get(s, "") for s in [*sert, *eksik_yanit]})
+    duzelt = {x.slot: x.brif for x in (karar.kararlar if karar else []) if x.karar == "duzelt" and x.slot in atama.gorevler
+              and x.slot not in erken}
+    if karar is None:  # O yanıt vermediyse (ya da çağrılmadıysa) bütün ihlaller düzeltilir
+        duzelt.update({s: "" for s in ihlal if s not in erken})
+    gec = {r: havuz.submit(kapi_duzelt, r, duzelt[r]) for r in sorted(duzelt, key=_no)}
     gelen: list[str] = []
     dusen_duzeltme: list[str] = []
-    if duzelt:
-        def kapi_duzelt(r):
-            kis = [*([duzelt[r]] if duzelt[r] else []), *ihlal.get(r, [])]
-            return editor(r, kok / "kapi", kisitlar=kis, onceki=yamalar.get(r))
-        for r, y in havuz.map(kapi_duzelt, sorted(duzelt, key=_no)):
+    if erken or gec:
+        for r, is_ in [*erken.items(), *gec.items()]:
+            _, y = is_.result()
             if y is not None:
                 yamalar[r] = y
                 gelen.append(r)
         # WHY: düzeltmesi çözümlenemeyen editör eskiden "düzeltilen" sayılıyordu (reel-video E3, 2026-11-23).
-        dusen_duzeltme = [r for r in sorted(duzelt, key=_no) if r not in gelen]
+        dusen_duzeltme = [r for r in sorted([*erken, *gec], key=_no) if r not in gelen]
+        gelen = sorted(gelen, key=_no)
         ihlal, genel = kural_denetimi(p, k, yamalar, atama, zorunlu)
     uyum_eksik = sum(1 for v in ihlal.values() for x in v if x.startswith("kural_uyum eksik"))
     durum.ayarla(kurallar={**durum.d["kurallar"], "uyum_eksik": uyum_eksik})
@@ -1547,36 +1935,55 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
     br["oto"] = oto_duzelt(yeni)
     hatalar = kurgu.denetle(p, yeni)
     if hatalar:
+        hatalar = render_kurtar(p, yeni, hatalar, atama, br)
+    if hatalar:
         # WHY: bozuk kurgu diske yazılırsa Stüdyo önizlemesi ve sonraki her edit aynı hatayla düşer (reel-video 2026-11-23).
         br["denetle"] = hatalar[:10]
         raise SystemExit("Birleşen kurgu render edilemez; diskteki kurgu korunuyor:\n  " + "\n  ".join(hatalar[:10]))
     kurgu.yaz(p.work, yeni, beklenen_rev=taban_rev)  # WHY: kullanıcı Stüdyo'da yazdıysa ezilmez (RevCakismasi)
     yeni = kurgu.oku(p.work)
+    t_bag = time.time()
+    hazir_motion = on_uretim.bekle()
     _bagla(p, yeni)
     kurgu.yaz(p.work, yeni)
-    video = hizli.taslak(p)
+    t_render = time.time()
+    video = hizli.qc_taslak(p)  # WHY: ADR 0058; QC videosu 15 fps, özet aynıysa atlanır
+    alt_sure = {"bagla": round(t_render - t_bag, 1), "render": round(time.time() - t_render, 1), "on_uretim": hazir_motion}  # WHY: ADR 0058; QC videosu 15 fps, özet aynıysa atlanır
     kapi("G3", "gecti" if not br["red"] else "kaldi", f"uygulanan {len(br['uygulanan'])}, reddedilen {len(br['red'])}, düşen öğe {len(br['dusen'])}"
-         + (f", vedit düzeltti {len(br['oto'])}" if br["oto"] else ""))
+         + (f", vedit düzeltti {len(br['oto'])}" if br["oto"] else "")
+         + f"; bağlama {alt_sure['bagla']:g} sn (önceden hazır {alt_sure['on_uretim']}), QC render {alt_sure['render']:g} sn")
 
     # G4 QC: bütün kalite kontrol kartları aynı anda, ortak paket
     kapi("G4", "acik")
     qdir = kok / "qc"
+    t_izle = time.time()
     girdi = ekip.izle(p, video, qdir)
+    alt_sure["izle"] = round(time.time() - t_izle, 1)
+
+    if ayar.hizli:
+        kk_kart = {g.slot: g for g in hizli_kk(yeni)}  # dilimler birleşen kurgunun süresinden
+        plan = plan.model_copy(update={"kk_gorevler": list(kk_kart.values())})
+        for g in kk_kart.values():
+            durum.slot(g.slot, rol=KK_ROL_ADI[g.rol], aralik=g.aralik, motor=ayar.slot(g.slot).motor, model=ayar.slot(g.slot).model)
 
     def kontrol(kk: str):
-        f = kontrol_istemi(p, kk_kart[kk], girdi, atama, notu)
+        kgirdi = {**girdi, "_paftalar": pafta_sec(girdi, kk_kart[kk].aralik)}
+        f = kontrol_istemi(p, kk_kart[kk], kgirdi, atama, notu)
         # QC kareleri görmek zorunda: Claude'a (yedekte) yalnız Read verilir, proje work klasörü okunabilir.
         yanit, meta = _cagir(p, ayar, kk, f.read_text(encoding="utf-8"), qdir, "plan", durum, roller=KK_ROL_DOSYASI[kk_kart[kk].rol],
-                             araclar="Read", dizinler=(p.work,))
+                             araclar="Read", dizinler=(p.work,), gorseller=[*kgirdi["_paftalar"], *([girdi["kontak sayfası"]] if girdi.get("kontak sayfası") else [])])
         olcum[f"qc/{kk}"] = meta
         o = ekip.json_cikar(yanit) if yanit else None
         c, _ = ekip.bulgu_dogrula(o, kk) if o is not None else (None, [])
-        return kk, [b.model_dump() for b in c.bulgular] if c else []
+        puan = _uretim_puani_cikar(o if o is not None else (_nesne(yanit, ("uretim_puani",)) if yanit else None))
+        return kk, [b.model_dump() for b in c.bulgular] if c else [], puan
 
-    listeler = dict(havuz.map(kontrol, sorted(kk_kart, key=_no)))
+    qc_sonuc = list(havuz.map(kontrol, sorted(kk_kart, key=_no)))
+    listeler = {kk: b for kk, b, _ in qc_sonuc}
+    uretim_puani = _uretim_puani_ort([puan for _, _, puan in qc_sonuc])
     for i, b in enumerate(slop_bulgulari(qdir, _bitis(yeni))):  # QC'ye "tekrar yazma" denen ölçüm bulguları sahibine gider
         listeler.setdefault("K9", []).append({**b, "id": f"K9-{800 + i:03d}"})
-    for i, b in enumerate(br["capa_bulgu"] + br["cakisma_bulgu"]):  # vedit'in kendi bulguları da birleştiriciye girer
+    for i, b in enumerate(br["capa_bulgu"] + br["cakisma_bulgu"] + br.get("render_bulgu", [])):  # vedit'in kendi bulguları da birleştiriciye girer
         listeler.setdefault("K9", []).append(
             {"id": f"K9-{900 + i:03d}", "hedef": b.get("hedef"), "onem": "P1", "zaman": list(b.get("zaman") or [0, 0.1]),
              "katman": b.get("iz", "V2"), "kategori": "tutarlilik", "kanit": "", "sorun": b["sorun"], "beklenen": "çakışma yok"})
@@ -1622,6 +2029,7 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
     kapi("G6", "acik")
     gerek = sorted({b["hedef"] for b in bulgular if b["onem"] in ("P0", "P1") and b.get("hedef") in atama.gorevler}, key=_no)
     duzeltilen, br2, uyum2 = [], None, {}
+    uyari_kapisi: dict = {}
     bekleyen_render = None
     yeni_ids = list(dict.fromkeys(kurallar["yeni"] + kurallar["tekrar"]))
     if gerek:
@@ -1633,26 +2041,52 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
             sinif = {KURAL_ROLU[x] for x in atama.katmanlar(r)} | {"hepsi"}
             return list(dict.fromkeys(zorunlu.get(r, []) + [i for i in yeni_ids if rol_kural.get(i) in sinif]))
 
+        # G3'te kalan uyarılar (ör. zoom yoğunluğu kırpılınca art arda kalan sessiz zoom) bu turun editörüne kısıt olarak gider;
+        # ek çağrı yok. WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md (g3b: kalan tek uyarı bu yoldan doğdu).
+        g3_uyari = yeni_uyarilar(p, None, k, atama, gerek)
         sonuc = dict(havuz.map(lambda r: editor(r, kok / "duzelt", bulgular=[b for b in bulgular if b["hedef"] == r],
-                                                kisitlar=kisit.get(r), zor=ilgili(r), taban=k), gerek))
+                                                kisitlar=[*(kisit.get(r) or []), *g3_uyari.get(r, [])] or None, zor=ilgili(r),
+                                                taban=k), gerek))
         sonuc = {r: y for r, y in sonuc.items() if y is not None}
-        uyum2 = {r: [i for i in ilgili(r) if i not in {u.id for u in y.kural_uyum}] for r, y in sonuc.items()}
-        uyum2 = {r: v for r, v in uyum2.items() if v}
         if sonuc:
             yeni2, br2 = birlestir(k, sonuc, atama)
             if h2 := kurgu.denetle(p, yeni2):
                 # WHY: düzeltme turu G3'te temiz yazılan kurguyu bozmasın; düzeltme düşer, G3 sürümü kalır.
                 br2["denetle"], sonuc = h2[:10], {}
         if sonuc:
+            # G6 uyarı kapısı. WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md. hizlic'te G2 temizdi, 4 uyarının
+            # hepsi bu düzeltmeden doğdu. Önce kodla düzeltilebilen (oto_duzelt), kalan yeni uyarı sahibine bir kez gider.
+            br2["oto"] = oto_duzelt(yeni2)
+            if uy := yeni_uyarilar(p, k, yeni2, atama, sonuc):
+                durum.ayarla(asama="Düzeltme · uyarı kapısı")
+                ek = dict(havuz.map(lambda r: editor(r, kok / "uyari", bulgular=[b for b in bulgular if b["hedef"] == r],
+                                                     kisitlar=[*(kisit.get(r) or []), *uy[r]], onceki=sonuc[r], zor=ilgili(r),
+                                                     taban=k), [r for r in uy if r in sonuc]))
+                aday = {**sonuc, **{r: y for r, y in ek.items() if y is not None}}
+                yeni3, br3 = birlestir(k, aday, atama)
+                kalan = uy
+                if not kurgu.denetle(p, yeni3):
+                    br3["oto"] = oto_duzelt(yeni3)
+                    kalan = yeni_uyarilar(p, k, yeni3, atama, aday)
+                    # Bulgu düzeltmesi (P0/P1) P2 uyarı için geri alınmaz; ikinci tur yalnız uyarıyı azaltıyorsa kabul edilir.
+                    if sum(map(len, kalan.values())) < sum(map(len, uy.values())):
+                        sonuc, yeni2, br2 = aday, yeni3, br3
+                    else:
+                        kalan = uy
+                uyari_kapisi = {"gelen": {r: len(v) for r, v in uy.items()}, "kalan": {r: len(v) for r, v in kalan.items()},
+                                "duzelten": [r for r in ek if ek[r] is not None]}
+        uyum2 = {r: [i for i in ilgili(r) if i not in {u.id for u in y.kural_uyum}] for r, y in sonuc.items()}
+        uyum2 = {r: v for r, v in uyum2.items() if v}
+        if sonuc:
             _bagla(p, yeni2)  # yeni hf/şablon klibinin kaynağı diske de yazılsın; Stüdyo kaynaksız klipte düşer
             kurgu.yaz(p.work, yeni2, beklenen_rev=k.rev)
             duzeltilen = [r for r in br2["uygulanan"] if r in sonuc]
-            araliklar = sorted({(max(0.0, b["zaman"][0] - 0.5), b["zaman"][1] + 0.5) for b in bulgular if b["hedef"] in sonuc})
             # WHY: ADR 0054. Render burada alınmaz: videoyu yalnız ikinci QC kullanır (G7). arvelior'da 176 sn'lik bu render'ı
             # hiçbir adım okumadı; Stüdyo önizlemesi kurgu.json'dan canlı çizer, --final zaten tam render alır.
-            bekleyen_render = (araliklar, atama.kurgu_sahibi() in sonuc)
+            bekleyen_render = True
     kapi("G6", "gecti" if not uyum2 else "kaldi",
          (f"düzeltilen: {', '.join(duzeltilen)}" if duzeltilen else "düzeltme gerekmedi" if not gerek else "düzeltme birleşmedi")
+         + (f"; uyarı kapısı {sum(uyari_kapisi['gelen'].values())} → {sum(uyari_kapisi['kalan'].values())}" if uyari_kapisi else "")
          + (f"; kural_uyum eksik: {', '.join(uyum2)}" if uyum2 else ""))
 
     # G7 son: deterministik denetim; ikinci QC yalnız P0 kapısı düşerse ya da istenirse
@@ -1663,8 +2097,7 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
     taslak_eski = False
     if bekleyen_render and (tekrar_denetle or p0):
         durum.ayarla(asama="Son · render")
-        araliklar, tam = bekleyen_render
-        video = hizli.taslak(p) if tam else parcali_render(p, araliklar)
+        video = hizli.qc_taslak(p)
     elif bekleyen_render:
         taslak_eski = True
     if tekrar_denetle or p0:
@@ -1673,12 +2106,15 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
     kapi("G7", "gecti" if not p0 else "kaldi", f"{len(p0)} hata, {len(uyari)} uyarı"
          + ("; taslak.mp4 düzeltmeden önceki hâl (Stüdyo önizlemesi güncel; `vedit taslak` yeniler)" if taslak_eski and not final else ""))
     durum.ayarla(asama="Bitti", bitti=True, bitis=time.time())
-    ozet = {"sure_sn": round(time.time() - t0), "seviye": ayar.ekip_seviye, "dagitim": dagitim, "plan_hata": plan_hata,
-            "plan": plan.model_dump(), "kapilar": kapilar, "olcum": olcum, "zorunlu": zorunlu, "kural_ihlal": ihlal,
+    ozet = {"sure_sn": round(time.time() - t0), "seviye": ayar.ekip_seviye, "en_cok": None if ayar.hizli else ayar.tavan(),
+            "editor": len(plan.gorevler), "kk": len(plan.kk_gorevler),
+            "ajanlar": {s: f"{ayar.slot(s).motor}:{ayar.slot(s).model or ''}" for s in [ORKESTRATOR, *atama.gorevler, *kk_kart]},
+            "dagitim": dagitim, "plan_hata": plan_hata, "yaratici_brif": brif_durum,
+            "plan": plan.model_dump(exclude={"yaratici_brif"}), "kapilar": kapilar, "olcum": olcum, "zorunlu": zorunlu, "kural_ihlal": ihlal,
             "birlestirme": br, "duzeltme_birlestirme": br2, "bulgular": bulgular, "reddedilen": reddedilen, "kurallar": kurallar,
-            "kural_dogrulama": dogrulama, "duzeltme_uyum_eksik": uyum2, "duzeltilen": duzeltilen,
-            "son_denetim": {"hata": p0, "uyari": len(uyari)}, "taslak_eski": taslak_eski, "hizli": ayar.hizli,
-            "kapi_sure": {x["id"]: x.get("sure") for x in durum.d["kapilar"]}}
+            "kural_dogrulama": dogrulama, "duzeltme_uyum_eksik": uyum2, "duzeltilen": duzeltilen, "uyari_kapisi": uyari_kapisi,
+            "son_denetim": {"hata": p0, "uyari": len(uyari)}, "uretim_puani": uretim_puani, "taslak_eski": taslak_eski, "hizli": ayar.hizli,
+            "kapi_sure": {x["id"]: x.get("sure") for x in durum.d["kapilar"]}, "alt_sure": alt_sure}
     (kok / "ozet.json").write_text(json.dumps(ozet, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     rapor_yaz(p, once, son, ozet, atama)
     return ozet
@@ -1687,11 +2123,11 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
 def rapor_yaz(p, once: Kurgu | None, son: Kurgu | None, o: dict, atama: Atama | None = None) -> Path:
     toplam = sum((m or {}).get("token", 0) for m in o["olcum"].values())
     tahmini = sum(1 for m in o["olcum"].values() if (m or {}).get("tahmini"))
-    ne, nk = SEVIYE.get(o.get("seviye") or "", (0, 0))
-    sat = [f"# AI edit raporu (ekip v3, ADR 0053) · {p.studyo}/{p.ad}", ""]
+    ne, nk = o.get("editor") or SEVIYE.get(o.get("seviye") or "", (0, 0))[0], o.get("kk") or SEVIYE.get(o.get("seviye") or "", (0, 0))[1]
+    sat = [f"# AI edit raporu (ekip v3 swarm, ADR 0059) · {p.studyo}/{p.ad}", ""]
     if (o.get("kural_dogrulama") or {}).get("dogrulanamayan"):
         sat += [f"> [!warning] Kural deposuna işlenemeyen aday: {'; '.join(o['kural_dogrulama']['dogrulanamayan'])}", ""]
-    sat += [f"- Seviye: `{o.get('seviye')}` ({ne} editör, {nk} kalite kontrol, 1 orkestratör) · dağıtım: "
+    sat += [f"- Ekip: {ne} editör, {nk} kalite kontrol, 1 orkestratör" + (f" (tavan {o['en_cok']})" if o.get("en_cok") else "") + " · dağıtım: "
             + ("orkestratör" if o.get("dagitim") == "orkestrator" else "hızlı (orkestratörsüz, ADR 0054)" if o.get("dagitim") == "hizli"
                else f"varsayılan ({'; '.join(o.get('plan_hata') or [])[:200]})"),
             f"- Duvar saati: {o['sure_sn']} sn · ajan çağrısı: {len(o['olcum'])} · token: {toplam:,}" + (f" ({tahmini} slot tahmini)" if tahmini else ""),
@@ -1700,12 +2136,15 @@ def rapor_yaz(p, once: Kurgu | None, son: Kurgu | None, o: dict, atama: Atama | 
             f"çapalanan {o['birlestirme']['capalanan']} · yeniden eşlenen {len(o['birlestirme']['tasinan'])} · itilen {len(o['birlestirme']['itilen'])}",
             f"- QC bulgusu: {len(o['bulgular'])} (P0 {sum(b['onem'] == 'P0' for b in o['bulgular'])}, P1 {sum(b['onem'] == 'P1' for b in o['bulgular'])}) · "
             f"orkestratörün reddettiği {len(o.get('reddedilen') or [])} · düzeltilen: {', '.join(o['duzeltilen']) or '-'}",
+            *(["- Üretim puanı: " + " · ".join(f"{k} {v:g}/5" for k, v in o["uretim_puani"].items())] if o.get("uretim_puani") else []),
             f"- Kurallar: atanan {sum(len(v) for v in (o.get('zorunlu') or {}).values())}, kapıda kalan ihlal {sum(len(v) for v in (o.get('kural_ihlal') or {}).values())} · "
             f"işlenen yeni {len(o['kurallar']['yeni'])}, tekrar {len(o['kurallar']['tekrar'])}, mezar taşından düşen {len(o['kurallar']['mezar'])}, "
             f"ihlal sayımı {sum(o['kurallar']['ihlal'].values())} · depoda doğrulanan {len((o.get('kural_dogrulama') or {}).get('dogrulanan', []))}",
             f"- Son denetim: {len(o['son_denetim']['hata'])} hata, {o['son_denetim']['uyari']} uyarı", ""]
     if atama is not None:
-        sat += ["## Görev kartları", *atama.tablo(), ""]
+        ajan = o.get("ajanlar") or {}
+        sat += ["## Görev kartları", *[x + (f" · `{ajan[s]}`" if s in ajan else "") for s, x in zip(atama.gorevler, atama.tablo())],
+                *[f"- {s} · `{m}`" for s, m in ajan.items() if s.startswith(("K", "O"))], ""]
     if o.get("kapilar"):
         ks = o.get("kapi_sure") or {}
         sat += ["## Kapılar", "| kapı | sn | sonuç |", "|---|---|---|",

@@ -17,23 +17,24 @@ from . import motorlar, paths
 MOTORLAR = tuple(motorlar.MOTORLAR)
 
 
-def komut(istek: str, motor: str, model: str | None, oturum: str | None) -> list[str]:
+def komut(istek: str, motor: str, model: str | None, oturum: str | None, seviye: str | None = None) -> list[str]:
     """Düzenle modunda tam komut; model yoksa motorun kendi varsayılanı.
 
     Claude'da MCP sunucuları ve slash komutları yüklenmez (ADR 0054): ajan yalnız dosya okur ve yazar, 15 MCP sunucusunun ve
     151 komutun araç tanımı her istekte boşa token ve süre harcıyordu. Araçlar ve oturum sürdürme (--resume) korunur."""
-    k = motorlar.komut(motor, istek, model, "duzenle", oturum)
+    k = motorlar.komut(motor, istek, model, "duzenle", oturum, seviye)
     if motor == "claude":
         i = k.index("-p")
         k = [*k[:i], "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--disable-slash-commands", *k[i:]]
     return k
 
 
-def calistir(istek: str, *, motor: str = "claude", model: str | None = None, oturum: str | None = None) -> tuple[str, str | None]:
+def calistir(istek: str, *, motor: str = "claude", model: str | None = None, oturum: str | None = None,
+             seviye: str | None = None) -> tuple[str, str | None]:
     """Ajanı çalıştırır, okunur satırları canlı basar. (yanıt metni, oturum kimliği) döner; hata SystemExit."""
     is_ = SimpleNamespace(oturum=oturum, model=model or "varsayılan")
     cevir, satirlar = motorlar.cevirici(), []
-    s = subprocess.Popen(komut(istek, motor, model, oturum), cwd=paths.ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+    s = subprocess.Popen(komut(istek, motor, model, oturum, seviye), cwd=paths.ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          stdin=subprocess.DEVNULL, text=True, encoding="utf-8", errors="replace",
                          env={**os.environ, "NO_COLOR": "1"})
     for ham in s.stdout:

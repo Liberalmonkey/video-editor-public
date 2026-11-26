@@ -111,7 +111,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "anime-sinematik-isik",
@@ -214,7 +215,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "sahne-cizgi-film",
@@ -317,7 +319,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "rubberhose-1930",
@@ -425,7 +428,8 @@
     "font": {
      "harf": "buyuk"
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "cagdas-duz-illustrasyon",
@@ -525,7 +529,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "kesik-kagit-karakter",
@@ -629,7 +634,8 @@
       "adim": 4
      }
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "yumusak-3d",
@@ -730,7 +736,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "duz-motion-grafik",
@@ -835,7 +842,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "enerjik"
   },
   {
    "id": "grenli-gradyan",
@@ -938,7 +946,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "kinetik-arayuz",
@@ -1042,7 +1051,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "enerjik"
   },
   {
    "id": "cam-ve-isik",
@@ -1146,7 +1156,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "neon-cizgi",
@@ -1251,7 +1262,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "enerjik"
   },
   {
    "id": "brutalist-mono",
@@ -1358,7 +1370,8 @@
     "font": {
      "harf": "buyuk"
     }
-   }
+   },
+   "motion_kisilik": "enerjik"
   },
   {
    "id": "temiz-kurumsal",
@@ -1460,7 +1473,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "kurumsal"
   },
   {
    "id": "premium-minimal",
@@ -1564,7 +1578,8 @@
     "font": {
      "izleme": 0.02
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "minimal-diyagram",
@@ -1667,7 +1682,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "kurumsal"
   },
   {
    "id": "editoryal-acik",
@@ -1768,7 +1784,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "kupur-kolaj",
@@ -1876,7 +1893,8 @@
     "font": {
      "harf": "buyuk"
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "altin-fintech",
@@ -1978,7 +1996,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "kurumsal"
   },
   {
    "id": "sinematik-koyu",
@@ -2084,7 +2103,8 @@
      "harf": "buyuk",
      "izleme": 0.08
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "sert-isik-gercekcilik",
@@ -2182,7 +2202,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "piksel-8bit",
@@ -2304,7 +2325,8 @@
      "kontur": 10,
      "agirlik": 700
     }
-   }
+   },
+   "motion_kisilik": "enerjik"
   },
   {
    "id": "vaporwave",
@@ -2409,7 +2431,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "enerjik"
   },
   {
    "id": "retro-analog",
@@ -2512,7 +2535,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "pop-art-noktali",
@@ -2620,7 +2644,8 @@
     "font": {
      "harf": "buyuk"
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "murekkep-zen",
@@ -2721,7 +2746,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "kesik-kagit-kolaj",
@@ -2824,7 +2850,8 @@
       "adim": 6
      }
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "bauhaus-geometri",
@@ -2924,7 +2951,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "kurumsal"
   },
   {
    "id": "golge-kukla",
@@ -3026,7 +3054,8 @@
       "adim": 5
      }
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
   },
   {
    "id": "gravur-el-yazmasi",
@@ -3126,7 +3155,8 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "premium"
   },
   {
    "id": "beyaz-tahta",
@@ -3229,7 +3259,508 @@
       ]
      }
     }
-   }
+   },
+   "motion_kisilik": "oyuncu"
+  },
+  {
+   "id": "saas-izgara",
+   "ad": "SaaS ızgara (Linear / Herk)",
+   "kategori": "Modern motion",
+   "kaynak": "Nate Herk herk-edit-kit & Linear/Vercel ürün dili (ilkeler)",
+   "lisans": "MIT",
+   "ozet": "Koyu milimetrik ızgara zemin, 1 px ince kenarlıklı buzlu cam paneller, sürekli-dünya kamera odaklaması ve n8n/ajan düğüm grafikleri.",
+   "palet": {
+    "vurgu": "#38BDF8",
+    "ikincil": "#A78BFA",
+    "zemin": "#0B0E14",
+    "yazi": "#F1F5F9",
+    "soluk": "#94A3B8"
+   },
+   "font": {
+    "baslik": "Space Grotesk",
+    "govde": "Inter",
+    "mono": "JetBrains Mono"
+   },
+   "agirlik": 700,
+   "kose": 14,
+   "cizgi": 4,
+   "tempo": "orta",
+   "kesim": [
+    2.0,
+    4.0
+   ],
+   "gorsel": [
+    "Koyu grafik kâğıdı/nokta ızgara arka plan, 1 px yarı saydam cam kenarlık",
+    "Sol yandan açılan buzlu cam bilgi panelleri, konuşmacı yüzünü kapatmayan 4-düzen yerleşimi",
+    "Akıcı Bezier düğüm bağlantıları ve canlı veri paketleri"
+   ],
+   "hareket": [
+    "Uzun kuyruklu expo.out varış, girişten %45 daha kısa çıkış",
+    "Ekran kaydında ekran_odak ve dunya_kaydir ile kesmesiz düğüm takibi",
+    "Tıklama anında imleç yaylanması ve +1 kare senkron tıklama sesi"
+   ],
+   "gecis": [
+    "tikla_iris",
+    "buton_zoom",
+    "bulanik_takas",
+    "sil"
+   ],
+   "hazir": [
+    "ekran_odak",
+    "dunya_kaydir",
+    "odak_karart"
+   ],
+   "motion": [
+    "akis-ajan-agi",
+    "arayuz-imlec-odak",
+    "veri-bento-izgara",
+    "arayuz-sohbet-akisi",
+    "tipografi-basamak-sayac"
+   ],
+   "uygun": "AI otomasyon, n8n/ajan akışları, SaaS ürün demosu, teknik YouTube eğitimleri.",
+   "kacin": [
+    "Yüz üstüne yığılan ağır kartlar",
+    "Rastgele neon parıltı ve kaba zıplama",
+    "Doğrusal hareket eğrisi"
+   ],
+   "gorsel_prompt": "dark minimalist architectural dot-grid background, subtle frosted glass UI panels with 1px hairline borders, crisp cyan and soft violet accents, studio software showcase aesthetic, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "doku": "gren",
+     "ikon_cizgi": 8
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.7,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.34,
+       1.36,
+       0.64,
+       1
+      ],
+      "settle": [
+       0.22,
+       1,
+       0.36,
+       1
+      ]
+     }
+    }
+   },
+   "motion_kisilik": "kurumsal"
+  },
+  {
+   "id": "kod-hud",
+   "ad": "Kod HUD (Degenerative)",
+   "kategori": "Modern motion",
+   "kaynak": "Degenerative Pixels kod-render kinetik HUD ilkeleri",
+   "lisans": "MIT",
+   "ozet": "Obsidyen terminal zemini, jilet gibi vektörel ızgara, BPM vuruş kilitli kinetik tipografi ve geliştirici HUD göstergeleri.",
+   "palet": {
+    "vurgu": "#00F5A0",
+    "ikincil": "#FF3B6B",
+    "zemin": "#080A0E",
+    "yazi": "#F8FAFC",
+    "soluk": "#94A3B8"
+   },
+   "font": {
+    "baslik": "Space Grotesk",
+    "govde": "JetBrains Mono",
+    "mono": "JetBrains Mono"
+   },
+   "agirlik": 800,
+   "kose": 4,
+   "cizgi": 4,
+   "tempo": "hizli",
+   "kesim": [
+    1.2,
+    2.8
+   ],
+   "gorsel": [
+    "Siyah terminal çerçevesi, ince tarama çizgisi, keskin vektörel SVG hatlar",
+    "Monospace teknik etiketler, yüksek kontrastlı tek sinyal vurgusu",
+    "Sıfır difüzyon bulanıklığı; her öğe matematiksel ızgaraya kilitli"
+   ],
+   "hareket": [
+    "BPM vuruş ızgarasına kare-kilitli kelime ve HUD girişleri",
+    "Başlık inişten sonra tamamen sabit durur (boşta sallanma yok)",
+    "Hızlı optik geçişler ve kısa yönlü bulanıklık izleri"
+   ],
+   "gecis": [
+    "bozulma",
+    "piksel",
+    "dip_kesim",
+    "kirbac"
+   ],
+   "hazir": [
+    "hizli_zoom",
+    "punch",
+    "sarsinti"
+   ],
+   "motion": [
+    "tipografi-kod-cozulme",
+    "arayuz-kod-farki",
+    "tipografi-donen-kelime",
+    "efekt-hayalet-iz",
+    "akis-istek-yanit"
+   ],
+   "uygun": "Yazılım, yapay zekâ, ritim kilitli Reels/Shorts, geliştirici hikâyeleri ve teknik hiciv.",
+   "kacin": [
+    "Yumuşak pastel gradyan",
+    "El yazısı ve süslü serif",
+    "Gecikmeli uyuşuk geçişler"
+   ],
+   "gorsel_prompt": "high-contrast dark developer HUD background, obsidian terminal grid, razor-sharp emerald and crimson vector lines, subtle scanlines, ultra-clean Swiss monospace aesthetic, no text",
+   "token": {
+    "sekil": {
+     "golge": "glow",
+     "doku": "tarama",
+     "ikon_cizgi": 8
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.12,
+       1,
+       0.24,
+       1
+      ],
+      "exit": [
+       0.76,
+       0,
+       0.88,
+       0
+      ],
+      "emphasis": [
+       0.28,
+       1.42,
+       0.58,
+       1
+      ],
+      "settle": [
+       0.2,
+       1,
+       0.32,
+       1
+      ]
+     }
+    }
+   },
+   "motion_kisilik": "enerjik"
+  },
+  {
+   "id": "beyaz-tahta-pro",
+   "ad": "Beyaz tahta Pro (Saraev)",
+   "kategori": "Editoryal",
+   "kaynak": "Nick Saraev 4-düzen mimari diyagram & Excalidraw dili",
+   "lisans": "MIT",
+   "ozet": "Sıcak açık tuvalde adım adım büyüyen mimari diyagramlar, yüzü kapatmayan 4-düzen ritmi ve net kanıt ekranları.",
+   "palet": {
+    "vurgu": "#2563EB",
+    "ikincil": "#D97706",
+    "zemin": "#FAF9F6",
+    "yazi": "#111827",
+    "soluk": "#4B5563"
+   },
+   "font": {
+    "baslik": "Space Grotesk",
+    "govde": "Inter",
+    "mono": "JetBrains Mono"
+   },
+   "agirlik": 700,
+   "kose": 12,
+   "cizgi": 5,
+   "tempo": "orta",
+   "kesim": [
+    2.5,
+    5.0
+   ],
+   "gorsel": [
+    "Sıcak kâğıt tonlu açık zemin, temiz kutu-ok diyagramları",
+    "Her sözel adımda tek bir düğüm/bağlantı büyür; bitmiş karmaşık şema tek seferde dökülmez",
+    "4-düzen rotasyonu: konuşmacı / diyagram+PiP / ekran+PiP / tam kanıt"
+   ],
+   "hareket": [
+    "Çizilerek açılan ok ve çerçeveler (stroke-dashoffset)",
+    "Ekran kaydında bağlamsal ekran_odak ve temiz PiP küçülmesi",
+    "İlk dakikada yüksek düzen ritmi, ana gövdede sakin ve net akış"
+   ],
+   "gecis": [
+    "kay",
+    "sil",
+    "kart_dunyaya",
+    "bulanik_takas"
+   ],
+   "hazir": [
+    "ekran_odak",
+    "dunya_kaydir",
+    "punch"
+   ],
+   "motion": [
+    "akis-ajan-agi",
+    "akis-karar-agaci",
+    "veri-kontrol-matrisi",
+    "tipografi-satir-fosfor",
+    "veri-once-sonra-perde"
+   ],
+   "uygun": "Uzun YouTube eğitimleri, sistem mimarisi, iş modeli/ajans anlatımı, sıfır sürtünmeli öğretici içerik.",
+   "kacin": [
+    "Yüzün üstüne binen dekoratif kartlar",
+    "Karanlık neon efektler",
+    "Gereksiz parçacık ve flaş"
+   ],
+   "gorsel_prompt": "clean warm off-white architectural whiteboard canvas, subtle paper texture, crisp royal blue and amber vector diagram lines, minimal modern educator studio look, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "doku": "kagit",
+     "ikon_cizgi": 10
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.18,
+       1,
+       0.32,
+       1
+      ],
+      "exit": [
+       0.68,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.3,
+       1.28,
+       0.56,
+       1
+      ],
+      "settle": [
+       0.22,
+       1,
+       0.38,
+       1
+      ]
+     }
+    }
+   },
+   "motion_kisilik": "kurumsal"
+  },
+  {
+   "id": "editoryal-belgesel",
+   "ad": "Editoryal belgesel (Vox)",
+   "kategori": "Editoryal",
+   "kaynak": "Vox / RandomAI editoryal veri hikâyeciliği ilkeleri",
+   "lisans": "MIT",
+   "ozet": "Koyu antrasit + kehribar vurgu, ince film greni, doğrudan etiketli veri grafikleri ve çok satırlı fosforlu alıntılar.",
+   "palet": {
+    "vurgu": "#F59E0B",
+    "ikincil": "#34D399",
+    "zemin": "#121316",
+    "yazi": "#F5F3EE",
+    "soluk": "#A1A1AA"
+   },
+   "font": {
+    "baslik": "Fraunces",
+    "govde": "Inter",
+    "mono": "JetBrains Mono"
+   },
+   "agirlik": 700,
+   "kose": 8,
+   "cizgi": 4,
+   "tempo": "orta",
+   "kesim": [
+    3.0,
+    5.5
+   ],
+   "gorsel": [
+    "İnce analog film greni, arşiv kupürü gölgeleri ve güçlü tipografik hiyerarşi",
+    "Efsanesiz (legend-free) doğrudan okla işaretlenmiş temiz grafikler",
+    "Bölüm kapsülleri ve çok satırlı fosforlu metin vurguları"
+   ],
+   "hareket": [
+    "Grafikler okuma sırasıyla katman katman kurulur (eksen → çizgi → nokta → etiket)",
+    "Büyük veriden önce 300-500 ms nefes boşluğu",
+    "Kâğıt yırtma ve yumuşak optik dip kesimler"
+   ],
+   "gecis": [
+    "yirtma",
+    "film_yanigi",
+    "dip_kesim",
+    "sil"
+   ],
+   "hazir": [
+    "ken_burns",
+    "odak_karart",
+    "zoom_in"
+   ],
+   "motion": [
+    "tipografi-satir-fosfor",
+    "tipografi-bolum-kapsul",
+    "veri-yaris-cubuk",
+    "veri-zaman-seridi",
+    "veri-huni"
+   ],
+   "uygun": "Araştırma, belgesel, finans ve teknoloji analizi, veri odaklı YouTube anlatıları.",
+   "kacin": [
+    "Ucuz 3B dönüş ve abartılı elastik yay",
+    "Neon parıltı",
+    "Kalabalık madde listesi slaytları"
+   ],
+   "gorsel_prompt": "editorial documentary dark charcoal desk background, subtle analog film grain, warm amber and muted emerald editorial accents, archival magazine layout depth, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "doku": "gren",
+     "ikon_cizgi": 9
+    },
+    "hareket": {
+     "easing": "yumusak",
+     "egri": {
+      "enter": [
+       0.22,
+       1,
+       0.36,
+       1
+      ],
+      "exit": [
+       0.55,
+       0,
+       0.8,
+       0
+      ],
+      "emphasis": [
+       0.3,
+       1.2,
+       0.54,
+       1
+      ],
+      "settle": [
+       0.26,
+       1,
+       0.42,
+       1
+      ]
+     }
+    }
+   },
+   "motion_kisilik": "premium"
+  },
+  {
+   "id": "urun-lansman",
+   "ad": "Ürün lansmanı (Keynote)",
+   "kategori": "Modern motion",
+   "kaynak": "Apple Keynote / Kaye ürün lansmanı & Living Bento ilkeleri",
+   "lisans": "MIT",
+   "ozet": "Derin siyah sahne, canlı Bento ızgaraları, çok katmanlı 3B paralaks kartlar ve tıklamadan dünyaya açılan optik geçişler.",
+   "palet": {
+    "vurgu": "#60A5FA",
+    "ikincil": "#F472B6",
+    "zemin": "#07080B",
+    "yazi": "#F8FAFC",
+    "soluk": "#94A3B8"
+   },
+   "font": {
+    "baslik": "Outfit",
+    "govde": "Inter",
+    "mono": "JetBrains Mono"
+   },
+   "agirlik": 800,
+   "kose": 20,
+   "cizgi": 4,
+   "tempo": "hizli",
+   "kesim": [
+    1.5,
+    3.5
+   ],
+   "gorsel": [
+    "Geniş yuvarlak köşeli (20 px) canlı Bento kutuları, çok katmanlı temas gölgesi",
+    "Üst kenar ince ışık yansıması ve kontrollü radyal arka plan halesi",
+    "Büyük rakam tekerleri, 3B izometrik katmanlar ve pencere sahneleri"
+   ],
+   "hareket": [
+    "Öğe büyürken kardeş öğeler zarifçe geri çekilir (promote & recess)",
+    "Hızlı buton_zoom ve kart_dunyaya geçişleriyle kesintisiz sahne akışı",
+    "Dengeli yay oturumu (ζ=0.74, minimal taşma)"
+   ],
+   "gecis": [
+    "buton_zoom",
+    "kart_dunyaya",
+    "tikla_iris",
+    "isik"
+   ],
+   "hazir": [
+    "ekran_odak",
+    "odak_karart",
+    "hizli_zoom"
+   ],
+   "motion": [
+    "veri-bento-izgara",
+    "derinlik-3b-kart-sahne",
+    "derinlik-izometrik-katman",
+    "arayuz-pencere-sahne",
+    "tipografi-basamak-sayac"
+   ],
+   "uygun": "Ürün tanıtımı, SaaS lansman teaser'ı, özellik duyurusu, yüksek zanaatlı Reels/YouTube açılışları.",
+   "kacin": [
+    "Düz keskin piksel köşeler",
+    "Sıkıcı sabit slayt geçişleri",
+    "Sürekli titreyen kamera"
+   ],
+   "gorsel_prompt": "sleek obsidian product launch stage, subtle radial sapphire ambient spotlight, floating dark glass bento surfaces with soft rim light, Apple keynote studio polish, no text",
+   "token": {
+    "sekil": {
+     "golge": "yumusak",
+     "doku": "gren",
+     "ikon_cizgi": 8
+    },
+    "hareket": {
+     "easing": "keskin",
+     "egri": {
+      "enter": [
+       0.16,
+       1,
+       0.3,
+       1
+      ],
+      "exit": [
+       0.7,
+       0,
+       0.84,
+       0
+      ],
+      "emphasis": [
+       0.34,
+       1.38,
+       0.64,
+       1
+      ],
+      "settle": [
+       0.22,
+       1,
+       0.36,
+       1
+      ]
+     }
+    }
+   },
+   "motion_kisilik": "enerjik"
   }
  ]
 }

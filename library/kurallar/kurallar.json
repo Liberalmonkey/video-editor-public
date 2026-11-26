@@ -443,7 +443,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 5,
+   "tekrar": 6,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-21"
   },
@@ -487,9 +487,9 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 3,
+   "tekrar": 4,
    "olusturma": "2026-11-20",
-   "guncelleme": "2026-11-20"
+   "guncelleme": "2026-11-26"
   },
   {
    "id": "K0029",
@@ -509,7 +509,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 8,
+   "tekrar": 9,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -597,7 +597,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 2,
+   "tekrar": 3,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -668,10 +668,10 @@
      "not": "e8b67138b4 klibi (inputs_2_2_mp4) giris: 0.0 ile başlıyor; kaynakta 'Böyle' kelimesi Whisper'da 0.0–1.22 görünse de konuşmacı ağzını yaklaşık 0.75 sn'ye kadar açmıyor ve 15.0 sn karesinde konuşma başlamadan 0.75 sn durağan bekleme oluşuyor."
     }
    ],
-   "durum": "aktif",
-   "tekrar": 7,
+   "durum": "pasif",
+   "tekrar": 8,
    "olusturma": "2026-11-20",
-   "guncelleme": "2026-11-20"
+   "guncelleme": "2026-11-26"
   },
   {
    "id": "K0037",
@@ -712,10 +712,10 @@
      "not": "Son V1 klibi (ada4415b2e) 53.05 sn'de bittiği hâlde A3 müzik klibi (e3-muzik) 68.653 sn sürdüğü için 53.05–68.72 sn arasında 15,67 sn boyunca ekran tamamen boş koyu lacivert-gri zemin olarak render edilmiş."
     }
    ],
-   "durum": "aktif",
+   "durum": "pasif",
    "tekrar": 1,
    "olusturma": "2026-11-20",
-   "guncelleme": "2026-11-21"
+   "guncelleme": "2026-11-26"
   },
   {
    "id": "K0039",
@@ -734,10 +734,10 @@
      "not": "2f7fdff97d (27.50-35.95 sn, 8.45 sn) ve ada4415b2e (44.80-53.05 sn, 8.25 sn) konuşan kafa kliplerinde tek bir punch efekti kullanıldığı için 30.75-35.95 sn arasında 5.20 sn ve 44.80-50.30 sn arasında 5.50 sn boyunca ekranda hiçbir görsel değişim, kesim veya ölçek hareketi yok."
     }
    ],
-   "durum": "aktif",
-   "tekrar": 1,
+   "durum": "pasif",
+   "tekrar": 2,
    "olusturma": "2026-11-20",
-   "guncelleme": "2026-11-20"
+   "guncelleme": "2026-11-26"
   },
   {
    "id": "K0040",
@@ -801,7 +801,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 6,
+   "tekrar": 8,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -822,10 +822,10 @@
      "not": "0c4c05aa3a (inputs_2_2_mp4) klibinde ilk kelime olan 'Böyle' (Whisper s: 0.0, e: 1.22) için baştaki boşluğu kesmek amacıyla giris: 0.65 verilmiş; ancak 0.65 sn kelimenin ilk hecesinin üstüne bindiği için 'Böyle' kelimesinin başı yutuluyor ve klip doğrudan 'UGC videolar' (kare_0010.5.jpg) ile başlıyor gibi duyuluyor."
     }
    ],
-   "durum": "aktif",
+   "durum": "pasif",
    "tekrar": 1,
    "olusturma": "2026-11-20",
-   "guncelleme": "2026-11-20"
+   "guncelleme": "2026-11-26"
   },
   {
    "id": "K0044",
@@ -845,7 +845,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 4,
+   "tekrar": 5,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -888,10 +888,10 @@
      "not": "a8cba1247d (2.933 sn) klibinin girişinde 0.3 sn süreli piksel geçişi kullanılmış; ancak inputs_1_mp4 kaynağında ilk kelime ('Gerçek', 0.0-0.62 sn) 0.0 sn'de hemen başladığı için geçiş sırasında iki konuşmacının yüzü birbirine karışıyor ve diğer tüm sunucu-örnek geçişleri düz kesim iken yalnız bu kesimde geçiş bulunması tutarsızlık yaratıyor."
     }
    ],
-   "durum": "aktif",
+   "durum": "pasif",
    "tekrar": 1,
    "olusturma": "2026-11-20",
-   "guncelleme": "2026-11-20"
+   "guncelleme": "2026-11-26"
   },
   {
    "id": "K0047",
@@ -955,7 +955,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 3,
+   "tekrar": 4,
    "olusturma": "2026-11-23",
    "guncelleme": "2026-11-23"
   },
@@ -977,7 +977,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 1,
+   "tekrar": 2,
    "olusturma": "2026-11-23",
    "guncelleme": "2026-11-23"
   },
@@ -1064,10 +1064,10 @@
      "not": "olcum.json slop ölçümü P1 OLAY_YOGUN (dakikada 19.2 zoom) veriyor. kurgu.json'da 53.1 sn boyunca 13 V1 klibinin tamamında t=0.0 başlangıç hareketi dahil toplam 26 adet hazir zoom/punch (punch, zoom_in, odak_zoom) yer alıyor; sürekli kadraj pompalanması ve olaylar.json'da 17 otomatik zoom/punch sesi oluşuyor."
     }
    ],
-   "durum": "aktif",
+   "durum": "pasif",
    "tekrar": 1,
    "olusturma": "2026-11-23",
-   "guncelleme": "2026-11-23"
+   "guncelleme": "2026-11-26"
   },
   {
    "id": "K0055",
@@ -1131,7 +1131,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 2,
+   "tekrar": 3,
    "olusturma": "2026-11-23",
    "guncelleme": "2026-11-23"
   },
@@ -1152,10 +1152,10 @@
      "not": "b68d84444e (inputs_3_mp4, bas 28.40 sn) klibinde ilk kelime 'Bugün' (kaynak 0.00–0.34 sn) iken giris: 0.08 verildiği için 'Bugün' altyazı eşlemesinden düşüyor; 28.5 sn karesinde görüntü araç içi çift sahnesine geçmiş olmasına rağmen önceki konuşmacının 'izlenir.' altyazısı ekranda kalıyor. Aynı biçimde e1514616bf (inputs_1_mp4, bas 0.00, giris: 0.08) klibinde ilk kelime 'Gerçek' (0.00–0.62 sn) de 0.0 sn açılış karesinden düşmüş."
     }
    ],
-   "durum": "aktif",
+   "durum": "pasif",
    "tekrar": 1,
    "olusturma": "2026-11-23",
-   "guncelleme": "2026-11-23"
+   "guncelleme": "2026-11-26"
   },
   {
    "id": "K0059",
@@ -1222,6 +1222,58 @@
    "tekrar": 1,
    "olusturma": "2026-11-23",
    "guncelleme": "2026-11-23"
+  },
+  {
+   "id": "K0062",
+   "metin": "YAPMA: müzik klibinin ses keyframe zamanlarını (ses.kf.t) klibin güncel bitiş süresinin (sure) ötesinde bırakma; bitiş fade-out keyframe'lerini son V1 bitişine hizala.",
+   "neden": "A3 izindeki mzk_a3_ana müzik klibinin süresi 52.47 sn olmasına rağmen ses.kf içindeki bitiş kısma (fade-out) keyframe'leri eski kurgu süresinde (t: 66.853 -> -17.0 dB, t: 69.853 -> -40.0 dB) kalmış; k",
+   "kapsam": "global",
+   "hedef_rol": "E3",
+   "kategori": "ses",
+   "onem": "P2",
+   "kaynak": "kk:K1",
+   "kanit": [
+    {
+     "proje": "instagram/arvelior-swarm",
+     "zaman": 49.47,
+     "kare": "Projeler/outputs/instagram/arvelior-swarm/work/edit/ekip/qc/izle/kare_0051.0.jpg",
+     "not": "A3 izindeki mzk_a3_ana müzik klibinin süresi 52.47 sn olmasına rağmen ses.kf içindeki bitiş kısma (fade-out) keyframe'leri eski kurgu süresinde (t: 66.853 -> -17.0 dB, t: 69.853 -> -40.0 dB) kalmış; klip bitişinde keyframe tabanlı -40 dB sönümleme devreye girmiyor."
+    }
+   ],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-24",
+   "guncelleme": "2026-11-24"
+  },
+  {
+   "id": "K0063",
+   "metin": "YAP: konuşan kafa klibinin başındaki nefes ve bekleme payını giris değerini ileri alarak kes; ilk kelime 0.00 sn'de başlıyor ve nefes yoksa giris'i ilerletme, ilerletirken ilk heceyi yutma (giris ilk kelimenin bitişine 0.70 sn'den fazla yaklaşmaz).",
+   "neden": "ADR 0064 birleştirme: K0036, K0043, K0058 aynı nefes kesimi kuralının üç parçasıydı",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-26",
+   "guncelleme": "2026-11-26"
+  },
+  {
+   "id": "K0064",
+   "metin": "YAP: konuşan kafayı 4.5 saniyeden uzun durağan bırakma, ama her klibe otomatik zoom ya da punch da koyma; durağanlığı kesim, ölçek değişimi, grafik ya da düzen değişimiyle, yaratıcı brifin enerji eğrisine göre kır.",
+   "neden": "ADR 0064 birleştirme: K0039 (durağanlık) ve K0054 (aşırı zoom) birbirine zıt yönde çekiyordu",
+   "kapsam": "global",
+   "hedef_rol": "E1",
+   "kategori": "kesim",
+   "onem": "P1",
+   "kaynak": "kullanici",
+   "kanit": [],
+   "durum": "aktif",
+   "tekrar": 1,
+   "olusturma": "2026-11-26",
+   "guncelleme": "2026-11-26"
   }
  ]
 }

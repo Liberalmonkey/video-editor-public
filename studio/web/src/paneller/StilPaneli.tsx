@@ -6,7 +6,7 @@ import { ApiHata, istek, sor, yukle } from "../api";
 import { useDepo } from "../depo";
 import { Bos, DosyaSec, Dugme, IkonDugme } from "../ortak";
 import { Bolum, Secim } from "./alanlar";
-import { HazirStiller } from "./HazirStiller";
+import { HazirStiller, RENK_SIRA } from "./HazirStiller";
 import { StilVarliklari } from "./StilVarliklari";
 
 interface StilOge {
@@ -16,6 +16,8 @@ interface StilOge {
   motion_md: string;
   referanslar: string[];
   varlik_sayisi?: number;
+  kapak?: boolean;
+  palet?: Record<string, string>;
 }
 
 interface StilYanit {
@@ -326,42 +328,41 @@ export const StilPaneli: React.FC = () => {
         {!stiller.length && (
           <Bos baslik="Henüz stil yok" metin="Yukarıdan yeni bir stil adı oluşturup referans video veya görsellerini yükle." />
         )}
-        {stiller.map((s) => {
-          const aktifStil = s.ad === seciliAd;
-          const projedeKullaniliyor = aktifBuStudyoda && projeSecili === s.ad;
-          return (
-            <div
-              key={s.ad}
-              className={`satir ${aktifStil ? "secili" : ""}`}
-              role="button"
-              tabIndex={0}
-              onClick={() => setSeciliAd(s.ad)}
-              onKeyDown={(e) => e.key === "Enter" && e.target === e.currentTarget && setSeciliAd(s.ad)}
-            >
-              <span className="ad">{s.ad}</span>
-              {(s.varlik_sayisi ?? 0) > 0 && <span className="rozet">{s.varlik_sayisi} varlık</span>}
-              {projedeKullaniliyor && <span className="rozet vurgu"><Check size={11} /> seçili</span>}
-              <span className={`rozet ${s.hazir ? "iyi" : "uyari"}`}>
-                {s.hazir ? "hazır" : "referans bekliyor"}
-              </span>
-              {silinecek === s.ad ? (
-                <span style={{ display: "inline-flex", gap: 4, alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
-                  <span className="ipucu">Paket ve referanslar silinsin mi?</span>
-                  <Dugme tur="tehlike" onClick={() => stilSil(s.ad)}>Sil</Dugme>
-                  <Dugme onClick={() => setSilinecek(null)}>Vazgeç</Dugme>
+        <div className="motion-izgara stil-izgara">
+          {stiller.map((s) => {
+            const projedeKullaniliyor = aktifBuStudyoda && projeSecili === s.ad;
+            const renk = s.palet ?? {};
+            return (
+              <div
+                key={s.ad}
+                className={`motion-kart ${s.ad === seciliAd ? "secili" : ""}`}
+                role="button"
+                tabIndex={0}
+                title={s.hazir ? s.ad : `${s.ad}: referans bekliyor`}
+                onClick={() => { setSeciliAd(s.ad); setSilinecek(null); }}
+                onKeyDown={(e) => e.key === "Enter" && e.target === e.currentTarget && setSeciliAd(s.ad)}
+              >
+                <span className="motion-kare dikey">
+                  {s.kapak
+                    ? <img src={`/api/stil/${seciliStudyo}/${encodeURIComponent(s.ad)}/kapak?v=${surum}-${s.referanslar.length}`} alt="" loading="lazy" />
+                    : <span className="galeri-yer" style={{ background: renk.zemin }}>
+                        {Object.keys(renk).length > 0 && (
+                          <span className="galeri-palet">{RENK_SIRA.map((r) => renk[r] && <i key={r} style={{ background: renk[r] }} />)}</span>
+                        )}
+                        <span className="galeri-yer-ad" style={{ color: renk.yazi }}>{s.ad}</span>
+                      </span>}
+                  {projedeKullaniliyor
+                    ? <span className="rozet vurgu"><Check size={11} /> seçili</span>
+                    : !s.hazir && <span className="rozet uyari">referans bekliyor</span>}
                 </span>
-              ) : (
-                <IkonDugme
-                  ad={`${s.ad} stilini sil`}
-                  className="eylem"
-                  onClick={(e) => { e.stopPropagation(); setSilinecek(s.ad); }}
-                >
-                  <Trash2 size={14} />
-                </IkonDugme>
-              )}
-            </div>
-          );
-        })}
+                <span className="motion-ad">
+                  {s.ad}
+                  {(s.varlik_sayisi ?? 0) > 0 && <span className="ipucu"> · {s.varlik_sayisi} varlık</span>}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
         {secili && (
           <div style={{ borderTop: "1px solid var(--cizgi)", marginTop: 6 }}>
@@ -377,6 +378,17 @@ export const StilPaneli: React.FC = () => {
                 >
                   <Download size={14} /> Paketi indir (.zip)
                 </a>
+              )}
+              {silinecek === secili.ad ? (
+                <span style={{ display: "inline-flex", gap: 4, alignItems: "center" }}>
+                  <span className="ipucu">Paket ve referanslar silinsin mi?</span>
+                  <Dugme tur="tehlike" onClick={() => stilSil(secili.ad)}>Sil</Dugme>
+                  <Dugme onClick={() => setSilinecek(null)}>Vazgeç</Dugme>
+                </span>
+              ) : (
+                <IkonDugme ad={`${secili.ad} stilini sil`} onClick={() => setSilinecek(secili.ad)}>
+                  <Trash2 size={14} />
+                </IkonDugme>
               )}
               {aktifBuStudyoda && secili.hazir && (
                 <Dugme

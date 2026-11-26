@@ -1,14 +1,16 @@
 ---
 type: decision
 title: "Kapak sayfası: YouTube ve Instagram için Antigravity ile 1-5 aday, iki platform skill'i"
-status: accepted
+status: superseded
 tags: [adr, kapak, thumbnail, youtube, instagram, antigravity, studio]
 created: 2026-11-09
-updated: 2026-11-15
+updated: 2026-11-24
 sources: ["[[2026-11-09-kapak-arastirmasi]]", "[[2026-11-15-kapak-kalip-analizi]]"]
 ---
 
 # ADR: Kapak sayfası
+
+> [!note] Güncellendi 2026-11-24: kapak özelliği kaldırıldı, bu karar `superseded`. Bkz. [[0056-kapak-kaldirildi]].
 
 ## Bağlam
 Kullanıcı projeye bir kapak (thumbnail) sayfası istedi (2026-11-09): her video için kapak, istenirse 2, 3, 4 ya da 5 aday; üretim Antigravity ile; yalnız YouTube ve Instagram. Her iki platform için ayrı skill, en çok izlenen kanalların (MrBeast, Nick Saraev, Iman Gadzhi vb.) araştırmasına dayanacak. [[0025-gorsel-uretimi-google]] kapak adayını 3 ile sınırlıyordu ve kapağı elle akışla (`vedit gorsel` + şablon + `vedit pano`) kuruyordu.

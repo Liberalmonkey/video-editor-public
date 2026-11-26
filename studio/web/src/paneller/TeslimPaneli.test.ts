@@ -8,7 +8,9 @@ test("çözünürlük kademesi sekans yönünü korur", () => {
 });
 
 test("varsayılan ayar iş isteğine fazladan alan eklemez", () => {
-  const a: Ayar = { cozunurluk: null, kalite: "yayin", kodek: "h264", fps: null, platform: "", ad: "", yenile: false };
+  const a: Ayar = { cozunurluk: null, kalite: "yayin", kodek: "h264", fps: null, platform: "", ad: "", yenile: false, kaynaga: null, vmaf: false };
   expect(JSON.parse(JSON.stringify(isAlanlari(a)))).toEqual({ kalite: "yayin", kodek: "h264", yenile: false });
   expect(isAlanlari({ ...a, cozunurluk: 1440, fps: 60, ad: "v-2k" })).toMatchObject({ cozunurluk: 1440, fps: 60, cikti_adi: "v-2k" });
+  // ADR 0060: kaynağa eşle yalnız açıkça seçilince gider (null: ön ayarın varsayılanı sunucuda)
+  expect(isAlanlari({ ...a, kalite: "master", kaynaga: false, vmaf: true })).toMatchObject({ kalite: "master", kaynaga: false, vmaf: true });
 });

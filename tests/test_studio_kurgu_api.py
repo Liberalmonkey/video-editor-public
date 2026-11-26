@@ -122,58 +122,10 @@ def test_peak_serit_gercek_dosya(ortam, tmp_path):
     assert (b["w"], b["ses"]) == (320, True) and 2.9 < b["sure"] < 3.2
 
 
-def test_kapak_durum_ve_sec(ortam):
-    c, p = ortam
-    k = p.work / "gorsel" / "kapak" / "instagram"
-    k.mkdir(parents=True)
-    (k / "kapak-1.jpg").write_bytes(b"x")
-    d = c.get("/api/kapak/instagram/x").json()
-    a = d["adaylar"][0]
-    assert (a["n"], a["yol"], a["aci"], a["yerlesim"], a["olcek"]) == (1, "work/gorsel/kapak/instagram/kapak-1.jpg", None, "ust", 1.0)
-    assert len(d["adaylar"]) == 1 and d["secim"] is None and d["yerlesimler"] == ["ust", "alt"]
-    assert c.post("/api/kapak/instagram/x/sec", json={"n": 1}, headers=ORIGIN).json() == {"dosya": "kapak-reels.jpg"}
-    assert c.post("/api/kapak/instagram/x/sec", json={"n": 7}, headers=ORIGIN).status_code == 422
-    assert c.get("/api/kapak/ugc/x").status_code == 422
-    # önizleme: zemini olan adayda şablon döner; zeminsiz aday ve platformda olmayan yerleşim reddedilir
-    assert c.post("/api/kapak/instagram/x/onizle", json={"n": 1}, headers=ORIGIN).status_code == 422
-    (k / "zemin-1.jpg").write_bytes(b"z")
-    (k / "kapak-1.json").write_text('{"zemin": "zemin-1.jpg"}', encoding="utf-8")
-    r = c.post("/api/kapak/instagram/x/onizle", json={"n": 1, "metin": "A|<b>B</b>", "yerlesim": "alt"}, headers=ORIGIN)
-    assert r.status_code == 200 and "&lt;b&gt;B&lt;/b&gt;" in r.json()["html"] and 'data-yerlesim="alt"' in r.json()["html"]
-    assert c.post("/api/kapak/instagram/x/onizle", json={"n": 1, "yerlesim": "sol"}, headers=ORIGIN).status_code == 422
-
-
-def test_kapak_v2_uclari(ortam, tmp_path):
-    """ADR 0052: referans yükle/sil, dış görsel yükle, öneri kaydet, master prompt, elle kare; agy çağrılmaz."""
-    c, p = ortam
-    q = "/api/kapak/instagram/x"
-    assert c.put(f"{q}/referans?tur=yuz&dosya=ben.png", content=b"g", headers=ORIGIN).json() == {"ad": "yuz-ben.png"}
-    assert c.put(f"{q}/referans?tur=kotu&dosya=a.png", content=b"g", headers=ORIGIN).status_code == 400
-    assert c.put(f"{q}/referans?tur=stil&dosya=a.exe", content=b"g", headers=ORIGIN).status_code == 415
-    d = c.get(q).json()
-    assert d["referanslar"] == [{"tur": "yuz", "ad": "yuz-ben.png", "kok": "outputs", "silinir": True,
-                                 "yol": "work/gorsel/kapak/referans/yuz-ben.png"}]
-    assert {h["id"] for h in d["hedefler"]} >= {"nano-banana-pro", "nano-banana-21", "midjourney"} and "gorsel_motor" in d
-    assert c.delete(f"{q}/referans/yuz-ben.png", headers=ORIGIN).json() == {"tamam": True}
-    assert c.delete(f"{q}/referans/yuz-ben.png", headers=ORIGIN).status_code == 404
-    assert c.put(f"{q}/ice-al?platform=instagram&dosya=dis.png", content=b"g", headers=ORIGIN).json() == {"ad": "dis.png"}
-    assert (p.work / "gorsel" / "kapak" / "instagram" / "disari" / "dis.png").read_bytes() == b"g"
-    assert c.put(f"{q}/ice-al?platform=tiktok&dosya=dis.png", content=b"g", headers=ORIGIN).status_code == 400
-    assert c.get(f"{q}/master").status_code == 422  # öneri ya da aday yok
-    brief = {"sahne": "A desk", "satir1": "A", "satir2": "B", "kalip": "klasik"}
-    r = c.post(f"{q}/oneri", json={"platform": "instagram", "fikir": "fikir", "briefler": [brief]}, headers=ORIGIN).json()
-    assert r["briefler"][0]["sahne"] == "A desk"
-    m = c.get(f"{q}/master?platform=instagram").json()
-    assert m["kaynak"] == "öneri" and '"A"' in m["hedefler"]["nano-banana-pro"]["yazili"]["prompt"] and "# Kapak master" in m["md"]
-    assert c.get(q).json()["oneri"]["briefler"][0]["govde"].startswith("A desk.")
-    assert c.post(f"{q}/kare", json={"video": "inputs:../x.mp4", "t": 1}, headers=ORIGIN).status_code == 422
-    subprocess.run(["ffmpeg", "-v", "error", "-f", "lavfi", "-i", "color=c=red:s=160x284:d=2", "-pix_fmt", "yuv420p",
-                    str(p.girdi / "1.mp4")], check=True)
-    r = c.post(f"{q}/kare", json={"video": "inputs:1.mp4", "t": 0.5}, headers=ORIGIN).json()
-    assert r == {"n": 7, "yol": "work/gorsel/kapak/kareler/inputs-1.mp4/el-00000500.jpg"}
-    d = c.get(f"{q}?video=inputs:1.mp4").json()
-    assert d["video"] == "inputs:1.mp4" and d["kareler"][-1] == {"n": 7, "yol": r["yol"], "el": True}
-    assert [v["yol"] for v in d["videolar"]] == ["inputs:1.mp4"]
+def test_kapak_uclari_kaldirildi(ortam):
+    """ADR 0056: kapak API'si yok."""
+    c, _ = ortam
+    assert c.get("/api/kapak/instagram/x").status_code == 404
 
 
 def test_kurgu_okuyan_uclar_kurgu_yokken_ve_bozukken_500_vermez(ortam):

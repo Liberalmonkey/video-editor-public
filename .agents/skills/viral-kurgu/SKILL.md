@@ -5,7 +5,7 @@ description: Videoyu platformların ölçtüğü sinyallere göre planlar ve kur
 
 # Viral kurgu
 
-Hiçbir kurgu viral garanti etmez. Kurgu, konu ve paketin kazandığı izleyiciyi tutar. Karar sırası: konu ve vaat, paket (başlık, kapak, ilk kare), ilk saniyeler, tutma, kapanış. Konu zayıfsa önce bunu söyle; efektle kurtarmaya çalışma.
+Hiçbir kurgu viral garanti etmez. Kurgu, konu ve paketin kazandığı izleyiciyi tutar. Karar sırası: konu ve vaat, paket (başlık, ilk kare), ilk saniyeler, tutma, kapanış. Konu zayıfsa önce bunu söyle; efektle kurtarmaya çalışma.
 
 Kanıtlar ve kaynaklar: [[2026-11-04-platform-algoritmalari]]. Kesim hızının tutmayı artırdığını gösteren kontrollü bir çalışma bulunamadı. Aşağıdaki sayılar yasa değil, başlangıç değeridir; kanalın kendi verisi gelince o kazanır.
 
@@ -25,17 +25,17 @@ Instagram'ın resmî sayfası filigranlı, düşük çözünürlüklü, sessiz, 
 1. **İlk kare:** sonuç ya da iddia ekranda. Siyah, logo, kanal introsu yok.
 2. **İlk cümle (0–3 sn):** `[bildiği şey] + [büyük sonuç] + [karşılığı]`. Söz ve ekran metni aynı vaadi taşır. Selamlama yok.
 3. **Tek fikir:** video tek bir şey öğretir ya da gösterir. İkinci fikir ayrı videodur.
-4. **Görsel değişim:** hook'ta 1–2 sn, gövdede 2–4 sn. Her değişim yeni bilgi taşır: kanıt, ekran görüntüsü, sayı, B-roll. Yalnız sayı tutsun diye kesme.
+4. **Görsel değişim (başlangıç değeri):** hook'ta 1–2 saniye, gövdede 2–4 saniye; sakin bölüm brifte bilinçliyse bu aralık istisnadır. Her değişim yeni bilgi taşır: kanıt, ekran görüntüsü, sayı, B-roll. Yalnız sayı tutsun diye kesme.
 5. **Konuşma:** dolgu ve nefes boşluğu temizlenir, ama cümle sonu nefesi kalır. Kelime anlaşılmıyorsa hızlandırma geri alınır.
 6. **Sessizde anlaşılır:** altyazı ADR 0014 standardıdır. Ana iddia sessizde de okunur.
 7. **Gönderme testi:** "Bunu kime, hangi cümleyle gönderirdim?" Cevap yoksa kapanmamış demektir. Hazır şablon, liste, kopyalanacak komut, şaşırtıcı sayı işe yarar.
 8. **Kapanış:** söz biter bitmez biter. Tek CTA, en çok 3 sn. "Takip etmeyi unutmayın" gibi uzun veda yok. Mümkünse son cümle ilk kareye bağlanır.
-9. **Kapak:** serideki tüm videolarda tek şablon. Yüz ya da avatar, iki araç logosu, iki satır başlık. Üretim `gorsel-uret`.
+9. **İlk kare:** serideki tüm videolarda tek düzen; ilk kare profil ızgarasında kapak gibi okunur (yüz ya da avatar, iki satır başlık).
 10. **Temiz çıktı:** filigransız, 9:16, kenarsız, müziksiz bile anlaşılır.
 
 ## YouTube uzun reçetesi (8–30 dk)
 
-1. **Önce paket:** başlık ve kapak yazılmadan kurguya başlama (`/yt-package`). Video o vaadi doğrular. Vaatle içerik uyuşmazsa izleyici çıkar.
+1. **Önce paket:** başlık yazılmadan kurguya başlama (`/yt-package`). Video o vaadi doğrular. Vaatle içerik uyuşmazsa izleyici çıkar.
 2. **İlk 30 sn:** sırayla kanıt (neden dinlenmeli), kazanç (sonunda ne olacak), yol haritası (ne göreceğiz). YouTube "intro" tutmasını ilk 30 sn üzerinden raporlar. Konu güncel bir araç ya da olaysa konuşmacıyla değil kanıt ekranıyla aç: repo, gönderi, sonuç. Kuru başlık kartıyla açılmaz.
 3. **İlk 3 dakika en sıkı bölümdür.** En çok kayıp ilk dakikadadır. Kurulumu kes, ilk somut sonucu erkene al.
 4. **Yaklaşık 3. dakikada yeniden kazan:** en güçlü demo, sonuç ya da şaşırtma burada. 3–6 dk arası basit ve ilginç içerik; uzun açıklamalar 6. dakikadan sonra.
@@ -75,7 +75,9 @@ Bu kurallar çoğunlukla üçüncü taraf gözlemidir; ayrı bir LinkedIn render
 
 ## Yayın paketi
 
-Her teslimde videonun yanına `Projeler/outputs/<stüdyo>/<proje>/yayin.md` yazılır: kopyalanacak açıklama, hashtag, kapak, paylaşım öncesi kontrol, riskler. Metin videoda söylenenle aynı vaadi taşır, tam düzyazıdır (`humanizer`). Platform sorulmaz, stüdyodan çıkar; birden çok platform isteniyorsa her biri için ayrı bölüm.
+Her teslimde videonun yanına `Projeler/outputs/<stüdyo>/<proje>/yayin.md` yazılır: kopyalanacak açıklama, hashtag, paylaşım öncesi kontrol, riskler. Metin videoda söylenenle aynı vaadi taşır, tam düzyazıdır (`humanizer`). Platform sorulmaz, stüdyodan çıkar; birden çok platform isteniyorsa her biri için ayrı bölüm.
+
+Araç: `vedit yayin <proje> [--hepsi] [--platform reels,youtube,shorts,tiktok,linkedin] [--motor] [--model]` ya da Stüdyo > Teslim > Yayın metni (ADR 0055). Varsayılan Claude Opus 5.5. Teslim videosu başına `yayin.md`'de ayrı blok yazar; sınırlar ve platform kuralları `library/yayin/platformlar.json`'dadır, vedit doğrular. Aşağıdaki kurallar o dosyanın kaynağıdır; birini değiştirirsen ikisini birlikte güncelle.
 
 **Instagram Reels:**
 1. İlk cümle videonun vaadidir ve konunun anahtar kelimesini doğal biçimde içerir. Selamlama yok.
@@ -107,6 +109,7 @@ Her "hayır" için zaman damgası ve tek cümle düzeltme öner. Cevabı ölçem
 7. Sessizde ana fikir anlaşılıyor mu?
 8. Son cümleden sonra boş süre var mı?
 9. Gönderme testinin cevabı ne?
+10. İmza anı var mı, paylaşılacak kare hangisi?
 
 ## Yayın sonrası ölçüm
 

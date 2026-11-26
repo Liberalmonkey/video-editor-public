@@ -31,10 +31,15 @@ assert not teslim.denetle(video(bit_rate="5000000", codec_name="hevc"))[1] and t
 
 # Filtre: girdinin aralığı ve matrisi okunur, HDR reddedilir
 f = teslim.renk_filtresi(video(pix_fmt="yuvj420p", color_range="pc", color_space="bt470bg"))
-assert "in_range=full" in f and "in_color_matrix=bt601" in f
-assert "in_range=limited" in teslim.renk_filtresi(video()) and "in_color_matrix=bt709" in teslim.renk_filtresi(video())
-assert "in_color_matrix=bt709" in teslim.renk_filtresi(video(color_space=None))
-assert "in_color_matrix=bt601" in teslim.renk_filtresi(video(color_space=None, width=640, height=360))
+assert "rin=full" in f and "min=470bg" in f
+assert "rin=limited" in teslim.renk_filtresi(video()) and "min=709" in teslim.renk_filtresi(video())
+assert "min=709" in teslim.renk_filtresi(video(color_space=None))
+assert "min=470bg" in teslim.renk_filtresi(video(color_space=None, width=640, height=360))
+# ADR 0060: zscale dither'lı, 10-bit çıkış ve Master ön ayarı
+assert "d=error_diffusion" in f and "format=yuv420p10le" in teslim.renk_filtresi(video(), 10)
+assert teslim.bit_derinligi("master", "h265") == 10 and teslim.bit_derinligi("master", "h264") == 8
+assert teslim.bit_derinligi("yayin", "h265") == 8 and teslim.KALITE["master"]["ara"] == "kayipsiz"
+assert not teslim.denetle(video(pix_fmt="yuv420p10le"), bit=10)[0] and teslim.denetle(video(pix_fmt="yuv420p10le"))[0]
 try:
     teslim.renk_filtresi(video(color_transfer="smpte2084"))
     raise SystemExit("HDR reddedilmeliydi")
@@ -58,6 +63,7 @@ with tempfile.TemporaryDirectory() as d:
     cikti = Path(r["cikti"])
     v, _ = teslim._akislar(cikti)
     assert teslim.denetle(v)[0] == [], v
+    assert r["sadakat"]["ssim"] > 0.97, r["sadakat"]
     ham = subprocess.run([ff.FFMPEG, "-v", "error", "-i", str(cikti), "-frames:v", "1", "-vf", "crop=8:8:28:28",
                           "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True, check=True).stdout
     orta = [sum(ham[i::3]) / (len(ham) / 3) for i in range(3)]
@@ -66,6 +72,10 @@ with tempfile.TemporaryDirectory() as d:
     h = teslim.kodla(kaynak, d / "hevc.mp4", kodek="h265", kalite="hafif", beklenen=(64, 64))
     hv, _ = teslim._akislar(Path(h["cikti"]))
     assert (hv["codec_name"], hv["codec_tag_string"], h["crf"]) == ("hevc", "hvc1", 24) and teslim.denetle(hv)[0] == [], hv
+    m = teslim.kodla(kaynak, d / "master.mp4", kodek="h265", kalite="master", vmaf=True)
+    mv, _ = teslim._akislar(Path(m["cikti"]))
+    assert (mv["pix_fmt"], mv["profile"], m["bit"]) == ("yuv420p10le", "Main 10", 10) and teslim.denetle(mv, bit=10)[0] == [], mv
+    assert m["sadakat"]["vmaf"] > 90 and m["sadakat"]["psnr"] > 40, m["sadakat"]
     try:
         teslim.kodla(kaynak, d / "yanlis.mp4", beklenen=(128, 128))
         raise SystemExit("boyut kapısı durdurmalıydı")

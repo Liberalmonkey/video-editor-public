@@ -12,7 +12,6 @@ import json
 
 import os
 import re
-import shutil
 import subprocess
 import time
 from dataclasses import dataclass
@@ -31,6 +30,9 @@ KAIZEN = paths.LIBRARY / "kaizen.md"
 # WHY: son kodlama vedit teslim'dedir (slow, CRF 16); ara dosyada aynı işi iki kez yapmak süreyi 2 katına çıkarıyordu.
 # PNG kalır: JPEG q95 videolu sahnede SSIM'i 0,979'a düşürüyor, veryfast 0,998'de kalıyor.
 ARA_KODLAMA = ["--crf=14", "--x264-preset=veryfast"]
+# WHY: bkz. wiki/decisions/0060-proxy-master-conform.md. Master ön ayarı: ara render kayıpsız 4:4:4 (x264 CRF 0),
+# tek kayıplı nesil teslim kodlamasında kalır.
+ARA_KAYIPSIZ = ["--crf=0", "--pixel-format=yuv444p", "--x264-preset=veryfast"]
 
 
 @dataclass(frozen=True)
@@ -60,6 +62,10 @@ def bul(ref: str) -> Proje:
             if d.is_dir() and not d.parent.name.startswith("_") and not d.name.startswith("_") \
                     and (ref in f"{d.parent.name}/{d.name}" or ref.endswith(f"{d.parent.name}/{d.name}")):
                 bulunan.add(Proje(d.parent.name, d.name))
+    # Tam ad öncelikli: `arvelior`, `arvelior-hiz` varken belirsiz sayılmaz.
+    tam = {p for p in bulunan if ref in (p.ad, f"{p.studyo}/{p.ad}") or ref.endswith(f"/{p.studyo}/{p.ad}")}
+    if len(tam) == 1:
+        return tam.pop()
     if len(bulunan) == 1:
         return bulunan.pop()
     if not bulunan:
@@ -141,6 +147,11 @@ def hazirla(p: Proje, *, dil: str | None = "tr", prompt: str | None = None, ek: 
     for d in ("analysis", "edit", "renders", "qa", "public"):
         (p.work / d).mkdir(parents=True, exist_ok=True)
     dosyalar = sorted((f for f in p.girdi.iterdir() if f.is_file() and f.suffix.lower() in MEDYA), key=lambda f: dogal(f.name)) + [Path(e) for e in ek or []]
+    # WHY: bkz. wiki/decisions/0060-proxy-master-conform.md. Ağır kaynağın proxy'si transkriptle paralel hazırlanır.
+    from . import vekil
+    vekil_isleri = vekil.arka_planda(p.work, dosyalar)
+    if vekil_isleri:
+        print(f"Proxy: {len(vekil_isleri)} iş başladı (4K/HEVC/10-bit/HDR/VFR kaynak; final yine orijinali kullanır)", flush=True)
     sonuc, digest = {"files": {}}, []
     for f in dosyalar:
         v = ff.probe(f).get("video")
@@ -158,6 +169,10 @@ def hazirla(p: Proje, *, dil: str | None = "tr", prompt: str | None = None, ek: 
     (p.work / "analysis" / "transcript.json").write_text(json.dumps(sonuc, ensure_ascii=False, indent=1), encoding="utf-8")
     (p.work / "analysis" / "digest.txt").write_text("\n".join(digest) + "\n", encoding="utf-8")
     print(f"Digest: {paths.rel(p.work / 'analysis' / 'digest.txt')}")
+    for t in vekil_isleri:
+        t.join()
+    if vekil_isleri:
+        print(f"Proxy hazır: {paths.rel(vekil.klasor(p.work))}")
 
 
 def hiz_parcalari(parcalar: list[dict], kelimeler: dict[str, list[dict]], hiz: float = 1.0, sessiz_hiz: float = 1.0,
@@ -273,10 +288,11 @@ def _public_hazirla(p: Proje) -> None:
             (fontlar / f.name).hardlink_to(f)
 
 
-def _props(p: Proje) -> Path:
+def _props(p: Proje, mod: str = "final") -> Path:
     # WHY: bkz. wiki/decisions/0021-video-studyo-nle.md. kurgu.json varsa tek kaynak odur, sahne.mjs çalışmaz.
+    # mod (ADR 0060): "taslak" ağır kaynakta proxy bağlar; "final"/"master" orijinali bağlar ve conform kapısını çalıştırır.
     if kurgu.yol(p.work).exists():
-        return kurgu.hazirla(p)
+        return kurgu.hazirla(p, mod=mod)
     sahne = p.work / "edit" / "sahne.mjs"
     if sahne.exists():
         subprocess.run(["node", str(sahne)], check=True, cwd=sahne.parent)
@@ -343,8 +359,11 @@ def _goruntu(p: Proje, props: Path, cikti: Path, ek: list[str], *, kalite: str, 
     if motor == "hf":
         olcek = next((float(e.split("=", 1)[1]) for e in ek if e.startswith("--scale=")), 1.0)
         crf = next((int(e.split("=", 1)[1]) for e in ek if e.startswith("--crf=")), None)
-        hf_kurgu.render(p, props, cikti, kalite=kalite, aralik=aralik, olcek=olcek, crf=crf)
+        chroma = "444" if "--pixel-format=yuv444p" in ek else None
+        hf_kurgu.render(p, props, cikti, kalite=kalite, aralik=aralik, olcek=olcek, crf=crf, chroma=chroma)
     else:
+        # Remotion H.264'te CRF 0'ı reddeder (iOS uyumu); master ara render orada CRF 1 4:4:4, görsel olarak kayıpsız.
+        ek = ["--crf=1" if e == "--crf=0" else e for e in ek]
         if aralik and not any(e.startswith("--frames=") for e in ek):
             fps = json.loads(props.read_text(encoding="utf-8")).get("sekans", {}).get("fps", 30)
             ek = [*ek, f"--frames={int(aralik[0] * fps)}-{int(aralik[1] * fps)}"]
@@ -355,7 +374,7 @@ def _goruntu(p: Proje, props: Path, cikti: Path, ek: list[str], *, kalite: str, 
 def taslak(p: Proje, *, aralik: list[float] | None = None) -> Path:
     bas = aralik[0] if aralik else 0.0
     out = p.work / "renders" / "taslak.mp4"
-    props = _props(p)
+    props = _props(p, "taslak")
     _public_hazirla(p)
     ek = ["--image-format=jpeg", "--x264-preset=veryfast", "--crf=23", "--scale=0.5"]
     if aralik:
@@ -366,6 +385,27 @@ def taslak(p: Proje, *, aralik: list[float] | None = None) -> Path:
     sheet = p.work / "renders" / "taslak.jpg"
     ff.contact_sheet(out, sheet, duration=sure, cols=6, rows=4, width=270)
     print(f"Taslak: {paths.rel(out)} · {sure:.1f}s · Kareler: {paths.rel(sheet)}" + (f" · {bas:g}. sn'den" if aralik else ""))
+    return out
+
+
+QC_FPS = 15  # QC videosu: slop 4 fps ölçer, paftalar seçilmiş sabit kareler; kesim tespiti 30 fps ile aynı (ADR 0058)
+
+
+def qc_taslak(p: Proje) -> Path:
+    """Kalite kontrolün videosu: yarım çözünürlük, 15 fps, `renders/qc.mp4`. Kurgu görüntüsü değişmediyse yeniden çizilmez.
+
+    WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md. QC karelere, 4 fps'lik slop ölçümüne ve sese bakar; 30 fps
+    taslak aynı bulguyu ~%25 daha uzun sürede verir (arvelior: 100 → 75 sn). Kullanıcıya giden taslak ve final değişmez.
+    HyperFrames yapamadığında (Remotion yolu) tam taslak alınır."""
+    from . import hf_kurgu
+    props = _props(p, "taslak")
+    _public_hazirla(p)
+    motor, neden = hf_kurgu.motor_sec(p, props, olcek=False)
+    if motor != "hf":
+        return taslak(p)
+    out = p.work / "renders" / "qc.mp4"
+    print(f"  Motor: HyperFrames ({neden}) · QC videosu {QC_FPS} fps", flush=True)
+    hf_kurgu.render(p, props, out, kalite="draft", olcek=0.5, fps=QC_FPS, crf=23, onbellek=True)
     return out
 
 
@@ -430,6 +470,13 @@ def srt_yaz(kelimeler: list[dict], stil: dict | None = None) -> str:
                      for i, s in enumerate(sayfalar, 1))
 
 
+def _json_oku(f: Path) -> dict | None:
+    try:
+        return json.loads(f.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
 def _bos_ad(cikti: Path, ad: str) -> Path:
     """Eski teslimin üzerine yazmaz: ad.mp4, ad-v2.mp4, ad-v3.mp4 …"""
     f, n = cikti / f"{ad}.mp4", 2
@@ -488,17 +535,50 @@ def _buyutme_uyarisi(p: Proje, boyut: tuple[int, int]) -> str | None:
     return None
 
 
+def kaynaga_esle(p: Proje) -> tuple[int | None, int | None]:
+    """(çözünürlük kademesi, fps): kurgudaki en büyük video kaynağına göre. WHY: ADR 0060 "Kaynağa eşle".
+
+    Kademe kaynağın kısa kenarını aşmaz (büyütme yok); fps yalnız kaynak 50+ ise 60 olur, değilse sekansınki kalır.
+    """
+    from . import teslim
+    if not kurgu.yol(p.work).exists():
+        return None, None
+    k = kurgu.oku(p.work)
+    kisa, hiz = 0, 0.0
+    for kay in k.kaynaklar.values():
+        try:
+            f = kurgu.dosya(p, kay.yol)
+        except ValueError:
+            continue
+        if f.suffix.lower() not in VIDEO or not f.is_file():
+            continue
+        v = (ff.probe_ob(f).get("video") or {})
+        if v and not v.get("alfa"):
+            kisa, hiz = max(kisa, min(v["width"], v["height"])), max(hiz, float(v.get("fps") or 0))
+    kademe = max((c for c in teslim.COZUNURLUK if c <= kisa), default=None)
+    return kademe, (60 if hiz >= 50 else None)
+
+
 def final(p: Proje, *, platform: str | None = None, ad: str | None = None, metin: str | None = None,
           yenile: bool = False, cozunurluk: int | None = None, kalite: str = "yayin", kodek: str = "h264",
-          fps: int | None = None) -> Path:
+          fps: int | None = None, kaynaga: bool | None = None, vmaf: bool = False) -> Path:
     from . import olaysesi, teslim
     t0 = time.time()
     ham = p.work / "renders" / "ham.mp4"
     imza = p.work / "renders" / "ham.imza"
     ayar_dosya = p.work / "renders" / "ham.ayar"
-    props = _props(p)
+    # WHY: bkz. wiki/decisions/0060-proxy-master-conform.md. Master: kayıpsız ara render, kaynağa eşle varsayılan.
+    master = teslim.KALITE[kalite].get("ara") == "kayipsiz"
+    if kaynaga if kaynaga is not None else master:
+        k_coz, k_fps = kaynaga_esle(p)
+        cozunurluk, fps = cozunurluk or k_coz, fps or k_fps
+        print(f"  Kaynağa eşle: {f'{k_coz}p' if k_coz else 'sekans boyutu'}" + (f" · {k_fps} fps" if k_fps else ""), flush=True)
+    props = _props(p, "master" if master else "final")
     _public_hazirla(p)
     motor_props, ek, ayar, boyut = _render_ayari(props, cozunurluk, fps)
+    ara = ARA_KAYIPSIZ if master else ARA_KODLAMA
+    if master:
+        ayar = (ayar + " ara=kayipsiz").strip()
     rev = f" rev {kurgu.oku(p.work).rev}" if kurgu.yol(p.work).exists() else ""
     print(f"Export: yapay zekâ kullanılmıyor, kurgu{rev} olduğu gibi render ediliyor.", flush=True)
     if (u := _buyutme_uyarisi(p, boyut)):
@@ -508,7 +588,7 @@ def final(p: Proje, *, platform: str | None = None, ad: str | None = None, metin
         print("Motor atlandı: görüntü girdileri değişmedi (zorlamak için --yenile).")
     else:
         imza.unlink(missing_ok=True)  # WHY: yarım kalan render geçerli sayılmasın
-        _goruntu(p, motor_props, ham, [*ARA_KODLAMA, *ek], kalite="looks", ilerleme=True)
+        _goruntu(p, motor_props, ham, [*ara, *ek], kalite="looks", ilerleme=True)
         ayar_dosya.write_text(ayar, encoding="utf-8")
         imza.write_text(ham_imzasi(p, ayar), encoding="utf-8")
     sure_yaz(p.work, "final:motor", time.time() - t0)
@@ -533,10 +613,22 @@ def final(p: Proje, *, platform: str | None = None, ad: str | None = None, metin
     t0 = time.time()
     hedef = _bos_ad(p.cikti, ad or p.ad)
     print("3/4 Teslim kodlaması (ffmpeg)", flush=True)
-    t = teslim.kodla(sesli, hedef, platform or PLATFORM.get(p.studyo), kodek=kodek, kalite=kalite, beklenen=boyut)
+    t = teslim.kodla(sesli, hedef, platform or PLATFORM.get(p.studyo), kodek=kodek, kalite=kalite, beklenen=boyut, vmaf=vmaf)
     sure_yaz(p.work, "final:teslim", time.time() - t0)
     t0 = time.time()
-    print(f"Teslim: {paths.rel(hedef)} · {t['boyut']} · {t['kodek']} · CRF {t['crf']} · {t['fps']:g} fps · {t['mbps']} Mbps")
+    conform = _json_oku(p.work / "edit" / "conform.json")
+    (p.work / "renders" / "kalite.json").write_text(json.dumps(
+        {"dosya": hedef.name, "kalite": kalite, "kodek": kodek, "bit": t["bit"], "boyut": t["boyut"], "mbps": t["mbps"],
+         "crf": t["crf"], "fps": t["fps"], "ara": "kayipsiz" if master else "hizli", "sadakat": t["sadakat"],
+         "conform": conform, "zaman": dt.datetime.now().isoformat(timespec="seconds")}, ensure_ascii=False, indent=1),
+        encoding="utf-8")
+    sd = t["sadakat"]
+    print(f"Teslim: {paths.rel(hedef)} · {t['boyut']} · {t['kodek']} · CRF {t['crf']} · {t['bit']}-bit · {t['fps']:g} fps · {t['mbps']} Mbps"
+          + (f" · SSIM {sd['ssim']}" if sd.get("ssim") is not None else "") + (f" · VMAF {sd['vmaf']}" if sd.get("vmaf") is not None else ""))
+    if conform:
+        print(f"  Master conform: {conform.get('master', 0)}/{conform.get('klip', 0)} klip orijinal kaynaktan")
+    if master and ham.exists():
+        print(f"  Kayıpsız ara render {ham.stat().st_size / 1e9:.2f} GB: work/renders/ham.mp4 (yeniden teslim için önbellek)")
     for u in t["uyarilar"]:
         print(f"  ! {u}")
     if kelimeler:
@@ -635,7 +727,7 @@ def kaizen(p: Proje, *, yaz: bool = True) -> str:
         print(f"  {k:14}  {sn / 60:6.1f} dk")
     print(satir)
     if not (p.cikti / "yayin.md").exists():
-        print("! yayin.md yok: teslimden önce açıklama ve hashtag paketini yaz (viral-kurgu).")
+        print(f"! yayin.md yok: teslimden önce `vedit yayin {p.studyo}/{p.ad} --hepsi` ya da Stüdyo Teslim > Yayın metni (ADR 0055).")
     if yaz and (not KAIZEN.exists() or satir not in KAIZEN.read_text(encoding="utf-8")):
         with KAIZEN.open("a", encoding="utf-8") as h:
             h.write(satir + "\n")

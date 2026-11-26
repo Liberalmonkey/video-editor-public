@@ -171,6 +171,26 @@ const KURUCU: Record<string, Kurucu> = {
     }
     return iz;
   },
+  // Sürekli-dünya ekran odaklama (ADR 0062): genel görünümden hedef (x,y)'ye pürüzsüz yaklaşır, tutar, geri döner.
+  ekran_odak: ({ t, d, p, o, c }) => {
+    const g = Math.min(p.gecis, d * 0.35);
+    const son = t + d;
+    const olcek = [kf(t, 1, "expo"), kf(t + g, p.s), kf(son - g, p.s, "yumusak"), kf(son, 1)];
+    const capa = c.donus.capa ?? { x: 0.5, y: 0.5 }, el = kfDeger(c.donus.olcek, t, 1);
+    const dx = (p.x - capa.x) * o.w * el, dy = (p.y - capa.y) * o.h * el;
+    return { olcek, x: olcek.map((f) => ({ ...f, v: r4((1 - f.v) * dx) })), y: olcek.map((f) => ({ ...f, v: r4((1 - f.v) * dy) })) };
+  },
+  // Sürekli-dünya kamera kaydırma (ADR 0062): zoom'lu alanda kesmesiz (x1,y1) -> (x2,y2) akıcı kayma.
+  dunya_kaydir: ({ t, d, p, o, c }) => {
+    const capa = c.donus.capa ?? { x: 0.5, y: 0.5 }, el = kfDeger(c.donus.olcek, t, 1);
+    const sx = (px: number) => r4((1 - p.s) * (px - capa.x) * o.w * el);
+    const sy = (py: number) => r4((1 - p.s) * (py - capa.y) * o.h * el);
+    return {
+      olcek: [kf(t, p.s, "yumusak"), kf(t + d, p.s)],
+      x: [kf(t, sx(p.x1), "yumusak"), kf(t + d, sx(p.x2))],
+      y: [kf(t, sy(p.y1), "yumusak"), kf(t + d, sy(p.y2))],
+    };
+  },
 };
 
 const sinirla = (v: number, pr: Param) => Math.min(pr.max ?? Infinity, Math.max(pr.min ?? -Infinity, v));

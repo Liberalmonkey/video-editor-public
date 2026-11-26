@@ -59,3 +59,13 @@ export const sureYaz = (s?: number | null) => {
   if (s < 10) return `${s.toFixed(1)} sn`;
   return t >= 3600 ? `${Math.floor(t / 3600)}:${String(Math.floor(t / 60) % 60).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}` : `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
 };
+
+// Kütüphane listesi (~0,5 MB JSON) panel başına değil oturumda bir kez iner; yükleme ve silmeden sonra `yenile` tazeler (ADR 0057).
+let kutuphaneSoz: Promise<any> | null = null;
+export const kutuphaneAl = (yenile = false): Promise<any> => {
+  if (yenile || !kutuphaneSoz) {
+    kutuphaneSoz = istek("/api/kutuphane");
+    kutuphaneSoz.catch(() => { kutuphaneSoz = null; });
+  }
+  return kutuphaneSoz;
+};

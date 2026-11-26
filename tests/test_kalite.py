@@ -1,5 +1,4 @@
 """Kurgu kalite uyarıları, ölü hava ve SFX parlaklık süzgeci (ADR 0040)."""
-from pathlib import Path
 
 import numpy as np
 
@@ -38,6 +37,8 @@ def test_art_arda_ayni_gecis_ve_efekt():
               "hazir": [{"ad": "punch", "t": 0.5}]} for i in range(4)])
     kodlar = [x["kod"] for x in kurgu_kalite.uyarilar(k)]
     assert kodlar.count("GECIS_TEKRAR") == 1 and kodlar.count("EFEKT_TEKRAR") == 1
+    gec = next(x for x in kurgu_kalite.uyarilar(k) if x["kod"] == "GECIS_TEKRAR")
+    assert gec["klip"] == "v2" and "(v2)" in gec["kanit"], "ADR 0058: seri üçüncü klibi adlandırır, uyarı sahibine gider"
     k.klipler[1].gecis_giris.yon = "sag"
     assert "GECIS_TEKRAR" not in [x["kod"] for x in kurgu_kalite.uyarilar(k)]
 
@@ -59,21 +60,3 @@ def test_tekrarli_rolde_parlak_ses_secilmez():
     assert secilen == {"tik1"}
 
 
-def test_teslim_kapak_yalniz_ilk_karede(tmp_path):
-    import subprocess
-
-    from vedit import ff, teslim
-    v, k = tmp_path / "v.mp4", tmp_path / "k.png"
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "color=c=gray:s=640x360:d=2:r=30", "-f", "lavfi",
-                    "-i", "sine=f=440:d=2", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", str(v)], check=True)
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "color=c=red:s=1280x720:d=1", "-frames:v", "1", str(k)], check=True)
-    r = teslim.kodla(v, tmp_path / "o.mp4", kapak=k)
-
-    def kare(n):
-        ham = subprocess.run(["ffmpeg", "-v", "error", "-i", r["cikti"], "-vf", f"select=eq(n\,{n})", "-frames:v", "1",
-                              "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True, check=True).stdout
-        return np.frombuffer(ham, np.uint8).reshape(-1, 3).mean(axis=0)
-    assert kare(0)[0] > 180 and kare(0)[1] < 80      # kırmızı kapak
-    assert abs(kare(1)[0] - kare(1)[1]) < 10           # gri özgün kare
-    o = ff.probe(Path(r["cikti"]))
-    assert abs(o["duration"] - 2.0) < 0.1 and o.get("audio")

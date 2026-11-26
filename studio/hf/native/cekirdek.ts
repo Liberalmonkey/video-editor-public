@@ -100,9 +100,29 @@ export const sahne = (kokId: string, kur: (b: Baglam) => (a: Akis) => void, ayar
   return tl;
 };
 
+// Kapalı-form sönümlü yay çözücüsü (ADR 0062): rastgele kare sıçramasında (out-of-order seek) %100 deterministik.
+// zeta = 0.74, omega = 20 → keskin UI (~%3 taşma); zeta = 0.58, omega = 18 → canlı pop (~%10 taşma).
+export const yayCoz = (t: number, zeta = 0.74, omega = 20): number => {
+  if (t <= 0) return 0;
+  if (zeta >= 1) {
+    const e = Math.exp(-omega * t);
+    return 1 - e * (1 + omega * t);
+  }
+  const kok = Math.sqrt(1 - zeta * zeta);
+  const wd = omega * kok;
+  const e = Math.exp(-zeta * omega * t);
+  const v = 1 - e * (Math.cos(wd * t) + (zeta / kok) * Math.sin(wd * t));
+  return Math.abs(1 - v) < 1e-4 && t > 0.25 ? 1 : v;
+};
+
+// Hızdan yönlü optik bulanıklık (SVG feGaussianBlur stdDeviation için px).
+export const yonBulaniklik = (dxDt: number, olcek = 0.012, maks = 18): number =>
+  Math.min(maks, Math.max(0, Math.abs(dxDt) * olcek));
+
 const HFN = {
   sahne, stil, oz,
   akis: akisHesapla, cizgiOfset, YAY_PROFIL,
+  yayCoz, yonBulaniklik,
   interpolate, spring, random,
   ikonKalinlik, KONTUR_EK, IKON_CIZGI_ORAN,
   ...tema,

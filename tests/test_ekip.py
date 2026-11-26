@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from vedit import aiedit, ekip, ekip_v3, ff, hizli, kural, kurgu, paths
+from vedit import aiedit, ekip, ekip_v3, ff, hizli, kural, kurgu, paths, suru, yaratici
 from vedit.ekip_sema import SEVIYE, EkipAyar, Slot
 
 
@@ -41,6 +41,7 @@ def proje(tmp_path, monkeypatch):
 
     monkeypatch.setattr(hizli, "hazirla", sahte_hazirla)
     monkeypatch.setattr(hizli, "taslak", sahte_taslak)
+    monkeypatch.setattr(hizli, "qc_taslak", sahte_taslak)
 
     def sahte_izle(prj, video, kok):
         (kok / "izle").mkdir(parents=True, exist_ok=True)
@@ -48,7 +49,12 @@ def proje(tmp_path, monkeypatch):
         return {"_kok": kok, "taslak video": video}
 
     monkeypatch.setattr(ekip, "izle", sahte_izle)
+    # Swarm (ADR 0059): gerçek motor taraması (11 sn, disk önbelleği) testte çalışmaz.
+    monkeypatch.setattr(suru, "model_listesi", lambda **k: dict(MODELLER))
     return p
+
+
+MODELLER = {"claude": ["m", "y", "claude-sonnet-5-5"], "antigravity": ["y", "gemini-4-neon-high"]}
 
 
 def _ayar(**ek):
@@ -135,8 +141,14 @@ def _sahte_ekip(proje, kayit: list):
         kayit.append((asama, rol))
         meta = {"motor": slot.motor, "sure": 0.1, "token": {"input_tokens": 10}}
         if rol == "O" and asama == "plan":
-            v = json.loads(re.search(r"Varsayılan dağıtım.*?```json\n(.+?)\n```", metin, re.S).group(1))
-            return True, json.dumps({"hook": {"bas": 0, "son": 2, "neden": "soru"}, **v, "gerekce": "istek dengeli"}), meta
+            # Swarm (ADR 0059): bütçenin izin verdiği en büyük seviye tablosunu seçer (varsayılan boydan büyük olabilir).
+            tavan = int(re.search(r"En çok (\d+) ajan", metin).group(1))
+            sev = max((s for s, (e, q) in SEVIYE.items() if e + q <= tavan), key=lambda s: sum(SEVIYE[s]))
+            v = json.loads(ekip_v3.varsayilan_dagitim(sev, kurgu.oku(proje.work)).model_dump_json(include={"gorevler", "kk_gorevler"}))
+            return True, json.dumps({**v, "gerekce": "istek dengeli"}), meta
+        if rol == "O" and asama == "brif":  # ADR 0064: hızlı modda brif tek kısa çağrıdır
+            return True, json.dumps({"tez": "Altı kelimede tek fikir.", "enerji": [{"aralik": [0, 3], "seviye": 5}],
+                                     "imza_anlari": [{"t": 4.5, "soz": "dört", "ne": "tek vuruş"}]}), meta
         if rol == "O" and asama == "kapi":
             grafik = sorted(set(re.findall(r"### (E\d+) · [^\n]*Grafik", metin)), key=lambda s: int(s[1:]))
             return True, json.dumps({"kararlar": [{"slot": grafik[0], "karar": "duzelt", "brif": "kural_uyum yaz"}]}), meta
@@ -173,7 +185,6 @@ def test_seviyeli_kapili_akis(proje, tmp_path, monkeypatch, seviye):
     k0 = _kural_deposu(tmp_path, monkeypatch)
     kayit: list = []
     monkeypatch.setattr(ekip, "ajan", _sahte_ekip(proje, kayit))
-    monkeypatch.setattr(ekip_v3, "parcali_render", lambda p, a: p.work / "renders" / "taslak.mp4")
     o = ekip_v3.calistir(proje, _ayar(ekip_seviye=seviye), notu="hızlı tempo")
     ne, nk = SEVIYE[seviye]
     assert [r for a, r in kayit if r == "O"] == ["O"] * 3, "orkestratör her seviyede tam üç kez: plan, kapı, triyaj"
@@ -208,7 +219,6 @@ def test_gecersiz_plan_varsayilan_dagitima_duser(proje, tmp_path, monkeypatch):
         return sahte(slot, istem, mod, yol, yedek=yedek)
 
     monkeypatch.setattr(ekip, "ajan", ajan)
-    monkeypatch.setattr(ekip_v3, "parcali_render", lambda p, a: p.work / "renders" / "taslak.mp4")
     o = ekip_v3.calistir(proje, _ayar(ekip_seviye="low"))
     assert o["dagitim"] == "varsayilan" and any("kurgu bölünmez" in h for h in o["plan_hata"])
 
@@ -268,7 +278,6 @@ def test_triyaj_cozumlenemezse_aday_islenmez(proje, tmp_path, monkeypatch):
         ok, yanit, meta = asil(slot, istem, mod, yol, yedek=yedek)
         return (ok, "anlaşılmaz yanıt", meta) if kayit[-1] == ("triyaj", "O") else (ok, yanit, meta)
     monkeypatch.setattr(ekip, "ajan", ajan)
-    monkeypatch.setattr(ekip_v3, "parcali_render", lambda p, a: p.work / "renders" / "taslak.mp4")
     o = ekip_v3.calistir(proje, _ayar(ekip_seviye="max"), notu="hızlı tempo")
     assert kural.bul_benzer(kural.yukle(), ADAY) is None, "orkestratör onaylamadan aday depoya girmez"
     assert "triyaj çözümlenemedi" in o["kapilar"]["G5"]
@@ -292,35 +301,32 @@ def test_iz_cakisma_coz_kirpar_ya_da_tasir():
 
 
 def _sayac(proje, monkeypatch):
-    """hizli.taslak ve parcali_render çağrılarını sayar (ADR 0054: render yalnız gerekince)."""
-    sayi = {"taslak": 0, "parca": 0}
-    asil = hizli.taslak
+    """QC render çağrılarını sayar (ADR 0054: render yalnız gerekince; ADR 0058: QC videosu `qc_taslak`)."""
+    sayi = {"taslak": 0}
+    asil = hizli.qc_taslak
 
     def taslak(prj, **k):
         sayi["taslak"] += 1
         return asil(prj, **k)
-
-    def parca(p, a):
-        sayi["parca"] += 1
-        return p.work / "renders" / "taslak.mp4"
-    monkeypatch.setattr(hizli, "taslak", taslak)
-    monkeypatch.setattr(ekip_v3, "parcali_render", parca)
+    monkeypatch.setattr(hizli, "qc_taslak", taslak)
     return sayi
 
 
 def test_hizli_on_ayar_orkestratorsuz(proje, tmp_path, monkeypatch):
-    """--hizli: low (2E+1K), orkestratör hiç çağrılmaz, kural adayı onaysız depoya girmez, düzeltmeden sonra render yok."""
+    """--hizli: 2E + zaman dilimi başına QC (ADR 0058), orkestratör hiç çağrılmaz, kural adayı onaysız depoya girmez, düzeltmeden sonra render yok."""
     _kural_deposu(tmp_path, monkeypatch)
     kayit: list = []
     monkeypatch.setattr(ekip, "ajan", _sahte_ekip(proje, kayit))
     sayi = _sayac(proje, monkeypatch)
     o = ekip_v3.calistir(proje, _ayar(ekip_seviye="max", hizli=True), notu="hızlı tempo")
     assert o["seviye"] == "low" and o["hizli"] and o["dagitim"] == "hizli"
-    assert not [r for a, r in kayit if r == "O"], "orkestratör çağrılmaz"
-    assert sorted({r for a, r in kayit if a == "duzen"}) == ["E1", "E2"] and sorted({r for a, r in kayit if a == "qc"}) == ["K1"]
+    # ADR 0064: orkestratör plan, kapı ve triyaj yapmaz; yalnız yaratıcı brifi bir kez yazar (aynı istekte yeniden kullanılır).
+    assert [a for a, r in kayit if r == "O"] == ["brif"], kayit
+    assert "yaratıcı brif yeni" in o["kapilar"]["G0"] and yaratici.gecerli(proje.work, "hızlı tempo") is not None
+    assert sorted({r for a, r in kayit if a == "duzen"}) == ["E1", "E2"] and sorted({r for a, r in kayit if a == "qc"}) == ["K1", "K2"]
     assert kural.bul_benzer(kural.yukle(), ADAY) is None, "onaysız aday depoya girmez"
     assert o["duzeltilen"], "P1 bulgusu yine düzeltilir"
-    assert sayi == {"taslak": 1, "parca": 0} and o["taslak_eski"], "G6'dan sonra render alınmaz"
+    assert sayi == {"taslak": 1} and o["taslak_eski"], "G6'dan sonra render alınmaz"
     assert "atlandı (hızlı)" in o["kapilar"]["G0"] and "deterministik" in o["kapilar"]["G2"]
 
 
@@ -332,10 +338,11 @@ def test_temiz_kural_kapisinda_orkestrator_beklenmez(proje, tmp_path, monkeypatc
 
     def ajan(slot, istem, mod, yol, *, yedek=False, **_):
         ok, yanit, meta = asil(slot, istem, mod, yol, yedek=yedek)
-        asama, rol = kayit[-1]
+        f = Path(re.search(r"Read the file (.+?\.istem\.md)", istem).group(1))
+        asama, rol = f.parent.name, f.name.split(".")[0]  # E1 plana paralel çalışır (ADR 0059): kayit[-1] başka ajan olabilir
         if rol.startswith("E") and asama == "duzen":  # grafik editörü de ilk seferde uyumu yazar
             y = json.loads(yanit)
-            metin = Path(re.search(r"Read the file (.+?\.istem\.md)", istem).group(1)).read_text(encoding="utf-8")
+            metin = f.read_text(encoding="utf-8")
             z = re.findall(r"^- \[(K\d{4}) P\d\]", metin.split("## Zorunlu kurallar")[1].split("##")[0], re.M)
             y["kural_uyum"] = [{"id": i, "nasil": "x"} for i in z]
             yanit = json.dumps(y)
@@ -345,7 +352,7 @@ def test_temiz_kural_kapisinda_orkestrator_beklenmez(proje, tmp_path, monkeypatc
     o = ekip_v3.calistir(proje, _ayar(ekip_seviye="medium"), tekrar_denetle=True)
     assert [a for a, r in kayit if r == "O"] == ["plan", "triyaj"], kayit
     assert "orkestratör çağrılmadı" in o["kapilar"]["G2"]
-    assert sayi["parca"] == 1 and not o["taslak_eski"], "ikinci QC için düzeltilen aralık render edilir"
+    assert sayi["taslak"] == 2 and not o["taslak_eski"], "ikinci QC için düzeltilmiş kurgu yeniden çizilir (QC videosu)"
 
 
 def test_yalin_claude_komutu_ve_stdin(tmp_path, monkeypatch):
@@ -385,3 +392,124 @@ def test_pafta_kareleri_toplar(tmp_path):
         assert im.size == (4 * 270, 3 * 480)
     with Image.open(paftalar[1]) as im:
         assert im.size == (4 * 270, 480), "2 kare tek satır"
+
+
+def test_suru_plan_dogrulama_butce_e1_ve_model():
+    """ADR 0059: swarm planı tavan içinde, E1 yalnız kurgu, slotlar ardışık, model listede."""
+    from vedit.ekip_sema import Plan
+    kk = [{"slot": "K1", "rol": "genel"}]
+    iyi = Plan.model_validate({"gorevler": [{"slot": "E1", "katmanlar": ["kurgu"]},
+                                            {"slot": "E2", "katmanlar": ["grafik", "sfx", "muzik", "stil"], "motor": "antigravity",
+                                             "model": "gemini-4-neon-high"}], "kk_gorevler": kk})
+    assert suru.plan_dogrula(iyi, 3, 10, MODELLER) == []
+    assert any("tavan 2" in h for h in suru.plan_dogrula(iyi, 2, 10, MODELLER))
+    kotu_e1 = iyi.model_copy(deep=True)
+    kotu_e1.gorevler[0].katmanlar = ["kurgu", "stil"]
+    kotu_e1.gorevler[1].katmanlar = ["grafik", "sfx", "muzik"]
+    assert any("E1 yalnız kurgu" in h for h in suru.plan_dogrula(kotu_e1, 6, 10, MODELLER))
+    kotu_model = iyi.model_copy(deep=True)
+    kotu_model.gorevler[1].model = "yok-model"
+    assert any("listede olmayan model" in h for h in suru.plan_dogrula(kotu_model, 6, 10, MODELLER))
+    atlamali = iyi.model_copy(deep=True)
+    atlamali.gorevler[1].slot = "E3"
+    assert any("ardışık" in h for h in suru.plan_dogrula(atlamali, 6, 10, MODELLER))
+
+
+def test_suru_ezme_ve_boy():
+    from vedit.ekip_sema import Plan
+    a = _ayar(ezme={"E3": Slot(motor="claude", model="m")})
+    plan = Plan.model_validate({"gorevler": [{"slot": "E1", "katmanlar": ["kurgu"]},
+                                             {"slot": "E2", "katmanlar": ["grafik"], "model": "gemini-4-neon-high"},
+                                             {"slot": "E3", "katmanlar": ["sfx", "muzik", "stil"], "motor": "antigravity"}],
+                                "kk_gorevler": [{"slot": "K1", "rol": "genel", "motor": "claude", "model": "claude-sonnet-5-5"}]})
+    ez = suru.ezme(plan, a, MODELLER)
+    assert ez["E2"].motor == "antigravity" and ez["E2"].model == "gemini-4-neon-high", "motor modelden bulunur"
+    assert "E3" not in ez, "kullanıcının açık ezmesi kazanır"
+    assert ez["K1"].model == "claude-sonnet-5-5" and ez["K1"].yedek_motor == "antigravity", "yedek grup ayarından"
+    assert "E1" not in ez
+    plan.gorevler[2].motor, plan.gorevler[2].model = "claude", "claude-haiku-5-5"
+    assert "E3" not in suru.ezme(plan, _ayar(), {**MODELLER, "claude": [*MODELLER["claude"], "claude-haiku-5-5"]}),         "editörde haiku grup modeline döner (g4: şemaya uymadı)"
+    assert suru.varsayilan_boy(30, 15) == "low" and suru.varsayilan_boy(53, 15) == "medium"
+    assert suru.varsayilan_boy(600, 15) == "xhigh" and suru.varsayilan_boy(600, 6) == "medium", "tavan boyu sınırlar"
+    assert suru.orkestrator_ayristir("claude:claude-opus-5-5") == ("claude", "claude-opus-5-5")
+    assert suru.orkestrator_ayristir("codex") == ("codex", None)
+    # agy incelemesi: E1 kartı ezilmez (plana paralel çalışıyor), geçersiz seviye düşer, yedek birincille aynı olmaz.
+    p2 = Plan.model_validate({"gorevler": [{"slot": "E1", "katmanlar": ["kurgu"], "motor": "antigravity"},
+                                           {"slot": "E2", "katmanlar": ["grafik", "sfx", "muzik", "stil"], "motor": "antigravity",
+                                            "model": "gemini-4-neon-high", "seviye": "olmayan"}],
+                              "kk_gorevler": [{"slot": "K1", "rol": "genel"}]})
+    ez2 = suru.ezme(p2, _ayar(), MODELLER)
+    assert "E1" not in ez2 and ez2["E2"].seviye is None
+    assert ez2["E2"].yedek_motor == "claude" and ez2["E2"].yedek_model == "m", "yedek grubun birincili olur"
+    assert any("seviye" in h for h in suru.plan_dogrula(p2, 6, 10, MODELLER))
+
+
+def test_suru_e1_plana_paralel_ve_model_secimi(proje, tmp_path, monkeypatch):
+    """ADR 0059: E1 orkestratörün planı bitmeden başlar; plan kartının motor/model seçimi slota uygulanır, durumda görünür."""
+    import threading
+    _kural_deposu(tmp_path, monkeypatch)
+    kayit: list = []
+    sahte = _sahte_ekip(proje, kayit)
+    e1_basladi = threading.Event()
+    motorlar_: dict[str, str] = {}
+
+    def ajan(slot, istem, mod, yol, *, yedek=False, **kw):
+        f = Path(re.search(r"Read the file (.+?\.istem\.md)", istem).group(1))
+        rol, asama = f.name.split(".")[0], f.parent.name
+        motorlar_[f"{asama}/{rol}"] = slot.motor
+        if rol == "E1" and asama == "duzen":
+            e1_basladi.set()
+        if rol == "O" and asama == "plan":
+            assert e1_basladi.wait(5), "E1 plan çağrısıyla aynı anda başlamalı"
+            v = json.loads(ekip_v3.varsayilan_dagitim("low", kurgu.oku(proje.work)).model_dump_json(include={"gorevler", "kk_gorevler"}))
+            v["gorevler"][1].update(motor="antigravity", model="gemini-4-neon-high")
+            v["kk_gorevler"].append({"slot": "K2", "rol": "gorsel"})
+            kayit.append((asama, rol))
+            return True, json.dumps({**v, "gerekce": "grafik agy"}), {"sure": 0.1}
+        return sahte(slot, istem, mod, yol, yedek=yedek)
+
+    monkeypatch.setattr(ekip, "ajan", ajan)
+    o = ekip_v3.calistir(proje, _ayar(ekip_seviye="medium"))
+    assert o["dagitim"] == "orkestrator", o["plan_hata"]
+    assert motorlar_["duzen/E2"] == "antigravity" and motorlar_["duzen/E1"] == "claude"
+    assert sorted({r for a, r in kayit if a == "qc"}) == ["K1", "K2"], "orkestratör QC sayısını seçer"
+    d = json.loads((proje.work / "edit" / "ekip" / "durum.json").read_text(encoding="utf-8"))
+    assert sorted(d["slotlar"]) == ["E1", "E2", "K1", "K2", "O"], "plan dışı seviye kartları silinir"
+    assert d["slotlar"]["E2"]["model"] == "gemini-4-neon-high" and d["en_cok"] == 6
+
+
+@pytest.mark.parametrize("argv, tavan, o_motor", [
+    (["--ekip", "--seviye", "medium"], 6, "claude"),
+    (["--suru", "--en-cok", "4", "--orkestrator", "codex:gpt-x"], 4, "codex"),
+    (["--suru", "--seviye", "max", "--en-cok", "5"], 5, "claude"),
+])
+def test_cli_suru_bayraklari_ve_eski_cagri(proje, monkeypatch, argv, tavan, o_motor):
+    """ADR 0059: --ekip = --suru; --seviye tavanı verir (--en-cok kazanır); --orkestrator MOTOR[:MODEL] grubu değiştirir."""
+    from vedit import cli
+    alinan = {}
+
+    def sahte(p, ayar, **kw):
+        alinan["ayar"] = ayar
+        return {"sure_sn": 1, "seviye": ayar.ekip_seviye, "en_cok": ayar.tavan(), "editor": 2, "kk": 1, "bulgular": [],
+                "son_denetim": {"hata": []}}
+
+    monkeypatch.setattr(ekip_v3, "calistir", sahte)
+    monkeypatch.setattr(ekip, "GLOBAL", proje.work / "yok.json")
+    cli.main(["ai-edit", f"{proje.studyo}/{proje.ad}", *argv])
+    a = alinan["ayar"]
+    assert a.tavan() == tavan and a.gruplar["orkestrator"].motor == o_motor
+    if o_motor == "codex":
+        assert a.gruplar["orkestrator"].model == "gpt-x"
+
+
+def test_ayar_katmani_seviye_verirse_alttaki_tavan_tasinmaz(proje, monkeypatch, tmp_path):
+    """agy incelemesi (ADR 0059): ön ayarda en_cok 9, projede eski biçim {ekip_seviye: low} → tavan 3, 9 değil."""
+    g = tmp_path / "ekip.json"
+    g.write_text(json.dumps({"varsayilan": "x", "onayarlar": {"x": {"ad": "x", "ekip_seviye": "high", "en_cok": 9}}}), encoding="utf-8")
+    monkeypatch.setattr(ekip, "GLOBAL", g)
+    assert ekip.ayar_yukle(proje).tavan() == 9
+    (proje.work / "edit").mkdir(parents=True, exist_ok=True)
+    (proje.work / "edit" / "ekip.json").write_text(json.dumps({"ekip_seviye": "low"}), encoding="utf-8")
+    assert ekip.ayar_yukle(proje).tavan() == 3
+    with pytest.raises(Exception):
+        EkipAyar(en_cok=2)

@@ -397,9 +397,11 @@ class Gecis(_M):
     # zoom, it, savur, bulanik: ADR 0033; çıkan klibin kuyruğu da hareket eder
     # sil, kay, saat, iris, kirbac, isik, piksel: ADR 0045; orta noktası kesimde, sonraki çekim her karede görünür
     # zoom_kirbac, film_yanigi, bolunme, bozulma, yirtma: aynı sözleşme (gecisler.tsx, tests/test_gecis_olcum.py)
+    # tikla_iris, buton_zoom, kart_dunyaya, bulanik_takas, dip_kesim: ADR 0062 optik geçişler
     tur: Literal["capraz", "kararma", "kaydir", "zoom", "it", "savur", "bulanik",
                  "sil", "kay", "saat", "iris", "kirbac", "isik", "piksel",
-                 "zoom_kirbac", "film_yanigi", "bolunme", "bozulma", "yirtma"] = "capraz"
+                 "zoom_kirbac", "film_yanigi", "bolunme", "bozulma", "yirtma",
+                 "tikla_iris", "buton_zoom", "kart_dunyaya", "bulanik_takas", "dip_kesim"] = "capraz"
     sure: float = Field(default=0.3, gt=0)
     yon: Literal["sol", "sag", "yukari", "asagi"] = "sol"  # it ve savur: görüntünün gittiği yön
 
@@ -465,6 +467,15 @@ class Klip(_M):
     # WHY: bkz. wiki/decisions/0050-hyperframes-birincil-motor.md. HyperFrames kompozisyonu {ad, param, tema}; ad
     # work/edit/hf/<ad>/ ya da library/motion/hf/<ad>/ klasörüdür, saydam webm'i kurgu.motion_bagla üretir.
     hf: dict[str, Any] | None = None
+
+    @field_validator("gecis_giris", "gecis_cikis", mode="before")
+    @classmethod
+    def _gecis_kisa(cls, v):
+        """Geçiş kısa yazımı: "sil" → {"tur": "sil"}. Bilinmeyen ad yine Gecis.tur'da reddedilir.
+
+        WHY: bkz. wiki/decisions/0059-swarm-edit.md. Ajanlar geçişi düz ad olarak yazıyor (E1-low, g4c E1); şema reddedince
+        bütün klip güncellemesi düşüyor, eski klip yerinde kalıp V1'i çakıştırıyor ve koşu G3'te duruyordu."""
+        return {"tur": v} if isinstance(v, str) else v
 
     @field_validator("hf")
     @classmethod

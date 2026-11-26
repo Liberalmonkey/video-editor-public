@@ -4,8 +4,8 @@ export interface Kelime { w: string; s: number; e: number }
 export interface Kaynak { yol: string; sure: number; w?: number | null; h?: number | null; ses: boolean }
 export interface Iz { id: string; tur: "video" | "ses"; ad: string; kilit: boolean; sessiz: boolean; gizli: boolean; gain_db: number }
 export type Yon = "sol" | "sag" | "yukari" | "asagi";
-// ADR 0045: sil, kay, saat, iris, kirbac, isik, piksel (+ zoom_kirbac, film_yanigi, bolunme, bozulma, yirtma) orta noktası kesimde olan geçişlerdir (gecisler.tsx).
-export interface Gecis { tur: "capraz" | "kararma" | "kaydir" | "zoom" | "it" | "savur" | "bulanik" | "sil" | "kay" | "saat" | "iris" | "kirbac" | "isik" | "piksel" | "zoom_kirbac" | "film_yanigi" | "bolunme" | "bozulma" | "yirtma"; sure: number; yon?: Yon }
+// ADR 0045 + ADR 0062: orta noktası kesimde olan geçişler (optik geçişler dahil).
+export interface Gecis { tur: "capraz" | "kararma" | "kaydir" | "zoom" | "it" | "savur" | "bulanik" | "sil" | "kay" | "saat" | "iris" | "kirbac" | "isik" | "piksel" | "zoom_kirbac" | "film_yanigi" | "bolunme" | "bozulma" | "yirtma" | "tikla_iris" | "buton_zoom" | "kart_dunyaya" | "bulanik_takas" | "dip_kesim"; sure: number; yon?: Yon }
 // Konuşmacı punch nesnesi: olcek hedef çarpan, sure tutma (sn), x/y odak 0..1 (ADR 0033). Sayı biçimi eskisi gibi.
 export interface Punch { t: number; olcek?: number; sure?: number; x?: number | null; y?: number | null }
 // Hazır efekt: ad ve parametreleri (studio/remotion/hazirEfekt.json); t klibin başından sn.

@@ -115,13 +115,14 @@ def _ff(*a: str) -> None:
 
 
 def _onizleme(webm: Path, m: dict) -> None:
-    """poster.jpg (tek kare) ve kontak.jpg (altı kare) koyu zeminde. libvpx çözücü olmadan alfa okunmaz."""
+    """poster.jpg + onizleme.mp4 (alfa kırpımlı, anlamlı kare; ADR 0061) ve kontak.jpg (altı kare) koyu zeminde.
+
+    libvpx çözücü olmadan alfa okunmaz.
+    """
+    from . import onizleme
     w, h, sure = m["w"], m["h"], m["sure"]
     zemin = f"color={ZEMIN}:s={w}x{h}:r=30[b];[b][0:v]overlay=shortest=1"
-    # shortcut: -ss ile atlama alfa kanalını bazı karelerde boş çözüyordu (ölçüm 2026-11-13); kare numarasıyla seçilir, klipler kısa.
-    kare = round(m.get("poster_t", sure * 0.5) * 30)
-    _ff("-c:v", "libvpx-vp9", "-i", str(webm), "-filter_complex",
-        f"{zemin},select=eq(n\\,{kare}),scale=-2:360", "-frames:v", "1", "-q:v", "4", str(webm.with_name("poster.jpg")))
+    onizleme.uret(webm, webm.parent, w=w, h=h, sure=sure, tur=m.get("kind", ""))
     _ff("-c:v", "libvpx-vp9", "-i", str(webm), "-filter_complex",
         f"{zemin},fps=6/{sure},scale=-2:320,tile=6x1", "-frames:v", "1", "-q:v", "4", str(webm.with_name("kontak.jpg")))
 
@@ -132,7 +133,7 @@ def kayit(kimlik: str, m: dict) -> dict:
     e = {"id": kimlik, "file": f"{rel}/{kimlik}.webm", "title": m["title"], "site": "custom", "kind": m["kind"],
          "tags": m.get("tags", []), "ne_zaman": m.get("ne_zaman", ""), "alpha": True, "width": m["w"], "height": m["h"],
          "duration_s": m["sure"], "loop": bool(m.get("loop")), "license": "project-made", "source": f"{rel}/{kimlik}.html",
-         "source_url": m.get("source_url"), "poster": f"{rel}/poster.jpg",
+         "source_url": m.get("source_url"), "poster": f"{rel}/poster.jpg", "onizleme": f"{rel}/onizleme.mp4",
          "attribution": f"proje yapımı (ADR 0036); yeniden üret: vedit motion kur {kimlik}"}
     if m.get("param"):
         e.update(param=m["param"], tam=bool(m.get("tam")))
@@ -157,6 +158,22 @@ def manifest_yaz(kayitlar: list[dict]) -> None:
     yeni = {e["id"]: e for e in kayitlar}
     d["entries"] = [yeni.pop(e["id"], e) for e in d["entries"]] + list(yeni.values())
     f.write_text(json.dumps(d, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+
+
+def onizleme_yenile(hedefler: list[str] | None = None) -> list[str]:
+    """Var olan webm'lerin posterini ve döngü önizlemesini yeniden üretir; render etmez, manifesti günceller (ADR 0061)."""
+    yapilan, kayitlar = [], []
+    for k in hedefler or kimlikler():
+        webm = kok() / k / f"{k}.webm"
+        if not webm.is_file():
+            continue
+        m = meta(k)
+        _onizleme(webm, m)
+        kayitlar.append(kayit(k, m))
+        yapilan.append(k)
+    if kayitlar:
+        manifest_yaz(kayitlar)
+    return yapilan
 
 
 def kur(hedefler: list[str] | None = None, *, yalniz_manifest: bool = False, manifest: bool = True) -> list[dict]:

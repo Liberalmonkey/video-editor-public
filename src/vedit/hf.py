@@ -55,7 +55,7 @@ def lint(comp_dir: Path) -> dict:
 
 def render(comp_dir: Path, out: Path, *, quality: str = "draft", fps: int | None = None, workers: int = 1,
            crf: int | None = None, video_frame_format: str | None = None,
-           aralik: tuple[float, float] | None = None) -> subprocess.CompletedProcess:
+           aralik: tuple[float, float] | None = None, chroma: str | None = None) -> subprocess.CompletedProcess:
     out, comp_dir = Path(out).resolve(), Path(comp_dir).resolve()  # HyperFrames comp_dir içinde çalışır; göreli yol oraya düşerdi
     args = ["render", str(comp_dir), "-o", str(out), "-q", quality, "-w", str(workers) if workers else "auto", "--quiet"]
     if aralik:  # yalnız SDR MP4 ve tam sayı fps (HyperFrames 0.9.7x)
@@ -66,6 +66,8 @@ def render(comp_dir: Path, out: Path, *, quality: str = "draft", fps: int | None
         args += ["--crf", str(crf)]
     if video_frame_format:
         args += ["--video-frame-format", video_frame_format]
+    if chroma:  # "444": kayıpsız PNG yakalama + yuv444p (ADR 0060 master ara render)
+        args += ["--chroma-subsampling", chroma]
     return run(args, cwd=comp_dir)
 
 

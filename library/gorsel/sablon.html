@@ -1,0 +1,108 @@
+<!doctype html>
+<!-- Görsel yazı şablonu (gorsel-uret skill'i): zemin, isteğe bağlı özne kesiti ve yüz, iki satır yazı. Yazı görsele gömülmez,
+     kodla eklenir. WHY: bkz. wiki/decisions/0025-gorsel-uretimi-google.md (kapak özelliği kaldırıldı: 0056-kapak-kaldirildi.md)
+     Kalıp (data-kalip): klasik | dev-yazi | alt-bant | bolunmus | rozet | not | seri | yazisiz.
+     Yerleşim (data-yerlesim, yalnız klasik): yatay sol | sag | ust | alt, dikey ust | alt.
+     Gövde sınıfı: karart (yazı arkası gradyan), kutu (vurgu renkli kutuda). Renk ve yazı tipi gövde style'ından.
+     Render: .venv/Scripts/vedit pano gorsel.html -o gorsel.jpg --sure 0 --w 1280 --h 720  (dikey: --w 1080 --h 1920) -->
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --zemin: url("zemin.png");   /* üretilen ya da gerçek kare */
+    --ozne: none;                /* zeminden kesilmiş özne (aynı ölçü): arkasına yazı girer */
+    --yuz: url("yuz.png");       /* şeffaf yüz/avatar kesiti; yoksa boş bırak */
+    --logo1: none; --logo2: none;
+  }
+  html, body { margin: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000; }
+  /* Stil paketi bu değişkenleri gövde style'ında ezer; varsayılan altyazı standardıyla aynı turuncu. */
+  body { --olcek: 1; --yazi: #fff; --vurgu: #FF7A00; --kutu-yazi: #fff; --kontur: #000; --kontur-k: 0.6vh;
+    --font: "Montserrat", sans-serif; --agirlik: 800; --vurgu-font: var(--font); --vurgu-egik: normal; --harf: uppercase;
+    /* shortcut: el yazısı sistem yazı tipidir (Windows: Segoe Print, Ink Free); başka makinede render edilecekse library/fonts'a OFL bir el yazısı eklenir */
+    --elyazisi: "Caveat", "Segoe Print", "Ink Free", "Bradley Hand", cursive; }
+  body > * { position: absolute; }
+  .zemin, .ozne { inset: 0; background: var(--zemin) center / cover no-repeat; }
+  .ozne { background-image: var(--ozne); z-index: 2; filter: drop-shadow(0 0 1.6vh rgba(0, 0, 0, .55)); }
+  .karartma { inset: 0; display: none; }
+  .karart .karartma { display: block; }
+  .yuz { right: 0; bottom: 0; height: 92%; aspect-ratio: 3 / 4; background: var(--yuz) bottom right / contain no-repeat; z-index: 2; }
+  .baslik, .ek, .etiket { z-index: 3; font-family: var(--font); font-weight: var(--agirlik); line-height: 1.02; color: var(--yazi);
+    text-transform: var(--harf); -webkit-text-stroke: var(--kontur-k) var(--kontur); paint-order: stroke fill; overflow-wrap: break-word; }
+  .baslik { --boy: min(11vw, 13vh); font-size: calc(var(--boy) * var(--olcek)); }
+  .baslik em { font-style: var(--vurgu-egik); font-family: var(--vurgu-font); color: var(--vurgu); }
+  .kutu .baslik em { color: var(--kutu-yazi); background: var(--vurgu); padding: 0 0.16em; border-radius: 0.08em; -webkit-text-stroke: 0;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .ek, .etiket, .bolen, .ok, .logo { display: none; }
+
+  /* klasik, yatay (YouTube 16:9). alt: sağ alttaki süre rozetine (x > %80, y > %82) girmez. */
+  [data-yerlesim="sol"] .baslik { left: 5vw; top: 50%; transform: translateY(-50%); max-width: 58vw; }
+  [data-yerlesim="sag"] .baslik { right: 5vw; top: 50%; transform: translateY(-50%); max-width: 58vw; text-align: right; }
+  [data-yerlesim="ust"] .baslik { left: 5vw; right: 5vw; top: 7vh; text-align: center; --boy: min(9.5vw, 13vh); }
+  [data-yerlesim="alt"] .baslik { left: 5vw; bottom: 8vh; max-width: 72vw; }
+  [data-yerlesim="sol"] .karartma { background: linear-gradient(90deg, rgba(0,0,0,.82), transparent 68%); }
+  [data-yerlesim="sag"] .karartma { background: linear-gradient(270deg, rgba(0,0,0,.82), transparent 68%); }
+  [data-yerlesim="ust"] .karartma { background: linear-gradient(180deg, rgba(0,0,0,.85), transparent 48%); }
+  [data-yerlesim="alt"] .karartma { background: linear-gradient(0deg, rgba(0,0,0,.9), transparent 55%); }
+
+  /* Alt bant: tek dev söz altta, süre rozetinin solunda biter. dev-yazi, alt-bant ve not kalıplarının başlığı. */
+  [data-kalip="dev-yazi"] .baslik, [data-kalip="alt-bant"] .baslik, [data-kalip="not"] .baslik {
+    left: 4.5vw; right: auto; top: auto; bottom: 7vh; transform: none; max-width: 74vw; text-align: left; --boy: min(10vw, 17vh); }
+  [data-kalip="alt-bant"] .baslik { --boy: min(13vw, 22vh); }
+  [data-kalip="dev-yazi"] .karartma, [data-kalip="alt-bant"] .karartma, [data-kalip="not"] .karartma {
+    background: linear-gradient(0deg, rgba(0,0,0,.9), transparent 55%); }
+
+  /* dev-yazi: ek söz öznenin arkasında dev boyda; özne kesiti (z 2) üstünü örter. */
+  [data-kalip="dev-yazi"] .ek { display: block; z-index: 1; left: 0; right: 0; top: 2vh; text-align: center; color: var(--vurgu);
+    -webkit-text-stroke: 0; font-size: calc(min(30vw, 46vh) * var(--olcek)); line-height: .9; white-space: nowrap; }
+  /* alt-bant: ek söz sol üstte küçük yardımcı satır. */
+  [data-kalip="alt-bant"] .ek { display: block; left: 5vw; top: 6vh; max-width: 60vw; font-size: calc(7.5vh * var(--olcek)); }
+  /* not: el yazısı kısa not ve ok. */
+  [data-kalip="not"] .ek { display: block; left: 7vw; top: 11vh; max-width: 44vw; font-family: var(--elyazisi); font-weight: 700;
+    text-transform: none; -webkit-text-stroke: 0; font-size: calc(10.5vh * var(--olcek)); transform: rotate(-4deg); transform-origin: left top;
+    text-shadow: 0 0.3vh 1.2vh rgba(0, 0, 0, .7); }
+  [data-kalip="not"] .ok { display: block; z-index: 3; left: 31vw; top: 24vh; width: 16vh; height: 13vh; color: var(--yazi);
+    filter: drop-shadow(0 0.3vh 0.8vh rgba(0, 0, 0, .7)); }
+  /* rozet: yalnız sağ üst köşede 1-2 kelime; sahne anlatır. */
+  [data-kalip="rozet"] .baslik { left: auto; right: 4.5vw; top: 5.5vh; bottom: auto; transform: none; max-width: 60vw; text-align: right;
+    --boy: min(7.5vw, 13vh); }
+  [data-kalip="rozet"] .karartma { background: linear-gradient(200deg, rgba(0,0,0,.6), transparent 40%); }
+  /* bolunmus: ortada ayraç, iki yarının üstünde birer etiket. */
+  [data-kalip="bolunmus"] .baslik { display: none; }
+  [data-kalip="bolunmus"] .bolen { display: block; z-index: 3; left: calc(50% - 0.5vh); top: 0; width: 1vh; height: 100%; background: #fff;
+    box-shadow: 0 0 2vh rgba(0, 0, 0, .6); }
+  [data-kalip="bolunmus"] .etiket { display: block; top: 5.5vh; width: 42vw; text-align: center; font-size: calc(min(7vw, 12.5vh) * var(--olcek)); }
+  [data-kalip="bolunmus"] .etiket.sol { left: 5vw; }
+  [data-kalip="bolunmus"] .etiket.sag { left: 53vw; color: var(--vurgu); }
+  [data-kalip="bolunmus"] .karartma { background: linear-gradient(180deg, rgba(0,0,0,.7), transparent 38%); }
+  [data-kalip="yazisiz"] .baslik { display: none; }
+
+  /* Dikey (Reels 9:16). Yazı profil ızgarasının (3:4) ve akışın (4:5) gösterdiği orta alanda kalır: üst %14.8, alt %85.2. */
+  @media (max-aspect-ratio: 1/1) {
+    .yuz { height: 60%; }
+    [data-yerlesim="ust"] .baslik { left: 5vw; right: auto; top: 18%; max-width: 90vw; text-align: left; --boy: 15vw; }
+    [data-yerlesim="alt"] .baslik { left: 5vw; right: 5vw; bottom: 16vh; max-width: none; text-align: center; --boy: 12.5vw; }
+    /* seri: marka sözü üstte öznenin arkasında, iki yanda eğik simge kartı, iki satır başlık altta. */
+    [data-kalip="seri"] .baslik { left: 5vw; right: 5vw; top: auto; bottom: 16vh; max-width: none; text-align: center; --boy: 8vw; }
+    [data-kalip="seri"] .ek { display: block; z-index: 1; left: 5vw; right: 5vw; top: 16.5%; text-align: center; text-transform: none;
+      -webkit-text-stroke: 0; font-family: var(--vurgu-font); font-size: calc(21vw * var(--olcek)); white-space: nowrap; }
+    [data-kalip="seri"] .logo { z-index: 3; top: 39%; width: 27vw; aspect-ratio: 1; border-radius: 22%;
+      background: center / cover no-repeat; box-shadow: 0 1.2vh 3vh rgba(0, 0, 0, .55); }
+    [data-kalip="seri"].logo-1 .logo.l1, [data-kalip="seri"].logo-2 .logo.l2 { display: block; }
+    [data-kalip="seri"] .logo.l1 { left: 5vw; background-image: var(--logo1); transform: rotate(-10deg); }
+    [data-kalip="seri"] .logo.l2 { right: 5vw; background-image: var(--logo2); transform: rotate(10deg); }
+    [data-kalip="seri"] .karartma { background: linear-gradient(0deg, rgba(0,0,0,.92) 18%, transparent 52%); }
+  }
+</style>
+</head>
+<body data-kalip="klasik" data-yerlesim="sol">
+  <div class="zemin"></div>
+  <div class="karartma"></div>
+  <div class="ozne"></div>
+  <div class="yuz"></div>
+  <div class="logo l1"></div><div class="logo l2"></div>
+  <div class="bolen"></div>
+  <svg class="ok" viewBox="0 0 120 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10 C 40 14, 78 34, 100 80"/><path d="M72 76 L102 84 L106 52"/></svg>
+  <!--yazilar--><div class="baslik">İki satır<br><em>en çok</em></div><!--/yazilar-->
+</body>
+</html>

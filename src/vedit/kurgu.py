@@ -16,14 +16,15 @@ import time
 import uuid
 from pathlib import Path
 
-from . import ff, fizik, hazir_efekt, hf_grafik, karakter, motion, native_motion, paths, yuz_bolge
+from . import ff, fizik, hazir_efekt, hf_grafik, karakter, motion, native_motion, paths
 from . import stil as stil_mod
 from .schemas import METIN_TIPLERI, SAHNE_TURLERI, SAHNE_ZEMINLERI, VURGU_BICIMLERI, Kurgu, KurguKaynak
 
 GECMIS = 20
 GORSEL = {".png", ".jpg", ".jpeg", ".webp"}  # hizli.GORSEL ile aynı; hizli bu modülü içe aldığı için burada
-ORTA_GECIS = ("sil", "kay", "saat", "iris", "kirbac", "isik", "piksel", "zoom_kirbac", "film_yanigi", "bolunme", "bozulma", "yirtma")
-GUCLU_GECIS = {"kirbac", "kay", "zoom_kirbac", "bozulma"}
+ORTA_GECIS = ("sil", "kay", "saat", "iris", "kirbac", "isik", "piksel", "zoom_kirbac", "film_yanigi", "bolunme", "bozulma", "yirtma",
+              "tikla_iris", "buton_zoom", "kart_dunyaya", "bulanik_takas", "dip_kesim")
+GUCLU_GECIS = {"kirbac", "kay", "zoom_kirbac", "bozulma", "buton_zoom", "kart_dunyaya"}
 
 
 class RevCakismasi(Exception):
@@ -140,7 +141,8 @@ def olaylar_uret(k: Kurgu, p) -> dict:
         olaylar.append(kayit)
     # WHY: bkz. wiki/decisions/0033-hazir-efektler.md. Hazır efektin sesi ses izinde klip olmadan rol olayı olarak gelir.
     # WHY: bkz. wiki/decisions/0039-fizik-ritim-galeri.md. Fizik temasının sesi bake'teki temas karesinden gelir.
-    olaylar = sorted(olaylar + hazir_efekt.ses_olaylari(k) + fizik.ses_olaylari(p, k), key=lambda o: o["t"])
+    # WHY: bkz. wiki/decisions/0062-modern-hyperframes-motion-mimarisi.md. HF kompozisyon ses ipuçları +1 kare senkron.
+    olaylar = sorted(olaylar + hazir_efekt.ses_olaylari(k) + fizik.ses_olaylari(p, k) + hf_grafik.ses_olaylari(p, k), key=lambda o: o["t"])
     # WHY: bkz. wiki/decisions/0045-native-motion.md. Orta noktalı geçişin sesi orta noktada (kesimde) çalar;
     # editör aynı yere geçiş sesi koyduysa ikinci kez eklenmez. Ses dosyasını ve seviyeyi olaysesi seçer (ADR 0032).
     orta = set(ORTA_GECIS)
@@ -172,13 +174,19 @@ def _ses_yolu(p, y: str) -> str:
     return f"library/{ic}" if kok == "library" else str(dosya(p, y))
 
 
-def hazirla(p) -> Path:
-    """kurgu.json → edit/kurgu.render.json + edit/olaylar.json + work/public/_k hardlink'leri."""
+def hazirla(p, *, mod: str = "final") -> Path:
+    """kurgu.json → edit/kurgu.render.json + edit/olaylar.json + work/public/_k hardlink'leri.
+
+    `mod`: "taslak" ağır kaynakta hazır proxy'yi bağlar; "final" ve "master" orijinali (HDR'de SDR kopyası) bağlar ve
+    conform kapısını çalıştırır; "master" HDR kopyasını yüksek kalitede üretir. WHY: ADR 0060.
+    """
     k = oku(p.work)
     hatalar = denetle(p, k)
     if hatalar:
         raise SystemExit("Kurgu render edilemez:\n  " + "\n  ".join(hatalar))
-    motion_bagla(p, k)  # bellekte: elle değişen şablon parametresi render'da da güncel olsun
+    from . import hf_kurgu
+    canli_hf = k.motor != "remotion" and (k.motor == "hf" or bool(hf_kurgu.ayar().get("oto_hf")))
+    motion_bagla(p, k, canli_hf=canli_hf)  # bellekte: elle değişen şablon parametresi render'da da güncel olsun
     fizik.bagla(p, k)  # fizik sahnesi bake JSON'u; parametre değiştiyse yeniden hesaplanır (ADR 0039)
     karakter.bagla(p, k)  # konuşan karakterin ağız ve jest verisi; ses değiştiyse yeniden yazılır
     ses_izleri = {i.id for i in k.izler if i.tur == "ses"}
@@ -187,9 +195,16 @@ def hazirla(p) -> Path:
     if not gorunen:
         raise SystemExit("Kurguda görüntü klibi yok.")
     bitis = max(c.bas + c.sure for c in k.klipler if c.iz not in gizli)
+    beklenen: dict[str, Path] = {}
+    vekiller: list[str] = []
     for ad, kaynak in k.kaynaklar.items():
         if any(c.kaynak == ad for c in gorunen):
-            _public_bagla(p, ad, kaynak.yol)
+            bag = _public_bagla(p, ad, kaynak.yol, mod=mod)
+            if bag:
+                beklenen[bag[0]] = bag[1]
+                if bag[2]:
+                    vekiller.append(ad)
+    _conform_yaz(p, mod, beklenen, vekiller)
     stil = k.altyazi.stil
     if stil and stil.dosya:
         # WHY: özel font render'da da bulunsun; yol kök içinde kalır (dosya()).
@@ -338,11 +353,11 @@ def _sabit_kimlik(k: Kurgu, c) -> str | None:
     return None
 
 
-def motion_bagla(p, k: Kurgu) -> bool:
+def motion_bagla(p, k: Kurgu, *, canli_hf: bool = False) -> bool:
     """Şablonlu motion kliplerinin webm'ini üretir, kaynağı kurguya bağlar. Kurgu değiştiyse True.
 
-    WHY: bkz. wiki/decisions/0036-motion-kutuphanesi-ve-ajanlar.md. Ajan kabuk komutu çalıştıramaz; `sablon` niyetini yazar,
-    dosyayı vedit üretir (shot_bagla ile aynı kalıp). Özet değişmedikçe yeniden render edilmez.
+    WHY: bkz. wiki/decisions/0036-motion-kutuphanesi-ve-ajanlar.md ve ADR 0062. `canli_hf=True` iken (HyperFrames motoru)
+    özel tema ezmesi olmayan `hf` klipleri çevrimdışı WebM üretmeden doğrudan `data-composition-src` ile gömülür.
     """
     degisti = False
     if not any(c.tur == "motion" for c in k.klipler):
@@ -355,10 +370,15 @@ def motion_bagla(p, k: Kurgu) -> bool:
     for c in k.klipler:
         if c.tur != "motion":
             continue
-        if c.hf:  # HyperFrames kompozisyonu (ADR 0050): seçili stilin token'ı tema.css olarak girer
+        if c.hf:  # HyperFrames kompozisyonu (ADR 0050, 0062): canlı gömülebilirse WebM ön-render atlanır
             ht = c.hf.get("tema")
+            hk = hf_grafik.bul(c.hf["ad"], p.work)
+            # WHY: bkz. wiki/specs/hf-canli-gomme-ve-dikey-duzen.md. Yönü sekansla uyuşmayan kompozisyon (16:9 şablon, 9:16
+            # Reels) canlı gömmede dikey düzenini kuramıyor; sekans boyutunda WebM'i kontak render'ıyla birebir aynıdır.
+            if canli_hf and not ht and hk and hf_grafik.canli_mi(hk) and hf_grafik.ayni_yon(hk, (k.sekans.w, k.sekans.h)):
+                continue
             f, bilgi = hf_grafik.uret(c.hf["ad"], c.hf.get("param"), etkin_tema(p, ht) if ht else tema, p.work,
-                                      p.work / "public" / "motion")
+                                      p.work / "public" / "motion", sekans=(k.sekans.w, k.sekans.h))
             kid = "M_" + f.stem.replace("-", "_")
             if kid not in k.kaynaklar:
                 k.kaynaklar[kid] = KurguKaynak(yol=f"public:motion/{f.name}", ses=False, **bilgi)
@@ -394,13 +414,51 @@ def motion_bagla(p, k: Kurgu) -> bool:
 
 # Grafik olayı aralığı hedefi (sn): (dikey stüdyolar, youtube). WHY: ADR 0036, kullanıcı "sık sık kullansın" dedi.
 YOGUNLUK = {"yogun": (4.0, 8.0), "orta": (6.5, 12.0), "az": None}
+# WHY: bkz. wiki/decisions/0064-yaratici-yon.md. Enerji seviyesine (1 sakin, 5 doruk) göre grafiksiz aralık ve hedef çarpanı.
+ENERJI_CARPAN: dict[int, float] = {1: 2.0, 2: 1.5, 3: 1.0, 4: 0.85, 5: 0.7}
 
 
-def motion_yogunlugu(k: Kurgu, hedef: float) -> list[str]:
-    """Grafik olayları (sahne, motion metin, motion klip, hazır efekt) arasındaki boşluk hedefi aşıyorsa uyarılar."""
+def _enerji_carpani(t: float, enerji: list[tuple[float, float, int]] | None) -> float:
+    """t anının düştüğü enerji diliminin yoğunluk çarpanı; dilim yoksa 1.0."""
+    if not enerji:
+        return 1.0
+    for bas, son, seviye in enerji:
+        if bas <= t < son:
+            return ENERJI_CARPAN.get(seviye, 1.0)
+    for bas, son, seviye in reversed(enerji):
+        if bas <= t <= son:
+            return ENERJI_CARPAN.get(seviye, 1.0)
+    return 1.0
+
+
+def _agirlikli_hedef(hedef: float, bitis: float, enerji: list[tuple[float, float, int]] | None) -> float:
+    """Brif enerji dilimlerinin süresine göre ağırlıklı ortalama yoğunluk hedefi."""
+    if not enerji or bitis <= 0:
+        return hedef
+    dilimler = [
+        (max(0.0, a), min(bitis, b), ENERJI_CARPAN.get(sev, 1.0))
+        for a, b, sev in enerji
+        if b > 0 and a < bitis and min(bitis, b) > max(0.0, a)
+    ]
+    if not dilimler:
+        return hedef
+    toplam_d = sum(b - a for a, b, _ in dilimler)
+    payda = max(bitis, toplam_d)
+    kalan = max(0.0, bitis - toplam_d)
+    ort_carpan = (sum((b - a) * c for a, b, c in dilimler) + kalan) / payda
+    return round(hedef * ort_carpan, 4)
+
+
+def motion_yogunlugu(k: Kurgu, hedef: float, enerji: list[tuple[float, float, int]] | None = None) -> list[str]:
+    """Grafik olayları (sahne, motion metin, motion klip, hazır efekt) arasındaki boşluk hedefi aşıyorsa uyarılar.
+
+    WHY: bkz. wiki/decisions/0064-yaratici-yon.md. `enerji` verilirse ([(bas, son, seviye 1-5)]) her boşluğun eşiği
+    orta noktasının düştüğü enerji dilimine, ortalama yoğunluk uyarısı da ağırlıklı hedefe göre ölçeklenir.
+    """
     gizli = {i.id for i in k.izler if i.gizli}
     bitis = max((c.bas + c.sure for c in k.klipler if c.iz not in gizli), default=0.0)
-    if bitis < hedef:
+    etkin_hedef = _agirlikli_hedef(hedef, bitis, enerji)
+    if bitis < etkin_hedef:
         return []
     anlar = []
     for c in k.klipler:
@@ -412,9 +470,13 @@ def motion_yogunlugu(k: Kurgu, hedef: float) -> list[str]:
     sinir = [0.0, *sorted(anlar), bitis]
     uyari = []
     ort = bitis / (len(anlar) + 1)
-    if ort > hedef:
-        uyari.append(f"motion yoğunluğu düşük: {len(anlar)} grafik olayı, ortalama {ort:.1f} sn'de bir (hedef {hedef:g} sn)")
-    bos = [(a, b) for a, b in zip(sinir, sinir[1:]) if b - a > hedef * 2]
+    if ort > etkin_hedef:
+        uyari.append(
+            f"motion yoğunluğu düşük: {len(anlar)} grafik olayı, ortalama {ort:.1f} sn'de bir "
+            f"(hedef {round(etkin_hedef, 2):g} sn)"
+        )
+    taban = hedef * 2
+    bos = [(a, b) for a, b in zip(sinir, sinir[1:]) if b - a > taban * _enerji_carpani((a + b) / 2, enerji)]
     if bos:
         uyari.append("grafiksiz uzun aralıklar: " + ", ".join(f"{a:.1f}-{b:.1f} sn" for a, b in bos[:8]))
     return uyari
@@ -510,24 +572,50 @@ def _motion_hatalari(c) -> list[str]:
     return h
 
 
-def _public_bagla(p, ad: str, y: str) -> None:
+def _public_bagla(p, ad: str, y: str, *, mod: str = "final") -> tuple[str, Path, bool] | None:
+    """Kaynağı `work/public/_k/<ad><uzantı>` olarak bağlar. (bağlantı adı, bağlanan dosya, proxy mi) ya da None.
+
+    WHY: bkz. wiki/decisions/0060-proxy-master-conform.md. Bağlantı adı moddan bağımsızdır: derleyici aynı adresi okur,
+    taslakta proxy, finalde master görür. Final ve master modunda proxy asla bağlanmaz.
+    """
+    from . import vekil
     if y.startswith("public:"):
-        return
+        return None
     kaynak = dosya(p, y)
     hedef = p.work / "public" / "_k" / f"{ad}{kaynak.suffix.lower()}"
     hedef.parent.mkdir(parents=True, exist_ok=True)
-    if kaynak.suffix.lower() in (".mp4", ".mov", ".m4v") and ff.hdr_mi(ff.probe(kaynak)):
+    proxy = False
+    baglanabilir = kaynak.suffix.lower() in vekil.BAGLANABILIR
+    if mod == "taslak" and baglanabilir and (px := vekil.hazir(p.work, kaynak, "taslak")):
+        kaynak, proxy = px, True
+    elif baglanabilir and ff.hdr_mi(ff.probe_ob(kaynak)):
         # WHY: ADR 0040. HDR kaynak render'a bağlantıyla değil SDR kopyayla girer; kurgu, kaynak yolu ve uzantı
-        # (Kurgu.tsx _k/<id><uzantı> okur) değişmez. H.264 mp4 ve mov kapsayıcısına sığar.
-        sdr = p.work / "sdr" / f"{kaynak.stem}-{kaynak.stat().st_size}{kaynak.suffix.lower()}"
+        # (Kurgu.tsx _k/<id><uzantı> okur) değişmez. H.264 mp4 ve mov kapsayıcısına sığar. Master modunda
+        # kopya yüksek kalitededir (ADR 0060), ayrı adla önbelleklenir.
+        yuksek = mod == "master"
+        sdr = p.work / "sdr" / f"{kaynak.stem}-{kaynak.stat().st_size}{'-m' if yuksek else ''}{kaynak.suffix.lower()}"
         if not sdr.exists():
-            print(f"  HDR kaynak SDR'ye çevriliyor: {kaynak.name}")
-            ff.sdr_cevir(kaynak, sdr)
+            print(f"  HDR kaynak SDR'ye çevriliyor{' (master kalite)' if yuksek else ''}: {kaynak.name}")
+            ff.sdr_cevir(kaynak, sdr, master=yuksek)
         kaynak = sdr
-    if hedef.exists() and hedef.stat().st_size == kaynak.stat().st_size and hedef.samefile(kaynak):
-        return
-    hedef.unlink(missing_ok=True)
-    hedef.hardlink_to(kaynak)
+    if not (hedef.exists() and hedef.stat().st_size == kaynak.stat().st_size and hedef.samefile(kaynak)):
+        hedef.unlink(missing_ok=True)
+        hedef.hardlink_to(kaynak)
+    return hedef.name, kaynak, proxy
+
+
+def _conform_yaz(p, mod: str, beklenen: dict[str, Path], vekiller: list[str]) -> None:
+    """Bağlama sonucunu `work/edit/conform.json`'a yazar; final ve master modunda proxy sızıntısında durur. WHY: ADR 0060."""
+    from . import vekil
+    hatalar = [] if mod == "taslak" else vekil.conform_denetle(p.work / "public", beklenen)
+    if mod != "taslak" and vekiller:
+        hatalar += [f"{ad}: proxy bağlı" for ad in vekiller]
+    (p.work / "edit").mkdir(parents=True, exist_ok=True)
+    (p.work / "edit" / "conform.json").write_text(json.dumps(
+        {"mod": mod, "klip": len(beklenen), "proxy": vekiller, "master": len(beklenen) - len(vekiller),
+         "hatalar": hatalar}, ensure_ascii=False), encoding="utf-8")
+    if hatalar:
+        raise SystemExit("Master conform kapısı: " + "; ".join(hatalar))
 
 
 def _olay_hatalari(c) -> list[str]:

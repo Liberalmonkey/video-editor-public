@@ -4,7 +4,7 @@ title: "Motion kütüphanesi: kaynaktan üretim, parametrik şablon, tema, yoğu
 status: accepted
 tags: [adr, motion, kutuphane, ai-edit, studyo, ajan, antigravity]
 created: 2026-11-13
-updated: 2026-11-20
+updated: 2026-11-25
 sources: ["[[2026-11-13-motion-kutuphane-arastirmasi]]", "[[2026-11-12-motion-grafik-arastirmasi]]"]
 ---
 
@@ -62,3 +62,6 @@ sources: ["[[2026-11-13-motion-kutuphane-arastirmasi]]", "[[2026-11-12-motion-gr
 
 > [!note] Güncellendi 2026-11-19
 > İkonların "`--vurgu` disk + `--zemin` çizgi" ortak dili kalktı ([[0043-stile-bagli-tema-tokenlari]]): 12 `ikon-*` ve `onay-tik` arka şekilsiz yeniden çizildi; gövde `--vurgu`, ikincil parça `--ikincil`, okunurluk tek SVG filtresiyle (`--ikon-kontur` ince dış çizgi, `--ikon-golge` gölge). Giriş ve çıkış stilin easing'ini (`--ease`, `--ease-cik`), çizgi ucu `--ucu` token'ını kullanır; ikonun kendi hareketi korundu. Kapı `tests/test_ikon_alfa.py`: ikon şeklinin (kontur ve gölge payı dahil) dışında alfa 0. Bütün motion HTML'den sabit yedek renk ve Montserrat kalktı; şablonlar `tema/varsayilan.css`'e bağlanır.
+
+## Güncelleme (2026-11-25)
+Kütüphane Kasam / Keşif / Arşiv olarak ayrıldı; kilitli varlık onayla kilidi kaldırılarak silinir, poster alfa kırpımlı doğru kareden üretilir. Ayrıntı [[0061-kasa-ve-kesif]].

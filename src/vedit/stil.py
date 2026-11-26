@@ -11,7 +11,7 @@ import re
 import shutil
 from pathlib import Path
 
-from . import ajan_cagri, hizli, motion, paths, reference
+from . import ajan_cagri, hizli, paths, reference
 
 AD = re.compile(r"[\w\-]{1,40}")
 ATLA = {"images", "analysis"}
@@ -73,6 +73,32 @@ def sec(p, ad: str) -> None:
     f.write_text(ad, encoding="utf-8")
 
 
+def kapak_yolu(studyo: str, ad: str) -> Path | None:
+    """Stil kartının kapağı: katalog önizlemesi, yoksa ilk görsel referans."""
+    from . import stil_katalog
+
+    f = stil_katalog.onizleme_yolu(ad_denetle(ad))
+    if f.is_file():
+        return f
+    r = referans_klasoru(studyo, ad)
+    if r.is_dir():
+        for g in sorted(r.iterdir(), key=lambda x: hizli.dogal(x.name)):
+            if g.is_file() and not g.name.startswith(".") and g.suffix.lower() in hizli.GORSEL:
+                return g
+    return None
+
+
+def palet(studyo: str, ad: str) -> dict[str, str]:
+    """tokens.json renklerini kart paletine çevirir (zemin, yazi, vurgu, ikincil, soluk)."""
+    f = klasor(studyo, ad) / "tokens.json"
+    try:
+        c = json.loads(f.read_text(encoding="utf-8")).get("colors") or {}
+    except (OSError, ValueError):
+        return {}
+    eslem = {"zemin": ("bg",), "yazi": ("fg",), "vurgu": ("accent",), "ikincil": ("accent2", "surface"), "soluk": ("muted",)}
+    return {k: v for k, adlar in eslem.items() if (v := next((c[a] for a in adlar if isinstance(c.get(a), str)), None))}
+
+
 def liste(studyo: str) -> list[dict]:
     """Stüdyonun hazır ve referans bekleyen tüm stilleri."""
     s_kok = paths.STUDIOS / studyo / "styles"
@@ -95,6 +121,8 @@ def liste(studyo: str) -> list[dict]:
             "style_md": sf.read_text(encoding="utf-8") if hazir else "",
             "motion_md": mf.read_text(encoding="utf-8") if mf.exists() else "",
             "referanslar": refler,
+            "kapak": kapak_yolu(studyo, ad) is not None,
+            "palet": palet(studyo, ad),
         }
         if hazir or (k / "varliklar.json").exists():
             from . import stil_varlik

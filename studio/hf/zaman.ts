@@ -3,8 +3,11 @@
 import type { Gecis, Klip, KurguProps } from "../remotion/tipler";
 import { bezier } from "./bezier";
 
-// Orta noktası kesimde olan geçişler (gecisler.tsx ORTA ile aynı küme).
-export const ORTA = new Set(["sil", "kay", "saat", "iris", "kirbac", "isik", "piksel", "zoom_kirbac", "film_yanigi", "bolunme", "bozulma", "yirtma"]);
+// Orta noktası kesimde olan geçişler (gecisler.tsx ORTA + ADR 0062 optik geçişler).
+export const ORTA = new Set([
+  "sil", "kay", "saat", "iris", "kirbac", "isik", "piksel", "zoom_kirbac", "film_yanigi", "bolunme", "bozulma", "yirtma",
+  "tikla_iris", "buton_zoom", "kart_dunyaya", "bulanik_takas", "dip_kesim",
+]);
 export const ortaMi = (g: Gecis | null | undefined): boolean => !!g && ORTA.has(g.tur);
 
 // Çapraz geçişte önceki klip kuyruğu altta sürer; orta noktalı geçişte yarısı.
@@ -26,11 +29,11 @@ export const dbGuc = (db: number) => Math.pow(10, db / 20);
 export const STAGE_H = 998;
 export const CAP_SPLIT_Y = 1066;
 const DUZEN = bezier(0.65, 0, 0.35, 1);
-export interface DuzenSahne { layout?: string | null; start: number }
+export interface DuzenSahne { layout?: string | null; duzen?: string | null; start: number }
 export const layoutP = (frame: number, fps: number, scenes: DuzenSahne[]): number => {
   let prev = 0, p = 0;
   for (const s of scenes) {
-    const target = s.layout === "split" ? 1 : 0;
+    const target = s.layout === "split" || s.duzen === "diyagram-pip" || s.duzen === "ekran-pip" ? 1 : 0;
     const st = Math.round(s.start * fps);
     if (frame < st) break;
     const k = DUZEN(Math.min(1, Math.max(0, (frame - st) / 10)));

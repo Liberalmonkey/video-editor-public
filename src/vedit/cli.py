@@ -12,7 +12,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-from . import motorlar, paths, project
+from . import motorlar, paths
+from .tembel import Tembel
+
+# WHY: bkz. wiki/decisions/0057-her-makinede-hiz.md. project şemaları (pydantic, ~280 ms) içe aktarır; yardım ve şema
+# gerektirmeyen komutlar beklemesin.
+project = Tembel("vedit.project")
 
 
 def _root(args) -> Path:
@@ -276,9 +281,10 @@ def cmd_olaysesi(a):
 
 def cmd_teslim(a):
     from . import teslim
-    r = teslim.kodla(Path(a.video), Path(a.output) if a.output else None, a.platform, kodek=a.kodek, kalite=a.kalite,
-                     kapak=Path(a.kapak_kare) if a.kapak_kare else None)
-    print(f"Teslim: {r['cikti']} · {r['boyut']} · {r['mbps']} Mbps · girdi {r['once']} → yuv420p/tv/bt709")
+    r = teslim.kodla(Path(a.video), Path(a.output) if a.output else None, a.platform, kodek=a.kodek, kalite=a.kalite, vmaf=a.vmaf)
+    sd = r["sadakat"]
+    print(f"Teslim: {r['cikti']} · {r['boyut']} · {r['mbps']} Mbps · girdi {r['once']} → {r['pix_fmt']}/tv/bt709"
+          + "".join(f" · {k.upper()} {v}" for k, v in sd.items()))
     for u in r["uyarilar"]:
         print(f"  ! {u}")
 
@@ -423,6 +429,10 @@ def cmd_motion(a):
         for f in dosyalar:
             print(f"  {paths.rel(f)}")
         return
+    if a.is_ == "onizleme":
+        yapilan = motion.onizleme_yenile(a.kimlik or None)
+        print(f"Önizleme: {len(yapilan)} kayıt yenilendi (poster.jpg + onizleme.mp4)")
+        return
     if a.is_ == "olc":
         sonuc = motion.olc(a.kimlik or None)
         for k, kusur in sonuc:
@@ -484,6 +494,22 @@ def cmd_hazirla(a):
     hizli.hazirla(hizli.bul(a.ref), dil=a.dil, prompt=a.prompt, ek=a.ek)
 
 
+def cmd_vekil(a):
+    """Proxy durumu ve üretimi (ADR 0060)."""
+    from . import ff, hizli, vekil
+    p = hizli.bul(a.ref)
+    dosyalar = sorted(f for f in p.girdi.iterdir() if f.is_file() and f.suffix.lower() in hizli.VIDEO)
+    for f in dosyalar:
+        n = vekil.neden(ff.probe(f))
+        durum = ", ".join(k for k in vekil.KATMAN if vekil.hazir(p.work, f, k)) or "yok"
+        print(f"- {f.name}: {'gerekli (' + ', '.join(n) + ')' if n else 'gerekmez'} · hazır: {durum}")
+    if a.uret:
+        isler = vekil.arka_planda(p.work, dosyalar)
+        for t in isler:
+            t.join()
+        print(f"Proxy: {len(isler)} iş bitti")
+
+
 def cmd_kes(a):
     from . import hizli
     hizli.kes(hizli.bul(a.ref))
@@ -495,15 +521,20 @@ def cmd_taslak(a):
 
 
 def _teslim_ayari(a) -> dict:
-    return {"cozunurluk": a.cozunurluk, "kalite": a.kalite, "kodek": a.kodek, "fps": a.fps}
+    return {"cozunurluk": a.cozunurluk, "kalite": a.kalite, "kodek": a.kodek, "fps": a.fps,
+            "kaynaga": a.kaynaga, "vmaf": a.vmaf}
 
 
 def _teslim_bayraklari(sp) -> None:
     from . import teslim
     sp.add_argument("--cozunurluk", type=int, choices=list(teslim.COZUNURLUK), help="kısa kenar: 720 HD, 1080 FHD, 1440 QHD (2K), 2160 UHD (4K); yoksa sekans boyutu")
-    sp.add_argument("--kalite", default="yayin", choices=list(teslim.KALITE), help="CRF kademesi (H.264: 14 / 16 / 20)")
+    sp.add_argument("--kalite", default="yayin", choices=list(teslim.KALITE),
+                    help="ön ayar: master (kayıpsız ara, H.265'te 10-bit, kaynağa eşle), arsiv, yayin, hafif")
     sp.add_argument("--kodek", default="h264", choices=list(teslim.KODEK))
     sp.add_argument("--fps", type=int, choices=list(teslim.FPS), help="yoksa sekans kare hızı")
+    sp.add_argument("--kaynaga-esle", dest="kaynaga", action=argparse.BooleanOptionalAction, default=None,
+                    help="çözünürlük ve fps en büyük kaynak klibe göre (master'da varsayılan açık)")
+    sp.add_argument("--vmaf", action="store_true", help="teslim sonrası VMAF da ölç (yavaş)")
 
 
 def cmd_final(a):
@@ -513,12 +544,22 @@ def cmd_final(a):
 
 def cmd_ai_edit(a):
     from . import aiedit, hizli
-    if a.ekip or a.hizli:  # --hizli ekibi de açar (ADR 0054)
-        # WHY: bkz. wiki/decisions/0053-seviyeli-ekip-orkestrator.md. --ekip yoksa tek ajan akışı aynen çalışır.
-        from . import ekip
+    if a.ekip or a.suru or a.hizli:  # --hizli ekibi de açar (ADR 0054)
+        # WHY: bkz. wiki/decisions/0059-swarm-edit.md. --ekip = --suru; --seviye ajan tavanıdır. Yoksa tek ajan akışı aynen çalışır.
+        from . import ekip, suru
         p = hizli.bul(a.ref)
+        from .ekip_sema import EN_COK
         ayar = ekip.ayar_yukle(p, Path(a.ekip_dosyasi) if a.ekip_dosyasi else None, ekip_seviye=a.seviye,
+                               en_cok=a.en_cok or (EN_COK[a.seviye] if a.seviye else None),
                                motion=a.motion if a.motion != "yogun" else None, stil=a.stil, hizli=True if a.hizli else None)
+        if o_sec := suru.orkestrator_ayristir(a.orkestrator):
+            if o_sec[0] not in motorlar.MOTORLAR:
+                raise SystemExit(f"Bilinmeyen motor: {o_sec[0]} ({', '.join(motorlar.MOTORLAR)})")
+            g = ayar.gruplar["orkestrator"]
+            yeni_o = g.model_copy(update={"motor": o_sec[0], "model": o_sec[1], "seviye": g.seviye if o_sec[0] == g.motor else None})
+            # Açık bayrak O slot ezmesinden de üstündür; yoksa ön ayardaki ezme["O"] onu sessizce ezerdi.
+            ayar = ayar.model_copy(update={"gruplar": {**ayar.gruplar, "orkestrator": yeni_o},
+                                           "ezme": {s: v for s, v in ayar.ezme.items() if s != "O"}})
         if a.sifirdan:
             from . import kurgu
             f = kurgu.yol(p.work)
@@ -531,7 +572,8 @@ def cmd_ai_edit(a):
         # Kapılı akış: plan, paralel düzen, kural kapısı, birleştirme, QC, triyaj ve kural, düzeltme, son.
         from . import ekip_v3
         o = ekip_v3.calistir(p, ayar, notu=a.notu, final=a.final, tekrar_denetle=a.tekrar_denetle)
-        print(f"Ekip v3 ({o['seviye']}{', hızlı' if o.get('hizli') else ''}): {o['sure_sn']} sn · rapor work/edit/ai-edit.rapor.md")
+        ekip_ad = "hızlı" if o.get("hizli") else f"en çok {o.get('en_cok')}"
+        print(f"Swarm ({ekip_ad}, {o.get('editor', 0)} editör + {o.get('kk', 0)} QC): {o['sure_sn']} sn · rapor work/edit/ai-edit.rapor.md")
         if o.get("taslak_eski") and not a.final:
             print("  taslak.mp4 düzeltmeden önceki hâl; Stüdyo önizlemesi güncel. Videoyu görmek için: vedit taslak " + a.ref)
         if a.final:
@@ -543,6 +585,38 @@ def cmd_ai_edit(a):
     aiedit.calistir(hizli.bul(a.ref), motor=a.motor, model=a.model, stil=a.stil, notu=a.notu, final=a.final, motion_seviye=a.motion,
                     aralik=tuple(a.aralik) if a.aralik else None,
                     final_ek={"platform": a.platform, "ad": a.ad, "yenile": a.yenile, **_teslim_ayari(a)})
+
+
+def cmd_yayin(a):
+    # WHY: bkz. wiki/decisions/0055-teslimde-yayin-metni.md. Export ajan çağırmaz; yayın metni ayrı, düğmeyle başlayan iştir.
+    import time
+    from . import hizli, yayin
+    p = hizli.bul(a.ref)
+    secili = yayin.platform_listesi(a.platform, p.studyo)
+    if a.hepsi:
+        hedefler = [v["ad"] for v in yayin.videolar(p)]
+    elif a.video:
+        hedefler = [a.video]
+    else:
+        v = yayin.videolar(p)
+        if len(v) > 1:
+            raise SystemExit("Teslimde birden çok video var: --video <ad.mp4> ya da --hepsi ver. " + ", ".join(x["ad"] for x in v))
+        hedefler = [x["ad"] for x in v]
+    if not hedefler:
+        raise SystemExit(f"Teslim videosu yok: önce vedit final {a.ref}")
+    t0, hatali = time.time(), []
+    for ad in hedefler:
+        try:
+            yayin.uret(p, ad, secili, motor=a.motor, model=a.model, seviye=a.seviye, dil=a.dil)
+        except SystemExit as e:
+            if len(hedefler) == 1:
+                raise
+            print(f"! {ad}: {e}", flush=True)
+            hatali.append(ad)
+    hizli.sure_yaz(p.work, "yayin", time.time() - t0, f"{len(hedefler)} video")
+    print(f"Yayın metni: {len(hedefler) - len(hatali)}/{len(hedefler)} video · {paths.rel(p.cikti / 'yayin.md')}")
+    if hatali:
+        raise SystemExit(f"Üretilemeyen: {', '.join(hatali)}")
 
 
 def cmd_stil_uret(a):
@@ -882,47 +956,6 @@ def cmd_ses_cikar(a):
         print(f"Ses: {paths.rel(ayristir.ses_cikar(f, p.cikti / 'ses', a.bicim))}")
 
 
-def cmd_kapak(a):
-    from . import hizli, kapak
-    p = hizli.bul(a.ref)
-    if a.sec is not None:  # 0 da geçersiz adaydır; üretime düşüp agy kotası harcamasın
-        print(f"Seçildi: {paths.rel(kapak.sec(p, a.platform, a.sec))}")
-        return
-    if a.master is not None:  # 0: aday yok, ilk öneri ya da brief
-        m = kapak.master(p, a.platform, a.master or None, kare=a.kare, video=a.video)
-        if a.hedef:
-            for tur in ("yazili", "bos"):
-                h = m["hedefler"][a.hedef][tur]
-                print(f"## {h['ad']} · {'yazılı' if tur == 'yazili' else 'boş zemin'}\n{h['prompt']}\n")
-        else:
-            print(m["md"])
-        return
-    if a.gelistir is not None:
-        kapak.gelistir(p, a.platform, a.gelistir, max(a.adet, 1), model=a.model, video=a.video, kare=a.kare)
-        print(f"Öneri yazıldı. Üretim: vedit kapak {p.studyo}/{p.ad} --oneri --adet N")
-        return
-    if a.gorsel_duzelt is not None:
-        bolge = [float(v) for v in a.bolge.split(",")] if a.bolge else None
-        print(f"Düzeltildi: {paths.rel(kapak.gorsel_duzelt(p, a.platform, a.gorsel_duzelt, a.istek or '', bolge=bolge, yalniz_bolge=not a.tum_gorsel, model=a.gorsel_model))}")
-        return
-    if a.ice_al:
-        print(f"İçe alındı: {paths.rel(kapak.ice_al(p, a.platform, Path(a.ice_al), yazili=a.yazili, metin=a.metin))}")
-        return
-    stil = dict(vurgu=a.vurgu, yerlesim=a.yerlesim, olcek=a.olcek, karart=a.karart, kutu=a.kutu, kalip=a.kalip, stil=a.stil, ek=a.ek)
-    if a.duzenle is not None:
-        print(f"Yazı çizildi: {paths.rel(kapak.duzenle(p, a.platform, a.duzenle, kopya=a.kopya, metin=a.metin, **stil))}")
-        return
-    if a.elestir and a.adet == 0:  # yalnız eleştiri: yeni aday üretmez
-        kapak.elestir(p, a.platform)
-        return
-    yeni = kapak.uret(p, a.platform, a.adet, metin=a.metin, prompt=a.prompt, zemin=Path(a.zemin) if a.zemin else None,
-                      yeni_brief=a.yeni_brief, kare=a.kare, video=a.video, oneri=a.oneri, model=a.model,
-                      gorsel_model=a.gorsel_model, **stil)
-    print(f"{len(yeni)}/{a.adet} aday. Seçim: vedit kapak {p.studyo}/{p.ad} --sec <n>")
-    if a.elestir and yeni:
-        kapak.elestir(p, a.platform)
-
-
 def cmd_kontrol(a):
     """Değişiklikten sonra tek komutla doğrulama: testler, tip denetimi, ajan kopyaları, wiki. Dosya değiştirmez."""
     import shutil
@@ -1009,7 +1042,7 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--parallel", type=int, default=2)
     sp = P("qa", cmd_qa, "otomatik kalite kontrol")
     sp.add_argument("--video")
-    sp = P("export", cmd_export, "varyantlar, SRT, bölümler, kapaklar")
+    sp = P("export", cmd_export, "varyantlar, SRT, bölümler")
     sp.add_argument("--variants", nargs="*")
     sp = P("mix", cmd_mix, "master ses (konuşma + müzik + SFX)")
     sp.add_argument("--duck-db", type=float, default=-11.0)
@@ -1055,7 +1088,7 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--tema", help="motion teması (boşsa varsayilan ya da projenin teması)")
     sp.add_argument("--cikti", help="çıktı klasörü (boşsa work/hf)")
     sp = P("motion", cmd_motion, "motion kütüphanesi: kur = kaynaktan (html + meta.json) webm, poster, kontak ve manifest üret; olc = alfa, boyut, son kare, geçiş ortası ölçümü", project_arg=False)
-    sp.add_argument("is_", metavar="kur|olc|kontak|ice-al", choices=["kur", "olc", "kontak", "ice-al"])
+    sp.add_argument("is_", metavar="kur|onizleme|olc|kontak|ice-al", choices=["kur", "onizleme", "olc", "kontak", "ice-al"])
     sp.add_argument("--kaynak", help="ice-al: mixkit, pixabay, lottiefiles, uppbeat, github (boşsa klasör adı)")
     sp.add_argument("--url", help="ice-al: varlığın sayfası (boşsa kaynağın lisans sayfası)")
     sp.add_argument("--lisans", help="ice-al: lisans adı (boşsa kaynağın varsayılanı)")
@@ -1075,7 +1108,7 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--cikti", default="work/motion-galeri", help="kontak: çıktı klasörü")
     sp.add_argument("--manifest", action="store_true", help="render etme, yalnız manifesti meta.json'lardan yenile")
     sp.add_argument("--onizle", action="store_true", help="manifesti yazma: webm, poster ve kontak üret (paralel ajanlar için)")
-    sp = P("pano", cmd_pano, "HTML panoyu kare kare mp4'e çevir; -o .webm saydam VP9 (motion), .png/.jpg ise --sure anındaki tek kare (kapak)", project_arg=False)
+    sp = P("pano", cmd_pano, "HTML panoyu kare kare mp4'e çevir; -o .webm saydam VP9 (motion), .png/.jpg ise --sure anındaki tek kare (görsel)", project_arg=False)
     sp.add_argument("html")
     sp.add_argument("--sure", type=float, default=8.0)
     sp.add_argument("-o", "--out", required=True)
@@ -1088,50 +1121,13 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("prompt")
     sp.add_argument("-o", "--out", required=True, help="hedef dosya; uzantısız verilirse agy'nin biçimi")
     sp.add_argument("--oran", default="16:9", choices=["16:9", "9:16", "1:1", "4:5", "4:3", "3:4"])
-    sp = P("kapak", cmd_kapak, "YouTube/Instagram kapak adayları (Antigravity zemini + şablon yazısı); --sec ile teslim", project_arg=False)
-    sp.add_argument("ref")
-    sp.add_argument("--platform", choices=["youtube", "instagram"], help="varsayılan stüdyodan; ugc'de zorunlu")
-    sp.add_argument("--adet", type=int, default=1, help="1-5 yeni aday")
-    sp.add_argument("--metin", help='kapak yazısı "satır1|satır2"; yoksa brief')
-    sp.add_argument("--prompt", help="görsel prompt'u; yoksa brief.json ya da agy brief'i")
-    sp.add_argument("--zemin", help="agy yerine bu kareyi zemin yap (eldeki malzeme)")
-    sp.add_argument("--kare", type=int, help="videodan çıkarılan karelerden referans (work/gorsel/kapak/kareler); yoksa brief seçer")
-    sp.add_argument("--yeni-brief", action="store_true", help="brief.json'u agy ile yeniden yaz")
-    sp.add_argument("--sec", type=int, help="bu adayı outputs'a teslim et")
-    sp.add_argument("--duzenle", type=int, help="bu adayın yazısını zemini yeniden üretmeden yeniden çiz (agy'siz)")
-    sp.add_argument("--kopya", action="store_true", help="--duzenle ile: adayın üzerine yazma, yeni aday aç (varyasyon)")
-    sp.add_argument("--vurgu", help="ikinci satırda turuncu olacak kelime; yoksa tüm ikinci satır")
-    sp.add_argument("--yerlesim", choices=["sol", "sag", "ust", "alt"], help="başlık yeri; YouTube sol|sag|ust|alt, Instagram ust|alt")
-    sp.add_argument("--olcek", type=float, help="yazı boyutu çarpanı 0.6-1.4")
-    sp.add_argument("--karart", action=argparse.BooleanOptionalAction, help="yazı arkasına yönlü gradyan")
-    sp.add_argument("--kutu", action=argparse.BooleanOptionalAction, help="vurguyu renkli kutuda yaz; yoksa stil paketinin varsayılanı")
-    sp.add_argument("--kalip", help="YouTube klasik|dev-yazi|alt-bant|bolunmus|rozet|not|yazisiz, Instagram klasik|seri|yazisiz")
-    sp.add_argument("--stil", help="yazı stil paketi (library/kapak/stiller/); yoksa stüdyonun kapak.json'u, brief ya da turuncu")
-    sp.add_argument("--ek", help="kalıbın ek sözü: dev-yazi'da arkadaki dev söz, alt-bant'ta üst satır, not'ta el yazısı, seri'de marka")
-    sp.add_argument("--elestir", action="store_true", help="adayları agy'ye puanlat (1-10 ve tek düzeltme); --adet 0 ile yalnız eleştiri")
-    sp.add_argument("--video", help='kareler yalnız bu videodan: "inputs:1.mp4" ya da "outputs:work/renders/ham.mp4"')
-    sp.add_argument("--model", help="brief, geliştirme ve eleştiriyi yazan agy modeli (`agy models`)")
-    sp.add_argument("--gorsel-model", help="generate_image'ı çağıran agy modeli; görsel modelinin kendisi agy'de sabittir")
-    sp.add_argument("--gelistir", metavar="FIKIR", nargs="?", const="",
-                    help="fikrini skill kurallarıyla yapılı brief'e çevir (oneri.json); fikir boşsa videodan öner; görsel üretmez")
-    sp.add_argument("--oneri", action="store_true", help="brief olarak oneri.json'u kullan (--gelistir sonrası)")
-    sp.add_argument("--gorsel-duzelt", type=int, metavar="N", help="adayın görselini düzelt (--istek); sonuç yeni aday")
-    sp.add_argument("--istek", help='görsel düzeltme isteği, ör. "arka planı koyu mavi yap"')
-    sp.add_argument("--bolge", help="düzeltilecek kutu, tuval yüzdesi: sol,üst,sağ,alt (ör. 50,10,95,60)")
-    sp.add_argument("--tum-gorsel", action="store_true", help="--bolge ile: sonucun tamamını al (varsayılan yalnız kutu değişir)")
-    sp.add_argument("--ice-al", metavar="DOSYA", help="başka platformda üretilen görseli aday yap (oran kırpılır)")
-    sp.add_argument("--yazili", action="store_true", help="--ice-al ile: görselde yazı var, yazı eklenmez")
-    sp.add_argument("--master", type=int, nargs="?", const=0, metavar="N",
-                    help="dış platformlar için master prompt (Nano Banana Pro/2.1, ChatGPT, Midjourney, Ideogram, Leonardo); N aday")
-    sp.add_argument("--hedef", choices=["nano-banana-pro", "nano-banana-21", "chatgpt", "midjourney", "ideogram", "leonardo"],
-                    help="--master ile yalnız bu platform")
     sp = P("teslim", cmd_teslim, "son kodlama: BT.709, yüksek kalite, ölçümle kapı", project_arg=False)
     sp.add_argument("video")
     sp.add_argument("-o", "--output")
     sp.add_argument("--platform", choices=["youtube", "reels", "ugc"])
-    sp.add_argument("--kalite", choices=["arsiv", "yayin", "hafif"], default="yayin")
+    sp.add_argument("--kalite", choices=["master", "arsiv", "yayin", "hafif"], default="yayin")
     sp.add_argument("--kodek", choices=["h264", "h265"], default="h264")
-    sp.add_argument("--kapak-kare", help="kapak görselini yalnız 0. kareye göm (X, Discord, Slack önizlemesi; oynatmada 1 kare)")
+    sp.add_argument("--vmaf", action="store_true", help="VMAF da ölç (yavaş)")
     sp = P("kesimqa", cmd_kesimqa, "dışa aktarılan sesi beklenen metinle karşılaştır", project_arg=False)
     sp.add_argument("video")
     sp.add_argument("--beklenen", help="düz metin dosyası (yoksa projenin transkripti)")
@@ -1144,6 +1140,9 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--yazisiz", action="store_true", help="metin taramasını atla")
     sp.add_argument("--dil", choices=["tr", "en"])
     sp.add_argument("--cikti", help="rapor klasörü (varsayılan: proje qa/)")
+    sp = P("vekil", cmd_vekil, "proxy durumu; --uret ağır kaynak için önizleme ve taslak proxy'si üretir (ADR 0060)", project_arg=False)
+    sp.add_argument("ref")
+    sp.add_argument("--uret", action="store_true")
     sp = P("hazirla", cmd_hazirla, "girdi ölçümü, önbellekli transkript, digest, kontak sayfası", project_arg=False)
     sp.add_argument("ref", help="proje adı (Projeler/inputs/<stüdyo>/<proje>)")
     sp.add_argument("--dil", default="tr")
@@ -1170,18 +1169,31 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--motion", default="yogun", choices=["az", "orta", "yogun"], help="motion grafik yoğunluğu (ADR 0036)")
     sp.add_argument("--aralik", nargs=2, type=float, metavar=("BAS", "SON"), help="yalnız bu sekans aralığını (sn) düzelt; dışı değişmez")
     sp.add_argument("--final", action="store_true", help="taslaktan sonra final render")
-    sp.add_argument("--ekip", action="store_true", help="orkestratör + seviyeli editör ve kalite kontrol ekibi (ADR 0053, kapılı paralel akış)")
+    sp.add_argument("--suru", action="store_true",
+                    help="swarm: orkestratör ajan sayısını (tavan içinde), dağılımı ve her ajanın modelini seçer (ADR 0059, kapılı paralel akış)")
+    sp.add_argument("--ekip", action="store_true", help="--suru ile aynı (eski ad)")
+    sp.add_argument("--orkestrator", metavar="MOTOR[:MODEL]", help="swarm orkestratörü, ör. claude:claude-opus-5-5 (yoksa ön ayar)")
+    sp.add_argument("--en-cok", type=int, choices=range(3, 16), metavar="N", help="swarm ajan tavanı, editör + QC (3-15)")
     sp.add_argument("--seviye", choices=["low", "medium", "high", "xhigh", "max"],
-                    help="ekip seviyesi: low 2E+1K, medium 4E+2K, high 6E+3K, xhigh 8E+4K, max 10E+5K (yoksa ön ayar)")
+                    help="swarm tavanı kısaltması: low 3, medium 6, high 9, xhigh 12, max 15 ajan (--en-cok kazanır)")
     sp.add_argument("--tekrar-denetle", action="store_true", help="ekip: düzeltmeden sonra ikinci QC paketi (yalnız istenirse)")
     sp.add_argument("--hizli", action="store_true",
-                    help="ekip: hızlı ön ayar (ADR 0054): 2 editör + 1 QC, orkestratör çağrısı yok, render yalnız gerekince")
+                    help="swarm: hızlı (ADR 0054, 0058): plan çağrısı yok, 2 editör + dilim başına QC, render yalnız gerekince")
     sp.add_argument("--ekip-dosyasi", help="ekip ayarı JSON; yoksa work/edit/ekip.json, sonra library/ekip.json")
     sp.add_argument("--sifirdan", action="store_true", help="ekip: mevcut kurguyu geçmişe bırakıp girdiden yeniden kur")
     sp.add_argument("--platform", choices=["youtube", "reels", "ugc"])
     sp.add_argument("--ad", help="teslim dosyası adı (--final)")
     sp.add_argument("--yenile", action="store_true")
     _teslim_bayraklari(sp)
+    sp = P("yayin", cmd_yayin, "teslim videoları için platforma göre başlık, açıklama, hashtag (yayin.md, ADR 0055)", project_arg=False)
+    sp.add_argument("ref")
+    sp.add_argument("--video", help="teslim klasöründeki mp4 adı; yoksa tek video ya da --hepsi")
+    sp.add_argument("--hepsi", action="store_true", help="teslim klasöründeki tüm videolar, doğal sırayla")
+    sp.add_argument("--platform", help="virgüllü: reels,youtube,shorts,tiktok,linkedin; yoksa stüdyo varsayılanı")
+    sp.add_argument("--motor", default="claude", choices=list(motorlar.MOTORLAR))
+    sp.add_argument("--model", help="motorun model kimliği; claude'da varsayılan claude-opus-5-5")
+    sp.add_argument("--seviye", help="akıl yürütme seviyesi (motorun listesinden)")
+    sp.add_argument("--dil", choices=["tr", "en"], help="yoksa transkript dili")
     sp = P("stil-uret", cmd_stil_uret, "referanslardan STYLE.md, MOTION.md, tokens.json (Projeler/inputs/_referanslar/<stüdyo>/<ad>/)", project_arg=False)
     sp.add_argument("studyo", choices=list(paths.STUDIO_NAMES))
     sp.add_argument("ad")

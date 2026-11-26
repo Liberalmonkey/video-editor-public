@@ -262,12 +262,41 @@ def ustu(dolgu: str, r: Renk) -> str:
     return max((r.zemin, r.yazi, "#000000", "#FFFFFF"), key=lambda c: (round(kontrast(_rgb(c), _rgb(dolgu)), 1), c in (r.zemin, r.yazi)))
 
 
+def _rgb_str(h: str) -> str:
+    r, g, b = _rgb(h)
+    return f"{r} {g} {b}"
+
+
+def _bezier_css(b: Bezier | None, yedek: str) -> str:
+    if not b:
+        return yedek
+    return f"cubic-bezier({b[0]:g},{b[1]:g},{b[2]:g},{b[3]:g})"
+
+
 def css_metni(t: Tokens, baslik: str = "") -> str:
     r, f, s, h = t.renk, t.font, t.sekil, t.hareket
     gol, filt = golge(t)
     gir, cik = EASING[h.easing]
+    eg = h.egri
+    piksel_mod = s.doku == "piksel" or s.piksel > 1
+    if piksel_mod:
+        e_enter = e_exit = e_emph = e_settle = f"steps({eg.adim if eg and eg.adim else 4},end)"
+        yuzey_cam = r.zemin
+        kenar_ince = f"{max(2, s.kontur)}px solid {r.yazi}"
+        yukselti_golge = gol
+        izgara_desen = "none"
+    else:
+        e_enter = _bezier_css(eg.enter if eg else None, gir)
+        e_exit = _bezier_css(eg.exit if eg else None, cik)
+        e_emph = _bezier_css(eg.emphasis if eg else None, "cubic-bezier(.34,1.56,.64,1)")
+        e_settle = _bezier_css(eg.settle if eg else None, "cubic-bezier(.22,1,.36,1)")
+        yuzey_cam = _rgba(r.zemin, 0.78)
+        kenar_ince = f"1px solid {_rgba(r.yazi, 0.14)}"
+        yukselti_golge = f"0 2px 6px rgba(0,0,0,.22), 0 14px 34px rgba(0,0,0,.32), inset 0 1px 0 {_rgba(r.yazi, 0.14)}"
+        izgara_desen = f"radial-gradient({_rgba(r.yazi, 0.14)} 1.2px, transparent 1.2px) 0 0/28px 28px"
     d = {
         **{k: getattr(r, k) for k in ("vurgu", "ikincil", "zemin", "yazi", "soluk", "olumlu", "olumsuz")},
+        **{f"{k}-rgb": _rgb_str(getattr(r, k)) for k in ("vurgu", "ikincil", "zemin", "yazi", "soluk", "olumlu", "olumsuz")},
         "ikincil-yazi": r.ikincil_yazi,
         # Dolgunun üstündeki yazı: zemin, yazı, siyah ve beyazdan dolguya en yüksek kontrastlı olan (etiket, rozet, buton).
         "vurgu-ustu": ustu(r.vurgu, r), "ikincil-ustu": ustu(r.ikincil, r),
@@ -279,7 +308,9 @@ def css_metni(t: Tokens, baslik: str = "") -> str:
         # Köşesiz stilde (piksel, brutalist, bauhaus) çizgi ucu ve birleşimi de köşeli olur.
         "ucu": "square" if s.kose == 0 else "round", "birlesim": "miter" if s.kose == 0 else "round",
         "golge": gol, "golge-filtre": filt, "doku": doku(t),
-        "ease": gir, "ease-cik": cik, "sure-kat": h.sure_kat,
+        "yuzey-cam": yuzey_cam, "kenar-ince": kenar_ince, "yukselti-golge": yukselti_golge, "izgara-desen": izgara_desen,
+        "ease": gir, "ease-cik": cik, "ease-enter": e_enter, "ease-exit": e_exit, "ease-emphasis": e_emph, "ease-settle": e_settle,
+        "sure-kat": h.sure_kat, "adim-fps": h.adim_fps or 0,
     }
     kurallar = ":root{" + ";".join(f"--{k}:{v}" for k, v in d.items()) + "}"
     # Yapı sınıfları: şablon gövdesi bunları kullanır; şekil çizmez, var olan biçimi stile uydurur.

@@ -308,79 +308,7 @@ a.dugme.birincil { color: var(--vurgu-ustu); }
 .motion-kare > svg { position: absolute; right: 4px; top: 4px; color: var(--y3); }
 .motion-ad { font-size: 12px; color: var(--y2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Kapak sekmesi: yazı düzenleyici, canlı önizleme ve kırpma alanları (ADR 0027) */
 a.dugme { color: inherit; text-decoration: none; }
-.kapak-duzenle { border-bottom: 1px solid var(--cizgi); }
-.kapak-duzenle-ic { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px; align-items: flex-start; }
-.kapak-onizleme { position: relative; flex: 1 1 240px; overflow: hidden; background: #000; border-radius: 4px; outline: 1px solid var(--cizgi); }
-.kapak-onizleme iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; pointer-events: none; }
-.kapak-guvenli { position: absolute; pointer-events: none; border: 1px dashed rgba(255, 255, 255, 0.8); }
-.kapak-guvenli.dis { border-color: var(--hata); background: rgba(255, 107, 107, 0.3); }
-.kapak-guvenli i { position: absolute; left: 3px; top: 3px; font-style: normal; font-size: 10px; line-height: 1; color: #fff; text-shadow: 0 0 3px #000, 0 0 3px #000; white-space: nowrap; }
-.kapak-guvenli.dis i { top: auto; bottom: 3px; }
-
-/* Kapak: küçük boyut önizlemesi ve ölçüm notları (ADR 0027) */
-.kapak-kucuk { display: flex; gap: 8px; align-items: center; }
-.kapak-kucuk img { display: block; border: 1px solid var(--cizgi); border-radius: 3px; }
-.kapak-notlar { margin: 0; padding-left: 16px; color: var(--uyari, #e0a030); }
-
-/* Kapak iş akışı v2 (ADR 0052): adım şeridi, video ve kare seçimi, referanslar, öneri kartları, kutu çizimi, master prompt */
-.kapak-serit { display: flex; flex-wrap: wrap; gap: 2px; }
-.kapak-serit-adim { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; min-height: 26px; border: 0; border-radius: var(--r);
-  background: transparent; color: var(--y3); font: inherit; cursor: pointer; }
-.kapak-serit-adim:hover { color: var(--y1); background: var(--z3); }
-.kapak-serit-adim.tamam { color: var(--y2); }
-.kapak-serit-adim.sirada { color: var(--vurgu-acik); }
-.kapak-serit-adim[aria-current="step"] { background: var(--z3); color: var(--y1); box-shadow: inset 0 -2px 0 var(--vurgu); }
-.kapak-adim-no { display: inline-grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; font-size: 10px; font-weight: 700;
-  background: var(--z3); color: var(--y2); flex: none; }
-.tamam > .kapak-adim-no, .kapak-adim.tamam .kapak-adim-no { background: var(--vurgu-zemin); color: var(--vurgu); }
-.sirada > .kapak-adim-no, .kapak-adim.sirada .kapak-adim-no { background: var(--vurgu); color: var(--vurgu-ustu); }
-.kapak-adim { border-bottom: 1px solid var(--cizgi); }
-.kapak-adim-baslik { display: flex; align-items: center; gap: 6px; width: 100%; padding: 6px 8px; border: 0; background: transparent;
-  color: var(--y1); font: 600 13px var(--yazi); text-align: left; cursor: pointer; }
-.kapak-adim-baslik[aria-expanded="true"] { background: var(--z2, var(--z3)); }
-.kapak-adim-ic { display: flex; flex-direction: column; gap: 6px; padding: 6px 10px 10px; }
-.kapak-adim-ic textarea { width: 100%; resize: vertical; }
-.kapak-videolar { display: flex; flex-wrap: wrap; gap: 4px; }
-.kapak-video { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; min-height: 26px; border: 1px solid var(--cizgi2);
-  border-radius: var(--r); background: var(--z0); color: var(--y2); font: inherit; cursor: pointer; }
-.kapak-video.secili { border-color: var(--vurgu); color: var(--y1); background: var(--vurgu-zemin); }
-.kapak-an { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
-.kapak-an video { border-radius: 4px; background: #000; }
-.kapak-kareler { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-.kapak-kare { position: relative; padding: 0; border: 0; background: none; cursor: pointer; flex: 0 0 auto; border-radius: 4px; overflow: hidden;
-  outline: 1px solid var(--cizgi); }
-.kapak-kare.secili { outline: 2px solid var(--vurgu); }
-.kapak-kare img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.kapak-kare i { position: absolute; left: 2px; bottom: 2px; font: 600 10px var(--yazi); font-style: normal; color: var(--y1);
-  background: rgba(0, 0, 0, 0.6); padding: 0 3px; border-radius: 2px; }
-.kapak-referanslar { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-end; }
-.kapak-ref { margin: 0; width: 84px; display: flex; flex-direction: column; gap: 2px; }
-.kapak-ref img { width: 84px; height: 64px; object-fit: cover; border-radius: 3px; outline: 1px solid var(--cizgi); display: block; }
-.kapak-ref figcaption { display: flex; align-items: center; gap: 3px; font-size: 11px; color: var(--y2); }
-.kapak-brief { border: 1px solid var(--cizgi); border-radius: var(--r); padding: 4px 8px 6px; }
-.kapak-not { margin: 0 0 4px; padding: 4px 6px; border-left: 2px solid var(--vurgu); background: var(--vurgu-zemin); color: var(--y1); font-size: 12px; }
-.kapak-sahne > summary { cursor: pointer; color: var(--y2); font-size: 12px; padding: 2px 0; }
-.kapak-uret-satir { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.kapak-model { display: inline-flex; flex-direction: column; gap: 2px; }
-.kapak-model select { max-width: 240px; }
-.kapak-cizim { position: relative; flex: 1 1 240px; overflow: hidden; border-radius: 4px; outline: 1px solid var(--cizgi); cursor: crosshair;
-  touch-action: none; user-select: none; }
-.kapak-cizim img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
-.kapak-bolge { position: absolute; border: 2px solid var(--hata); background: rgba(255, 107, 107, 0.15); pointer-events: none; }
-.kapak-cipler { display: flex; flex-wrap: wrap; gap: 4px; }
-.kapak-cip { padding: 2px 8px; border: 1px solid var(--cizgi2); border-radius: 999px; background: var(--z0); color: var(--y2); font: 12px var(--yazi); cursor: pointer; }
-.kapak-cip:hover { border-color: var(--vurgu); color: var(--y1); }
-.kapak-master { width: 100%; font: 12px/1.45 var(--mono); resize: vertical; }
-.kapak-ayar { margin: 0; padding-left: 16px; font-size: 12px; }
-.kapak-ice-al { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--cizgi2); }
-.kapak-adaylar-baslik { margin: 0; padding: 8px 8px 0; font: 600 13px var(--yazi); color: var(--y2); }
-.kapak-izgara { display: grid; gap: 8px; padding: 8px; }
-.kapak-aday { margin: 0; outline: 1px solid var(--cizgi); border-radius: 4px; overflow: hidden; }
-.kapak-aday.secili { outline: 2px solid var(--vurgu); }
-.kapak-aday-gorsel { display: block; position: relative; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
-.kapak-aday-gorsel img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* Galeri (ADR 0039): stil, tema, fizik, ışık, karakter ve efekt seçenekleri tek ızgarada; yan yana karşılaştırma. */
 .galeri-izgara { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); }
@@ -429,6 +357,12 @@ a.dugme { color: inherit; text-decoration: none; }
 .seviye-ad { font-size: 12px; font-weight: 600; }
 .seviye-sayi { font-size: 10px; color: var(--y3); }
 .seviye-secici .segment > button[aria-checked="true"] .seviye-sayi { color: var(--vurgu-acik); }
+/* Swarm (ADR 0059): orkestratör motor ve modeli tek satır, ajan tavanı segment + sayı */
+.suru-secici { border: 0; margin: 0; padding: 0; min-width: 0; }
+.suru-orkestrator { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.suru-orkestrator > select, .suru-orkestrator > * { min-width: 0; }
+.suru-tavan { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--y2); }
+.suru-tavan input { width: 4.5em; }
 .ai-cekmece > summary { display: flex; align-items: center; gap: 6px; cursor: default; color: var(--y2); font-size: 12px; list-style: none; }
 .ai-cekmece > summary::-webkit-details-marker { display: none; }
 .ai-cekmece > summary::before { content: "▸"; color: var(--y3); font-size: 10px; }
@@ -498,6 +432,7 @@ a.dugme { color: inherit; text-decoration: none; }
 .ajan-kart.yedek .kart-nokta { background: var(--uyari); }
 .kart-durum { margin-left: auto; font-size: 10px; color: var(--y3); }
 .kart-rol { font-size: 11px; color: var(--y2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kart-model { font-size: 10px; color: var(--y3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .kart-alt { font-size: 10px; color: var(--y3); min-height: 13px; font-variant-numeric: tabular-nums; }
 .ekip-gunluk { max-height: 200px; min-height: 60px; border: 1px solid var(--cizgi); border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { .sekme-nabiz, .kapi.acik > i, .ajan-kart.calisiyor .kart-nokta { animation: none; } }
@@ -536,3 +471,8 @@ a.dugme { color: inherit; text-decoration: none; }
 .sv-donen { animation: sv-don 1s linear infinite; }
 @keyframes sv-don { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .sv-donen { animation: none; } }
+
+/* Timeline sağ tık menüsü (ADR 0061) */
+.baglam-menu { display: flex; flex-direction: column; min-width: 180px; padding: 4px; background: var(--z1); border: 1px solid var(--z4); border-radius: 6px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+.baglam-menu > button { text-align: left; padding: 6px 10px; border: 0; border-radius: 4px; background: transparent; color: var(--y1); cursor: default; }
+.baglam-menu > button:hover, .baglam-menu > button:focus-visible { background: var(--vurgu-zemin); outline: none; }

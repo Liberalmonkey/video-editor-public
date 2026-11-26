@@ -87,3 +87,15 @@ studios/*/styles/*/.disa/
 /work/hf-native/
 # Oturum devir notları: yerel
 /work/devam-*.md
+
+# Müzik öncülü ritim analizi önbelleği (ADR 0064): kod yeniden üretir
+/work/ritim-muzik/
+
+# Ölçüm çıktıları (ham koşu kopyaları; sonuçlar ADR tablolarına girer)
+/work/olcum/
+
+# Chrome ağ uyarı günlüğü: yerel
+/debug.log
+
+# Dikey kontak sayfaları ve WebM önbelleği (scripts/hf_dikey_kontak.py): kod yeniden üretir
+/work/hf-dikey/

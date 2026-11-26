@@ -113,6 +113,16 @@ def test_bozuk_oge_duser_gerisi_birlesir():
     assert set(dusen) == {"E2:kotu", "E2:m"}
 
 
+def test_idsiz_oge_duser_cokertmez():
+    """ADR 0059 (g4 koşusu): id'siz ve yanlış alanlı ses olayı KeyError ile birleştirmeyi çökertiyordu; öğe düşer."""
+    dusen = []
+    y = Yama(ekle=[{"tur": "ses", "iz": "A2", "olay": {"tur": "gecis"}, "baslangic": 4.8, "sure": 0.6},
+                   {"id": "s1", "iz": "A2", "tur": "ses", "olay": {"tur": "gecis"}, "bas": 1.0, "sure": 0.3}])
+    k = ekip_v3.yama_uygula(_k(), "E3", y, dusen, ekip_v3.Atama.uc())
+    assert "s1" in {c.id for c in k.klipler}
+    assert any("id'siz" in x for x in dusen), dusen
+
+
 def test_suresiz_ogeye_varsayilan_sure():
     # instagram/1 temiz-kurumsal koşusunda E2/E3 öğeleri `bas` ve `sure` yazmadı; hepsi düştü.
     from vedit import native_motion
@@ -287,6 +297,60 @@ def test_oto_duzelt_zoom_yogunlugu_ve_kisa_grafik():
     assert any("zoom/punch" in x for x in out)
 
 
+def test_oto_duzelt_art_arda_gecis_yonu():
+    """ADR 0058: üçüncü aynı geçişin yönü çevrilir (yumuşak geçiş kalır); efekt tekrarına kod dokunmaz."""
+    from vedit import kurgu_kalite
+    g = {"tur": "sil", "sure": 0.3, "yon": "sol"}
+    klipler = [{"id": f"v{i}", "iz": "V1", "tur": "video", "bas": i * 15.0, "sure": 15.0, "kaynak": "a", "gecis_giris": g,
+                "hazir": [{"ad": "zoom_in", "t": 1.0}]} for i in range(4)]
+    k = Kurgu.model_validate({"sekans": {"w": 1080, "h": 1920, "fps": 30}, "kaynaklar": {"a": {"yol": "inputs:a.mp4", "sure": 60}},
+                              "izler": [{"id": "V1", "tur": "video"}], "klipler": klipler})
+    out = ekip_v3.oto_duzelt(k)
+    by = {c.id: c for c in k.klipler}
+    assert by["v2"].gecis_giris.yon == "sag" and by["v2"].gecis_giris.tur == "sil", out
+    assert by["v3"].gecis_giris.yon == "sol"
+    assert all(len(c.hazir) == 1 for c in k.klipler), "efekt tekrarı sahibine kalır"
+    kodlar = [u["kod"] for u in kurgu_kalite.uyarilar(k)]
+    assert "GECIS_TEKRAR" not in kodlar and "EFEKT_TEKRAR" in kodlar
+
+
+def test_yeni_uyarilar_g6_sahibine_gider(monkeypatch):
+    """ADR 0058 G6 uyarı kapısı: G3'te olmayan uyarı klip id'siyle bu turun sahibine, sahipsizse bütün adaylara."""
+    monkeypatch.setattr(ekip_v3.kurgu, "etkin_tema", lambda p, t: "varsayilan")
+    monkeypatch.setattr(ekip_v3.tema_token, "oku", lambda t: None)
+    once, sonra = _k(), _k()
+    a = _atama5()
+    a.bagla(once)
+    eski = [{"kod": "YAZI_KISA", "bas": 0.0, "kanit": "v: eski", "oneri": "x"}]
+    yeni = eski + [{"kod": "MOTION_ART_ARDA", "bas": 1.0, "kanit": "g1 ve g2: aynı", "oneri": "değiştir", "klip": "g2"},
+                   {"kod": "GECIS_TEKRAR", "bas": 2.0, "kanit": "3 kez art arda aynı geçiş: sil/sol", "oneri": "çevir"}]
+    sonra = sonra.model_copy(update={"klipler": [*sonra.klipler,
+                                                 *[c for c in Kurgu.model_validate({"izler": [{"id": "V2", "tur": "video"}], "klipler": [
+                                                     {"id": "g2", "iz": "V2", "tur": "metin", "bas": 0.5, "sure": 1, "metin": "x"}]}).klipler]]})
+    monkeypatch.setattr(ekip_v3.kurgu_kalite, "uyarilar", lambda k, *x, **kw: yeni if k is sonra else eski)
+    out = ekip_v3.yeni_uyarilar(None, once, sonra, a, {"E1", "E2"})
+    sahip = a.sahip(sonra, sonra.klipler[-1])
+    assert any("MOTION_ART_ARDA" in m for m in out[sahip])
+    assert all(any("GECIS_TEKRAR" in m for m in out[s]) for s in ("E1", "E2")), "sahipsiz uyarı bütün adaylara"
+    assert not any("YAZI_KISA" in m for v in out.values() for m in v), "G3'te olan uyarı yeni sayılmaz"
+    assert ekip_v3.yeni_uyarilar(None, once, sonra, a, set()) == {}
+    hepsi = ekip_v3.yeni_uyarilar(None, None, sonra, a, {"E1"})
+    assert any("YAZI_KISA" in m for m in hepsi.get("E1", [])), "once None: G3'te kalan uyarılar da gider"
+
+
+def test_hizli_qc_dilimleri_ve_pafta_secimi():
+    """ADR 0058: hızlı modda QC zaman dilimine bölünür; her ajana yalnız kendi diliminin paftaları (sınırda bir kare payı)."""
+    k = _k()
+    kk = ekip_v3.hizli_kk(k)
+    assert [g.slot for g in kk] == ["K1", "K2"] and all(g.rol == "genel" for g in kk)
+    assert kk[0].aralik[0] == 0 and kk[1].aralik[1] == pytest.approx(10) and kk[0].aralik[1] == kk[1].aralik[0]
+    girdi = {"_paftalar": ["p1", "p2", "p3"], "_pafta_zaman": [(0.0, 16.5), (18.0, 34.5), (36.0, 52.5)]}
+    assert ekip_v3.pafta_sec(girdi, [0.0, 17.0]) == ["p1", "p2"], "sınıra 1,5 sn yakın pafta iki tarafa da gider"
+    assert ekip_v3.pafta_sec(girdi, [36.5, 53.0]) == ["p3"]
+    assert ekip_v3.pafta_sec(girdi, None) == ["p1", "p2", "p3"]
+    assert ekip_v3.pafta_sec({"_paftalar": ["p1"]}, [0, 5]) == ["p1"], "zaman yoksa hepsi"
+
+
 def test_slop_bulgulari_k9_bicimi(tmp_path):
     import json
     (tmp_path / "olcum.json").write_text(json.dumps({"slop": {"bulgular": [
@@ -309,3 +373,44 @@ def test_rol_metni_frontmatter_atar_ve_paketler_dosya_okutmaz(monkeypatch):
     metin = ekip_v3.plan_paketi(p, k, EkipAyar(), None, ekip_v3.varsayilan_dagitim("medium", k))
     assert "oku" not in metin.split("## Kullanıcı isteği")[0].replace("okuma", ""), "orkestratör rol dosyası okumaya yollanmaz"
     assert "(transkript yok)" in metin, "digest istemin içinde"
+
+
+def test_render_kurtar_bozuk_grafigi_dusurur_kurguyu_degil(monkeypatch):
+    """ADR 0059 (g4b): tek bozuk grafik G3'te bütün edit'i durdurmaz; düşer ve sahibine bulgu olur. V1 hatası durdurur."""
+    k = _k()
+    k = ekip_v3.yama_uygula(k, "E2", Yama(ekle=[{"id": "g1", "iz": "V2", "tur": "metin", "bas": 1, "sure": 1, "metin": "x"}]))
+    monkeypatch.setattr(ekip_v3.kurgu, "denetle", lambda p, kk: [f"{c.id}: bileşen param hatalı" for c in kk.klipler if c.id in ("g1", "v")
+                                                                  and (c.id == "g1" or kk.klipler[0].sure < 0)])
+    a = ekip_v3.Atama.uc()
+    br = {"dusen": []}
+    assert ekip_v3.render_kurtar(None, k, ["g1: bileşen param hatalı"], a, br) == []
+    assert "g1" not in {c.id for c in k.klipler} and br["dusen"] == ["E2:g1(render hatası)"]
+    assert br["render_bulgu"][0]["hedef"] == "E2"
+    k2 = _k()
+    assert ekip_v3.render_kurtar(None, k2, ["v: kaynak yok"], a, {"dusen": []}) == ["v: kaynak yok"], "V1 klibi düşürülmez"
+    assert ekip_v3.render_kurtar(None, k2, ["genel hata"], a, {"dusen": []}) == ["genel hata"], "klipsiz hata durdurur"
+
+
+def test_gecis_kisa_yazimi_kabul_edilir():
+    """ADR 0059 (g4c): `gecis_giris: "sil"` bütün klip güncellemesini düşürüp V1'i çakıştırıyordu."""
+    dusen = []
+    y = Yama(guncelle=[{"id": "v", "sure": 8, "gecis_giris": "sil"}])
+    k = ekip_v3.yama_uygula(_k(), "E1", y, dusen, ekip_v3.Atama.uc())
+    v = next(c for c in k.klipler if c.id == "v")
+    assert v.sure == 8 and v.gecis_giris.tur == "sil" and not dusen
+
+
+def test_render_kurtar_yapisal_esler_konusma_sesini_korur(monkeypatch):
+    """agy incelemesi (ADR 0059): klip id'si hata metninin başından ya da çakışma satırından alınır; serbest metindeki
+    `hook` gibi değer adı aynı adlı sağlıklı klibi düşürmez; A1 konuşma sesi kurgu katmanıdır, düşmez."""
+    k = _k()
+    k = ekip_v3.yama_uygula(k, "E2", Yama(ekle=[{"id": "g1", "iz": "V2", "tur": "metin", "bas": 1, "sure": 1, "metin": "x"},
+                                                {"id": "hook", "iz": "V2", "tur": "metin", "bas": 3, "sure": 1, "metin": "y"}]))
+    monkeypatch.setattr(ekip_v3.kurgu, "denetle", lambda p, kk: [])
+    br = {"dusen": []}
+    assert ekip_v3.render_kurtar(None, k, ["g1: işaret türü geçerli değil (geçerli: shot, hook, cta)"], ekip_v3.Atama.uc(), br) == []
+    assert {c.id for c in k.klipler} >= {"hook"} and "g1" not in {c.id for c in k.klipler}
+    assert ekip_v3._hata_klipleri("V2: g1 ile hook çakışıyor (1.5 sn)", {"g1", "hook"}) == ["g1", "hook"]
+    k2 = _k()
+    k2.klipler.append(k2.klipler[0].model_copy(update={"id": "a1", "iz": "A1", "tur": "ses"}))
+    assert ekip_v3.render_kurtar(None, k2, ["a1: kaynak yok"], ekip_v3.Atama.uc(), {"dusen": []}) == ["a1: kaynak yok"]

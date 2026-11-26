@@ -16,6 +16,6 @@ brief ─► (plan_shoot) ─► ingest ─► transcribe ─► digest ─► [
 - **sfx:** `vedit sfx cues` (kural) + `vedit sfx suggest` (transkript olayları) → editor onaylar → `resolve`.
 - **mix:** müzik `library/music/` ya da kullanıcının parçası, `duck: true`.
 - **critique:** yalnız `qa/sheet.jpg` + `qa/report.json` + brief; aralık için `vedit sheet renders/preview.mp4 --start 6 --dur 4`.
-- **export:** UGC'de 4:5 + 16:9 varyant, kapak adayları.
+- **export:** UGC'de 4:5 + 16:9 varyant.
 
 Tipik 45 sn UGC: ingest+transcribe 1–3 dk, cut+audio+captions < 1 dk, preview 2–3 dk, final 3–5 dk.

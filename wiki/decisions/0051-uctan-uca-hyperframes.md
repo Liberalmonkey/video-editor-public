@@ -4,13 +4,15 @@ title: "Uçtan uca HyperFrames: tek derleyici, çift motor geçişi, sürekli g�
 status: accepted
 tags: [adr, renderer, hyperframes, remotion, studio, guncelleme]
 created: 2026-11-22
-updated: 2026-11-22
+updated: 2026-11-24
 sources: ["[[2026-10-20-hyperframes]]"]
 supersedes:
 superseded_by:
 ---
 
 # ADR 0051: Uçtan uca HyperFrames
+
+> [!note] Güncellendi 2026-11-24: kapak işi kaldırıldı ([[0056-kapak-kaldirildi]]); Playwright (`pano`) pano ve tek kare görsel render'ında kalır.
 
 ## Bağlam
 ADR 0050 karma geçişi yaptı: yeni grafikler HyperFrames kompozisyonu oldu, ama önizleme, taslak ve final render, altyazı, sahneler, hazır efekt, geçişler ve native bileşenler Remotion'da kaldı.

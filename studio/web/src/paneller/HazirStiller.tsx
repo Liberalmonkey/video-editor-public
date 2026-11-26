@@ -31,7 +31,7 @@ interface KatalogYanit {
 }
 
 const TEMPO = { yavas: "yavaş", orta: "orta", hizli: "hızlı" } as const;
-const RENK_SIRA = ["vurgu", "ikincil", "zemin", "yazi", "soluk"];
+export const RENK_SIRA = ["vurgu", "ikincil", "zemin", "yazi", "soluk"];
 
 export const HazirStiller: React.FC<{
   studyo: string;

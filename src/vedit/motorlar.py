@@ -333,12 +333,15 @@ YALIN_KOK = Path(os.environ.get("LOCALAPPDATA") or Path.home()) / "vedit" / "aja
 
 
 def yalin_komut(model: str | None, seviye: str | None = None, *, sistem: str | None = None, araclar: str = "",
-                dizinler: tuple = ()) -> list[str]:
-    """Ekip çağrısı için yalın Claude komutu. İstem stdin'den okunur; `araclar` boşsa hiç araç yoktur (QC için "Read")."""
+                dizinler: tuple = (), akis_girdi: bool = False) -> list[str]:
+    """Ekip çağrısı için yalın Claude komutu. İstem stdin'den okunur; `araclar` boşsa hiç araç yoktur (QC için "Read").
+
+    `akis_girdi`: stdin tek bir stream-json kullanıcı mesajıdır; görseller (QC paftaları) istemle aynı turda gider (ADR 0058)."""
     b = bas("claude")
     if not b:
         raise SystemExit(f"{MOTORLAR['claude'].ad} kurulu değil. {MOTORLAR['claude'].kurulum}")
-    return [*b, "-p", *(["--model", model] if model else []), *seviye_arg("claude", seviye),
+    return [*b, "-p", *(["--input-format", "stream-json"] if akis_girdi else []), *(["--model", model] if model else []),
+            *seviye_arg("claude", seviye),
             "--output-format", "stream-json", "--verbose", "--tools", araclar,
             "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--disable-slash-commands",
             "--setting-sources", "", "--no-session-persistence",

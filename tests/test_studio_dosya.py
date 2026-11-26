@@ -99,14 +99,37 @@ def test_buyuk_silme_kaliciya_gitmez(ortam, monkeypatch):
 def test_kilitli_ve_yuvadaki_varlik(ortam):
     c, t, silinen = ortam
     k = "/api/kutuphane/muzik/"
-    assert c.delete(k + "kilitli", headers=ORIGIN).status_code == 403
-    assert c.delete(k + "kilitli", params={"zorla": True}, headers=ORIGIN).status_code == 403, "zorla kilidi aşamaz"
+    assert c.delete(k + "kilitli", headers=ORIGIN).status_code == 423
+    assert c.delete(k + "kilitli", params={"zorla": True}, headers=ORIGIN).status_code == 423, "zorla kilidi aşamaz"
     r = c.delete(k + "yuva", headers=ORIGIN)
     assert r.status_code == 409 and "*.zoom_in" in r.json()["detail"]
     assert c.delete(k + "yuva", params={"zorla": True}, headers=ORIGIN).status_code == 200
     assert c.delete(k + "m", headers=ORIGIN).status_code == 200
     kalan = json.loads((t / "library/music/manifest.json").read_text())
     assert [e["id"] for e in kalan["entries"]] == ["kilitli"] and kalan["_note"] == "n" and len(silinen) == 2
+    # ADR 0061: onaylı yol, kilit kaldırılır ve silinir
+    assert c.delete(k + "kilitli", params={"kilit_ac": True}, headers=ORIGIN).status_code == 200
+    assert "kilitli" not in json.loads((t / "library/kit.json").read_text())["locked"]
+
+
+def test_toplu_sil_kilit_ve_kasa(ortam):
+    c, t, silinen = ortam
+    r = c.post("/api/kutuphane/toplu-sil", json={"tur": "muzik", "idler": ["m", "kilitli", "yuva", "yok"]}, headers=ORIGIN).json()
+    assert r["silinen"] == ["m"] and {a["id"]: a["durum"] for a in r["atlanan"]} == {"kilitli": 423, "yuva": 409, "yok": 404}
+    # Kilit aç / kilitle ucu: yuvadaki kimlik boşalır
+    r = c.put("/api/kit/kilit", json={"id": "yuva", "kilitli": False}, headers=ORIGIN).json()
+    assert r["bos_yuva"] == ["*.zoom_in"]
+    assert c.put("/api/kit/kilit", json={"id": "m2", "kilitli": True}, headers=ORIGIN).status_code == 200
+    assert "m2" in json.loads((t / "library/kit.json").read_text())["locked"]
+    # Kasa listesi, silme ve galeri gizleme
+    (t / "library/kasa/a").mkdir(parents=True)
+    (t / "library/kasa/a/a.webm").write_bytes(b"w")
+    (t / "library/kasa/manifest.json").write_text(json.dumps({"entries": [{"id": "a", "title": "A", "tur": "motion", "file": "library/kasa/a/a.webm", "sure": 1}]}))
+    assert [e["id"] for e in c.get("/api/kutuphane").json()["kasa"]] == ["a"]
+    assert c.delete("/api/kutuphane/kasa/a", headers=ORIGIN).status_code == 200
+    assert c.get("/api/kutuphane").json()["kasa"] == [] and not (t / "library/kasa/a").exists()
+    assert c.post("/api/galeri/gizle", json={"anahtar": "fizik:domino"}, headers=ORIGIN).json()["gizli"] == ["fizik:domino"]
+    assert c.post("/api/galeri/gizle", json={"anahtar": "../x"}, headers=ORIGIN).status_code == 422
 
 
 def test_kullanimdaki_varlik_uyarilir(ortam):
@@ -185,63 +208,11 @@ def test_gorsel_kucuk_resmi_dosyanin_kendisi(ortam):
     assert r.status_code == 200 and r.content == b"\xff\xd8ham"
 
 
-def test_kapak_is_beyaz_liste():
-    A = lambda **k: isler.arguman(isler.Istek(komut="kapak", studyo="instagram", ad="x", **k))
-    assert A() == ["kapak", "instagram/x", "--adet", "1"]
-    assert A(adet=3, platform="youtube", metin="-a|b", yeni_brief=True) == \
-        ["kapak", "instagram/x", "--adet", "3", "--platform", "youtube", "--metin=-a|b", "--yeni-brief"]
-    # yazı düzenleme: aday sayısı ve prompt geçmez, boş metin ve boş vurgu geçer
-    assert A(duzenle=2, kopya=True, platform="youtube", metin="|", vurgu="", yerlesim="alt", olcek=1.2, karart=True, kutu=False, prompt="x") == \
-        ["kapak", "instagram/x", "--duzenle", "2", "--kopya", "--platform", "youtube", "--yerlesim", "alt", "--olcek", "1.2",
-         "--karart", "--no-kutu", "--metin=|", "--vurgu="]
-    assert A(adet=2, kalip="dev-yazi", stil="kirmizi-kutu", ek="4K!", elestir=True) == \
-        ["kapak", "instagram/x", "--adet", "2", "--elestir", "--kalip", "dev-yazi", "--stil", "kirmizi-kutu", "--ek=4K!"]
-    assert A(adet=0, elestir=True) == ["kapak", "instagram/x", "--adet", "0", "--elestir"]
-    assert A(duzenle=1, kalip="alt-bant", ek="") == ["kapak", "instagram/x", "--duzenle", "1", "--kalip", "alt-bant", "--ek="]
-    for kotu in (dict(adet=6), dict(platform="reels"), dict(metin="a\nb"), dict(prompt="x" * 801), dict(duzenle=0),
-                 dict(kalip="a b"), dict(stil="../x"), dict(ek="x" * 41),
-                 dict(yerlesim="orta"), dict(olcek=3), dict(vurgu="x" * 41), dict(duzenle=1, vurgu="a\0")):
-        with pytest.raises(Exception) as e:
-            A(**kotu)
-        assert getattr(e.value, "status_code", 0) == 400, kotu
-
-
-def test_kapak_v2_is_beyaz_liste(tmp_path, monkeypatch):
-    """ADR 0052: video, model, fikir, görsel düzeltme ve dış görsel beyaz listeden geçer."""
-    from vedit import kapak
-    from vedit.studio import ajan
-    monkeypatch.setattr(paths, "INPUTS", tmp_path / "in")
-    monkeypatch.setattr(paths, "OUTPUTS", tmp_path / "out")
-    monkeypatch.setattr(ajan, "_durum", lambda: {"antigravity": {"kurulu": True, "modeller": [{"id": "gemini-4-argon-medium"}, {"id": "g-flash"}]}})
-    p = ortak.proje("instagram", "x")
-    p.girdi.mkdir(parents=True)
-    (p.girdi / "1.mp4").write_bytes(b"v")
-    disari = kapak.klasor(p, "instagram") / "disari"
-    disari.mkdir(parents=True)
-    (disari / "dis.png").write_bytes(b"g")
-    A = lambda **k: isler.arguman(isler.Istek(komut="kapak", studyo="instagram", ad="x", **k))
-    assert A(gelistir="Şaşkın yüz, parlak laptop", adet=2, model="gemini-4-argon-medium", kapak_video="inputs:1.mp4", kare=7) == \
-        ["kapak", "instagram/x", "--gelistir=Şaşkın yüz, parlak laptop", "--adet", "2", "--kare", "7",
-         "--video=inputs:1.mp4", "--model", "gemini-4-argon-medium"]
-    assert A(adet=2, oneri=True, gorsel_model="g-flash", kapak_video="inputs:1.mp4") == \
-        ["kapak", "instagram/x", "--adet", "2", "--oneri", "--video=inputs:1.mp4", "--gorsel-model", "g-flash"]
-    assert A(gorsel_duzelt=3, istek_metni="arka planı mavi yap", bolge=[10, 20, 50.5, 60], yalniz_bolge=False, gorsel_model="g-flash") == \
-        ["kapak", "instagram/x", "--gorsel-duzelt", "3", "--istek=arka planı mavi yap", "--gorsel-model", "g-flash",
-         "--bolge=10.00,20.00,50.50,60.00", "--tum-gorsel"]
-    assert A(gorsel_duzelt=3, istek_metni="ifade") == ["kapak", "instagram/x", "--gorsel-duzelt", "3", "--istek=ifade"]
-    ice = A(ice_al="dis.png", platform="instagram", yazili=True)
-    assert ice[2].startswith("--ice-al=") and ice[2].endswith("dis.png") and ice[3:] == ["--platform", "instagram", "--yazili"]
-    # düzenleme zemini yeniden üretmez: video ve model geçmez
-    assert A(duzenle=1, kapak_video="inputs:1.mp4", model="g-flash") == ["kapak", "instagram/x", "--duzenle", "1"]
-    for kotu in (dict(model="gpt-yok"), dict(gorsel_model="claude"), dict(kapak_video="inputs:../../x.mp4"),
-                 dict(kapak_video="c:/x.mp4"), dict(gelistir="a\nb"), dict(gelistir="x" * 801),
-                 dict(gorsel_duzelt=1, istek_metni=""), dict(gorsel_duzelt=1, istek_metni="x", bolge=[1, 2, 3]),
-                 dict(gorsel_duzelt=1, istek_metni="x", bolge=[1, 2, 3, 101]), dict(gorsel_duzelt=0, istek_metni="x"),
-                 dict(ice_al="../dis.png", platform="instagram"), dict(ice_al="yok.png", platform="instagram"),
-                 dict(ice_al="dis.png"), dict(kare=41)):
-        with pytest.raises(Exception) as e:
-            A(**kotu)
-        assert getattr(e.value, "status_code", 0) == 400, kotu
+def test_kapak_komutu_kaldirildi():
+    """ADR 0056: kapak işi kuyruğa giremez."""
+    with pytest.raises(Exception) as e:
+        isler.arguman(isler.Istek(komut="kapak", studyo="instagram", ad="x"))
+    assert getattr(e.value, "status_code", 0) == 400
 
 
 def test_ai_edit_ve_stil_beyaz_liste(monkeypatch):

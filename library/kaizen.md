@@ -21,3 +21,6 @@ Her teslimde `vedit kaizen` bir satır ekler: tarih, proje, araç süresi, rende
 - 2026-11-08 · kilavuz-demo · araç 3.9 dk · taslak 0 · final 1 · en yavaş: final 3.8 dk · kes 0.1 dk · kurgu-al 0.0 dk
 - 2026-11-13 · avatar-reel · araç 35.9 dk · taslak 1 · final 2 · en yavaş: final 13.5 dk · ai-edit 9.4 dk · kapak 6.3 dk
 - 2026-11-19 · 1 · araç 178.0 dk · taslak 0 · final 0 · en yavaş: ai-edit 178.0 dk · kurgu-denetle 0.0 dk
+- 2026-11-25 · arvelior-swarm · araç 56.9 dk · taslak 11 · final 0 · en yavaş: ai-edit 34.8 dk · taslak 21.4 dk · denetim 0.7 dk · ekip en yavaş kapı: G1 1.8 dk
+  - Sonraki iyileştirme: G6 düzeltmesi tam yamayı yeniden yazıyor (~90 sn); yalnız değişen öğeyi döndüren fark yaması denenecek (ADR 0058).
+  - Swarm (ADR 0059, 2026-11-25): medium 778 → 692 sn. Sonraki iyileştirme: G6 (198 sn) ve G2 (155 sn); E1 çizelgeyi çok değiştirince grafik ve ses editörlerinin yeniden çapalaması iki tur sürüyor.

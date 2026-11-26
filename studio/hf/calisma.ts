@@ -108,6 +108,7 @@ const kur = () => {
     el.style.transform = g?.transform ?? "";
     el.style.filter = g?.filter ?? "";
     el.style.clipPath = g?.clipPath ?? "";
+    el.style.opacity = g?.opacity ?? "";
     el.style.setProperty("mask-image", g?.mask || "");
     el.style.setProperty("-webkit-mask-image", g?.mask || "");
     const html = g?.katman ?? "";

@@ -1,14 +1,17 @@
 ---
 type: decision
 title: "Seviyeli ekip ve orkestratör: 2-10 editör, 1-5 kalite kontrol, kapılı paralel akış, kural güvencesi"
-status: accepted
+status: superseded
 tags: [adr, ai-edit, ajan, ekip, orkestrator, kural, studio]
 created: 2026-11-22
-updated: 2026-11-23
+updated: 2026-11-25
 sources: ["[[0048-ekip-motoru-v2]]", "[[0047-kural-deposu]]", "[[0044-ekip-motoru]]"]
 ---
 
 # ADR 0053: Seviyeli ekip ve orkestratör
+
+> [!note] Yerini aldı 2026-11-25
+> Sabit seviye tablosu (2-10 editör, 1-5 QC) [[0059-swarm-edit]] ile ajan tavanına döndü: sayıyı, dağılımı ve her ajanın modelini orkestratör seçer. Kapılı akış, kural güvencesi ve deterministik parçalar aynen geçerli.
 
 > [!note] [[0048-ekip-motoru-v2]]'nin yerini alır. Sabit 3+3 ekip, eski turlu motor ([[0044-ekip-motoru]], `--ekip-v1`), Bölüş ve Tur seçenekleri kaldırıldı.
 

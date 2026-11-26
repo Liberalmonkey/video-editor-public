@@ -6,6 +6,7 @@ geçmeyen birleşmez. Seviye editör ve kalite kontrol sayısını sabitler; iş
 
 from __future__ import annotations
 
+import math
 import re
 from typing import Annotated, Any, Literal
 
@@ -15,6 +16,9 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, field_valida
 
 SEVIYE: dict[str, tuple[int, int]] = {"low": (2, 1), "medium": (4, 2), "high": (6, 3), "xhigh": (8, 4), "max": (10, 5)}
 SeviyeAd = Literal["low", "medium", "high", "xhigh", "max"]
+# Swarm (ADR 0059): seviye artık ajan tavanıdır (editör + kalite kontrol); dağılımı ve modeli orkestratör seçer.
+EN_COK: dict[str, int] = {"low": 3, "medium": 6, "high": 9, "xhigh": 12, "max": 15}
+EDITOR_EN_COK, KK_EN_COK = 10, 5
 
 KATMANLAR = ("kurgu", "grafik", "sfx", "muzik", "stil")
 Katman = Literal["kurgu", "grafik", "sfx", "muzik", "stil"]
@@ -103,6 +107,9 @@ class EkipAyar(_M):
     stil: str | None = None
     # ADR 0054: low seviye, orkestratör çağrısı yok (varsayılan dağıtım, deterministik kural kapısı, triyajsız), render yalnız gerekince
     hizli: bool = False
+    # ADR 0059: swarm ajan tavanı (editör + kalite kontrol); yoksa seviyeden (EN_COK)
+    # En küçük geçerli ekip 3'tür: E1 (yalnız kurgu) + kalan katmanlar için bir editör + bir QC.
+    en_cok: int | None = Field(default=None, ge=3, le=EDITOR_EN_COK + KK_EN_COK)
 
     @model_validator(mode="before")
     @classmethod
@@ -153,19 +160,27 @@ class EkipAyar(_M):
     def slot(self, s: str) -> Slot:
         return self.ezme.get(s) or self.gruplar[grup(s)]
 
+    def tavan(self) -> int:
+        return self.en_cok or EN_COK[self.ekip_seviye]
+
     def es(self) -> int:
-        return self.eszamanlilik or len(self.editorler())
+        # Swarm'da editör sayısını plan belirler; havuz tavana göre açılır, bellek sınırı ajan_eszamanlilik'te.
+        return self.eszamanlilik or (len(self.editorler()) if self.hizli else min(EDITOR_EN_COK, self.tavan()))
 
 
 # ---------------------------------------------------------------- orkestratör: plan, kapı, triyaj
 
 class Gorev(_M):
-    """Editör görev kartı: hangi katmanlar, hangi zaman aralığı (taban zaman çizelgesinde), odak ve zorunlu kurallar."""
+    """Editör görev kartı: hangi katmanlar, hangi zaman aralığı (taban zaman çizelgesinde), odak ve zorunlu kurallar.
+    Swarm (ADR 0059): orkestratör kartın motorunu, modelini ve seviyesini seçebilir; boşsa grup ayarı."""
     slot: str = Field(pattern=r"^E(10|[1-9])$")
     katmanlar: list[Katman] = Field(min_length=1)
     aralik: list[float] | None = Field(default=None, min_length=2, max_length=2)
     odak: Kirp(600) = ""
     kurallar: list[str] = []  # kural id (K0012); P0'ları vedit kendisi ekler
+    motor: Motor | None = None
+    model: str | None = None
+    seviye: str | None = None
 
     @field_validator("kurallar")
     @classmethod
@@ -178,6 +193,9 @@ class KkGorev(_M):
     rol: KkRol
     aralik: list[float] | None = Field(default=None, min_length=2, max_length=2)
     odak: Kirp(600) = ""
+    motor: Motor | None = None
+    model: str | None = None
+    seviye: str | None = None
 
 
 class Plan(_M):
@@ -185,6 +203,54 @@ class Plan(_M):
     gorevler: list[Gorev] = []
     kk_gorevler: list[KkGorev] = []
     gerekce: Kirp(1500) = ""
+    # ADR 0064: G0.5 yaratıcı brif plan çağrısıyla gelir. Sözlük kalır, `YaraticiBrif` ayrıca doğrular: bozuk brif planı düşürmez.
+    yaratici_brif: dict[str, Any] | None = None
+
+
+# ---------------------------------------------------------------- G0.5 yaratıcı brif (ADR 0064)
+
+def _ilk(n: int):
+    """Liste en çok n öğe; fazlası kırpılır, reddedilmez (Kirp ile aynı gerekçe)."""
+    return BeforeValidator(lambda v: v[:n] if isinstance(v, list) else v)
+
+
+class EnerjiDilimi(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    aralik: list[float] = Field(min_length=2, max_length=2)
+    seviye: int = Field(ge=1, le=5)
+    neden: Kirp(200) = ""
+
+    @field_validator("aralik")
+    @classmethod
+    def _sira(cls, v):
+        if v[0] < 0 or v[1] <= v[0]:
+            raise ValueError("aralik [bas, son], 0 <= bas < son")
+        return v
+
+
+class ImzaAni(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    t: float | None = Field(default=None, ge=0)  # sekans saniyesi, yaklaşık; çapa söz
+    soz: Kirp(160) = ""
+    ne: Kirp(300)
+
+
+class YaraticiBrif(BaseModel):
+    """Videoya özgü yaratıcı yön (`work/edit/yaratici-brif.json`). Bütün editörler ve QC bu brife göre karar verir.
+
+    WHY: bkz. wiki/decisions/0064-yaratici-yon.md. Ajan metni veridir ama brif yaratıcı bir taslaktır: bilinmeyen alan ve
+    fazla öğe brifi düşürmez; yalnız tez boşsa ya da enerji seviyesi aralık dışındaysa brif geçersizdir."""
+    model_config = ConfigDict(extra="ignore")
+    tez: Kirp(300) = Field(min_length=3)
+    metafor: Kirp(300) = ""
+    iplik: Kirp(200) = ""
+    enerji: Annotated[list[EnerjiDilimi], _ilk(8)] = []
+    imza_anlari: Annotated[list[ImzaAni], _ilk(3)] = []
+    ses: Kirp(400) = ""
+    riskler: Annotated[list[Kirp(200)], _ilk(3)] = []
+    yasak: Annotated[list[Kirp(200)], _ilk(5)] = []
+    istek: str | None = None  # vedit: brifin yazıldığı kullanıcı isteği; istek değişince brif yenilenir
+    kilit: bool = False       # kullanıcı elle yazdıysa vedit üzerine yazmaz
 
 
 class KapiKarari(_M):
@@ -222,7 +288,7 @@ class Bulgu(_M):
     onem: Literal["P0", "P1", "P2"]
     zaman: list[float] = Field(min_length=2, max_length=2)
     katman: str
-    kategori: Literal["stil", "okunurluk", "ritim", "ses", "teknik", "tutarlilik"]
+    kategori: Literal["stil", "okunurluk", "ritim", "ses", "teknik", "tutarlilik", "etki"]  # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
     kanit: str  # açılmış kare dosyası; dosya yoksa bulgu düşer
     sorun: str
     beklenen: str  # ölçülebilir kabul ölçütü
@@ -266,8 +332,30 @@ class Yama(_M):
     pano: list[Mesaj] = []
     kural_uyum: list[KuralUyum] = []  # ADR 0053: kartın zorunlu kurallarına nasıl uyduğu
     rapor: Kirp(1500) = ""
+    oz_denetim: Kirp(600) = ""  # WHY: bkz. wiki/decisions/0064-yaratici-yon.md
+
+
+def _uretim_puani_temizle(v: Any) -> dict[str, int] | None:
+    """Üretim puanını 1-5 tam sayılarına kırpar; bilinmeyen anahtar kalır, bozuk değer ya da sözlük dışı girdi None olur.
+
+    WHY: bkz. wiki/decisions/0064-yaratici-yon.md."""
+    if not isinstance(v, dict):
+        return None
+    temiz: dict[str, int] = {}
+    for k, val in v.items():
+        if not isinstance(k, str) or isinstance(val, bool):
+            continue
+        try:
+            f = float(val)
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(f):
+            continue
+        temiz[k] = max(1, min(5, int(round(f))))
+    return temiz or None
 
 
 class KontrolCikti(_M):
     bulgular: list[Bulgu] = []
     brif: str = ""  # editöre profesyonel düzeltme brifi (markdown)
+    uretim_puani: Annotated[dict[str, int] | None, BeforeValidator(_uretim_puani_temizle)] = None  # WHY: bkz. wiki/decisions/0064-yaratici-yon.md

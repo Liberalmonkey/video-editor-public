@@ -16,9 +16,8 @@ KAPSAM = [("studio/remotion", ("*.ts", "*.tsx")), ("library/motion/custom", ("*.
 
 
 def _desen() -> re.Pattern:
-    fontlar = [k for k in json.loads((paths.FONTS_DIR / "fonts.json").read_text(encoding="utf-8")) if not k.startswith("_")]
-    adlar = "|".join(re.escape(f) for f in fontlar)
-    return re.compile(rf"#[0-9A-Fa-f]{{6}}\b|['\"]({adlar})['\"]")
+    from vedit import tema_denetim
+    return tema_denetim.sabit_desen()  # üretilen varlık denetimiyle aynı font listesi (ADR 0058)
 
 
 def bulgular() -> dict[str, int]:

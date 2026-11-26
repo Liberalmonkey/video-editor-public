@@ -1,6 +1,6 @@
 import { Lock, Pause, Play, Plus, Trash2, Upload } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { ApiHata, istek, sor, sureYaz, yukle } from "../api";
+import { ApiHata, istek, kutuphaneAl, sor, sureYaz, yukle } from "../api";
 import { useDepo } from "../depo";
 import { Bos, Diyalog, DosyaSec, Dugme, IkonDugme, Iskelet, useDinle } from "../ortak";
 import type { KaynakOge } from "../zaman/depo";
@@ -119,8 +119,9 @@ export const KutuphanePaneli: React.FC = () => {
   const [bekleyen, setBekleyen] = useState<File[]>([]);
   const { calan, cal } = useDinle();
 
-  const al = async () => { try { setVeri(await istek("/api/kutuphane")); } catch (e) { hata(e); } };
-  useEffect(() => { al(); }, []);
+  // İlk açılış oturum önbelleğinden; sonraki her çağrı (yükleme, silme, kilit) sunucudan tazeler.
+  const al = async (yenile: unknown = true) => { try { setVeri(await kutuphaneAl(!!yenile)); } catch (e) { hata(e); } };
+  useEffect(() => { al(false); }, []);
   useEffect(() => { setSecili(null); setKategori(""); setAra(""); }, [sekme]);
 
   // Kendi verisini getiren sekmeler (galeri, grafik) ve kit /api/kutuphane listesinde yoktur.
@@ -138,21 +139,35 @@ export const KutuphanePaneli: React.FC = () => {
     if (sekme === "pano") goster({ tur: "pano", url: e.url, ad: e.title });
   };
 
-  const sil = async (e: any, zorla = false): Promise<void> => {
-    if (!zorla && !(await onayla({ baslik: "Kütüphaneden sil", onay: "Sil", tehlike: true, metin: `${e.id}\n\nDosya geri dönüşüm kutusuna gider, manifest kaydı kaldırılır.` }))) return;
+  // WHY: bkz. wiki/decisions/0061-kasa-ve-kesif.md. Kilitli varlık çıkmaz 403 yerine onaylı "Kilidi kaldır ve sil" yolu (423).
+  const sil = async (e: any, zorla = false, tur: string = sekme, kilitAc = false): Promise<void> => {
+    if (!zorla && !kilitAc && !(await onayla({ baslik: "Kütüphaneden sil", onay: "Sil", tehlike: true, metin: `${e.id}\n\nDosya geri dönüşüm kutusuna gider, manifest kaydı kaldırılır.` }))) return;
     try {
-      const r = await istek(`/api/kutuphane/${sekme}/${encodeURIComponent(e.id)}?${sor({ zorla: zorla || undefined })}`, { method: "DELETE" });
+      const r = await istek(`/api/kutuphane/${tur}/${encodeURIComponent(e.id)}?${sor({ zorla: zorla || undefined, kilit_ac: kilitAc || undefined })}`, { method: "DELETE" });
       bildir(r.mesaj);
       setSecili(null);
       await al();
     } catch (er) {
-      if (er instanceof ApiHata && er.durum === 409) {
+      if (er instanceof ApiHata && er.durum === 423) {
+        if (await onayla({ baslik: "Kilitli varlık", onay: "Kilidi kaldır ve sil", tehlike: true, metin: `${e.id}\n\nBu varlık kit.json'da kilitli (ADR 0012). Kilidi kaldırılır, atandığı yuvalar boşalır, sonra silinir.` })) return sil(e, zorla, tur, true);
+      } else if (er instanceof ApiHata && er.durum === 409) {
         const d = JSON.parse(er.message);
         const metin = [d.yuva.length && `Kit yuvası: ${d.yuva.join(", ")}`, d.projeler.length && `Kullanan projeler: ${d.projeler.join(", ")}`].filter(Boolean).join("\n");
-        if (await onayla({ baslik: "Bu varlık kullanımda", onay: "Yine de sil", tehlike: true, metin: `${e.id}\n\n${metin}\n\nSilinirse bu projeler render'da dosyayı bulamaz.` })) return sil(e, true);
+        if (await onayla({ baslik: "Bu varlık kullanımda", onay: "Yine de sil", tehlike: true, metin: `${e.id}\n\n${metin}\n\nSilinirse bu projeler render'da dosyayı bulamaz.` })) return sil(e, true, tur, kilitAc);
       } else hata(er);
     }
   };
+
+  const topluSil = async (tur: string, idler: string[]) => {
+    if (!(await onayla({ baslik: `${idler.length} kaydı sil`, onay: "Sil", tehlike: true, metin: "Dosyalar geri dönüşüm kutusuna gider. Kilitli ya da kullanımdaki kayıtlar atlanır; onları tek tek silebilirsin." }))) return;
+    try {
+      const r = await istek("/api/kutuphane/toplu-sil", { method: "POST", json: { tur, idler } });
+      bildir(r.mesaj);
+      await al();
+    } catch (er) { hata(er); }
+  };
+  // Timeline'dan kasaya kayıt: liste tazelensin (ADR 0061)
+  useEffect(() => { const f = () => { al(); }; window.addEventListener("studio-kutuphane-tazele", f); return () => window.removeEventListener("studio-kutuphane-tazele", f); }, []);
 
   const yukleme = !!KABUL[sekme];
   const ses = sekme === "sfx" || sekme === "muzik";
@@ -170,7 +185,7 @@ export const KutuphanePaneli: React.FC = () => {
       </div>
       {sekme === "galeri" ? <GaleriPaneli />
         : sekme === "grafik" ? <div className="icerik"><GrafikPaneli /></div>
-        : sekme === "motion" && veri ? <MotionPaneli kayitlar={veri.motion} temalar={veri.temalar ?? []} tazele={al} sil={(e) => sil(e)} yukle={setBekleyen} />
+        : sekme === "motion" && veri ? <MotionPaneli kayitlar={veri.motion} kasa={veri.kasa ?? []} temalar={veri.temalar ?? []} tazele={al} sil={(e, tur) => sil(e, false, tur ?? "motion")} topluSil={topluSil} yukle={setBekleyen} />
         : <>
       {sekme !== "kit" && (
         <div className="arac">
@@ -222,8 +237,8 @@ export const KutuphanePaneli: React.FC = () => {
             </div>
           )}
           {sekme !== "pano" && (
-            <Dugme tur="tehlike" disabled={secili.kilitli} title={secili.kilitli ? "Kilitli varlık silinemez (ADR 0012)" : undefined} onClick={() => sil(secili)}>
-              {secili.kilitli ? <Lock size={14} /> : <Trash2 size={14} />} {secili.kilitli ? "Kilitli" : "Sil"}
+            <Dugme tur="tehlike" title={secili.kilitli ? "Kilitli: silmeden önce kilidi kaldırmanı ister" : undefined} onClick={() => sil(secili)}>
+              {secili.kilitli ? <Lock size={14} /> : <Trash2 size={14} />} Sil
             </Dugme>
           )}
         </div>

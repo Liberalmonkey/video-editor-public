@@ -173,3 +173,48 @@ def test_motion_yogunlugu():
     dolu = kur({"id": "t1", "iz": "V2", "tur": "metin", "bas": 2, "sure": 1, "metin": "a", "metin_stil": {"tip": "anahtar"}},
                {"id": "t2", "iz": "V2", "tur": "sahne", "bas": 5, "sure": 2, "sahne": {"layout": "full", "kind": "text", "lines": []}})
     assert kurgu.motion_yogunlugu(dolu, 3.0) == []
+
+
+def test_hf_katalogu_tur_ve_aileye_gore_gruplar(tmp_path, monkeypatch):
+    from vedit import hf_grafik
+    lib = tmp_path / "hf_lib"
+    monkeypatch.setattr(hf_grafik, "KUTUPHANE", lib)
+    for ad, meta in (
+        ("a-sahne", '{"tur":"sahne","ne_zaman":"Akışta"}'),
+        ("b-aile", '{"aile":"uc","ne_zaman":"3B vurgu"}'),
+        ("c-diger", '{}'),
+    ):
+        d = lib / ad
+        d.mkdir(parents=True)
+        (d / "index.html").write_text(
+            f'<html data-hf-meta=\'{meta}\'><div data-composition-id="main" data-width="1080" data-height="1920" data-duration="2"></div></html>',
+            encoding="utf-8",
+        )
+    kat = aiedit._hf_katalogu(tmp_path / "work")
+    assert "**sahne**\n- `a-sahne` (kütüphane, sahne, 2 sn): param: yok. Ne zaman: Akışta" in kat
+    assert "**uc**\n- `b-aile` (kütüphane, 2 sn) [3D]: param: yok. Ne zaman: 3B vurgu" in kat
+    assert "**diğer**\n- `c-diger` (kütüphane, 2 sn): param: yok." in kat
+    # Spec hf-canli-gomme-ve-dikey-duzen: dikey sekansta `yalniz_yatay` sahne listelenmez, yatayda listelenir.
+    (lib / "b-aile" / "index.html").write_text(
+        '<html data-hf-meta=\'{"aile":"uc","yalniz_yatay":true}\'><div data-composition-id="main" data-width="1920" '
+        'data-height="1080" data-duration="2"></div></html>', encoding="utf-8")
+    assert "`b-aile`" not in aiedit._hf_katalogu(tmp_path / "work", (1080, 1920))
+    assert "`b-aile`" in aiedit._hf_katalogu(tmp_path / "work", (1920, 1080))
+
+
+def test_motion_kurallari_ve_istek_sablondan_ozerk(p):
+    for yasak_esleme in ("tipografi/kinetik-baslik", "tipografi/bolum-baslik", "tipografi/durum-rozeti", "tipografi/vurgu-soz", "kart/cta-karti"):
+        assert yasak_esleme not in aiedit.MOTION_KURALLARI
+    assert "en çok %30'u ikon" in aiedit.MOTION_KURALLARI
+    assert "hazir" in aiedit.MOTION_KURALLARI
+    assert ".claude/skills/yaratici-yon/SKILL.md" in aiedit.KURALLAR
+
+    kurgu.yaz(p.work, kur())
+    istek_yolu = aiedit._istek_yaz(p, kurgu.oku(p.work), stil_adi=None, notu=None)
+    metin = istek_yolu.read_text(encoding="utf-8")
+    assert "Yaratıcı yetki:" in metin
+    assert "durağanlık 4,5 saniyeyi geçerse" in metin
+    assert "videonun %90'ı düz kesim kalır" in metin
+    assert "sessizlik de seçimdir" in metin
+    assert "yoğunluk hedefi enerji eğrisini izler; sakin bölüm boş kalabilir" in metin.lower()
+    assert "yaratici-yon" in metin

@@ -4,7 +4,7 @@ title: "earshot ile ses ölçümü, teslim render standardı ve ajan düzeni"
 status: accepted
 tags: [adr, ses, render, kalite, ajan, maliyet]
 created: 2026-11-03
-updated: 2026-11-15
+updated: 2026-11-25
 sources: []
 supersedes:
 superseded_by:
@@ -58,3 +58,6 @@ Kullanıcı iki repo verdi ([earshot](https://github.com/Leonxlnx/earshot), [cla
 
 > [!note] Güncellendi 2026-11-04
 > `editor` ve `sound` ajanları kaldırıldı, standart aynı: [[0017-terminal-hizli-hat]].
+
+## Güncelleme (2026-11-25)
+Teslim kapısı 10-bit (`yuv420p10le`, yalnız Master H.265) kabul eder ve SSIM/PSNR sadakat ölçümü yazar; renk dönüşümü zscale ile dither'lı. Ayrıntı [[0060-proxy-master-conform]].

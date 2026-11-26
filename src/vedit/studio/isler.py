@@ -24,6 +24,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from .. import ayristir, kurgu, paths, teslim
+from ..ekip_sema import EN_COK
 from . import ortak
 
 VEDIT = paths.ROOT / ".venv" / "Scripts" / ("vedit.exe" if os.name == "nt" else "vedit")
@@ -31,8 +32,6 @@ VEDIT = paths.ROOT / ".venv" / "Scripts" / ("vedit.exe" if os.name == "nt" else 
 PROJELI = {"hazirla", "kes", "taslak", "final", "kaizen", "kurgu-al", "miks", "ai-edit"}
 STIL_AD = re.compile(r"[\w\-]{1,40}")
 PLATFORM = {"youtube", "reels", "ugc"}
-KAPAK_PLATFORM = {"youtube", "instagram"}
-KAPAK_YERLESIM = {"sol", "sag", "ust", "alt"}  # platforma uygunluğu kapak.yazi denetler
 router = APIRouter()
 _sayac = itertools.count(1)  # iki kuyruk ortak: iş kimliği tek
 
@@ -49,33 +48,10 @@ class Istek(BaseModel):
     kalite: str | None = None
     kodek: str | None = None
     fps: int | None = None
+    kaynaga: bool | None = None  # final: kaynağa eşle (ADR 0060); None ön ayarın varsayılanı
+    vmaf: bool = False
     dil: str | None = None
     video: str | None = None  # denetim: outputs içinde göreli yol
-    adet: int | None = None  # kapak
-    metin: str | None = None  # kapak: "satır1|satır2"
-    prompt: str | None = None  # kapak
-    yeni_brief: bool = False  # kapak
-    kare: int | None = None  # kapak: videodan referans kare
-    duzenle: int | None = None  # kapak: bu adayın yazısını agy'siz yeniden çiz
-    kopya: bool = False  # kapak: düzenlemeyi yeni aday olarak kaydet
-    vurgu: str | None = None  # kapak yazı stili
-    yerlesim: str | None = None
-    olcek: float | None = None
-    karart: bool | None = None
-    kutu: bool | None = None
-    kalip: str | None = None  # kapak: geçerliliği kapak.yazi denetler
-    ek: str | None = None
-    elestir: bool = False  # kapak: adayları agy'ye puanlat
-    kapak_video: str | None = None  # kapak: kareler bu videodan ("inputs:1.mp4"); ADR 0052
-    gelistir: str | None = None  # kapak: kullanıcının fikri → oneri.json
-    oneri: bool = False  # kapak: brief olarak oneri.json
-    gorsel_duzelt: int | None = None  # kapak: bu adayın görselini düzelt
-    istek_metni: str | None = None  # kapak: görsel düzeltme isteği
-    bolge: list[float] | None = None  # kapak: düzeltme kutusu, tuval yüzdesi
-    yalniz_bolge: bool = True  # kapak: sonuçtan yalnız kutuyu al
-    gorsel_model: str | None = None  # kapak: generate_image'ı çağıran agy modeli
-    ice_al: str | None = None  # kapak: work/gorsel/kapak/<platform>/disari/ altındaki yüklenmiş dosya
-    yazili: bool = False  # kapak: içe alınan görselde yazı var
     motor: str | None = None  # ai-edit, stil-uret
     model: str | None = None
     stil: str | None = None
@@ -88,6 +64,8 @@ class Istek(BaseModel):
     hepsi: bool = False  # ayristir, ses-cikar: girdi klasörünün tamamı
     ekip: bool = False  # ai-edit: orkestratör + seviyeli ekip (ADR 0053)
     ekip_ayar: dict | None = None  # seviye, gruplar, ezme; doğrulanıp work/edit/ekip/istek-ayar.json'a yazılır
+    platformlar: list[str] | None = None  # yayin: reels, youtube, shorts, tiktok, linkedin (ADR 0055)
+    seviye: str | None = None  # yayin: akıl yürütme seviyesi (motorlar.SEVIYELER)
 
 
 def arguman(i: Istek) -> list[str]:
@@ -106,10 +84,10 @@ def arguman(i: Istek) -> list[str]:
         if not i.video:
             raise HTTPException(400, "Video gerekli")
         return ["denetim", str(ortak.kok_ici(p.cikti, i.video))]
-    if i.komut == "kapak":
-        return kapak_arguman(i, ref)
     if i.komut in ("ayristir", "ses-cikar"):
         return ses_arguman(i, p, ref)
+    if i.komut == "yayin":
+        return yayin_arguman(i, p, ref)
     if i.komut not in PROJELI:
         raise HTTPException(400, f"İzinli olmayan komut: {i.komut}")
     a = [i.komut, ref]
@@ -159,6 +137,10 @@ def arguman(i: Istek) -> list[str]:
                 if deger not in izinli:
                     raise HTTPException(400, f"Bilinmeyen değer: {bayrak[2:]}")
                 a += [bayrak, str(deger)]
+        if i.kaynaga is not None:
+            a.append("--kaynaga-esle" if i.kaynaga else "--no-kaynaga-esle")
+        if i.vmaf:
+            a.append("--vmaf")
     return a
 
 
@@ -183,118 +165,33 @@ def ajan_bayraklari(i: Istek) -> list[str]:
     return ["--motor", i.motor, *(["--model", i.model] if i.model else [])]
 
 
-def _agy_model(model: str | None) -> str | None:
-    """Kapak modelleri yalnız agy listesinden (AI paneliyle aynı kaynak); listede olmayan model komuta girmez."""
-    if not model:
-        return None
-    from . import ajan  # döngüsel içe aktarma
-    d = ajan._durum().get("antigravity")
-    if not d or not d["kurulu"]:
-        raise HTTPException(400, "Antigravity (agy) kurulu değil")
-    if model not in [m["id"] for m in d["modeller"]]:
-        raise HTTPException(400, f"agy'de olmayan model: {model}")
-    return model
-
-
-def _tek_satir(ad: str, deger: str, sinir: int) -> str:
-    if len(deger) > sinir or any(c in deger for c in "\r\n\0"):
-        raise HTTPException(400, f"{ad} en çok {sinir} karakter, tek satır")
-    return deger
-
-
-def kapak_arguman(i: Istek, ref: str) -> list[str]:
-    # WHY: bkz. wiki/decisions/0052-kapak-is-akisi-v2.md. Video, model, fikir, düzeltme ve dış görsel beyaz listeden geçer.
-    from .. import kapak
-    ek: list[str] = []
-    if i.kapak_video:
+def yayin_arguman(i: Istek, p, ref: str) -> list[str]:
+    """WHY: bkz. wiki/decisions/0055-teslimde-yayin-metni.md. Video teslim kökünde, platform reçetede, motor/model canlı listede."""
+    from .. import motorlar, yayin
+    a = ["yayin", ref]
+    if i.hepsi:
+        a.append("--hepsi")
+    elif i.video:
         try:
-            kapak.video_yolu(ortak.proje(i.studyo, i.ad), i.kapak_video)
+            a.append(f"--video={yayin.video_bul(p, i.video).name}")
         except SystemExit as e:
             raise HTTPException(400, str(e)) from e
-        ek.append(f"--video={i.kapak_video}")
-    if model := _agy_model(i.model):
-        ek += ["--model", model]
-    if gmodel := _agy_model(i.gorsel_model):
-        ek += ["--gorsel-model", gmodel]
-    if i.platform and i.platform not in KAPAK_PLATFORM:
-        raise HTTPException(400, "Kapak platformu youtube ya da instagram")
-    platform = ["--platform", i.platform] if i.platform else []
-    if i.kare is not None and not 1 <= i.kare <= 40:
-        raise HTTPException(400, "Kare 1-40")
-    kare = ["--kare", str(i.kare)] if i.kare is not None else []
-    if i.gelistir is not None:
-        fikir = _tek_satir("Fikir", i.gelistir.strip(), 800)  # boş: videodan öner
-        if not 1 <= (i.adet or 1) <= 5:
-            raise HTTPException(400, "Öneri sayısı 1-5")
-        return ["kapak", ref, f"--gelistir={fikir}", "--adet", str(i.adet or 1), *platform, *kare, *ek]
-    if i.gorsel_duzelt is not None:
-        if not 1 <= i.gorsel_duzelt <= 999:
-            raise HTTPException(400, "Aday numarası geçersiz")
-        istek = _tek_satir("Düzeltme isteği", (i.istek_metni or "").strip(), 400)
-        if not istek:
-            raise HTTPException(400, "Düzeltme isteği boş")
-        a = ["kapak", ref, "--gorsel-duzelt", str(i.gorsel_duzelt), f"--istek={istek}", *platform, *ek]
-        if i.bolge is not None:
-            if len(i.bolge) != 4 or not all(0 <= v <= 100 for v in i.bolge):
-                raise HTTPException(400, "Bölge dört sayı, 0-100")
-            a.append("--bolge=" + ",".join(f"{v:.2f}" for v in i.bolge))
-            if not i.yalniz_bolge:
-                a.append("--tum-gorsel")
-        return a
-    if i.ice_al is not None:
-        if not i.platform:
-            raise HTTPException(400, "İçe alma için platform gerekli")
-        p = ortak.proje(i.studyo, i.ad)
-        ad = Path(i.ice_al.replace("\\", "/")).name
-        if ad != i.ice_al or not (kapak.klasor(p, i.platform) / "disari" / ad).is_file():
-            raise HTTPException(400, "İçe alınacak dosya yok")
-        a = ["kapak", ref, f"--ice-al={kapak.klasor(p, i.platform) / 'disari' / ad}", *platform,
-             *(["--yazili"] if i.yazili else [])]
-        if i.metin:
-            a.append(f"--metin={_tek_satir('metin', i.metin, 120)}")
-        return a
-    if i.duzenle is not None:  # yazı düzenleme: zemin üretilmez, aday sayısı ve brief alanları geçmez
-        if not 1 <= i.duzenle <= 999:
-            raise HTTPException(400, "Aday numarası geçersiz")
-        a = ["kapak", ref, "--duzenle", str(i.duzenle), *(["--kopya"] if i.kopya else [])]
-    elif i.elestir and i.adet == 0:  # yalnız eleştiri
-        a = ["kapak", ref, "--adet", "0", "--elestir"]
     else:
-        a = ["kapak", ref, "--adet", str(i.adet or 1), *(["--elestir"] if i.elestir else [])]
-        if not 1 <= (i.adet or 1) <= 5:
-            raise HTTPException(400, "Aday sayısı 1-5")
-    for bayrak, deger in (("--kalip", i.kalip), ("--stil", i.stil)):
-        if deger:
-            a += [bayrak, _stil(deger)]
-    if i.platform:
-        if i.platform not in KAPAK_PLATFORM:
-            raise HTTPException(400, "Kapak platformu youtube ya da instagram")
-        a += ["--platform", i.platform]
-    if i.yerlesim:
-        if i.yerlesim not in KAPAK_YERLESIM:
-            raise HTTPException(400, "Kapak yerleşimi sol, sag, ust ya da alt")
-        a += ["--yerlesim", i.yerlesim]
-    if i.olcek is not None:
-        if not 0.6 <= i.olcek <= 1.4:
-            raise HTTPException(400, "Ölçek 0.6-1.4")
-        a += ["--olcek", f"{i.olcek:g}"]
-    for ad, deger in (("karart", i.karart), ("kutu", i.kutu)):
-        if deger is not None:
-            a.append(f"--{ad}" if deger else f"--no-{ad}")
-    # düzenlemede boş metin de anlamlıdır (satırı siler); üretimde boş alan "brief'ten al" demektir
-    bos_gecer = i.duzenle is not None
-    for ad, deger, sinir in (("--metin", i.metin, 120), ("--vurgu", i.vurgu, 40), ("--ek", i.ek, 40),
-                             ("--prompt", None if bos_gecer else i.prompt, 800)):
-        if deger or (bos_gecer and deger is not None):
-            if len(deger) > sinir or any(c in deger for c in "\r\n\0"):
-                raise HTTPException(400, f"{ad[2:]} en çok {sinir} karakter, tek satır")
-            a.append(f"{ad}={deger}")  # WHY: '-' ile başlayan metin bayrak sanılmasın
-    if i.yeni_brief:
-        a.append("--yeni-brief")
-    if i.oneri and i.duzenle is None:
-        a.append("--oneri")
-    if i.duzenle is None:
-        a += kare + ek  # düzenleme zemini yeniden üretmez: kare, video ve model geçmez
+        raise HTTPException(400, "Video ya da hepsi gerekli")
+    if i.platformlar:
+        try:
+            a.append("--platform=" + ",".join(yayin.platform_listesi(i.platformlar, p.studyo)))
+        except SystemExit as e:
+            raise HTTPException(400, str(e)) from e
+    a += ajan_bayraklari(i)
+    if i.seviye:
+        if not i.motor or i.seviye not in motorlar.SEVIYELER.get(i.motor, ()):
+            raise HTTPException(400, f"Bu motorda olmayan seviye: {i.seviye}")
+        a += ["--seviye", i.seviye]
+    if i.dil:
+        if i.dil not in ("tr", "en"):
+            raise HTTPException(400, "Dil tr ya da en")
+        a += ["--dil", i.dil]
     return a
 
 
@@ -452,10 +349,11 @@ def is_ekle(i: Istek):
     args = arguman(i)
     baslik = f"stil-uret · {i.studyo}/{i.stil}" if i.komut == "stil-uret" else f"{i.komut} · {i.studyo}/{i.ad}" if i.ad and i.komut != "duzen" else i.komut
     # WHY: rozet çalışan işin motorunu gösterir; ekip işinde motor yoktu, rozet tek ajan seçimini (claude) gösteriyordu.
-    # Ekipte "ekip" + seviye yazılır; rozet çalışan slotları ekip durumundan okur.
+    # Swarm'da "ekip" + tavan yazılır (ADR 0059); rozet çalışan slotları ekip durumundan okur.
     if i.komut == "ai-edit" and i.ekip:
-        ek = {"motor": "ekip", "model": (i.ekip_ayar or {}).get("ekip_seviye")}
-    elif i.komut in ("ai-edit", "stil-uret") and i.motor:
+        ea = i.ekip_ayar or {}
+        ek = {"motor": "ekip", "model": "hızlı" if ea.get("hizli") else f"en çok {ea.get('en_cok') or EN_COK.get(ea.get('ekip_seviye') or 'medium', 6)}"}
+    elif i.komut in ("ai-edit", "stil-uret", "yayin") and i.motor:
         ek = {"motor": i.motor, "model": i.model}
     else:
         ek = {}

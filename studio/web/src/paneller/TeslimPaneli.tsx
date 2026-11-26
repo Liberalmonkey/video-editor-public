@@ -1,4 +1,5 @@
 // WHY: bkz. wiki/decisions/0035-teslim-ayarlari.md. Seçenekler sunucudan gelir (teslim.py tabloları), burada kopyası tutulmaz.
+// ADR 0060: Master ön ayarı, Kaynağa eşle, proxy/master durumu ve sadakat ölçümü.
 import { CircleAlert, Download, Hammer, TriangleAlert } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { istek, sor } from "../api";
@@ -8,7 +9,7 @@ import { useKurgu } from "../zaman/depo";
 
 interface Secenekler {
   cozunurluk: { deger: number; ad: string; rehber_mbps: number }[];
-  kalite: { deger: string; ad: string; crf: Record<string, number> }[];
+  kalite: { deger: string; ad: string; crf: Record<string, number>; ara: "hizli" | "kayipsiz"; bit: Record<string, number> | null }[];
   kodek: { deger: string; ad: string; rehber: number }[];
   fps: number[]; preset: string; ses_kbps: number;
 }
@@ -16,10 +17,17 @@ interface Durum {
   secenekler: Secenekler; sekans: { w: number; h: number; fps: number } | null; kaynak_kisa: number | null; platform: string | null;
   son: { dosya: string; w: number; h: number; kodek: string; profil: string; fps: string; mbps: number; pix_fmt: string; renk: string; ses: string | null; mb: number } | null;
   hatalar: string[];
+  vekil?: { dosya: string; neden: string[]; hazir: string[] }[];
+  kaynak_esle?: { cozunurluk: number | null; fps: number | null };
+  rapor?: { dosya: string; kalite: string; ara: string; bit: number; sadakat: { ssim?: number; psnr?: number; vmaf?: number };
+    conform: { mod: string; klip: number; master: number; proxy: string[] } | null } | null;
 }
-export interface Ayar { cozunurluk: number | null; kalite: string; kodek: string; fps: number | null; platform: string; ad: string; yenile: boolean }
+export interface Ayar {
+  cozunurluk: number | null; kalite: string; kodek: string; fps: number | null; platform: string; ad: string; yenile: boolean;
+  kaynaga: boolean | null; vmaf: boolean;
+}
 
-const ILK: Ayar = { cozunurluk: null, kalite: "yayin", kodek: "h264", fps: null, platform: "", ad: "", yenile: false };
+const ILK: Ayar = { cozunurluk: null, kalite: "yayin", kodek: "h264", fps: null, platform: "", ad: "", yenile: false, kaynaga: null, vmaf: false };
 const cift = (x: number) => Math.round(x / 2) * 2;
 
 /** Sekans yönünü koruyarak kısa kenarı hedefe getirir; teslim.hedef_boyut ile aynı kural. */
@@ -33,6 +41,7 @@ export const hedefBoyut = (w: number, h: number, kisa: number | null): [number, 
 export const isAlanlari = (a: Ayar) => ({
   cozunurluk: a.cozunurluk ?? undefined, kalite: a.kalite, kodek: a.kodek, fps: a.fps ?? undefined,
   platform: a.platform || undefined, cikti_adi: a.ad || undefined, yenile: a.yenile,
+  kaynaga: a.kaynaga ?? undefined, vmaf: a.vmaf || undefined,
 });
 
 export const TeslimPaneli: React.FC = () => {
@@ -83,11 +92,18 @@ export const TeslimPaneli: React.FC = () => {
 
   const s = v.secenekler;
   const sekans = canliSekans ?? v.sekans ?? { w: 1080, h: 1920, fps: 30 };
-  const [w, h] = hedefBoyut(sekans.w, sekans.h, a.cozunurluk);
-  const kisa = Math.min(w, h);
-  const fps = a.fps ?? sekans.fps;
-  const kodek = s.kodek.find((k) => k.deger === a.kodek) ?? s.kodek[0];
   const kalite = s.kalite.find((k) => k.deger === a.kalite) ?? s.kalite[0];
+  const master = kalite.ara === "kayipsiz";
+  const kaynaga = a.kaynaga ?? master; // master'da varsayılan açık (hizli.final ile aynı kural)
+  const ke = v.kaynak_esle ?? { cozunurluk: null, fps: null };
+  const cozunurluk = a.cozunurluk ?? (kaynaga ? ke.cozunurluk : null);
+  const [w, h] = hedefBoyut(sekans.w, sekans.h, cozunurluk);
+  const kisa = Math.min(w, h);
+  const fps = a.fps ?? (kaynaga ? ke.fps : null) ?? sekans.fps;
+  const kodek = s.kodek.find((k) => k.deger === a.kodek) ?? s.kodek[0];
+  const bit = kalite.bit?.[a.kodek] ?? 8;
+  const vekiller = v.vekil ?? [];
+  const agir = vekiller.filter((x) => x.neden.length);
   const kademe = [...s.cozunurluk].reverse().find((c) => kisa >= c.deger);
   const rehber = kademe ? kademe.rehber_mbps * (fps > 40 ? 1.5 : 1) * kodek.rehber : null;
   const platform = a.platform || v.platform;
@@ -96,6 +112,7 @@ export const TeslimPaneli: React.FC = () => {
     platform === "reels" && (w !== 1080 || h !== 1920) && `Reels 1080x1920 bekler; Instagram ${w}x${h} yüklemeyi 1080p'ye indirir.`,
     a.kodek === "h265" && "H.265: Instagram ve eski oynatıcılarda uyum riski. YouTube kabul eder.",
     fps !== sekans.fps && !v.sekans && "Kare hızı yalnız kurgu.json projelerinde değişir; bu projede render durur.",
+    master && "Master: ara render kayıpsız 4:4:4. Render daha uzun sürer, work/renders altında 1080p 10 dakikada 10-20 GB yer tutar.",
     fps > sekans.fps && `${fps} fps yalnız grafik ve hareketi akıcılaştırır; klipler ${sekans.fps} fps kalır. Render süresi yaklaşık ${Math.round(fps / sekans.fps)} kat.`,
   ].filter(Boolean) as string[];
 
@@ -140,9 +157,9 @@ export const TeslimPaneli: React.FC = () => {
               {s.kodek.map((k) => <option key={k.deger} value={k.deger}>{k.ad}</option>)}
             </select>
           </label>
-          <label>Kalite
+          <label>Ön ayar
             <select value={a.kalite} onChange={(e) => degis({ kalite: e.target.value })}>
-              {s.kalite.map((k) => <option key={k.deger} value={k.deger}>{k.ad} · CRF {k.crf[a.kodek]}</option>)}
+              {s.kalite.map((k) => <option key={k.deger} value={k.deger}>{k.ad} · CRF {k.crf[a.kodek]}{k.ara === "kayipsiz" ? " · kayıpsız ara" : ""}{(k.bit?.[a.kodek] ?? 8) === 10 ? " · 10-bit" : ""}</option>)}
             </select>
           </label>
           <label>Platform
@@ -156,8 +173,9 @@ export const TeslimPaneli: React.FC = () => {
         </div>
 
         <dl className="tani" aria-label="Çıktı özeti">
-          <dt>Çıktı</dt><dd data-ozet="boyut">{w}x{h} · {fps} fps{a.cozunurluk && kisa !== Math.min(sekans.w, sekans.h) ? ` · motor ölçeği ×${(kisa / Math.min(sekans.w, sekans.h)).toFixed(3)}` : ""}</dd>
-          <dt>Video</dt><dd>{kodek.ad} · CRF {kalite.crf[a.kodek]} · preset {s.preset} · yuv420p 8 bit</dd>
+          <dt>Çıktı</dt><dd data-ozet="boyut">{w}x{h} · {fps} fps{cozunurluk && kisa !== Math.min(sekans.w, sekans.h) ? ` · motor ölçeği ×${(kisa / Math.min(sekans.w, sekans.h)).toFixed(3)}` : ""}</dd>
+          <dt>Video</dt><dd>{kodek.ad} · CRF {kalite.crf[a.kodek]} · preset {s.preset} · {bit === 10 ? "yuv420p10le 10 bit" : "yuv420p 8 bit"}</dd>
+          <dt>Ara render</dt><dd data-ozet="ara">{master ? "Kayıpsız 4:4:4 (tek kayıplı nesil teslimde)" : "Hızlı (CRF 14, 4:2:0)"}</dd>
           <dt>Renk</dt><dd>BT.709 · sınırlı aralık (tv) · SDR</dd>
           <dt>Ses</dt><dd>AAC-LC {s.ses_kbps} kbps · 48 kHz · stereo</dd>
           <dt>Kap</dt><dd>MP4 · faststart</dd>
@@ -175,7 +193,33 @@ export const TeslimPaneli: React.FC = () => {
             <input type="checkbox" checked={a.yenile} style={{ minHeight: 0 }} onChange={(e) => degis({ yenile: e.target.checked })} />
             Görüntü değişmese de yeniden render et
           </label>
+          <label style={{ display: "flex", gap: 6, alignItems: "center" }} title="Çözünürlük ve kare hızı en büyük kaynak klibe göre; büyütme yapılmaz">
+            <input type="checkbox" data-kaynaga checked={kaynaga} style={{ minHeight: 0 }} onChange={(e) => degis({ kaynaga: e.target.checked })} />
+            Kaynağa eşle{ke.cozunurluk ? ` (${ke.cozunurluk}p${ke.fps ? ` · ${ke.fps} fps` : ""})` : ""}
+          </label>
+          <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <input type="checkbox" checked={a.vmaf} style={{ minHeight: 0 }} onChange={(e) => degis({ vmaf: e.target.checked })} />
+            VMAF da ölç (yavaş)
+          </label>
         </div>
+
+        {!!vekiller.length && (
+          <>
+            <h3 style={{ margin: "16px 0 6px", fontSize: 12, color: "var(--y2)" }}>Kaynak ve proxy</h3>
+            <ul aria-label="Proxy durumu" data-vekil style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 12 }}>
+              {vekiller.map((x) => (
+                <li key={x.dosya} style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <span>{x.dosya}</span>
+                  <span className="rozet" style={{ color: x.neden.length ? (x.hazir.includes("taslak") ? "var(--iyi)" : "var(--uyari)") : "var(--y2)" }}>
+                    {x.neden.length ? (x.hazir.includes("taslak") ? "proxy hazır" : "proxy hazırlanıyor") : "proxy gerekmez"}
+                  </span>
+                  {!!x.neden.length && <span className="ipucu">{x.neden.join(", ")}</span>}
+                </li>
+              ))}
+            </ul>
+            {!!agir.length && <p className="ipucu" style={{ margin: "4px 0 0" }}>Kurgu ve taslak proxy ile çalışır. Export her zaman orijinal dosyaya döner (master conform).</p>}
+          </>
+        )}
 
         {v.son && (
           <>
@@ -185,6 +229,12 @@ export const TeslimPaneli: React.FC = () => {
               <dt>Video</dt><dd>{v.son.w}x{v.son.h} · {v.son.kodek} {v.son.profil} · {v.son.fps} fps · {v.son.mbps} Mbps · {v.son.pix_fmt}</dd>
               <dt>Renk</dt><dd>{v.son.renk}</dd>
               {v.son.ses && <><dt>Ses</dt><dd>{v.son.ses}</dd></>}
+              {v.rapor?.conform && <><dt>Conform</dt><dd data-conform>{v.rapor.conform.master}/{v.rapor.conform.klip} klip orijinal kaynaktan{v.rapor.conform.proxy.length ? ` · ${v.rapor.conform.proxy.length} proxy!` : ""}</dd></>}
+              {v.rapor && Object.keys(v.rapor.sadakat).length > 0 && <><dt>Sadakat</dt><dd data-sadakat>
+                {[v.rapor.sadakat.ssim != null && `SSIM ${v.rapor.sadakat.ssim}`, v.rapor.sadakat.psnr != null && `PSNR ${v.rapor.sadakat.psnr.toFixed(1)} dB`,
+                  v.rapor.sadakat.vmaf != null && `VMAF ${v.rapor.sadakat.vmaf}`].filter(Boolean).join(" · ")}
+                {" "}<span className="ipucu">(ara render'a göre; ara: {v.rapor.ara === "kayipsiz" ? "kayıpsız" : "hızlı"})</span>
+              </dd></>}
             </dl>
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <a className="dugme birincil" data-indir download={v.son.dosya} href={`/api/indir/${studyo}/${projeAdi}?${sor({ yol: v.son.dosya })}`}><Download size={14} /> İndir</a>

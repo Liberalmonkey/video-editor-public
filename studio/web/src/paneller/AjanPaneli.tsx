@@ -1,4 +1,5 @@
 import { RefreshCw } from "lucide-react";
+import { yokla } from "../yokla";
 import React, { useEffect, useState } from "react";
 import { istek } from "../api";
 import { useDepo, type MotorDurum } from "../depo";
@@ -72,8 +73,8 @@ const useEkipCalisan = (yol: string | null): EkipDurum | null => {
     let iptal = false;
     const oku = () => istek(yol).then((x) => { if (!iptal) setD(x.yok || !x.slotlar ? null : x); }).catch(() => {});
     oku();
-    const t = window.setInterval(oku, 2000);
-    return () => { iptal = true; window.clearInterval(t); };
+    const dur = yokla(oku, 2000);
+    return () => { iptal = true; dur(); };
   }, [yol]);
   return d;
 };
@@ -86,8 +87,8 @@ const EkipRozeti: React.FC<{ ac: () => void; durum: EkipDurum | null; seviye?: s
   const metin = calisan.length ? `${slotlar} · ` : `${durum?.asama ?? "hazırlanıyor"} · `;
   return (
     <button type="button" className="ajan-rozet calisiyor" onClick={ac}
-      title={`Ekip ${seviye ?? ""}: ${calisan.map(([x, s]) => `${x} ${ad(s)}${s.durum === "yedek" ? " (yedek)" : ""}`).join("; ") || "ajan çalışmıyor"}. AI panelini aç.`}>
-      <i aria-hidden="true" /><span className="rozet-metin">Ekip · {metin}<b>{modeller.length > 2 ? `${modeller.length} model` : modeller.join(" + ") || seviye}</b> · Çalışıyor</span>
+      title={`Swarm ${seviye ?? ""}: ${calisan.map(([x, s]) => `${x} ${ad(s)}${s.durum === "yedek" ? " (yedek)" : ""}`).join("; ") || "ajan çalışmıyor"}. AI panelini aç.`}>
+      <i aria-hidden="true" /><span className="rozet-metin">Swarm · {metin}<b>{modeller.length > 2 ? `${modeller.length} model` : modeller.join(" + ") || seviye}</b> · Çalışıyor</span>
     </button>
   );
 };

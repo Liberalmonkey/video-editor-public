@@ -16,51 +16,34 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from pydantic import BaseModel
 
-from .. import ayristir, ff, hizli, kapak, kurgu, motion, paths, teslim
+from .. import ayristir, ff, hizli, kurgu, motion, paths, teslim, vekil
 from ..schemas import Kurgu
 from . import ajan, gorsel, isler, kutuphane, medya
 from . import ekip as ekip_api
 from . import galeri as galeri_api
 from . import kurallar as kurallar_api
 from . import stil as stil_api
-from .ortak import akisi_yaz, kok_ici, proje
-from .ortak import dosya_adi as medya_dosya_adi
+from .ortak import kok_ici, proje
 
 DIST = paths.ROOT / "studio" / "web" / "dist"
-PROXY_VF = "scale='if(gt(iw,ih),-2,540)':'if(gt(iw,ih),540,-2)'"
 # WHY: kullanıcı dosyası aynı kökten HTML olarak çalışıp API'ye ulaşamasın.
 GUVENLI = {"X-Content-Type-Options": "nosniff", "Content-Security-Policy": "sandbox"}
-_proxy_kilit = threading.Lock()
-_proxy_suren: set[str] = set()
 
 
 def _proxy_yolu(p: hizli.Proje, kaynak: Path) -> Path:
-    return p.work / "proxy" / f"{kaynak.stem}-{hizli._ozet(kaynak)}.mp4"
+    return vekil.yol(p.work, kaynak, "onizleme")
 
 
 def _proxy_uret(p: hizli.Proje, kaynak: Path) -> None:
-    hedef = _proxy_yolu(p, kaynak)
-    anahtar = str(hedef)
-    with _proxy_kilit:
-        if anahtar in _proxy_suren:
-            return
-        _proxy_suren.add(anahtar)
-    try:
-        gecici = hedef.with_name(f".{hedef.stem}.tmp.mp4")
-        hedef.parent.mkdir(parents=True, exist_ok=True)
-        # WHY: sık anahtar kare ve B-kare yok: sarma ve kare adımı gecikmesini düşürür.
-        # ADR 0040: HDR kaynağın önizlemesi de ton eşlenir; render ile aynı renk görünür.
-        vf = ff.sdr_zinciri(ff.probe(kaynak)["video"]) + "," + PROXY_VF if ff.hdr_mi(ff.probe(kaynak)) else PROXY_VF
-        ff.ffmpeg("-i", str(kaynak), "-vf", vf, "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-g", "12", "-bf", "0",
-                  "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(gecici))
-        gecici.replace(hedef)
-    finally:
-        with _proxy_kilit:
-            _proxy_suren.discard(anahtar)
+    # WHY: bkz. wiki/decisions/0060-proxy-master-conform.md. Önizleme ve taslak proxy'si tek modülde (vekil);
+    # ağır kaynakta (4K, HEVC, 10-bit, HDR, VFR) taslak katmanı da arka planda hazırlanır.
+    vekil.sessiz_uret(p.work, kaynak, "onizleme")
+    if kaynak.suffix.lower() in vekil.BAGLANABILIR and vekil.gerekli(ff.probe_ob(kaynak)):
+        vekil.sessiz_uret(p.work, kaynak, "taslak")
 
 
 @functools.lru_cache(maxsize=512)
@@ -178,7 +161,20 @@ def teslim_ozeti(p: hizli.Proje) -> dict:
                  "pix_fmt": v.get("pix_fmt"), "renk": f"{v.get('color_space')} / {v.get('color_range')}",
                  "ses": f"{s.get('codec_name')} {round(int(s.get('bit_rate') or 0) / 1000)} kbps {s.get('sample_rate')} Hz" if s else None,
                  "mb": round(son.stat().st_size / 1e6, 1)}
+    # WHY: bkz. wiki/decisions/0060-proxy-master-conform.md. Proxy durumu ve son teslimin sadakat/conform raporu.
+    vekiller = []
+    for f in sorted(x for x in p.girdi.iterdir() if x.is_file() and x.suffix.lower() in hizli.VIDEO) if p.girdi.exists() else []:
+        try:
+            n = vekil.neden(ff.probe_ob(f))
+        except Exception:  # WHY: okunamayan girdi özet ekranını düşürmesin
+            continue
+        vekiller.append({"dosya": f.name, "neden": n, "hazir": [kt for kt in vekil.KATMAN if vekil.hazir(p.work, f, kt)]})
+    rapor = hizli._json_oku(p.work / "renders" / "kalite.json")
+    if rapor and (not son or rapor.get("dosya") != son.name):
+        rapor = None  # son teslimle eşleşmeyen rapor gösterilmez
+    k_coz, k_fps = hizli.kaynaga_esle(p) if tam else (None, None)
     return {"secenekler": teslim.secenekler(), "sekans": {"w": k.w, "h": k.h, "fps": k.fps} if k else None,
+            "vekil": vekiller, "rapor": rapor, "kaynak_esle": {"cozunurluk": k_coz, "fps": k_fps},
             "kaynak_kisa": max(kisa) if kisa else None, "platform": hizli.PLATFORM.get(p.studyo), "son": olcum,
             # Export'u durduracak kurgu hataları: final'in kurgu.hazirla içinde çalıştırdığı aynı denetim
             "hatalar": kurgu.denetle(p, tam) if tam else []}
@@ -208,34 +204,6 @@ class SablonIstek(BaseModel):
     tema: str | None = None
     w: int = 1080
     h: int = 1920
-
-
-class KapakSec(BaseModel):
-    platform: str | None = None
-    n: int
-
-
-class KapakKare(BaseModel):
-    video: str
-    t: float
-
-
-class KapakOneri(BaseModel):
-    platform: str | None = None
-    fikir: str | None = None
-    briefler: list[dict]
-
-
-class KapakOnizle(KapakSec):
-    metin: str | None = None  # "satır1|satır2"
-    vurgu: str | None = None
-    yerlesim: str | None = None
-    olcek: float | None = None
-    karart: bool | None = None
-    kutu: bool | None = None
-    kalip: str | None = None
-    stil: str | None = None
-    ek: str | None = None
 
 
 def _kaynak(p: hizli.Proje, yol: str) -> Path:
@@ -295,9 +263,10 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
 
     @app.get("/api/hf/onizleme")
     def hf_onizleme():
-        """Önizleme derleyicisinin girdisi (ADR 0051): taşınmış native bileşenler ve hız kapısı (motor seçimi)."""
-        from .. import hf_kurgu
-        return {"native": hf_kurgu.native_harita(), "oto_hf": bool(hf_kurgu.ayar().get("oto_hf"))}
+        """Önizleme derleyicisinin girdisi (ADR 0051, 0062): native bileşenler, canlı HF grafikleri ve hız kapısı."""
+        from .. import hf_grafik, hf_kurgu
+        return {"native": hf_kurgu.native_harita(), "grafikler": hf_grafik.grafik_harita(),
+                "oto_hf": bool(hf_kurgu.ayar().get("oto_hf"))}
 
     @app.get("/hfs/{dizin}/{kok}/{boyut}.html")
     def hf_sahne(dizin: str, kok: str, boyut: str):
@@ -309,6 +278,19 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
         html = hf_kurgu.sahne_kopyasi(dizin, kok, int(m[1]), int(m[2]))
         if html is None:
             raise HTTPException(404, "Sahne yok")
+        return HTMLResponse(html, headers={"Cache-Control": "no-store"})
+
+    @app.get("/hfg/{studyo}/{proje_ad}/{ad}/{kok}/{boyut}.html")
+    def hf_grafik_sahne(studyo: str, proje_ad: str, ad: str, kok: str, boyut: str):
+        """Canlı HF grafik kompozisyonunun bağlama kopyası (ADR 0062); Stüdyo WebM'siz önizler."""
+        from .. import hf_grafik
+        m = re.fullmatch(r"(\d{2,5})x(\d{2,5})", boyut)
+        if not m or not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", kok) or not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", ad):
+            raise HTTPException(400, "Geçersiz grafik adresi")
+        p = proje(studyo, proje_ad)
+        html = hf_grafik.grafik_kopyasi(ad, kok, int(m[1]), int(m[2]), p.work)
+        if html is None:
+            raise HTTPException(404, "Grafik yok")
         return HTMLResponse(html, headers={"Cache-Control": "no-store"})
 
     @app.get("/api/hf/durum")
@@ -470,6 +452,22 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
     def teslim_durumu(studyo: str, ad: str):
         return teslim_ozeti(proje(studyo, ad))
 
+    @app.get("/api/yayin/{studyo}/{ad}")
+    def yayin_durumu(studyo: str, ad: str):
+        """Yayın metni paneli (ADR 0055): reçete sınırları, stüdyo varsayılanı, teslim videoları ve paketleri."""
+        from .. import yayin
+        return yayin.ozet(proje(studyo, ad))
+
+    @app.put("/api/yayin/{studyo}/{ad}/{video}")
+    def yayin_kaydet(studyo: str, ad: str, video: str, g: dict = Body(...)):
+        """Elle düzenlenen paket: doğrulanır, JSON ve yayin.md'ye yazılır. Ajan çağrılmaz."""
+        from .. import yayin
+        try:
+            veri, uyarilar = yayin.kaydet(proje(studyo, ad), video, g)
+        except SystemExit as e:
+            raise HTTPException(422, str(e)) from e
+        return {"paket": veri, "uyarilar": uyarilar}
+
     @app.get("/api/indir/{studyo}/{ad}")
     def indir(studyo: str, ad: str, yol: str):
         """Teslim dosyasını ek olarak verir (Content-Disposition: attachment). Yalnız çıktılar kökü, work hariç."""
@@ -535,84 +533,6 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
         is_ = isler._k().ekle("pano", f"pano · {html.stem}", ["pano", str(html), "--sure", f"{sure:g}", "-o", str(hedef)])
         return {"hazir": False, "yol": f"public:{ic}", "is": is_.id}
 
-    @app.get("/api/kapak/{studyo}/{ad}")
-    def kapak_durum(studyo: str, ad: str, platform: str | None = None, video: str | None = None):
-        try:
-            return kapak.durum(proje(studyo, ad), platform, video or None)
-        except SystemExit as e:
-            raise HTTPException(422, str(e)) from e
-
-    # WHY: bkz. wiki/decisions/0052-kapak-is-akisi-v2.md. Kare ekleme, referans, öneri ve master prompt eşzamanlıdır (agy'siz);
-    # agy isteyen işler (geliştir, üret, görsel düzelt, içe al) iş kuyruğunda `vedit kapak` olarak çalışır.
-    @app.post("/api/kapak/{studyo}/{ad}/kare")
-    def kapak_kare(studyo: str, ad: str, g: KapakKare):
-        p = proje(studyo, ad)
-        try:
-            f = kapak.kare_ekle(p, g.video, g.t)
-            kr = kapak.kareler(p, video=g.video)
-        except SystemExit as e:
-            raise HTTPException(422, str(e)) from e
-        return {"n": kr.index(f) + 1 if f in kr else len(kr), "yol": f.relative_to(p.cikti).as_posix()}
-
-    @app.put("/api/kapak/{studyo}/{ad}/referans")
-    async def kapak_referans(studyo: str, ad: str, tur: str, dosya: str, request: Request):
-        if tur not in kapak.REF_TURLERI:
-            raise HTTPException(400, "Referans türü yuz ya da stil")
-        p = proje(studyo, ad)
-        temiz = medya_dosya_adi(dosya, set(kapak.GORSEL_UZANTI))
-        f = await akisi_yaz(request, kapak._ref_klasoru(p) / f"{tur}-{temiz}")
-        return {"ad": f.name}
-
-    @app.delete("/api/kapak/{studyo}/{ad}/referans/{dosya}")
-    def kapak_referans_sil(studyo: str, ad: str, dosya: str):
-        try:
-            kapak.referans_sil(proje(studyo, ad), dosya)
-        except SystemExit as e:
-            raise HTTPException(404, str(e)) from e
-        return {"tamam": True}
-
-    @app.put("/api/kapak/{studyo}/{ad}/ice-al")
-    async def kapak_ice_al_yukle(studyo: str, ad: str, platform: str, dosya: str, request: Request):
-        """Dış görseli aday klasörüne yükler; içe alma (kırpma, yazı) iş kuyruğunda `vedit kapak --ice-al` ile yapılır."""
-        if platform not in kapak.PLATFORMLAR:
-            raise HTTPException(400, "Platform youtube ya da instagram")
-        if int(request.headers.get("content-length") or 0) > kapak.DIS_SINIR:
-            raise HTTPException(413, "Dosya 15 MB'tan büyük")
-        p = proje(studyo, ad)
-        temiz = medya_dosya_adi(dosya, set(kapak.GORSEL_UZANTI))
-        f = await akisi_yaz(request, kapak.klasor(p, platform) / "disari" / temiz)
-        return {"ad": f.name}
-
-    @app.post("/api/kapak/{studyo}/{ad}/oneri")
-    def kapak_oneri(studyo: str, ad: str, g: KapakOneri):
-        try:
-            return kapak.oneri_yaz(proje(studyo, ad), g.platform, g.briefler, g.fikir)
-        except SystemExit as e:
-            raise HTTPException(422, str(e)) from e
-
-    @app.get("/api/kapak/{studyo}/{ad}/master")
-    def kapak_master(studyo: str, ad: str, platform: str | None = None, n: int | None = None, kare: int | None = None,
-                     video: str | None = None):
-        try:
-            return kapak.master(proje(studyo, ad), platform, n or None, kare=kare, video=video or None)
-        except SystemExit as e:
-            raise HTTPException(422, str(e)) from e
-
-    @app.post("/api/kapak/{studyo}/{ad}/sec")
-    def kapak_sec(studyo: str, ad: str, g: KapakSec):
-        try:
-            return {"dosya": kapak.sec(proje(studyo, ad), g.platform, g.n).name}
-        except SystemExit as e:
-            raise HTTPException(422, str(e)) from e
-
-    @app.post("/api/kapak/{studyo}/{ad}/onizle")
-    def kapak_onizle(studyo: str, ad: str, g: KapakOnizle):
-        """Düzenleyicinin canlı önizlemesi: render'la aynı şablon, dosya yazmaz. Kalıcı çizim iş kuyruğunda `vedit kapak --duzenle`."""
-        try:
-            return {"html": kapak.onizleme_html(proje(studyo, ad), g.platform, g.n, **g.model_dump(exclude={"platform", "n"}))}
-        except SystemExit as e:
-            raise HTTPException(422, str(e)) from e
-
     @app.get("/api/peak/{studyo}/{ad}")
     def peak(studyo: str, ad: str, yol: str):
         p = proje(studyo, ad)
@@ -676,6 +596,9 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
         if yol.startswith("assets/"):
             # WHY: yeniden derleme sonrası eski parça istenirse index.html (200, text/html) dönmesin; tembel panel 404 görür
             raise HTTPException(404, "Arayüz güncellendi, sayfayı yenile")
+        if yol.startswith(("api/", "dosya/", "pub/")):
+            # WHY: kaldırılan ya da yanlış yazılan uç (ör. /api/kapak, ADR 0056) HTML ile 200 dönüp JSON ayrıştırmasını bozmasın
+            raise HTTPException(404, "Böyle bir uç yok")
         return FileResponse(DIST / "index.html", headers={"Cache-Control": "no-store"})
 
     return app

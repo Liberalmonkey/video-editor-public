@@ -74,6 +74,6 @@ Claude dışı ajanda aynı istemi kendi alt ajan aracına ver (`AGENTS.md`). Uz
 ## Teslimden önce
 - [ ] `vedit qa` 0 hata (−14 ±1 LUFS, TP ≤ −1, siyah kare yok, TR glif tam)
 - [ ] Rubrik puanları ≥ 8 ya da kullanıcı "yeterli" dedi
-- [ ] `vedit export`: varyantlar, SRT, (YouTube) bölümler, kapaklar
+- [ ] `vedit export`: varyantlar, SRT, (YouTube) bölümler
 - [ ] Atıflı varlık varsa `credits.txt` metnini kullanıcıya ver
 - [ ] Kalıcı ders → stil/skill/blok güncelle + `wiki/log.md`'ye `code` kaydı

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import datetime as dt
 import re
-import shutil
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
@@ -46,7 +45,7 @@ FOOTAGE_STEPS = [
     Step("qa", "script", "vedit qa", "qa/report.json", "Otomatik ölçümler + kontak sayfası."),
     Step("critique", "gate", "director", "qa/critique.md", "director (critique) rubrikle puanlar; P0/P1 düzelt (en fazla 2 tur); kullanıcı onayı."),
     Step("final", "script", "vedit render final", "renders/final.mp4", "Yüksek kalite render."),
-    Step("export", "script", "vedit export", "renders/export.json", "Platform varyantları, SRT, kapak önerileri."),
+    Step("export", "script", "vedit export", "renders/export.json", "Platform varyantları, SRT."),
 ]
 
 ANIMATION_STEPS = [
@@ -69,7 +68,7 @@ ANIMATION_STEPS = [
     Step("qa", "script", "vedit qa", "qa/report.json", "Otomatik ölçümler."),
     Step("critique", "gate", "director", "qa/critique.md", "Bölüm bölüm eleştiri, düzeltme, onay."),
     Step("final", "script", "vedit render final", "renders/final.mp4", "Final render (değişmeyen bölümler cache'ten)."),
-    Step("export", "script", "vedit export", "renders/export.json", "SRT, YouTube bölüm listesi, kapak önerileri."),
+    Step("export", "script", "vedit export", "renders/export.json", "SRT, YouTube bölüm listesi."),
 ]
 
 
@@ -176,14 +175,3 @@ def status_text(root: Path) -> str:
     return "\n".join(lines)
 
 
-def copy_into(root: Path, files: list[Path]) -> list[Path]:
-    out = []
-    for f in files:
-        dst = paths.input_dir(root) / f.name
-        if not dst.exists():
-            try:
-                dst.hardlink_to(f)
-            except OSError:
-                shutil.copy2(f, dst)
-        out.append(dst)
-    return out

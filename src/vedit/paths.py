@@ -46,6 +46,11 @@ def find_project(ref: str | Path | None) -> Path:
     matches = [d for d in OUTPUTS.glob(f"*/*{ref}*/work") if (d / "project.yaml").exists()]
     if len(matches) == 1:
         return matches[0]
+    # Tam ad öncelikli: `arvelior`, `arvelior-hiz` varken belirsiz sayılmaz.
+    s = str(ref).replace("\\", "/").rstrip("/")
+    tam = [m for m in matches if s in (m.parent.name, f"{m.parent.parent.name}/{m.parent.name}")]
+    if len(tam) == 1:
+        return tam[0]
     if not matches:
         raise SystemExit(f"Proje bulunamadı: {ref}")
     raise SystemExit("Birden fazla proje eşleşti: " + ", ".join(str(m.relative_to(ROOT)) for m in matches))

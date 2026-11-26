@@ -66,8 +66,13 @@ def probe(path: Path) -> dict:
             w, h = int(s.get("width", 0)), int(s.get("height", 0))
             if abs(rotation) in (90, 270):
                 w, h = h, w
+            rn, _, rd = (s.get("r_frame_rate") or "0/1").partition("/")
+            r_fps = float(rn) / float(rd or 1) if float(rd or 1) else 0.0
             info["video"] = {"codec": s.get("codec_name"), "width": w, "height": h,
                              "fps": round(fps, 3), "pix_fmt": s.get("pix_fmt"), "rotation": rotation, "alfa": _alfa_mi(s),
+                             # WHY: bkz. wiki/decisions/0060-proxy-master-conform.md. Ortalama ve nominal hız ayrışırsa VFR.
+                             "vfr": bool(fps and r_fps and abs(r_fps - fps) / r_fps > 0.01),
+                             "bit_rate": int(s.get("bit_rate") or fmt.get("bit_rate") or 0),
                              **{k: s[k] for k in ("color_transfer", "color_primaries", "color_space", "color_range") if s.get(k)}}
         elif s.get("codec_type") == "audio" and "audio" not in info:
             info["audio"] = {"codec": s.get("codec_name"), "sample_rate": int(s.get("sample_rate", 0)),
@@ -196,15 +201,20 @@ def sdr_zinciri(video: dict, *, tepe: float = 1000.0, egri: str = "hable") -> st
     return ",".join(etiket + [
         f"zscale=tin={trc}:pin={prim}:min={mat}:rin={video.get('color_range') or 'tv'}:t=linear:npl=100",
         "format=gbrpf32le", "zscale=p=bt709", f"tonemap=tonemap={egri}:desat=0:peak={kaynak_tepe / 100:g}",
-        "zscale=t=bt709:m=bt709:r=tv", "format=yuv420p"])
+        "zscale=t=bt709:m=bt709:r=tv:d=error_diffusion", "format=yuv420p"])
 
 
-def sdr_cevir(src: Path, dst: Path, *, tepe: float = 1000.0) -> Path:
-    """HDR kaynağı ara kalitede (CRF 14) SDR kopyaya çevirir; ses kopyalanır. Son kalite kodlaması teslimdedir."""
+def sdr_cevir(src: Path, dst: Path, *, tepe: float = 1000.0, master: bool = False) -> Path:
+    """HDR kaynağı SDR kopyaya çevirir; ses kopyalanır. Son kalite kodlaması teslimdedir.
+
+    Ara kalite CRF 14 veryfast; `master` (ADR 0060) CRF 6 medium: teslimden önce görünür kayıp bırakmaz, kayıpsızın
+    disk bedelini (4K'da dakikada ~8 GB) ödemez.
+    """
     v = probe(src)["video"]
     dst.parent.mkdir(parents=True, exist_ok=True)
     gecici = dst.with_name(f".{dst.stem}.tmp{dst.suffix}")
-    ffmpeg("-y", "-i", str(src), "-vf", sdr_zinciri(v, tepe=tepe), "-c:v", "libx264", "-preset", "veryfast", "-crf", "14",
+    preset, crf = ("medium", "6") if master else ("veryfast", "14")
+    ffmpeg("-y", "-i", str(src), "-vf", sdr_zinciri(v, tepe=tepe), "-c:v", "libx264", "-preset", preset, "-crf", crf,
            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", "-color_range", "tv",
            "-c:a", "copy", "-movflags", "+faststart", str(gecici))
     gecici.replace(dst)

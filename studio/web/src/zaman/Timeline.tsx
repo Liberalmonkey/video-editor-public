@@ -2,6 +2,7 @@ import { produce } from "immer";
 import { AudioLines, Eye, EyeOff, Hand, Link2, Lock, LockOpen, Magnet, MousePointer2, MoveHorizontal, Plus, Redo2, Rows3, Scissors, SplitSquareHorizontal, Trash2, Undo2, ZoomIn, ZoomOut } from "lucide-react";
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Klip, KurguProps } from "../../../remotion/tipler";
+import { istek } from "../api";
 import { useDepo } from "../depo";
 import { Bos, Dugme, IkonDugme } from "../ortak";
 import { CETVEL, ciz, izYuksekligi, kazancY, sesBandi, yKazanc } from "./ciz";
@@ -69,6 +70,27 @@ export const Timeline: React.FC = () => {
 
   const kap = useRef<HTMLDivElement>(null);
   const kaydirici = useRef<HTMLDivElement>(null);
+  // ADR 0061: klipte sağ tık menüsü, "Kütüphaneye kaydet"
+  const [menu, setMenu] = useState<{ x: number; y: number; klip: string } | null>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const kapat = () => setMenu(null);
+    const tus = (e: KeyboardEvent) => { if (e.key === "Escape") setMenu(null); };
+    window.addEventListener("pointerdown", kapat);
+    window.addEventListener("keydown", tus);
+    return () => { window.removeEventListener("pointerdown", kapat); window.removeEventListener("keydown", tus); };
+  }, [menu]);
+  const kasayaKaydet = async (klip: string) => {
+    setMenu(null);
+    const { aktif, bildir, hata } = useDepo.getState();
+    if (!aktif) return;
+    try {
+      await useKurgu.getState().kaydet(); // sunucu kurguyu diskten okur
+      const r = await istek(`/api/kasa/kaydet/${aktif.studyo}/${aktif.ad}`, { method: "POST", json: { klip } });
+      bildir(r.mesaj);
+      window.dispatchEvent(new Event("studio-kutuphane-tazele"));
+    } catch (e) { hata(e); }
+  };
   const tuval = useRef<HTMLCanvasElement>(null);
   const basliklar = useRef<HTMLDivElement>(null);
   const [pxSn, setPxSn] = useState(30);
@@ -460,10 +482,25 @@ export const Timeline: React.FC = () => {
               if (c.ses.kf?.length) duzenle("Kazanç keyframe", (f) => K.sesKfDegistir(f, c.id, x / pxRef.current - c.bas, 8 / pxRef.current));
               else duzenle("Kazanç", (f) => K.kazancYaz(f, c.id, 0));
             }}
+            onContextMenu={(e) => {
+              const k = useKurgu.getState().kurgu;
+              if (!k) return;
+              const { c } = klipBul(k, konum(e).x, konum(e).y);
+              if (!c) return;
+              e.preventDefault();
+              useKurgu.getState().sec([c.id]);
+              setMenu({ x: e.clientX, y: e.clientY, klip: c.id });
+            }}
             onPointerLeave={() => { if (imlecRef.current !== null) { imlecRef.current = null; iste(); } }} />
           <div style={{ width: toplamW, height: toplamH }} />
         </div>
       </div>
+      {menu && (
+        <div role="menu" className="baglam-menu" data-baglam-menu style={{ position: "fixed", left: menu.x, top: menu.y, zIndex: 60 }}
+          onPointerDown={(e) => e.stopPropagation()}>
+          <button type="button" role="menuitem" autoFocus onClick={() => kasayaKaydet(menu.klip)}>Kütüphaneye kaydet</button>
+        </div>
+      )}
     </div>
   );
 };

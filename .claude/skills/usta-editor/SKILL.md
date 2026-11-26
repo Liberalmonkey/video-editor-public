@@ -31,7 +31,7 @@ Bir kesimin bu listeden sebebi yoksa o kesim yapılmaz.
 
 ## Ritim: düz çizgi yasak
 
-Aynı uzunlukta art arda kesimler slayt gösterisi hissi verir. Süreyi bilgi yoğunluğu belirler.
+Aynı uzunlukta art arda kesimler slayt gösterisi hissi verir. Süreyi bilgi yoğunluğu belirler. Aşağıdaki sayılar başlangıç değeridir; brifin enerji eğrisi kazanır (`yaratici-yon`).
 
 | Bölüm | Görüntü değişimi | Not |
 |---|---|---|
@@ -46,7 +46,7 @@ Karmaşık bilgi ekrandayken kesim yavaşlar. Duygu ya da heyecan anında hızla
 
 ## Zoom disiplini
 
-Zoom bir cümledir, süs değildir. Her zoom "şuna bak" der; söylenecek bir şey yoksa yapılmaz.
+Zoom bir cümledir, süs değildir. Her zoom "şuna bak" der; söylenecek bir şey yoksa yapılmaz. Aşağıdaki oran, süre ve sıklık sayıları başlangıç değeridir; brifin enerji eğrisi kazanır.
 
 - **Punch-in (anlık %110–118):** jump cut gizler, sessizdir. Üst üste iki kez aynı ölçek kullanılmaz.
 - **Yavaş itiş (3–8 sn, %100→%106):** konuşan kafada gerilim kurar, duyulmaz. Ses eklenmez.
@@ -57,7 +57,7 @@ Zoom bir cümledir, süs değildir. Her zoom "şuna bak" der; söylenecek bir ş
 
 ## Geçiş disiplini
 
-Videonun %90'ı düz kesimdir. Geçiş, anlam değişimini söyler.
+Videonun %90'ı düz kesimdir. Geçiş, anlam değişimini söyler. Aşağıdaki oran ve süre sayıları başlangıç değeridir; brifin enerji eğrisi kazanır.
 
 | İhtiyaç | Geçiş | Ses |
 |---|---|---|
@@ -68,6 +68,17 @@ Videonun %90'ı düz kesimdir. Geçiş, anlam değişimini söyler.
 | Sayfa çevirme, defter vb. | Yalnız görsel dil bunu taşıyorsa | Sayfa sesi |
 
 Videonun tamamında en çok 2–3 geçiş ailesi olur. Rastgele geçiş, editörün en belirgin amatör izidir.
+
+## Modern kurgu dili
+
+Kurgu teknikleri zorunlu tarif değil araç kutusudur; brifin fikrine ve enerji eğrisine hizmet ettiğinde seçilir:
+- **Match cut (şekil, hareket veya ses eşleşmesi):** İki ayrı sahneyi ortak biçim, hareket yönü ya da sesle tek düşüncede bağlarken işe yarar; ilgisiz planları yalnızca marifet göstermek için zorlayınca klişeleşir.
+- **Speed ramp:** Uzun bir geçişi ya da hareketi enerji zirvesine taşıyıp varışta vurgulu biçimde yavaşlatırken işe yarar; her aksiyona gerekçesiz hız dalgası eklenince klişeleşir.
+- **J/L cut ile ses öncülü açılış:** Yeni sahnenin sesini görüntüden önce getirerek kesimi görünmez kılar ve merakı çeker; her kesimde otomatik tekrarlanıp konuşma nefesini ezince klişeleşir.
+- **Pattern interrupt:** Uzun anlatımda ya da ritim düşerken izleyiciyi uyandırmak için beklenmedik kadraj, ses ya da görsel değişimi verir; birkaç saniyede bir sebepsiz patlatılınca dikkat dağıtan gürültüye döner.
+- **Sessizlik ve vuruş:** İmza anından hemen önce kısa bir boşluk açıp ardından gelen darbe ya da sözü iki kat güçlü duyurur; her cümle sonunda tekrarlanınca dramatik etkisini yitirir.
+- **Görsel metafor:** Soyut bir fikri brifteki tek somut imgeyle ekranda görünür kılar; konuşmadan kopuk hazır simgeler yapıştırıldığında şablon klişesine döner.
+- **Negatif alan:** Büyük bir cümleyi ya da kritik sayıyı kalabalıktan arındırıp tek başına nefes aldırır; görsel fikir üretmeden her kareyi boş bırakınca yavanlaşır.
 
 ## Ses: kulak gözden önce karar verir
 
@@ -114,7 +125,7 @@ Son geçiş: `denetim`. Slop anları zaman damgası ve öneriyle kullanıcıya g
 `renders/` önizlemesiyle birlikte kullanıcıya 5 satır ver: süre, hook, en güçlü an, bilinçli verilen kararlar, kararsız kalınan yer. Zevk kararı gerektiren yeri sor, tahmin etme. Yeni bir zevk kararı verilirse kuralı buraya ya da stil paketine yaz.
 
 
-## Altyazı ve düzeltme defteri (ADR 0014)
-- Altyazı her videoda aynıdır: okunan kelime turuncu, gerisi beyaz, siyah kontur, Montserrat 800. Stil seçilmez.
+## Altyazı ve düzeltme defteri (ADR 0014, 0043)
+- Stil seçilmemişse okunan kelime turuncu, gerisi beyaz, siyah kontur ve Montserrat 800 kullanılır; stil seçiliyse stilin altyazı token'ı uygulanır (ADR 0043).
 - Editten önce `library/checks.md` okunur. Kullanıcının her düzeltmesi oraya tek satır YAP / YAPMA olarak eklenir.
 - Kesim sonrası `vedit kesimqa` çalışır.

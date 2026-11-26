@@ -15,3 +15,10 @@ test("arama etiket ve ne_zaman alanına bakar, Türkçe küçük harfle", () => 
   expect(suz(hepsi, "", "OK").map((e) => e.id)).toEqual(["ok-ciz"]);
   expect(suz(hepsi, "", "ALINTI söylenince").map((e) => e.id)).toEqual(["alinti-karti"]);
 });
+
+test("eski custom kayıt yalnız Arşiv'de görünür (ADR 0061)", () => {
+  const liste = [...hepsi, k("eski-ok", "overlay", { eski: true }), k("native-yerine", "icon", { arsiv: "ikon/zil" })];
+  expect(suz(liste, "", "").map((e) => e.id)).not.toContain("eski-ok");
+  expect(suz(liste, "overlay", "").map((e) => e.id)).toEqual(["ok-ciz"]);
+  expect(suz(liste, "arsiv", "").map((e) => e.id)).toEqual(["eski-ok", "native-yerine"]);
+});

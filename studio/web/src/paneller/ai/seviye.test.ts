@@ -1,20 +1,24 @@
 import { expect, test } from "vitest";
 import type { MotorDurum } from "../../depo";
 import { motorSebebi } from "./MotorModel";
-import { grup, HIZLI_OZET, SEVIYE, SEVIYELER, seviyeOzet, slotAyari, slotlar, slotSirasi, type EkipAyar } from "./seviye";
+import { EN_COK, editorSlotlari, gerekenMotorlar, grup, kkSlotlari, SEVIYELER, slotAyari, slotSirasi, suruOzet, tavan, type EkipAyar } from "./seviye";
 
-test("seviye tablosu: low 2+1, medium 4+2, high 6+3, xhigh 8+4, max 10+5; her seviyede bir orkestratör", () => {
-  expect(SEVIYELER.map((s) => [SEVIYE[s].editor, SEVIYE[s].kk])).toEqual([[2, 1], [4, 2], [6, 3], [8, 4], [10, 5]]);
-  expect(slotlar("low")).toEqual(["O", "E1", "E2", "K1"]);
-  expect(slotlar("max")).toHaveLength(16);
-  expect(seviyeOzet("medium")).toBe("4 editör · 2 kalite kontrol · orkestratör");
+const ayar = (ek: Partial<EkipAyar> = {}): EkipAyar => ({ ad: "x", ekip_seviye: "medium", motion: "yogun", ezme: {},
+  gruplar: { orkestrator: { motor: "claude" }, editor: { motor: "claude" }, kk: { motor: "antigravity" } }, ...ek });
+
+test("swarm tavanı: seviye kısaltması 3/6/9/12/15, en_cok kazanır (ADR 0059)", () => {
+  expect(SEVIYELER.map((s) => EN_COK[s])).toEqual([3, 6, 9, 12, 15]);
+  expect(tavan(ayar())).toBe(6);
+  expect(tavan(ayar({ en_cok: 4 }))).toBe(4);
+  expect(editorSlotlari(15)).toHaveLength(10);
+  expect(kkSlotlari(3)).toEqual(["K1"]);
+  expect(suruOzet(ayar({ en_cok: 9 }))).toContain("en çok 9 ajan");
 });
 
 test("slot sırası sayısaldır ve slot ayarı ezmeyi gruba tercih eder", () => {
   expect(["K2", "E10", "O", "E2", "K1"].sort(slotSirasi)).toEqual(["O", "E2", "E10", "K1", "K2"]);
   expect([grup("O"), grup("E7"), grup("K5")]).toEqual(["orkestrator", "editor", "kk"]);
-  const a: EkipAyar = { ad: "x", ekip_seviye: "high", motion: "yogun", ezme: { E3: { motor: "codex" } },
-    gruplar: { orkestrator: { motor: "claude" }, editor: { motor: "claude" }, kk: { motor: "antigravity" } } };
+  const a = ayar({ ezme: { E3: { motor: "codex" } } });
   expect(slotAyari(a, "E3").motor).toBe("codex");
   expect(slotAyari(a, "E4").motor).toBe("claude");
   expect(slotAyari(a, "K1").motor).toBe("antigravity");
@@ -28,9 +32,11 @@ test("kurulu olmayan ya da uyarılı motor sebebiyle görünür, hazır motor bo
   expect(motorSebebi(undefined)).toBe("taranıyor");
 });
 
-test("hızlı ön ayar low ekibini orkestratörsüz özetler (ADR 0054)", () => {
-  expect(HIZLI_OZET).toBe("2 editör · 1 kalite kontrol · orkestratörsüz");
-  const a: EkipAyar = { ad: "x", ekip_seviye: "max", motion: "yogun", ezme: {}, hizli: true,
-    gruplar: { orkestrator: { motor: "claude" }, editor: { motor: "claude" }, kk: { motor: "antigravity" } } };
-  expect(slotlar(a.hizli ? "low" : a.ekip_seviye).filter((s) => !(a.hizli && s === "O"))).toEqual(["E1", "E2", "K1"]);
+test("gereken motorlar: hızlıda orkestratör yok, ezme eklenir (ADR 0054, 0059)", () => {
+  const a = ayar({ gruplar: { orkestrator: { motor: "codex" }, editor: { motor: "claude" }, kk: { motor: "antigravity" } }, ezme: { E2: { motor: "opencode" } } });
+  expect(gerekenMotorlar(a).sort()).toEqual(["antigravity", "claude", "codex", "opencode"]);
+  expect(gerekenMotorlar({ ...a, hizli: true, ezme: { O: { motor: "codex" } } }).sort()).toEqual(["antigravity", "claude"]);
+  const yedekli = ayar({ gruplar: { orkestrator: { motor: "claude" }, editor: { motor: "claude", yedek_motor: "antigravity" }, kk: { motor: "claude" } } });
+  expect(gerekenMotorlar(yedekli).sort()).toEqual(["antigravity", "claude"]);
+  expect(suruOzet({ ...a, hizli: true })).toContain("orkestratörsüz");
 });

@@ -7,11 +7,11 @@ import { useKurgu } from "../../zaman/depo";
 import { EkipAyarlari } from "./EkipAyarlari";
 import { EkipIlerleme } from "./EkipIlerleme";
 import { MotorSatiri } from "./MotorSatiri";
-import { SeviyeSecici } from "./SeviyeSecici";
-import { slotAyari, slotlar, sn, type EkipAyar, type Seviye } from "./seviye";
+import { SuruSecici } from "./SuruSecici";
+import { gerekenMotorlar, sn, type EkipAyar } from "./seviye";
 
-// Edit sekmesi: istek, birkaç ayar, çalışma biçimi (tek ajan ya da seviyeli ekip), tek birincil düğme; çalışırken ilerleme,
-// bitince son edit özeti. WHY: bkz. wiki/decisions/0028-ai-edit.md (tek ajan), 0053-seviyeli-ekip-orkestrator.md (ekip).
+// Edit sekmesi: istek, birkaç ayar, çalışma biçimi (tek ajan ya da swarm), tek birincil düğme; çalışırken ilerleme,
+// bitince son edit özeti. WHY: bkz. wiki/decisions/0028-ai-edit.md (tek ajan), 0059-swarm-edit.md (swarm).
 
 interface AiOzet { once_rev: number; rev: number; klip: [number, number]; sure: [number, number]; aralik: [number, number] | null; rapor: string[]; geri_alinabilir: boolean }
 
@@ -81,9 +81,10 @@ export const EditSekmesi: React.FC = () => {
   const tekGunluk = !ekipModu && sonEdit ? gunlukler[sonEdit.id] ?? [] : [];
   useEffect(() => { const k = gunlukKutu.current; if (k) k.scrollTop = k.scrollHeight; }, [tekGunluk.length]);
 
-  const eksik = useMemo(() => (ayar ? slotlar(ayar.hizli ? "low" : ayar.ekip_seviye).filter((s) => !(ayar.hizli && s === "O") && !ajanDurum?.[slotAyari(ayar, s).motor]?.kurulu) : []), [ayar, ajanDurum]);
-  const hazir = ekipModu ? !!ayar && !eksik.length : !!motor?.kurulu;
-  const neden = !aktif ? "Önce bir proje aç" : ekipModu ? (eksik.length ? `Kurulu olmayan motor: ${eksik.join(", ")}` : "")
+  // Tarama bitmeden motor "kurulu değil" sayılmaz (yanlış alarm); düğme tarama bitince açılır.
+  const eksik = useMemo(() => (ayar && ajanDurum ? gerekenMotorlar(ayar).filter((m) => !ajanDurum[m]?.kurulu) : []), [ayar, ajanDurum]);
+  const hazir = ekipModu ? !!ayar && !!ajanDurum && !eksik.length : !!motor?.kurulu;
+  const neden = !aktif ? "Önce bir proje aç" : ekipModu ? (!ajanDurum ? "Motorlar taranıyor…" : eksik.length ? `Kurulu olmayan motor: ${eksik.join(", ")}` : "")
     : motor?.kurulu ? "" : `${motor?.ad ?? ajan.motor} kurulu değil`;
 
   const editle = async () => {
@@ -152,21 +153,20 @@ export const EditSekmesi: React.FC = () => {
         <div className="ai-calisma">
           <div className="segment segment-genis" role="radiogroup" aria-label="Çalışma biçimi">
             <button type="button" role="radio" aria-checked={!ekipModu} onClick={() => setEkipModu(false)} title="Tek ajan kurguyu yazar, vedit doğrular ve taslak alır">Tek ajan</button>
-            <button type="button" role="radio" aria-checked={ekipModu} onClick={() => setEkipModu(true)} title="Orkestratör, editörler ve kalite kontrol paralel çalışır (ADR 0053)">Ekip</button>
+            <button type="button" role="radio" aria-checked={ekipModu} onClick={() => setEkipModu(true)} title="Orkestratör ajan sayısını ve modellerini seçer; editörler ve kalite kontrol paralel çalışır (ADR 0059)">Swarm</button>
           </div>
           {!ekipModu && <MotorSatiri />}
           {ekipModu && ayar && (
             <>
-              <SeviyeSecici deger={ayar.ekip_seviye} sec={(s: Seviye) => setAyar({ ...ayar, ekip_seviye: s })} kilitli={!!calisan}
-                hizli={!!ayar.hizli} hizliSec={(h) => setAyar({ ...ayar, hizli: h })} />
+              <SuruSecici ayar={ayar} setAyar={setAyar} durum={ajanDurum} kilitli={!!calisan} />
               <details className="ai-cekmece">
-                <summary><Settings2 size={13} /> Ekip ayarları <span className="ipucu">modeller, yedek, ön ayar{ayar.ad ? ` · ${ayar.ad}` : ""}</span></summary>
+                <summary><Settings2 size={13} /> Swarm ayarları <span className="ipucu">varsayılan modeller, yedek, ön ayar{ayar.ad ? ` · ${ayar.ad}` : ""}</span></summary>
                 <EkipAyarlari ayar={ayar} setAyar={setAyar} durum={ajanDurum} onayarlar={onayarlar} varsayilan={varsayilan} projeVar={!!aktif}
                   onayarSec={(ad) => onayarlar[ad] && setAyar(onayarlar[ad])} onayarKaydet={onayarKaydet} projeyeKaydet={projeyeKaydet} />
               </details>
             </>
           )}
-          {ekipModu && !ayar && <span className="ipucu">Ekip ayarı yükleniyor…</span>}
+          {ekipModu && !ayar && <span className="ipucu">Swarm ayarı yükleniyor…</span>}
         </div>
 
         <div className="ai-eylem">
@@ -174,7 +174,7 @@ export const EditSekmesi: React.FC = () => {
             ? <Dugme tur="tehlike" onClick={() => istek(`/api/isler/${calisan.id}/iptal`, { method: "POST" }).catch(hata)}
                 title={ekipModu ? "Bütün ajanları durdurur; kurgu son geçen kapıda kalır" : "AI editi durdurur"}><CircleStop size={14} /> {ekipModu ? "Hepsini durdur" : "Durdur"}</Dugme>
             : <Dugme tur="birincil" className="ai-ana" disabled={!aktif || !hazir} onClick={editle}
-                title={neden || (ekipModu ? "Orkestratör dağıtır, editörler paralel yazar, kural kapısı ve QC denetler" : "AI kurguyu seçili stille yazar, vedit doğrular ve taslak alır")}>
+                title={neden || (ekipModu ? "Orkestratör ekibi kurar, editörler paralel yazar, kural kapısı ve QC denetler" : "AI kurguyu seçili stille yazar, vedit doğrular ve taslak alır")}>
                 <Wand2 size={15} /> AI ile editle</Dugme>}
           {neden && !calisan && <span className="ipucu">{neden}</span>}
         </div>

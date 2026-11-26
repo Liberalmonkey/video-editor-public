@@ -1,4 +1,4 @@
-"""Teslim: platform varyantları (yeniden build + render), SRT, YouTube bölüm listesi, kapak kareleri,
+"""Teslim: platform varyantları (yeniden build + render), SRT, YouTube bölüm listesi,
 atıf listesi (credits.txt); hepsi Projeler/outputs/<stüdyo>/<proje>/ klasörüne de konur."""
 
 from __future__ import annotations
@@ -7,7 +7,7 @@ import json
 import shutil
 from pathlib import Path
 
-from . import build, ff, paths, project, render
+from . import build, paths, project, render
 from .schemas import Format, Timeline, load_json
 
 
@@ -20,21 +20,6 @@ def chapters_text(tl: Timeline) -> str:
     if chs and chs[0].start > 0:
         chs[0] = chs[0].model_copy(update={"start": 0})
     return "\n".join(f"{ts(c.start)} {c.title or c.id}" for c in chs)
-
-
-def covers(root: Path, video: Path, tl: Timeline, n: int = 3) -> list[str]:
-    """Kapak adayları: ilk kare + başlık/kinetik metin bloklarının tam okunur anları."""
-    times = [0.4]
-    for o in sorted(tl.overlays, key=lambda o: o.start):
-        if o.block in ("title-card", "kinetic-text", "stat", "chapter-card") and len(times) < n:
-            times.append(o.start + min(1.2, o.dur * 0.6))
-    out = []
-    for i, t in enumerate(times[:n]):
-        p = root / "renders" / "covers" / f"cover{i + 1}.jpg"
-        p.parent.mkdir(parents=True, exist_ok=True)
-        ff.still(video, p, t)
-        out.append(f"renders/covers/{p.name}")
-    return out
 
 
 def credits(root: Path, tl: Timeline) -> list[str]:
@@ -87,7 +72,6 @@ def run(root: Path, *, variants: list[str] | None = None) -> dict:
     if tl.chapters:
         (root / "renders" / "youtube-chapters.txt").write_text(chapters_text(tl), encoding="utf-8")
         res["chapters"] = "renders/youtube-chapters.txt"
-    res["covers"] = covers(root, final, tl)
     wanted = [v for v in studio.variants if not variants or v.name in variants]
     for v in wanted:
         fmt = Format(width=v.width, height=v.height, fps=tl.format.fps)
@@ -103,7 +87,7 @@ def run(root: Path, *, variants: list[str] | None = None) -> dict:
     if cred:
         (root / "renders" / "credits.txt").write_text("\n".join(cred) + "\n", encoding="utf-8")
         res["credits"] = "renders/credits.txt"
-    files = [root / res["final"], *(root / v for v in res["variants"]), *(root / c for c in res["covers"])]
+    files = [root / res["final"], *(root / v for v in res["variants"])]
     files += [root / res[k] for k in ("srt", "chapters", "credits") if k in res]
     res["delivery"] = paths.rel(deliver(root, proj, files))
     (root / "renders" / "export.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")

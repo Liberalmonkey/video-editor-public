@@ -1,14 +1,20 @@
 ---
 type: decision
 title: "Hızlı edit: yalın ajan çağrısı, pafta ile QC, gereksiz render ve seri çağrının kaldırılması, hızlı ön ayar"
-status: accepted
+status: superseded
 tags: [adr, ai-edit, ajan, ekip, hiz, kaizen, qc]
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-25
 sources: ["[[0053-seviyeli-ekip-orkestrator]]", "[[0017-terminal-hizli-hat]]"]
 ---
 
 # ADR 0054: Hızlı edit
+
+> [!note] Yerini aldı 2026-11-25
+> Ekip akışı [[0059-swarm-edit]] ile swarm oldu; `--hizli` aynı kaldı (plan çağrısı yok), QC artık zaman dilimine bölünür ([[0058-hizli-ve-kaliteli-edit]]).
+
+> [!note] Güncellendi 2026-11-25
+> QC render'ı, dilimli QC, uyarı kapısı ve tema kilidi denetimi [[0058-hizli-ve-kaliteli-edit]]'te. `--hizli` 672 → 419 sn.
 
 ## Bağlam
 Kullanıcı edit süresinin kısalmasını istedi (2026-11-23). Kaizen günlüğüne göre darboğaz artık render değil, `ai-edit`.

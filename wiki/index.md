@@ -16,6 +16,7 @@ Format: `- [[sayfa]] — tek satır özet`
 - [[log]] — Kronolojik işlem günlüğü
 
 ## Specs (özellikler)
+- [[hf-canli-gomme-ve-dikey-duzen]] — HyperFrames canlı gömmede kök sorgusu hatası (42 şablon) ve 9:16 dikey düzen; agy aile ajanlarıyla (done, 2026-11-26)
 - [[video-studyo]] — Video Stüdyo: paneller, veri modeli, render köprüsü, kabul kriterleri (done)
 - [[ugc-studyosu]] — Ürün tanıtımı/satış odaklı çekim kurgusu, 3 en-boy varyantı (active, 2026-10-20)
 - [[instagram-studyosu]] — Reels: 9:16, güvenli alan, kapak karesi, loop (active, 2026-10-20)
@@ -66,10 +67,20 @@ Format: `- [[sayfa]] — tek satır özet`
 - [[0030-sade-arayuz]] — Sade arayüz: üç çalışma alanı (Kurgu, Teslim, Kütüphane), her iş tek yerde (accepted, 2026-11-12)
 - [[0029-stil-paneli]] — Stil paneli: referanstan STYLE.md üretimi (`vedit stil-uret`), projeye stil seçimi (accepted, 2026-11-12)
 - [[0028-ai-edit]] — AI edit: Final öncesi kurguyu ajan yazar, vedit doğrular ve render eder (`vedit ai-edit`) (accepted, 2026-11-12)
-- [[0027-kapak-sayfasi]] — Kapak sayfası: YouTube ve Instagram, Antigravity ile 1-5 aday, iki platform skill'i (accepted, 2026-11-09)
-- [[0052-kapak-is-akisi-v2]] — Kapak v2: video seç, fikri geliştir, agy modeli, bölgesel görsel düzeltme, master prompt, dış görsel (accepted, 2026-11-22)
-- [[0053-seviyeli-ekip-orkestrator]] — seviyeli ekip (low 2+1 … max 10+5), orkestratör, kapılı paralel akış, kural uyumu ve kural işleme güvencesi, sade AI paneli (accepted, 2026-11-22)
-- [[0054-hizli-edit]] — yalın ajan çağrısı, pafta ile QC, koşullu orkestratör ve render, deterministik ön düzeltme, `--hizli` ön ayarı (accepted, 2026-11-23)
+- [[0027-kapak-sayfasi]] — Kapak sayfası: YouTube ve Instagram, Antigravity ile 1-5 aday, iki platform skill'i (superseded, 2026-11-24)
+- [[0052-kapak-is-akisi-v2]] — Kapak v2: video seç, fikri geliştir, agy modeli, bölgesel görsel düzeltme, master prompt, dış görsel (superseded, 2026-11-24)
+- [[0057-her-makinede-hiz]] — Her makinede hız: tembel Remotion yolu, doğru JS parçaları (ilk yük 2,7 → 0,9 MB), tembel CLI importu, ölü kod ve paket temizliği, `jsonschema` bağımlılığı (accepted, 2026-11-24)
+- [[0058-hizli-ve-kaliteli-edit]] — Hızlı ve kaliteli edit: tema kilidi denetimi, görselli tek tur QC, 15 fps önbellekli QC render'ı, dilimli QC, G6 uyarı kapısı; `--hizli` 672 → 419 sn, uyarı 1 → 0 (accepted, 2026-11-25)
+- [[0059-swarm-edit]] — Swarm edit: ajan tavanı (`--en-cok`, seviye kısaltması 3-15), orkestratörün kart başına model seçimi, plana paralel kurgu editörü, birleştirme sağlamlığı (id'siz öğe, render kurtarma, geçiş kısa yazımı); medium 778 → 692 sn (accepted, 2026-11-25)
+- [[0060-proxy-master-conform]] — proxy (vekil) ile kurgu ve taslak, teslimde orijinale conform kapısı; Master ön ayarı (kayıpsız 4:4:4 ara, H.265 10-bit, kaynağa eşle), zscale renk zinciri, SSIM/PSNR/VMAF sadakat ölçümü (accepted, 2026-11-25)
+- [[0061-kasa-ve-kesif]] — hibrit motion kütüphanesi: Kasam (videodan kaydet, niyetiyle), Keşif (şablon + dış), Arşiv; kilidi kaldırıp silme, toplu silme, galeride gizleme; alfa kırpımlı doğru-kare önizleme (accepted, 2026-11-25)
+- [[0062-modern-hyperframes-motion-mimarisi]] — canlı `data-composition-src` HF gömme, Tema v2, `+1 kare` ses ipuçları, 4-düzen, sürekli-dünya kamera, 5 optik geçiş, 24 modern HF şablonu, 5 referans stil ve Swarm v4 G0.5 brifi (accepted, 2026-11-25)
+- [[0063-gsap-eklentileri-ve-threejs-hf]] — GSAP eklenti paketi (SplitText, DrawSVG, MorphSVG, MotionPath, tema eğrileri), `uc.js` three.js çekirdeği (saydam WebGL, seçici bloom), 22 yeni şablon, hareket kişiliği ve beş bölümlü motion brifi (accepted, 2026-11-25)
+- [[0064-yaratici-yon]] — G0.5 yaratıcı brif (tez, enerji eğrisi, imza anları, metafor, iplik, ses, riskler, yasak klişeler); swarm'da plan çağrısında, hızlıda tek kısa çağrıda, tek ajanda kurgudan önce; şablondan özerkliğe sekiz adımlı yükseltmenin ilki (accepted, 2026-11-26)
+- [[0056-kapak-kaldirildi]] — Kapak özelliği kaldırıldı: Kapak alanı, `vedit kapak`, `--kapak-kare`, iki kapak skill'i; şablon `library/gorsel/`'e taşındı (accepted, 2026-11-24)
+- [[0053-seviyeli-ekip-orkestrator]] — seviyeli ekip (low 2+1 … max 10+5), orkestratör, kapılı paralel akış, kural uyumu ve kural işleme güvencesi, sade AI paneli (superseded → 0059, 2026-11-25)
+- [[0054-hizli-edit]] — yalın ajan çağrısı, pafta ile QC, koşullu orkestratör ve render, deterministik ön düzeltme, `--hizli` ön ayarı (superseded → 0059, 2026-11-25)
+- [[0055-teslimde-yayin-metni]] — Teslim'de video başına, platforma göre başlık, açıklama ve hashtag (`vedit yayin`, Yayın metni paneli, varsayılan Opus 5.5) (accepted, 2026-11-23)
 - [[0026-arayuzde-ajan]] — Video Stüdyo AI paneli: Claude Code ya da Antigravity, model seçimi arayüzde (accepted, 2026-11-08)
 - [[0023-coklu-ajan]] — Antigravity CLI ve Codex kopyaları tek kaynaktan üretilir (accepted, 2026-11-05)
 - [[0022-av-ayirma-metre-yatay]] — Görüntü ve sesi ayırma, canlı metre, 16:9 sahne şablonları (accepted, 2026-11-05)
@@ -121,6 +132,7 @@ Format: `- [[sayfa]] — tek satır özet`
 - [[2026-11-03-sirio-berati-repolari]] — Pano, kelimeye kilit, teleprompter, kesim denetimi; alınan ve alınmayan repolar
 - [[2026-10-20-ffmpeg]] — FFmpeg filtre seçkisi (repo)
 - [[2026-10-20-sfx-ve-arac-arastirmasi]] — SFX/müzik/TTS/çekim araçları ve lisanslar (araştırma)
+- [[2026-11-25-motion-kaynaklari]] — prompt-motion, gsap-skills, threejs-skills, LottieFiles motion-design, video-shotcraft, pascal editor: ne alındı, ne alınmadı
 
 ## Queries (dosyalanmış cevaplar)
 - [[2026-11-02-usta-editor-denetimi]] — Sistem 15 yıllık editör seviyesinde mi: güçlü, zayıf yönler ve öneriler

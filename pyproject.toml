@@ -20,6 +20,8 @@ dependencies = [
   "fonttools>=4.50",
   # vedit ritim, senkron, viseme: onset, beat ve ağız şekli (ADR 0039)
   "librosa>=0.10.2",
+  # native motion parametre doğrulaması (ADR 0045); eskiden yalnız rembg (kapak) dolaylı kuruyordu (ADR 0057)
+  "jsonschema>=4.20",
 ]
 
 [project.optional-dependencies]
@@ -30,8 +32,6 @@ boards = ["playwright>=1.49"]
 gpu = ["nvidia-cublas-cu12>=12.4", "nvidia-cudnn-cu12>=9,<10"]
 # vedit studio: yerel kurgu uygulaması (ADR 0021)
 studio = ["fastapi>=0.115", "uvicorn>=0.30", "send2trash>=1.8"]
-# vedit kapak: zeminden özne kesiti (dev-yazi ve seri kalıpları); ilk çalıştırmada ~170 MB model iner (ADR 0027)
-kapak = ["rembg[cpu]>=2.0"]
 # testler: .venvScriptspytest tests
 dev = ["pytest>=8"]
 

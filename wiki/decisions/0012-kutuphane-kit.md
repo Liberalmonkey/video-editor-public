@@ -4,7 +4,7 @@ title: "Kütüphane kiti: kilitli ve her zaman kullanılan varlıklar (library/k
 status: accepted
 tags: [adr, kutuphane, sfx, motion, arayuz]
 created: 2026-11-01
-updated: 2026-11-15
+updated: 2026-11-25
 sources: []
 supersedes:
 superseded_by:
@@ -46,3 +46,6 @@ Seçenek 2.
 
 > [!note] Güncellendi 2026-11-04
 > Kütüphane sekmesi kalktı; `library/kit.json` doğrudan düzenlenir: [[0017-terminal-hizli-hat]].
+
+## Güncelleme (2026-11-25)
+Kütüphane Kasam / Keşif / Arşiv olarak ayrıldı; kilitli varlık onayla kilidi kaldırılarak silinir, poster alfa kırpımlı doğru kareden üretilir. Ayrıntı [[0061-kasa-ve-kesif]].

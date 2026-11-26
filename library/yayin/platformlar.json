@@ -1,0 +1,100 @@
+{
+ "_not": "Yayın metni reçetesi (ADR 0055). Sınırlar 2026-11-23'te doğrulandı; kurallar viral-kurgu SKILL.md 'Yayın paketi' bölümünün özetidir. baslik_max/aciklama_max/hashtag_max/etiket_max sert sınırdır (vedit reddeder); *_oneri yumuşak sınırdır (yalnız uyarı). arastirildi=false: kurallar geneldir, uydurulmuş platform kuralı yoktur.",
+ "studyo_varsayilan": {"instagram": ["reels"], "youtube-animasyon": ["youtube"], "ugc": ["reels"]},
+ "platformlar": {
+  "reels": {
+   "ad": "Instagram Reels",
+   "arastirildi": true,
+   "baslik_ad": "Kapak ve ilk satır başlığı",
+   "baslik_max": 100,
+   "baslik_oneri": 55,
+   "aciklama_max": 2200,
+   "hashtag_min": 3,
+   "hashtag_max": 5,
+   "etiket_max": 0,
+   "bolumler": false,
+   "kural": [
+    "Reels'te başlık alanı yoktur: başlık kapak yazısı ve açıklamanın ilk satırıdır; akışta yaklaşık ilk 55 karakter görünür.",
+    "Açıklamanın ilk cümlesi videonun vaadidir ve konunun anahtar kelimesini doğal biçimde içerir. Selamlama yok.",
+    "Açıklama videonun değerini metinle de verir: adımlar, liste, sonuç. Kaydedilecek ya da gönderilecek bir şey olsun.",
+    "En çok 5 hashtag (Instagram'ın Aralık 2025 sınırı), konuya özgü; alakasız ya da genel popüler etiket yok. Hashtag erişim yaratmaz, konuyu ve aramayı destekler.",
+    "Tek çağrı, önce gönderme ('... birine gönder'). 'Yorumlara yaz' çağrısı kullanıcı kararıdır; kullanılırsa notlarda engagement bait riskini yaz.",
+    "Keşfet ya da viral garantisi verme."
+   ]
+  },
+  "youtube": {
+   "ad": "YouTube (uzun video)",
+   "arastirildi": true,
+   "baslik_ad": "Başlık",
+   "baslik_max": 100,
+   "baslik_oneri": 60,
+   "aciklama_max": 5000,
+   "hashtag_min": 2,
+   "hashtag_max": 5,
+   "etiket_max": 500,
+   "bolumler": true,
+   "kural": [
+    "Başlık somut sonuç ya da açık vaat taşır; arama sonuçlarında yaklaşık ilk 60 karakter görünür, anahtar kelime başta olsun. '<' ve '>' kullanma.",
+    "Açıklamanın ilk iki satırı videonun vaadi ve kimin için olduğudur (katlanmadan önce görünen kısım).",
+    "Video 8 dakikayı geçiyorsa bölümler (zaman damgası 0:00 ile başlar, en az 3 bölüm, her biri en az 10 sn) yalnız transkriptteki gerçek konu değişimlerinden çıkarılır.",
+    "Hashtag'ler açıklamanın sonunda; ilk üçü başlığın üstünde görünür. 2-5 konuya özgü hashtag.",
+    "Etiketler (tags) toplam 500 karakteri geçmez; yazım varyantları ve konu terimleri.",
+    "Başlık ve açıklama videoda söylenmeyen bir şeyi vaat etmez."
+   ]
+  },
+  "shorts": {
+   "ad": "YouTube Shorts",
+   "arastirildi": true,
+   "baslik_ad": "Başlık",
+   "baslik_max": 100,
+   "baslik_oneri": 40,
+   "aciklama_max": 5000,
+   "hashtag_min": 2,
+   "hashtag_max": 4,
+   "etiket_max": 0,
+   "bolumler": false,
+   "kural": [
+    "Akışta 'izlendi / kaydırıldı' oranı ölçülür; başlık kısa ve somut, mobilde yaklaşık ilk 40 karakter görünür.",
+    "Açıklama kısa: tek cümle vaat, gerekiyorsa bir satır bağlam.",
+    "2-4 konuya özgü hashtag; '#shorts' zorunlu değildir.",
+    "Uzun videoya bağlantı verilecekse notlarda 'ilgili video' önerisi yaz, açıklamaya uydurma bağlantı koyma."
+   ]
+  },
+  "tiktok": {
+   "ad": "TikTok",
+   "arastirildi": false,
+   "baslik_ad": "İlk satır (kanca)",
+   "baslik_max": 100,
+   "baslik_oneri": 80,
+   "aciklama_max": 4000,
+   "hashtag_min": 2,
+   "hashtag_max": 5,
+   "etiket_max": 0,
+   "bolumler": false,
+   "kural": [
+    "Kurallar genel yazım kurallarıdır; bu proje TikTok sıralama sinyallerini araştırmadı. Notlarda bunu belirt.",
+    "Akışta yaklaşık ilk 100-150 karakter görünür: ilk satır videonun vaadidir.",
+    "TikTok 2025'ten beri en çok 5 hashtag sayar; Creator Academy 2-3 ilgili hashtag öneriyor.",
+    "API ya da zamanlayıcıyla yüklenecekse açıklama 2200 karakteri geçmesin."
+   ]
+  },
+  "linkedin": {
+   "ad": "LinkedIn",
+   "arastirildi": true,
+   "baslik_ad": "İlk iki satır",
+   "baslik_max": 150,
+   "baslik_oneri": 140,
+   "aciklama_max": 3000,
+   "hashtag_min": 0,
+   "hashtag_max": 3,
+   "etiket_max": 0,
+   "bolumler": false,
+   "kural": [
+    "İlk iki satır iş sonucudur: para, zaman, müşteri. 'Daha fazla gör'den önce görünen kısım budur.",
+    "Altında kısa bağlam ve somut iş değeri; profesyonel, abartısız ton.",
+    "Dış bağlantıyı gönderi metnine koyma; gerekiyorsa notlarda 'ilk yoruma yaz' de.",
+    "Emoji anketi ve yorum grubu (pod) çağrısı yok. En çok 3 hashtag."
+   ]
+  }
+ }
+}

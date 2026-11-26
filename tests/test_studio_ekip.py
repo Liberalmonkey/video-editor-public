@@ -67,7 +67,7 @@ def test_onayar_kaydet_varsayilan_durum_ve_cikti(ortam):
         ekip_api.onayar_yaz("Kötü Ad", EkipAyar().model_dump())
     assert ekip_api.durum("instagram", "p") == {"yok": True}
     assert ekip_api.proje_oku("instagram", "p")["etkin"]["ekip_seviye"] == "low"
-    assert ekip_api.ekip_oku()["seviyeler"]["max"] == {"editor": 10, "kk": 5}
+    assert ekip_api.ekip_oku()["seviyeler"]["max"] == {"editor": 10, "kk": 5, "en_cok": 15}
     # Orkestratör birden çok kapıda yazar: en yeni çıktı döner.
     import os
     import time

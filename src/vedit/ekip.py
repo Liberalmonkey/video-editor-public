@@ -34,10 +34,16 @@ def ayar_yukle(p, dosya: Path | None = None, **ezme) -> EkipAyar:
     if GLOBAL.is_file():
         g = json.loads(GLOBAL.read_text(encoding="utf-8"))
         d = dict((g.get("onayarlar") or {}).get(g.get("varsayilan") or "", {}))
+    def katman(x: dict) -> None:
+        # Seviye veren ama tavan vermeyen katman (eski biçim ya da --seviye) alttaki tavanı taşımasın (ADR 0059).
+        if "ekip_seviye" in x and "en_cok" not in x:
+            d.pop("en_cok", None)
+        d.update(x)
+
     for f in (p.work / "edit" / "ekip.json", dosya):
         if f and Path(f).is_file():
-            d.update(json.loads(Path(f).read_text(encoding="utf-8")))
-    d.update({k: v for k, v in ezme.items() if v is not None})
+            katman(json.loads(Path(f).read_text(encoding="utf-8")))
+    katman({k: v for k, v in ezme.items() if v is not None})
     return EkipAyar.model_validate(d)
 
 
@@ -64,6 +70,12 @@ class Durum:
     def slot(self, s: str, **kv):
         with self.kilit:
             self.d["slotlar"].setdefault(s, {"durum": "bekliyor"}).update(kv)
+            self.yaz()
+
+    def daralt(self, slotlar) -> None:
+        """Swarm (ADR 0059): plan belli olunca yalnız plandaki slotlar kalır; seviye tablosundan açılmış boş kartlar silinir."""
+        with self.kilit:
+            self.d["slotlar"] = {s: v for s, v in self.d["slotlar"].items() if s in slotlar}
             self.yaz()
 
     def kapi(self, kid: str, durum: str, not_: str = ""):
@@ -110,8 +122,27 @@ def _metin_ve_kullanim(satirlar: list[str]) -> tuple[str, dict]:
     return son, kul
 
 
+def akis_mesaji(metin: str, gorseller: list[Path]) -> str:
+    """Claude stream-json girdisi: görseller (base64 JPEG/PNG) ve metin tek kullanıcı mesajında.
+
+    WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md. QC paftaları Read aracıyla tek tek okunurken her biri bir tur
+    ediyordu; isteme gömülünce kalite kontrol tek turda biter."""
+    import base64
+    icerik: list[dict] = []
+    for g in gorseller:
+        g = Path(g)
+        if not g.is_file():
+            continue
+        tur = "image/png" if g.suffix.lower() == ".png" else "image/jpeg"
+        icerik += [{"type": "text", "text": f"Görsel: {g.resolve()}"},
+                   {"type": "image", "source": {"type": "base64", "media_type": tur, "data": base64.b64encode(g.read_bytes()).decode()}}]
+    icerik.append({"type": "text", "text": metin})
+    return json.dumps({"type": "user", "message": {"role": "user", "content": icerik}}, ensure_ascii=False) + chr(10)
+
+
 def ajan(slot: Slot, istem: str, mod: str, kayit: Path, *, yedek: bool = False, metin: str | None = None,
-         sistem: str | None = None, araclar: str = "", dizinler: tuple = ()) -> tuple[bool, str, dict]:
+         sistem: str | None = None, araclar: str = "", dizinler: tuple = (),
+         gorseller: list[Path] | None = None) -> tuple[bool, str, dict]:
     """Tek çağrı. Ham akış `<kayit>.cikti.jsonl`, okunur günlük `<kayit>.cikti.txt`. (başarılı, yanıt metni, meta).
 
     `metin` verilirse ve motor Claude ise yalın çağrı yapılır (ADR 0054): `metin` stdin'den, `sistem` (rol) sistem istemine,
@@ -123,7 +154,11 @@ def ajan(slot: Slot, istem: str, mod: str, kayit: Path, *, yedek: bool = False, 
     meta = {"motor": motor, "model": model, "seviye": seviye, "mod": mod, "yedek": yedek, "yalin": yalin, "baslangic": time.time()}
     try:
         if yalin:
-            komut = motorlar.yalin_komut(model, seviye, sistem=sistem, araclar=araclar, dizinler=dizinler)
+            komut = motorlar.yalin_komut(model, seviye, sistem=sistem, araclar=araclar, dizinler=dizinler,
+                                         akis_girdi=bool(gorseller))
+            if gorseller:
+                metin = akis_mesaji(metin, gorseller)
+                meta["gorsel"] = len(gorseller)
             motorlar.YALIN_KOK.mkdir(parents=True, exist_ok=True)
         else:
             komut = motorlar.komut(motor, istem, model, mod, None, seviye)  # bypass bayrağı yok (motorlar kuralı)
@@ -218,6 +253,7 @@ def json_cikar(metin: str) -> dict | None:
 KARE_ARALIK = 1.5   # sn; sabit kare aralığı (uzun videoda en çok KARE_EN_COK kare)
 KARE_EN_COK = 160
 PAFTA_KARE = 12     # pafta başına kare (4 sütun × 3 satır)
+OCR_BEKLE = 5.0     # sn; öteki QC girdileri bittikten sonra OCR için en çok bu kadar beklenir (ADR 0058)
 
 
 def _ocr_analiz(video: Path, izd: Path) -> dict[float, str]:
@@ -313,9 +349,16 @@ def izle(p, video: Path, kok: Path) -> dict:
         (kok / "olcum.json").write_text(json.dumps(ol, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     except (SystemExit, Exception) as e:  # noqa: BLE001 - ölçüm eksik olsa da denetim sürer
         (kok / "olcum.json").write_text(json.dumps({"hata": str(e)[:400]}, ensure_ascii=False), encoding="utf-8")
-    ocr = ocr_is.result()
+    # WHY: bkz. wiki/decisions/0058-hizli-ve-kaliteli-edit.md. OCR (npx) 53 sn'lik videoda 48 sn sürüyor, öteki girdiler 8 sn.
+    # QC kare yazısını paftadan zaten okuyor; OCR yalnız kısa süre beklenir, gecikirse kare listesi OCR'sız yazılır.
+    from concurrent.futures import TimeoutError as Zamanasimi
+    try:
+        ocr = ocr_is.result(timeout=OCR_BEKLE)
+    except Zamanasimi:
+        ocr = {}
+        print(f"  OCR {OCR_BEKLE:g} sn içinde bitmedi; kareler OCR'sız (QC yazıyı paftadan okur)", flush=True)
     kontak_is.result()
-    arka.shutdown()
+    arka.shutdown(wait=False)
     kareler = sorted(izd.glob("*.jpg"))
     liste = kok / "kareler.md"
     liste.write_text("# Kareler (zaman · dosya · OCR)\n\n" + "\n".join(
@@ -329,7 +372,8 @@ def izle(p, video: Path, kok: Path) -> dict:
     (kok / "kurgu-denetle.txt").write_text("\n".join(dn) or "Kurgu temiz.", encoding="utf-8")
     if t:
         (kok / "stil-token.json").write_text(t.model_dump_json(indent=1), encoding="utf-8")
-    return {"_kok": kok, "_paftalar": paftalar, "_vedit": vedit_bulgulari(kok), "taslak video": video, "kontak sayfası": kontak,
+    pafta_zaman = [(sabit[i][0], sabit[min(i + PAFTA_KARE, len(sabit)) - 1][0]) for i in range(0, len(sabit), PAFTA_KARE)]
+    return {"_kok": kok, "_paftalar": paftalar, "_pafta_zaman": pafta_zaman, "_vedit": vedit_bulgulari(kok), "taslak video": video, "kontak sayfası": kontak,
             "kare listesi (zaman, yol, OCR)": liste, "ölçüm (format, loudness, slop)": kok / "olcum.json",
             "kurgu-denetle": kok / "kurgu-denetle.txt", "kurgu": kurgu.yol(p.work),
             **({"stil token": kok / "stil-token.json"} if t else {})}

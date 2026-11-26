@@ -31,9 +31,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
+          // WHY: bkz. wiki/decisions/0057-her-makinede-hiz.md. Vite'ın preload yardımcısı ve CommonJS yardımcıları açıkça
+          // her zaman inen parçaya konur; yoksa rollup onları remotion/uc-boyut'a koyuyor, giriş parçası da ~1,1 MB'ı açılışta çekiyordu.
+          if (id.includes("preload-helper") || id.includes("commonjsHelpers")) return "react";
           if (!id.includes("node_modules")) return undefined;
-          if (/[\\/](remotion|@remotion)[\\/]/.test(id)) return "remotion";
-          if (/[\\/](three|@react-three|postprocessing|@dimforge)[\\/]/.test(id)) return "uc-boyut";
+          // react-reconciler ve yardımcıları yalnız @react-three/fiber içindir; lottie-web yalnız @remotion/lottie: ikisi de tembel yolda.
+          if (/[\\/](three|three-stdlib|@react-three|postprocessing|@dimforge|react-reconciler|its-fine|react-use-measure|suspend-react|maath|potpack)[\\/]|[\\/]@remotion[\\/]three[\\/]/.test(id)) return "uc-boyut";
+          if (/[\\/](remotion|@remotion|lottie-web)[\\/]/.test(id)) return "remotion";
           if (/[\\/](dockview|dockview-core|dockview-react)[\\/]/.test(id)) return "dockview";
           if (/[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return "react";
           return "kutuphane";

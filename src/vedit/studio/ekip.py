@@ -15,7 +15,7 @@ from pydantic import ValidationError
 
 from .. import ekip as ekip_mod
 from .. import motorlar
-from ..ekip_sema import SEVIYE, SLOT_DESEN, EkipAyar
+from ..ekip_sema import EN_COK, SEVIYE, SLOT_DESEN, EkipAyar
 from . import ortak
 
 router = APIRouter()
@@ -38,7 +38,10 @@ def dogrula(ayar: dict) -> EkipAyar:
     except ValidationError as e:
         raise HTTPException(422, str(e)[:600]) from e
     d = motorlar.durum()
+    # Hızlıda orkestratör çağrılmaz: onun motoru kurulu olmasa da iş başlar (arayüz seviye.gerekenMotorlar ile aynı kural).
     for s, sl in [*a.gruplar.items(), *a.ezme.items()]:
+        if a.hizli and s in ("orkestrator", "O"):
+            continue
         for motor, model, seviye, ek in ((sl.motor, sl.model, sl.seviye, ""), (sl.yedek_motor, sl.yedek_model, sl.yedek_seviye, " yedek")):
             if not motor:
                 continue
@@ -54,7 +57,7 @@ def dogrula(ayar: dict) -> EkipAyar:
 
 @router.get("/api/ekip")
 def ekip_oku():
-    return {"global": _global(), "seviyeler": {k: {"editor": e, "kk": q} for k, (e, q) in SEVIYE.items()},
+    return {"global": _global(), "seviyeler": {k: {"editor": e, "kk": q, "en_cok": EN_COK[k]} for k, (e, q) in SEVIYE.items()},
             "varsayilan_ayar": EkipAyar().model_dump()}
 
 

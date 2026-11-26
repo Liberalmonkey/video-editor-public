@@ -22,11 +22,11 @@ import "./stil.css";
 
 // Açılışta görünmeyen paneller ayrı parçada; ilk açılışta yüklenir (ADR 0050).
 const DenetimPaneli = React.lazy(() => import("./paneller/DenetimPaneli").then((m) => ({ default: m.DenetimPaneli })));
-const KapakPaneli = React.lazy(() => import("./paneller/kapak/KapakPaneli").then((m) => ({ default: m.KapakPaneli })));
 const KutuphanePaneli = React.lazy(() => import("./paneller/KutuphanePaneli").then((m) => ({ default: m.KutuphanePaneli })));
 const StilPaneli = React.lazy(() => import("./paneller/StilPaneli").then((m) => ({ default: m.StilPaneli })));
 const KurallarPaneli = React.lazy(() => import("./paneller/KurallarPaneli").then((m) => ({ default: m.KurallarPaneli })));
 const TeslimPaneli = React.lazy(() => import("./paneller/TeslimPaneli").then((m) => ({ default: m.TeslimPaneli })));
+const YayinPaneli = React.lazy(() => import("./paneller/YayinPaneli").then((m) => ({ default: m.YayinPaneli })));
 
 // HyperFrames sürümü ve son güncelleme denemesi (ADR 0051). Güncelleme arka planda olur; rozet yalnız bilgi verir.
 const HfRozeti: React.FC = () => {
@@ -94,12 +94,12 @@ const bilesenler: Record<string, React.FC<IDockviewPanelProps>> = {
   mikser: sar("Ses", MikserPaneli),
   denetim: sar("Denetim", DenetimPaneli),
   teslim: sar("Çıktı ayarları", TeslimPaneli),
+  yayin: sar("Yayın metni", YayinPaneli),
   ajan: sar("AI", AjanPaneli),
-  kapak: sar("Kapak", KapakPaneli),
   stil: sar("Video stili", StilPaneli),
   kurallar: sar("Kurallar", KurallarPaneli),
 };
-const BASLIK: Record<string, string> = { proje: "Proje", medya: "Medya", cikti: "Çıktılar", kutuphane: "Kütüphane", kaynak: "Kaynak", program: "Program", isler: "İşler", timeline: "Timeline", efekt: "Klip", altyazi: "Altyazı", mikser: "Ses", denetim: "Denetim", teslim: "Çıktı ayarları", ajan: "AI", kapak: "Kapak", stil: "Video stili", kurallar: "Kurallar" };
+const BASLIK: Record<string, string> = { proje: "Proje", medya: "Medya", cikti: "Çıktılar", kutuphane: "Kütüphane", kaynak: "Kaynak", program: "Program", isler: "İşler", timeline: "Timeline", efekt: "Klip", altyazi: "Altyazı", mikser: "Ses", denetim: "Denetim", teslim: "Çıktı ayarları", yayin: "Yayın metni", ajan: "AI", stil: "Video stili", kurallar: "Kurallar" };
 
 const ekleyici = (api: DockviewApi) => (id: string, position?: any) => api.addPanel({ id, component: id, title: BASLIK[id], position });
 const yan = (referencePanel: string, direction: string) => ({ referencePanel, direction });
@@ -125,9 +125,10 @@ const ALANLAR: Record<string, { ad: string; paneller: string[]; kur: (api: Dockv
     efekt.api.setSize({ width: Math.round(api.width * 0.24) });
     tl.api.setActive();
   } },
-  teslim: { ad: "Teslim", paneller: ["teslim", "isler", "denetim", "program", "cikti"], kur: (api) => {
+  teslim: { ad: "Teslim", paneller: ["teslim", "yayin", "isler", "denetim", "program", "cikti"], kur: (api) => {
     const e = ekleyici(api);
     const t = e("teslim");
+    e("yayin", ic("teslim")); // ADR 0055: her teslim videosunun yayın metni, Çıktı ayarlarının yanında
     const i = e("isler", ic("teslim"));
     const d = e("denetim", yan("teslim", "right"));
     const p = e("program", yan("denetim", "right"));
@@ -144,18 +145,9 @@ const ALANLAR: Record<string, { ad: string; paneller: string[]; kur: (api: Dockv
     k.api.setSize({ width: Math.round(api.width * 0.5) });
     k.api.setActive();
   } },
-  // WHY: Kapak, Teslim alanında Çıktılar'ın arkasında gizli sekmeydi ve bulunamıyordu; kendi alanı var (ADR 0027).
-  kapak: { ad: "Kapak", paneller: ["kapak", "program", "isler"], kur: (api) => {
-    const e = ekleyici(api);
-    const k = e("kapak");
-    e("program", yan("kapak", "right"));
-    e("isler", yan("program", "below"));
-    k.api.setSize({ width: Math.round(api.width * 0.62) });
-    k.api.setActive();
-  } },
 };
-// Teslim yerleşimine Çıktı ayarları paneli eklendi (ADR 0035): yalnız onun kayıtlı yerleşimi yenilenir, diğer alanlar korunur.
-const alanAnahtari = (ad: string) => `studio.alan.${ad === "teslim" ? "v3" : "v2"}.${ad}`;
+// Teslim yerleşimine Çıktı ayarları (ADR 0035) ve Yayın metni (ADR 0055) eklendi: yalnız onun kayıtlı yerleşimi yenilenir.
+const alanAnahtari = (ad: string) => `studio.alan.${ad === "teslim" ? "v4" : "v2"}.${ad}`;
 
 const App: React.FC = () => {
   const aktif = useDepo((d) => d.aktif);

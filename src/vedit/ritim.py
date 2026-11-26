@@ -181,3 +181,27 @@ def yakin(t: float, anlar: list[float]) -> float | None:
     a = np.asarray(anlar)
     i = int(np.abs(a - t).argmin())
     return float(a[i] - t)
+
+
+def bpm_izgara(bpm: float, sure: float, *, fps: int = 30, ofset: float = 0.0) -> list[float]:
+    """Sıfır-kaymalı kare-kilitli BPM vuruş ızgarası (ADR 0062): Math.round(i * fps * 60 / bpm) / fps."""
+    if bpm <= 0 or sure <= 0 or fps <= 0:
+        return []
+    adim_kare = fps * 60.0 / bpm
+    izgara: list[float] = []
+    i = 0
+    while True:
+        t = ofset + round(i * adim_kare) / fps
+        if t > sure + 1e-6:
+            break
+        izgara.append(round(t, 4))
+        i += 1
+    return izgara
+
+
+def en_yakin_vurus(t: float, beats: list[float], *, esik: float = 0.12) -> float:
+    """t değerini eşik içindeyse en yakın beat anına mıhlar, değilse t'yi korur."""
+    fark = yakin(t, beats)
+    if fark is not None and abs(fark) <= esik:
+        return round(t + fark, 4)
+    return t

@@ -4,7 +4,7 @@ title: "Teslim ayarları: çözünürlük, kalite, kodek, kare hızı"
 status: accepted
 tags: [adr, teslim, render, studio, cozunurluk]
 created: 2026-11-13
-updated: 2026-11-13
+updated: 2026-11-25
 sources: []
 ---
 
@@ -45,3 +45,6 @@ HDR, ProRes, VP9/AV1, hedef bitrate, iki geçişli kodlama, yapay zekâ ile gör
 
 ## Doğrulama
 `tests/test_teslim.py`, `tests/test_hizli.py`, `tests/test_studio_dosya.py`, `studio/web/src/paneller/TeslimPaneli.test.ts`, tarayıcı `studio/e2e/teslim_ayar.py`. Gerçek render (10 sn kopya proje): 1440x2560 H.264, aynı ham ile H.265 `hvc1` (motor atlandı), 1080x1920 60 fps (600 kare).
+
+## Güncelleme (2026-11-25)
+Master ön ayarı, kaynağa eşle, 10-bit H.265 ve sadakat ölçümü eklendi; teslim renk dönüşümü zscale'e geçti. Ayrıntı [[0060-proxy-master-conform]].

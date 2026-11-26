@@ -4,7 +4,8 @@
 import { derle, desteklenmeyenler, type NativeKayit } from "../../../hf/derle";
 import type { KurguProps } from "../../../remotion/tipler";
 
-export interface OnizlemeVerisi { native: Record<string, NativeKayit>; oto_hf: boolean }
+export interface GrafikOnizleme { w: number; h: number; sure: number; varsayilan: Record<string, unknown> }
+export interface OnizlemeVerisi { native: Record<string, NativeKayit>; grafikler?: Record<string, GrafikOnizleme>; oto_hf: boolean }
 export interface MotorSecimi { motor: "hf" | "remotion"; neden: string }
 
 let veriSozu: Promise<OnizlemeVerisi> | null = null;
@@ -37,7 +38,7 @@ export const oynaticiYukle = (): Promise<void> => {
 export const motorSec = (k: KurguProps, v: OnizlemeVerisi | null): MotorSecimi => {
   if (k.motor === "remotion") return { motor: "remotion", neden: "kurgu motor: remotion" };
   if (!v) return { motor: "remotion", neden: "HyperFrames verisi yükleniyor" };
-  const eksik = desteklenmeyenler(k, v.native);
+  const eksik = desteklenmeyenler(k, v.native, { grafikler: v.grafikler });
   // Fizik ve karakter sahnesi render'da Remotion'dan ön render edilip HyperFrames'e gömülür; tarayıcıda ön render yok.
   if (eksik.length && eksik.every((e) => e === "sahne:fizik" || e === "sahne:karakter"))
     return { motor: "remotion", neden: "fizik/karakter sahnesi: önizleme Remotion'da; render HyperFrames (sahne ön render edilir)" };
@@ -47,14 +48,15 @@ export const motorSec = (k: KurguProps, v: OnizlemeVerisi | null): MotorSecimi =
 };
 
 // Önizleme kompozisyonu: proje dosyaları /pub/<stüdyo>/<ad>/ altından (fontlar, hf/tema.css), medya önizleme adresinden
-// (proxy), native sahneler /hfs/ altından.
+// (proxy), native sahneler /hfs/ altından, canlı HF grafikleri /hfg/ altından.
 export const onizlemeHtml = (k: KurguProps & { medya?: Record<string, string> }, v: OnizlemeVerisi, studyo: string, ad: string): string => {
   const taban = `/pub/${encodeURIComponent(studyo)}/${encodeURIComponent(ad)}/`;
   const { w, h } = k.sekans;
   return derle(k, {
     mod: "onizleme", medyaUrl: (id) => k.medya?.[id] ?? "", taban,
     calismaUrl: "/hf/calisma.js", adaUrl: "/hf/ada.js", gsapUrl: "/hf/gsap.min.js", cekirdekUrl: "/hf/native/cekirdek.js",
-    temaCssUrl: `${taban}hf/tema.css`, native: v.native,
+    temaCssUrl: `${taban}hf/tema.css`, native: v.native, grafikler: v.grafikler,
     sahneUrl: (kok, bilesen) => `/hfs/${bilesen.replace("/", "-")}/${kok}/${w}x${h}.html`,
+    grafikUrl: (kok, grafik) => `/hfg/${encodeURIComponent(studyo)}/${encodeURIComponent(ad)}/${encodeURIComponent(grafik)}/${kok}/${w}x${h}.html`,
   }).html;
 };

@@ -233,9 +233,28 @@ def isci_sec(istenen: int = 0, bos: float | None = None) -> int:
     return next((n for esik, n in BELLEK_ISCI if bos < esik), 0)
 
 
+def _derleme_ozeti(proje: Path, *ek) -> str:
+    """Derlenmiş kompozisyonun özeti: index.html, tema ve ön render eşlemesi aynıysa görüntü aynıdır (medya adları özetlidir)."""
+    import hashlib
+    h = hashlib.sha256()
+    for f in ("index.html", "hf/tema.css", "hf/onrender.json"):
+        if (proje / f).is_file():
+            h.update((proje / f).read_bytes())
+    h.update(repr(ek).encode())
+    return h.hexdigest()[:20]
+
+
 def render(p, props: Path, cikti: Path, *, kalite: str = "draft", aralik: tuple[float, float] | None = None,
-           fps: int | None = None, olcek: float = 1.0, crf: int | None = None, isci: int = 0) -> Path:
+           fps: int | None = None, olcek: float = 1.0, crf: int | None = None, isci: int = 0,
+           onbellek: bool = False, chroma: str | None = None) -> Path:
+    """Görüntü render'ı. `onbellek`: derleme özeti önceki çıktıyla aynıysa render atlanır (ADR 0058; QC videosu)."""
     proje = hazirla(p, props, olcek=olcek, pencere=aralik)
+    damga = cikti.with_name(cikti.name + ".ozet")
+    ozet = _derleme_ozeti(proje, kalite, aralik, fps, olcek, crf, chroma)
+    if onbellek and cikti.is_file() and damga.is_file() and damga.read_text(encoding="utf-8") == ozet:
+        print("  HyperFrames render atlandı: kurgu görüntüsü değişmedi", flush=True)
+        return cikti
+    damga.unlink(missing_ok=True)
     cikti.parent.mkdir(parents=True, exist_ok=True)
     # WHY: ölçüldü (instagram/1, 2026-11-22): otomatik işçi (4) en hızlısı; 8 işçi bellek yüzünden 1,8 kat yavaş.
     # isci: 0 otomatik; bellek darsa isci_sec 2'ye ya da 1'e düşürür.
@@ -245,6 +264,8 @@ def render(p, props: Path, cikti: Path, *, kalite: str = "draft", aralik: tuple[
           + (f" · {aralik[0]:g}-{aralik[1]:g} sn" if aralik else "")
           + f" · işçi {isci or 'otomatik'}" + (f" (boş bellek {bos:.1f} GB)" if bos is not None else ""), flush=True)
     t0 = time.time()
-    hf.render(proje, cikti, quality=kalite, fps=fps, workers=isci, crf=crf)
+    hf.render(proje, cikti, quality=kalite, fps=fps, workers=isci, crf=crf, chroma=chroma)
     print(f"  HyperFrames bitti · {time.time() - t0:.0f} sn", flush=True)
+    if onbellek:
+        damga.write_text(ozet, encoding="utf-8")
     return cikti

@@ -4,11 +4,13 @@ title: "İkinci repo dalgası: on beş repodan yalnız projeyi geliştiren parç
 status: accepted
 tags: [adr, hyperframes, motion, sablon, ses, hdr, teslim, kalite, ritim, antigravity, lisans]
 created: 2026-11-16
-updated: 2026-11-16
+updated: 2026-11-24
 sources: ["[[2026-11-16-ikinci-repo-dalgasi]]", "[[2026-11-16-fizik-stil-repolari]]"]
 ---
 
 # ADR: İkinci repo dalgası
+
+> [!note] Güncellendi 2026-11-24: `vedit teslim --kapak-kare` kaldırıldı ([[0056-kapak-kaldirildi]]).
 
 ## Bağlam
 Kullanıcı 2026-11-16'da on beş repo verdi ve aynı süreci istedi: kurulu olanı yeniden kurma, bizde daha iyisi olanı alma, yalnız projeyi gerçekten geliştiren yönleri al. Repolar: hyperframes, ffmpeg-skill, snapcn, hyperframes-community-skills, saas-motion-kit, open-edit, rea-video, herk-edit-kit, onetake, claude-motion-design, product-launch-motion, motion-video-kit, motion-graphics, opus-video-skills, brag.

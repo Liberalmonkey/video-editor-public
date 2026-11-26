@@ -4,11 +4,13 @@ title: "Sade arayüz: üç çalışma alanı, her iş tek yerde"
 status: accepted
 tags: [adr, studio, arayuz, ergonomi]
 created: 2026-11-12
-updated: 2026-11-15
+updated: 2026-11-24
 sources: []
 ---
 
 # ADR: Sade arayüz
+
+> [!note] Güncellendi 2026-11-24: Kapak alanı (Alt+4) kaldırıldı; çalışma alanları yeniden üçtür ([[0056-kapak-kaldirildi]]).
 
 ## Bağlam
 Kullanıcı Video Stüdyo arayüzünü karışık buldu (2026-11-12): "ses ile ilgili düzenlemeleri yaptığımız bir sayfa varsa ikincisine gerek yok, altyazıyı yalnız bir yerden düzenleyelim". Denetimde 5 çalışma alanı ve 17 panel sayıldı; Kurgu alanında sağ grupta 7 sekme vardı, ses 6 yerde, iş başlatma 7 panelde, aynı kesme işlemi 3 arayüzdeydi, "Stil" adı iki ayrı şeyi anlatıyordu.

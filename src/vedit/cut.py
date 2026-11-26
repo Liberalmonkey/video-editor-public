@@ -110,9 +110,3 @@ def remap_transcript(root: Path, edl: Edl, timemap: list[dict], words_cache: dic
     save_json(root / "build" / "transcript_cut.json", {"words": words_out})
 
 
-def map_time(timemap: list[dict], src: str, t: float) -> float | None:
-    """Kaynak zamanını (src, t) kesilmiş A-roll zamanına çevir; kesilmiş bölgedeyse None."""
-    for seg in timemap:
-        if seg["src"] == src and seg["in"] <= t <= seg["out"]:
-            return round(seg["start"] + (t - seg["in"]), 3)
-    return None

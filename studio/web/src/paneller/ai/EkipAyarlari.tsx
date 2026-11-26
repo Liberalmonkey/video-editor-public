@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import type { MotorDurum } from "../../depo";
 import { Dugme } from "../../ortak";
 import { ModelSecici, MotorSec, SeviyeSec } from "./MotorModel";
-import { editorSlotlari, GRUP_ADI, GRUPLAR, grup, kkSlotlari, type EkipAyar, type Grup, type Slot } from "./seviye";
+import { editorSlotlari, GRUP_ADI, GRUPLAR, grup, kkSlotlari, tavan, type EkipAyar, type Grup, type Slot } from "./seviye";
 
-// Ekip ayarları çekmecesi: üç grup (orkestratör, editörler, kalite kontrol), isteğe bağlı slot ezmesi, eşzamanlılık, ön ayar.
-// Günlük kullanımda kapalı kalır; seviye seçimi yeter.
+// Swarm ayarları çekmecesi: üç grubun varsayılan modeli (orkestratör kartta başka model seçebilir), isteğe bağlı slot ezmesi
+// (orkestratörün seçimini ezer), eşzamanlılık, ön ayar. Günlük kullanımda kapalı kalır (ADR 0059).
 
 const SlotSatiri: React.FC<{ ad: string; sl: Slot; durum: Record<string, MotorDurum> | null; yaz: (ek: Partial<Slot>) => void }> = ({ ad, sl, durum, yaz }) => {
   const m = durum?.[sl.motor];
@@ -39,14 +39,15 @@ export const EkipAyarlari: React.FC<{
     if (sl) ezme[s] = sl; else delete ezme[s];
     setAyar({ ...ayar, ezme });
   };
-  const ezilebilir = ["O", ...editorSlotlari(ayar.ekip_seviye), ...kkSlotlari(ayar.ekip_seviye)];
+  // Tavanın dışında kalan eski ezmeler de görünür kalır: kurulu olmayan motoru taşıyorsa kullanıcı temizleyebilsin.
+  const ezilebilir = [...new Set(["O", ...editorSlotlari(tavan(ayar)), ...kkSlotlari(tavan(ayar)), ...Object.keys(ayar.ezme ?? {})])];
   const ezilen = Object.keys(ayar.ezme ?? {}).filter((s) => ezilebilir.includes(s));
   return (
     <div className="ekip-ayarlari">
       {GRUPLAR.map((g) => <SlotSatiri key={g} ad={GRUP_ADI[g]} sl={ayar.gruplar[g]} durum={durum} yaz={(ek) => grupYaz(g, ek)} />)}
       <details className="ekip-ezme">
         <summary>Slot bazında ez{ezilen.length ? ` (${ezilen.length})` : ""}</summary>
-        <p className="ipucu">Seçilen slot grubun yerine kendi motorunu kullanır (ör. yalnız E1 için daha güçlü model).</p>
+        <p className="ipucu">Seçilen slot grubun ve orkestratörün seçimi yerine kendi motorunu kullanır (ör. yalnız E1 için daha güçlü model).</p>
         <div className="ezme-cipler">
           {ezilebilir.map((s) => (
             <label key={s} className="cip">

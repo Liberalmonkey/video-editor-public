@@ -11,6 +11,9 @@ import math
 import subprocess
 from pathlib import Path
 
+# Tek kare (görsel) render'ında bağlanan yazı tipleri: html work/ altında durur, dosyalar library/fonts'tan gelir.
+FONTLAR = {"Montserrat": "Montserrat-Variable.ttf", "Playfair Display": "PlayfairDisplay-Variable.ttf"}
+
 # Geri sarmada da aynı kare çıkmalı: video kaynakları seek bitene kadar beklenir.
 SEEK = """async t => {
   for (const a of document.getAnimations()) { a.pause(); a.currentTime = t * 1000; }
@@ -83,8 +86,7 @@ def kodlayici(out: Path) -> list[str]:
 
 
 def render(html: Path, out: Path, *, sure: float, w: int = 1920, h: int = 1080, fps: int = 30,
-           css: Path | None = None, param: dict | None = None, son_tam: bool = False,
-           js: str | None = None, sonuc: list | None = None) -> int:
+           css: Path | None = None, param: dict | None = None, son_tam: bool = False) -> int:
     """Kare sayısını döner. shortcut: tek süreç, uzun panolarda yavaşlarsa parçalı render eklenir."""
     try:
         from playwright.sync_api import sync_playwright
@@ -93,10 +95,9 @@ def render(html: Path, out: Path, *, sure: float, w: int = 1920, h: int = 1080, 
     if not html.exists():
         raise SystemExit(f"Pano yok: {html}")
     out.parent.mkdir(parents=True, exist_ok=True)
-    if out.suffix.lower() in (".png", ".jpg", ".jpeg"):  # kapak: --sure anındaki tek kare
+    if out.suffix.lower() in (".png", ".jpg", ".jpeg"):  # görsel: --sure anındaki tek kare
         with sync_playwright() as p:
             b, pg = ac(p, html, w, h, css)
-            from .kapak import FONTLAR  # kapak html'i work/ altında durur; yazı tipleri kütüphaneden bağlanır
             from .paths import FONTS_DIR
             pg.add_style_tag(content="".join(f'@font-face {{ font-family: "{ad}"; font-weight: 100 900; src: url("'
                                              + (FONTS_DIR / dosya).resolve().as_uri() + '"); }' for ad, dosya in FONTLAR.items()))
@@ -105,8 +106,6 @@ def render(html: Path, out: Path, *, sure: float, w: int = 1920, h: int = 1080, 
                         " return document.fonts.load(`${s.fontStyle} ${s.fontWeight} 40px ${s.fontFamily}`, e.textContent || 'a'); }))"
                         ".then(() => document.fonts.ready)")
             pg.evaluate(SEEK, sure)
-            if js and sonuc is not None:  # kapak ölçümü: yazı kutuları render'la aynı sayfadan
-                sonuc.append(pg.evaluate(js))
             tip = "png" if out.suffix.lower() == ".png" else "jpeg"
             pg.screenshot(path=str(out), type=tip, **({"quality": 95} if tip == "jpeg" else {}))
             b.close()
@@ -153,15 +152,3 @@ def pikselle(png: bytes, n: int) -> bytes:
     return b.getvalue()
 
 
-def geri_sarma_ayni_mi(html: Path, t: float = 3.0, *, w: int = 1920, h: int = 1080) -> bool:
-    """Aynı zamana ileri ve geri gidince birebir aynı kare çıkıyor mu?"""
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as p:
-        b, pg = ac(p, html, w, h, None)
-        pg.evaluate(SEEK, t)
-        a = pg.screenshot(type="png")
-        pg.evaluate(SEEK, t + 2.5)
-        pg.evaluate(SEEK, t)
-        c = pg.screenshot(type="png")
-        b.close()
-    return a == c

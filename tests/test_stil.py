@@ -41,10 +41,27 @@ def test_liste_iki_kaynagi_birlestirir_ve_ozel_adlari_atlar(ortam):
         "style_md": "",
         "motion_md": "",
         "referanslar": ["kare.png", "ornek.mp4"],
+        "kapak": True,
+        "palet": {},
     }
     assert sonuc[1]["hazir"] is True
+    assert sonuc[1]["kapak"] is False
+    assert stil.kapak_yolu("instagram", "aday-stil").name == "kare.png"
     assert sonuc[1]["style_md"] == "# Stil"
     assert sonuc[1]["motion_md"] == "# Hareket"
+
+
+def test_palet_tokens_renklerinden_gelir(ortam):
+    k = stil.klasor("instagram", "renkli")
+    k.mkdir(parents=True)
+    (k / "tokens.json").write_text(
+        '{"colors": {"bg": "#000000", "fg": "#FFFFFF", "accent": "#2CE66D", "surface": "#151B22", "muted": "#8B949E"}}',
+        encoding="utf-8",
+    )
+    assert stil.palet("instagram", "renkli") == {
+        "zemin": "#000000", "yazi": "#FFFFFF", "vurgu": "#2CE66D", "ikincil": "#151B22", "soluk": "#8B949E",
+    }
+    assert stil.palet("instagram", "yok") == {}
 
 
 def test_uret_referans_yok_basarili_ve_bozuk_tokens(ortam, monkeypatch):

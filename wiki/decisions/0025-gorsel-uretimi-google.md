@@ -4,11 +4,13 @@ title: "Görsel üretimi: ücretsiz Google araçları ve kodla yazı katmanı"
 status: accepted
 tags: [adr, gorsel, kapak, google, flow, antigravity]
 created: 2026-11-08
-updated: 2026-11-09
+updated: 2026-11-24
 sources: []
 ---
 
 # ADR: Görsel üretimi Google araçlarıyla
+
+> [!note] Güncellendi 2026-11-24: kapak üretimi kaldırıldı ([[0056-kapak-kaldirildi]]). Yazı şablonu `library/gorsel/sablon.html`'e taşındı; görsel üretimi (sunum, B-roll, loop karesi) sürer.
 
 ## Bağlam
 Kullanıcı kapak (YouTube, Instagram), sunum grafiği ve videoda kullanılacak görselin ajan tarafından üretilmesini istedi; üretimin dengeli olmasını şart koştu (2026-11-08). Bütçe 0 USD kuralı sürüyor. Araştırma ikinci beyinde: `knowledge/sources/2026-11-08-google-araclari.md`.

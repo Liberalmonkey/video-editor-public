@@ -14,9 +14,16 @@ Strateji: `wiki/decisions/0004-ses-efekti-stratejisi.md`, `wiki/concepts/sfx-str
 4. `vedit sfx resolve`: dosya seçer, tekrarlamaz, peak'i hizalar, yoksa sentezler.
 5. `vedit mix` → `vedit qa` loudness.
 
+## Ses fikri (ADR 0064)
+- Yaratıcı brifin `ses` alanı (müzik karakteri, sessizlik ve vuruş anları) bütün ses kararlarına yön verir (`yaratici-yon`); brif yoksa standart akış sürer.
+- **Sessizlik ve vuruş:** imza anı ya da büyük açıklamadan önce 0,3–0,6 saniye müzik ve efekt geri çekilir; bu boşluk ardından gelen vuruşu iki kat güçlü duyurur.
+- **Riser → kesim:** beklenti kurulan geçişlerde riser tam kesim ya da reveal karesinde sonlanır; ardından tek darbe ya da bilinçli sessizlik gelir.
+- **Ses öncülü (J-cut) açılış:** yeni sahnenin ya da cümlenin sesini görüntü kesiminden birkaç kare önce başlatarak geçişi doğal bağla.
+- **Enerji eğrisi:** SFX yoğunluğu ve gücü brifin enerji eğrisini izler; sakin bölümlerde ses geri çekilir. Her bölüm açılışına efekt koymak zorunlu değil, yalnızca içerik ve enerji desteklediğinde seçilen bir adaydır.
+
 ## SFX kuralları
 - Her ses ekranda görünen ya da söylenen bir olaya bağlı; boşluk doldurmak için ses yok.
-- Yoğunluk ≤ 1 / 0.4 sn; kısa format ~4–8 / 15 sn, uzun format 6–15 / dk.
+- Yoğunluk ≤ 1 / 0.4 sn; başlangıç değeri olarak kısa formatta 15 saniyede yaklaşık 4–8, uzun formatta dakikada 6–15 olay (brifin enerji eğrisi kazanır).
 - Seviye: soft −9 dB (UI, metin, B-roll) · medium −5 dB (vurgu, bölüm) · hard −1.5 dB (tek büyük an). Konuşmayı asla bastırmaz.
 - Riser reveal'den 1–2 sn önce başlar, `t` = reveal; ardından impact ya da sessizlik.
 - Aynı whoosh 6 kezden fazla duyulursa kütüphaneyi büyüt.

@@ -1,8 +1,0 @@
-{
- "aciklama": "Beyaz yazı, son söz mavi kutuda (11 kapak).",
- "kutu": true,
- "css": {
-  "--vurgu": "#007AFF",
-  "--kontur-k": "0.35vh"
- }
-}

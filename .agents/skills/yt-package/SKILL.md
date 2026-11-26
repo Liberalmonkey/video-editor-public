@@ -55,4 +55,4 @@ copies, and the last line of every run is the question: **Yayınla mı, değişt
 - Araçlar proje kökünden `python -X utf8 .claude/skills/...` ile çalışır (Windows'ta `python3` yok; `-X utf8` Türkçe karakterleri korur). TR desteği yerel yamadır, kontrolü `.claude/skills/yt-script/test_tr.py`.
 - Uydurma sayı yok: eksik veri `[KAYNAK?]` olarak işaretlenir.
 - Yayın metinleri (başlık, thumbnail brief, açıklama, bölümler) teslim klasöründe tek dosyada toplanır: `Projeler/outputs/<stüdyo>/<proje>/yayin.md`.
-- Kapak adayları vedit/OpenMontage çıktısından gelir (`cover*.jpg`); brief bunlardan birini ya da yeni çekimi hedefler. Kapak görseli ve yazı katmanı `gorsel-uret` skill'iyle üretilir (`library/kapak/sablon.html`).
+- Kapak görseli bu projede üretilmez (ADR 0056); paket kapak metni önerisini yalnız metin olarak verir, görseli kullanıcı kendi aracıyla hazırlar.

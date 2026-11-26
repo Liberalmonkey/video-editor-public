@@ -1,14 +1,16 @@
 ---
 type: decision
 title: "Kapak iş akışı v2: video seç, fikri geliştir, üret, bölgesel düzelt, master prompt ve dış görsel"
-status: accepted
+status: superseded
 tags: [adr, kapak, thumbnail, youtube, instagram, antigravity, nano-banana, studio]
 created: 2026-11-22
-updated: 2026-11-22
+updated: 2026-11-24
 sources: ["[[2026-11-22-kapak-arastirmasi-v2]]", "[[0027-kapak-sayfasi]]"]
 ---
 
 # ADR: Kapak iş akışı v2
+
+> [!note] Güncellendi 2026-11-24: kapak özelliği kaldırıldı, bu karar `superseded`. Bkz. [[0056-kapak-kaldirildi]].
 
 ## Bağlam
 Kullanıcı Kapak sayfasının profesyonel bir YouTube ve Instagram kapak aracına dönüşmesini istedi (2026-11-22). İstekleri şunlardı:

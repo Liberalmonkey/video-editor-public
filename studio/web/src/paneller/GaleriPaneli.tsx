@@ -1,6 +1,6 @@
 // WHY: bkz. wiki/decisions/0039-fizik-ritim-galeri.md. Stil ve motion galerisi: stil paketi, tema, motion, fizik ve ışık
 // presetleri, konuşan karakter ve hazır efektler tek ızgarada; yan yana karşılaştırma ve tek tıkla kurguya ekleme.
-import { Columns2, Plus, X } from "lucide-react";
+import { Columns2, Eye, EyeOff, Plus, X } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { istek } from "../api";
 import { useDepo } from "../depo";
@@ -11,7 +11,7 @@ import { useKurgu } from "../zaman/depo";
 export interface GaleriOge {
   tur: string; id: string; title: string; ne_zaman?: string; poster_url?: string | null; video_url?: string | null;
   palet?: string[]; font?: string | null; studyo?: string; kind?: string; sablon?: boolean; file?: string; amac?: string;
-  sure?: number; tags?: string[];
+  sure?: number; tags?: string[]; eski?: boolean; gizli?: boolean;
   param?: Record<string, { tip: string; vars: any; min?: number; max?: number; secenek?: string[]; birim?: string }>;
 }
 
@@ -20,10 +20,10 @@ const TURLER: [string, string][] = [["", "Tümü"], ["stil", "Stil paketi"], ["t
 const GENIS = new Set(["tema", "fizik", "isik", "karakter"]); // 16:9 önizleme
 const EN_COK_KARSILASTIR = 4;
 
-// Saf süzgeç: test edilir.
-export const galeriSuz = (ogeler: GaleriOge[], tur: string, ara: string) => {
+// Saf süzgeç: test edilir. ADR 0061: gizlenen öğe ve eski (Arşiv) motion yalnız "Gizlenenleri göster" açıkken.
+export const galeriSuz = (ogeler: GaleriOge[], tur: string, ara: string, hepsi = false) => {
   const kelimeler = ara.toLocaleLowerCase("tr").split(/\s+/).filter(Boolean);
-  return ogeler.filter((o) => (!tur || o.tur === tur) && kelimeler.every((k) =>
+  return ogeler.filter((o) => (hepsi || (!o.gizli && !o.eski)) && (!tur || o.tur === tur) && kelimeler.every((k) =>
     [o.id, o.title, o.ne_zaman, o.kind, o.amac, ...(o.tags ?? [])].filter(Boolean).join(" ").toLocaleLowerCase("tr").includes(k)));
 };
 
@@ -104,9 +104,20 @@ export const GaleriPaneli: React.FC = () => {
   const [sure, setSure] = useState(4);
   const [saydam, setSaydam] = useState(true);
   const [is, setIs] = useState(false);
+  const [hepsi, setHepsi] = useState(false);
 
-  useEffect(() => { istek("/api/galeri").then((r) => setOgeler(r.ogeler)).catch(hata); }, []);
-  const liste = useMemo(() => galeriSuz(ogeler ?? [], tur, ara), [ogeler, tur, ara]);
+  const al = () => istek("/api/galeri").then((r) => setOgeler(r.ogeler)).catch(hata);
+  useEffect(() => { al(); }, []);
+  const liste = useMemo(() => galeriSuz(ogeler ?? [], tur, ara, hepsi), [ogeler, tur, ara, hepsi]);
+  // Kodla tanımlı öğe silinemez, gizlenir; motion dosyası Motion sekmesinden silinir (ADR 0061).
+  const gizle = async (o: GaleriOge, g: boolean) => {
+    try {
+      await istek("/api/galeri/gizle", { method: "POST", json: { anahtar: `${o.tur}:${o.id}`, gizle: g } });
+      bildir(g ? `${o.title} gizlendi. "Gizlenenleri göster" ile geri alınır.` : `${o.title} yeniden görünür`);
+      setSecili(null);
+      await al();
+    } catch (e) { hata(e); }
+  };
   const isiklar = useMemo(() => (ogeler ?? []).filter((o) => o.tur === "isik"), [ogeler]);
   const anahtar = (o: GaleriOge) => `${o.tur}/${o.id}`;
   const karsiVar = (o: GaleriOge) => karsi.some((x) => anahtar(x) === anahtar(o));
@@ -188,10 +199,11 @@ export const GaleriPaneli: React.FC = () => {
       <div className="arac">
         <input type="search" aria-label="Galeride ara" placeholder="Ara: domino, gün batımı, finans" value={ara} onChange={(e) => setAra(e.target.value)} style={{ flex: 1, minWidth: 0 }} />
         <Dugme disabled={karsi.length < 2} title="İşaretlenen seçenekleri yan yana oynat" onClick={() => setAcik(true)}><Columns2 size={14} /> Karşılaştır{karsi.length ? ` (${karsi.length})` : ""}</Dugme>
+        <Dugme aria-pressed={hepsi} title="Gizlenen öğeleri ve Arşiv'deki eski motion kayıtlarını da göster" onClick={() => setHepsi(!hepsi)}>{hepsi ? <EyeOff size={14} /> : <Eye size={14} />} {hepsi ? "Gizlenenleri sakla" : "Gizlenenleri göster"}</Dugme>
       </div>
       <div className="motion-cipler" role="tablist" aria-label="Galeri türü">
         {TURLER.map(([k, et]) => {
-          const n = galeriSuz(ogeler, k, "").length;
+          const n = galeriSuz(ogeler, k, "", hepsi).length;
           return n || !k ? <button key={k} type="button" role="tab" className="sekme" aria-selected={tur === k} onClick={() => setTur(k)}>{et}<span className="sayi">{n}</span></button> : null;
         })}
       </div>
@@ -216,7 +228,13 @@ export const GaleriPaneli: React.FC = () => {
               <label style={{ flexDirection: "row", alignItems: "center", gap: 6 }}><input type="checkbox" checked={saydam} onChange={(e) => setSaydam(e.target.checked)} /> Saydam zemin (üst izde)</label>
             </div>
           )}
-          <Dugme tur="birincil" disabled={is} onClick={eylem}><Plus size={14} /> {is ? "Hazırlanıyor" : eylemAdi[secili.tur]}</Dugme>
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <Dugme tur="birincil" disabled={is} onClick={eylem}><Plus size={14} /> {is ? "Hazırlanıyor" : eylemAdi[secili.tur]}</Dugme>
+            <span style={{ flex: 1 }} />
+            <Dugme title={secili.gizli ? "Galeride yeniden göster" : "Galeriden gizle (silinmez)"} onClick={() => gizle(secili, !secili.gizli)}>
+              {secili.gizli ? <Eye size={14} /> : <EyeOff size={14} />} {secili.gizli ? "Göster" : "Gizle"}
+            </Dugme>
+          </div>
         </div>
       )}
       {acik && karsi.length > 1 && <Karsilastir ogeler={karsi} kapat={() => setAcik(false)} cikar={(o) => setKarsi(karsi.filter((x) => anahtar(x) !== anahtar(o)))} />}

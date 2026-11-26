@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight, RotateCcw, ScanSearch, Scissors, Trash2 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { AltyaziStil } from "../../../remotion/tipler";
-import { istek } from "../api";
+import { istek, kutuphaneAl } from "../api";
 import { useDepo } from "../depo";
 import { Bos, Dugme, IkonDugme } from "../ortak";
 import { useKurgu } from "../zaman/depo";
@@ -18,7 +18,7 @@ const StilFormu: React.FC = () => {
   const duzenle = useKurgu((d) => d.duzenle);
   const hata = useDepo((d) => d.hata);
   const [fontlar, setFontlar] = useState<{ id: string; file: string }[]>([]);
-  useEffect(() => { istek("/api/kutuphane").then((v) => setFontlar(v.font)).catch(hata); }, []);
+  useEffect(() => { kutuphaneAl().then((v) => setFontlar(v.font)).catch(hata); }, []);
   if (!altyazi) return null;
   const stil = altyazi.stil;
   const degis = (p: Partial<AltyaziStil>, b?: string) => duzenle("Altyazı stili", (d) => { d.altyazi.stil = { ...(d.altyazi.stil ?? STANDART), ...p }; }, b && `altyazi.${b}`);

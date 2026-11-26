@@ -78,6 +78,13 @@ def test_bul_belirsiz_ve_yok(kok):
         hizli.bul("yok")
 
 
+def test_bul_tam_ad_onek_kardesine_ragmen_bulunur(kok):
+    (kok / "Projeler/inputs/instagram/08-demo-hiz").mkdir()
+    assert hizli.bul("08-demo").ad == "08-demo"
+    assert hizli.bul("instagram/08-demo").ad == "08-demo"
+    assert hizli.bul("08-demo-hiz").ad == "08-demo-hiz"
+
+
 def test_pj_input_girdiye_gerisi_worke(kok):
     root = kok / "Projeler/outputs/ugc/x/work"
     assert paths.pj(root, "input/a.mp4") == kok / "Projeler/inputs/ugc/x/a.mp4"

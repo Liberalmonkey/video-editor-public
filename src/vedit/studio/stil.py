@@ -175,6 +175,18 @@ def referans_indir(studyo: str, ad: str, dosya: str):
     return FileResponse(f, filename=f.name, headers={"X-Content-Type-Options": "nosniff"})
 
 
+@router.get("/api/stil/{studyo}/{ad}/kapak")
+def stil_kapak(studyo: str, ad: str):
+    """Stillerim kartının kapağı (ADR 0029): katalog önizlemesi, yoksa ilk görsel referans."""
+    _studyo(studyo)
+    _ad(ad)
+    f = stil.kapak_yolu(studyo, ad)
+    if f is None:
+        raise HTTPException(404, "Kapak yok")
+    tur = {".png": "image/png", ".webp": "image/webp"}.get(f.suffix.lower(), "image/jpeg")
+    return FileResponse(f, media_type=tur, headers={"Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff"})
+
+
 @router.get("/api/stil/{studyo}/{ad}/varliklar")
 def stil_varliklar_liste(studyo: str, ad: str):
     _studyo(studyo)

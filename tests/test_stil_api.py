@@ -307,3 +307,15 @@ def test_dosya_stil_koku_erisim_proxy_korumasi_ve_path_traversal_reddi(ortam, mo
     ):
         r_saldiri = c.get(saldiri)
         assert r_saldiri.status_code != 200 or b"cok-gizli" not in r_saldiri.content
+
+
+def test_stil_kapak_ucu_gorsel_referansi_verir_yoksa_404(ortam):
+    c, _ = ortam
+    assert c.get("/api/stil/instagram/stil-a/kapak").status_code == 404
+    r = stil.referans_klasoru("instagram", "stil-a")
+    r.mkdir(parents=True)
+    (r / "a.mp4").write_bytes(b"v")
+    (r / "b.png").write_bytes(b"png")
+    yanit = c.get("/api/stil/instagram/stil-a/kapak")
+    assert yanit.status_code == 200 and yanit.headers["content-type"] == "image/png"
+    assert c.get("/api/stil/instagram").json()["stiller"][0]["kapak"] is True  # stil-a ilk sırada

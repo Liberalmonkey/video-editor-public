@@ -13,7 +13,7 @@ Kullanıcı her şeyi girdi klasörüne koyar, videoyu çıktı klasöründen al
 
 ```
 Projeler/inputs/<stüdyo>/<proje>/        ham çekim, ekran görüntüsü, senaryo, ISTEK.md
-Projeler/outputs/<stüdyo>/<proje>/       teslim mp4, srt, kapak, yayın metni, NOTLAR.md
+Projeler/outputs/<stüdyo>/<proje>/       teslim mp4, srt, yayın metni, NOTLAR.md
 Projeler/outputs/<stüdyo>/<proje>/work/  analysis, edit, renders, qa, public, sure.jsonl
 ```
 
@@ -63,7 +63,7 @@ Kurallar `usta-editor` ve `viral-kurgu`; kod sahnesi varsa `sahne-motoru` tablos
 
 ## 4. Teslim
 
-Kullanıcı onaylayınca çıktı `Projeler/outputs/<s>/<p>/<ad>.mp4`; eskisinin üzerine yazma, `-v2` ekle. YouTube için elle: `/yt-package`, `/yt-seo`, `/yt-chapters` → `yayin.md`. Her videoda yayın paketi `Projeler/outputs/<s>/<p>/yayin.md` (`viral-kurgu` Yayın paketi): açıklama, hashtag, kapak (`vedit kapak`, `kapak-youtube` / `kapak-instagram`; varsayılan 1, istenirse en çok 5 aday). Paket çıktıyla birlikte verilir, kullanıcı istemeden de. Yayınlama. Yeniden kullanılabilir grafik çıktıysa kütüphaneye al (`library/motion/custom/<id>/`, şeffaf `.webm` + kaynak, manifest), kilit öner.
+Kullanıcı onaylayınca çıktı `Projeler/outputs/<s>/<p>/<ad>.mp4`; eskisinin üzerine yazma, `-v2` ekle. YouTube için elle: `/yt-package`, `/yt-seo`, `/yt-chapters` → `yayin.md`. Her videoda yayın paketi `Projeler/outputs/<s>/<p>/yayin.md` (`viral-kurgu` Yayın paketi): başlık, açıklama, hashtag (`vedit yayin`). Paket çıktıyla birlikte verilir, kullanıcı istemeden de. Yayınlama. Yeniden kullanılabilir grafik çıktıysa kütüphaneye al (`library/motion/custom/<id>/`, şeffaf `.webm` + kaynak, manifest), kilit öner.
 
 ## 5. Kaizen
 

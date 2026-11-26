@@ -36,6 +36,7 @@ Giriş 0.35–0.6 sn, çıkış 0.2–0.3 sn (hep girişten kısa), stagger 0.05
 Sağ/yukarı = ilerleme · sol/aşağı = geri · büyüme = önem · küçülme = arka plan · dönme = durum değişimi · renk vurgusu = önemli. Videoda sabit; director `scenes.json → motion_language`'e yazar.
 
 ## 5. Ritim
+- Aşağıdaki süre ve sıklık sayıları başlangıç değeridir; yaratıcı brifin enerji eğrisi ve ritim kararı kazanır (`yaratici-yon`).
 - Büyük andan (reveal, stat, CTA) önce 300–600 ms durgunluk.
 - Kısa formatta her 1–2 sn, uzunda her 3–8 sn anlamlı değişim; ölü zaman ≤ 0.5 sn.
 - 2–3 geçiş ailesi (`cut`, `match`, `push`, `mask`, `dissolve`); her sahne birini kullanır.
@@ -80,7 +81,7 @@ Sağ/yukarı = ilerleme · sol/aşağı = geri · büyüme = önem · küçülme
 - Pano gerekiyorsa önce `library/boards/katalog.md`; render `vedit pano`. Stil kararları `sanat-yonetimi`, düzeltme geçmişi `library/checks.md`.
 
 ## 12. Native motion zanaatı (ADR 0045)
-Native bileşeni yazarken ya da kurguya koyarken. Bileşenler iki biçimde durur: Remotion kaynağı `studio/remotion/motion/` (sözleşme `SOZLESME.md`) ve HyperFrames sahnesi `library/motion/hf/<aile>-<ad>/sahne.html` (ADR 0051, `library/motion/hf/SOZLESME.md` "Native bileşen taşıma"); render ikincisini kullanır, ikisi `scripts/hf_native_karsilastir.py` ile birebir tutulur. Kurallar ikisinde de aynı; ölçülebilenler kapıdır (`tests/test_motion_kurallari.py`, `kurgu_kalite`).
+Native bileşeni yazarken ya da kurguya koyarken. Bileşenler iki biçimde durur: Remotion kaynağı `studio/remotion/motion/` (sözleşme `SOZLESME.md`) ve HyperFrames sahnesi `library/motion/hf/<aile>-<ad>/sahne.html` (ADR 0051, `library/motion/hf/SOZLESME.md` "Native bileşen taşıma"); render ikincisini kullanır, ikisi `scripts/hf_native_karsilastir.py` ile birebir tutulur. Kurallar ikisinde de aynı; ölçülebilenler kapıdır (`tests/test_motion_kurallari.py`, `kurgu_kalite`). Aşağıdaki süre, oran ve kare sayıları başlangıç değeridir; yaratıcı brif ve hareket kişiliği farklı bir ritim gerektirdiğinde onlar kazanır (teknik kapılar ve P0 kuralları aynen kalır).
 - **Amaç:** her grafik söylenen bir kelimeye çapalıdır (`capa`), giriş kelimeden 2-4 kare önce.
 - **Zaman:** giriş 0,3-0,5 sn; iki kez okunacak kadar tut; çıkış girişten kısa. İkon 1-1,6 sn, alt bant 2,5-4 sn, kart en çok 3 sn.
 - **Eğri:** doğrusal yok. Stilin adlı eğrileri enter, exit, emphasis, settle; piksel stilde basamak.
@@ -94,5 +95,15 @@ Native bileşeni yazarken ya da kurguya koyarken. Bileşenler iki biçimde durur
 - **Geçiş:** hep sonraki çekimi gösterir: `sil`, `kay`, `saat`, `iris`, `kirbac`, `isik`, `piksel`.
   - Reels'te 6-12 kare; orta nokta kesimde, geçiş sesi kendiliğinden.
   - Düz tam kare renk en çok 2 kare; V2'ye `gecis-*` bindirmesi konmaz.
-- **Çeşitlilik:** aynı grafik art arda gelmez. Yoğunluk `--motion` seviyesine göre.
+- **Çeşitlilik:** aynı grafik art arda gelmez. Yoğunluk brifin enerji eğrisini ve `--motion` seviyesini izler.
 - **Kaynaklar (yalnız ilke, kopya yok):** School of Motion (graph editor, anticipation/follow-through, transitions), Ben Marriott (smooth transitions, overshoot-settle), Jake In Motion (easing eğrileri). Notlar: `work/agy/2026-11-19-motion/A/A3-zanaat.md`.
+
+## 13. Yönetmen katmanı ve 3D (ADR 0063)
+- Grafik yazmadan önce: duygu, hareket kişiliği (`oyuncu`, `premium`, `kurumsal`, `enerjik`; stilin `motion_kisilik` alanı), mikro-hikâye (kur, eylem, çözüm) ve 1/3 kuralı. Motion brifi beş bölümdür: girdi, yön (tek iplik öğe ve yasak listesi), yapı, kurulum, tuzaklar. Ayrıntı: `references/yonetmen-katmani.md`.
+- GSAP eklentileri (SplitText, drawSVG, morphSVG, motionPath, physics2D) ve tema eğrileri (`giris`, `cikis`, `vurgu`, `oturma`) her kompozisyonda hazırdır; three.js 3D sahne `uc.js` ile. Kurallar `hf-gsap-uc` skill'inde.
+
+## 14. Fikir önce (ADR 0064)
+- Grafik yalnızca süs ya da boşluk dolgusu değildir; yaratıcı brifin görsel metaforunu ve iplik öğesini taşır (`yaratici-yon`).
+- Aynı anlatı işlevini (örneğin her hook, bölüm başı, metrik ya da kapanışı) her videoda aynı bileşenle karşılamak şablon kokusudur; seçim katalog sırasına değil içeriğe ve brife dayanır.
+- Brifteki imza anını akılda kalıcı biçimde teslim etmek için hazır şablon yerine özel HyperFrames kompozisyonu yazmak meşrudur; render sözleşmesi, P0 kuralları ve seçili stilin tema token'ları özel kompozisyonda da geçerlidir.
+- Yaratıcı brif yoksa standart akış ve stil token'ları ile üretim sürer.

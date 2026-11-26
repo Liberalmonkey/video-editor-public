@@ -1,7 +1,7 @@
-import { Player, type PlayerRef } from "@remotion/player";
+import type { PlayerRef } from "@remotion/player";
+import { yokla } from "../yokla";
 import { CornerDownLeft, FastForward, Pause, Play, Replace, Rewind, SkipBack, SkipForward, StepBack, StepForward, Volume2 } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Kurgu } from "../../../remotion/Kurgu";
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { KurguProps } from "../../../remotion/tipler";
 import { useDepo } from "../depo";
 import { Bos, Dugme, IkonDugme } from "../ortak";
@@ -11,6 +11,10 @@ import { motorSec, onizlemeHtml, onizlemeVerisi, oynaticiYukle, type MotorSecimi
 import { bitisHesapla } from "../zaman";
 import * as K from "../zaman/komutlar";
 import { dinlemeAl, dinlemeYaz, metreBagla } from "../zaman/metre";
+
+// WHY: bkz. wiki/decisions/0057-her-makinede-hiz.md. Remotion oynatıcısı ve kurgusu (three.js dahil ~1,1 MB) yalnız HyperFrames
+// yapamadığında gerekir; statik içe aktarma her açılışta indiriyordu.
+const RemotionMonitor = React.lazy(() => import("./RemotionMonitor"));
 
 const ZamanKodu: React.FC = () => {
   const t = useKurgu((d) => d.zaman);
@@ -180,22 +184,27 @@ export const ProgramMonitor: React.FC = () => {
   const giris = useKurgu((d) => d.giris);
   const cikis = useKurgu((d) => d.cikis);
   const ayarla = useKurgu((d) => d.ayarla);
-  const player = useRef<PlayerRef>(null);
+  const player = useRef<PlayerRef | null>(null);
+  const [oyuncu, setOyuncu] = useState<PlayerRef | null>(null);
+  const oyuncuRef = useCallback((r: PlayerRef | null) => { player.current = r; setOyuncu(r); }, []);
   const solo = useKurgu((d) => d.solo);
   // Solo yalnız önizlemeyi etkiler, kurguya yazılmaz.
   const girdi = useMemo(() => kurgu && ({ ...kurgu, medya, tema, bolgeler: bolgeler ?? undefined, onizleme: true, metreBagla, izler: solo.length ? kurgu.izler.map((i) => ({ ...i, sessiz: i.sessiz || !solo.includes(i.id) })) : kurgu.izler }), [kurgu, medya, tema, bolgeler, solo]);
   const sure = kurgu ? bitisHesapla(kurgu.klipler) : 0;
-  const [veri, setVeri] = useState<OnizlemeVerisi | null>(null);
-  useEffect(() => { onizlemeVerisi(true).then(setVeri).catch(() => setVeri(null)); }, [aktif?.studyo, aktif?.ad]);
-  const secim = useMemo(() => (kurgu ? motorSec(kurgu, veri) : null), [kurgu, veri]);
+  // undefined: yükleniyor (motor henüz seçilmez; eskiden bu arada Remotion kurulup sonra HF'ye geçiliyordu), null: veri yok.
+  const [veri, setVeri] = useState<OnizlemeVerisi | null | undefined>(undefined);
+  useEffect(() => {
+    setVeri(undefined);
+    onizlemeVerisi(true).then(setVeri).catch(() => setVeri(null));
+  }, [aktif?.studyo, aktif?.ad]);
+  const secim = useMemo(() => (kurgu && veri !== undefined ? motorSec(kurgu, veri) : null), [kurgu, veri]);
   const hfMi = secim?.motor === "hf" && !!veri;
-  const var_ = !!girdi && !hfMi;
 
   // Test köprüsü: ölçüm betikleri kullanır.
   useEffect(() => { (window as any).__studio = { player: player.current, depo: useKurgu }; });
 
   useEffect(() => {
-    const p = player.current;
+    const p = oyuncu;
     oyuncuBagla(p);
     if (!p) return;
     const fpsAl = () => useKurgu.getState().kurgu?.sekans.fps ?? 30;
@@ -215,7 +224,7 @@ export const ProgramMonitor: React.FC = () => {
       p.removeEventListener("ended", dur);
       oyuncuBagla(null);
     };
-  }, [var_, aktif?.ad, aktif?.studyo]);
+  }, [oyuncu]);
 
   // Proxy arka planda üretilir; hazır olunca adresler değişir.
   // Kütüphane, stil ve motion (saydam) kaynakları proxy'ye hiç girmez (app.py medya_eslemesi); onları beklemek sonsuz yoklama olur.
@@ -225,8 +234,7 @@ export const ProgramMonitor: React.FC = () => {
   });
   useEffect(() => {
     if (!proxyBekliyor) return;
-    const t = setInterval(kurguAl, 4000);
-    return () => clearInterval(t);
+    return yokla(kurguAl, 4000);
   }, [proxyBekliyor, kurguAl]);
 
   if (!aktif) return <div className="panel"><Bos baslik="Proje seçilmedi" metin="Soldaki Proje panelinden bir proje aç ya da yeni proje oluştur." /></div>;
@@ -243,14 +251,14 @@ export const ProgramMonitor: React.FC = () => {
       {proxyBekliyor && <div className="arac" style={{ minHeight: 26, padding: "2px 8px" }}><span className="rozet uyari">Proxy hazırlanıyor</span><span className="ipucu">Oynatma akıcı olmayabilir</span></div>}
       <div className="monitor">
         {hfMi ? <HfMonitor key={`hf:${aktif.studyo}/${aktif.ad}`} girdi={girdi} veri={veri!} studyo={aktif.studyo} ad={aktif.ad} hiz={hiz}
-          stil={dikey ? { height: "100%", aspectRatio: `${girdi.sekans.w} / ${girdi.sekans.h}` } : { width: "100%", aspectRatio: `${girdi.sekans.w} / ${girdi.sekans.h}`, maxHeight: "100%" }} /> : <Player
-          key={`${aktif.studyo}/${aktif.ad}`} ref={player} component={Kurgu as React.FC<any>} inputProps={girdi}
-          compositionWidth={girdi.sekans.w} compositionHeight={girdi.sekans.h} fps={fps}
-          durationInFrames={Math.max(fps, Math.ceil(sure * fps))} playbackRate={hiz}
-          initialFrame={Math.min(Math.max(fps, Math.ceil(sure * fps)) - 1, Math.round(useKurgu.getState().zaman * fps))}
-          clickToPlay={false} doubleClickToFullscreen={false} spaceKeyToPlayOrPause={false} moveToBeginningWhenEnded={false}
-          style={dikey ? { height: "100%", aspectRatio: `${girdi.sekans.w} / ${girdi.sekans.h}` } : { width: "100%", aspectRatio: `${girdi.sekans.w} / ${girdi.sekans.h}`, maxHeight: "100%" }}
-        />}
+          stil={dikey ? { height: "100%", aspectRatio: `${girdi.sekans.w} / ${girdi.sekans.h}` } : { width: "100%", aspectRatio: `${girdi.sekans.w} / ${girdi.sekans.h}`, maxHeight: "100%" }} />
+          : !secim ? <div className="ipucu">Önizleme hazırlanıyor</div>
+          : <Suspense fallback={<div className="ipucu">Önizleme hazırlanıyor</div>}><RemotionMonitor
+          key={`${aktif.studyo}/${aktif.ad}`} ref={oyuncuRef} girdi={girdi} fps={fps} hiz={hiz}
+          sureKare={Math.max(fps, Math.ceil(sure * fps))}
+          ilkKare={Math.min(Math.max(fps, Math.ceil(sure * fps)) - 1, Math.round(useKurgu.getState().zaman * fps))}
+          stil={dikey ? { height: "100%", aspectRatio: `${girdi.sekans.w} / ${girdi.sekans.h}` } : { width: "100%", aspectRatio: `${girdi.sekans.w} / ${girdi.sekans.h}`, maxHeight: "100%" }}
+        /></Suspense>}
       </div>
       <div className="tasima">
         <ZamanKodu />

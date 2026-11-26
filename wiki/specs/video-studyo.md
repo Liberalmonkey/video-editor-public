@@ -4,20 +4,19 @@ title: "Video Stüdyo"
 status: done
 tags: [arayuz, timeline, remotion]
 created: 2026-11-05
-updated: 2026-11-15
+updated: 2026-11-24
 sources: []
 ---
 
 # Spec: Video Stüdyo
 
 > [!note] Güncellendi 2026-11-15
-> Çalışma alanları dörttür: Kurgu, Teslim, Kütüphane, Kapak (Alt+4) ([[0030-sade-arayuz]], [[0027-kapak-sayfasi]]). "Arayüz içinde Claude sohbeti" artık kapsam içindedir: Kurgu alanında AI paneli ([[0026-arayuzde-ajan]]). Sonradan eklenen paneller: Video stili ([[0029-stil-paneli]]), Çıktı ayarları ([[0035-teslim-ayarlari]]), Motion ([[0036-motion-kutuphanesi-ve-ajanlar]]).
+> Çalışma alanları üçtür: Kurgu, Teslim, Kütüphane ([[0030-sade-arayuz]]); Kapak alanı kaldırıldı ([[0056-kapak-kaldirildi]]). "Arayüz içinde Claude sohbeti" artık kapsam içindedir: Kurgu alanında AI paneli ([[0026-arayuzde-ajan]]). Sonradan eklenen paneller: Video stili ([[0029-stil-paneli]]), Çıktı ayarları ([[0035-teslim-ayarlari]]), Motion ([[0036-motion-kutuphanesi-ve-ajanlar]]).
 
 > [!note] Güncellendi 2026-11-15
-> AI paneli kurguyu da başlatır: stil, kapsam (seçili klipler ya da giriş-çıkış aralığı) ve "AI ile editle", ardından önce/sonra özeti ve geri alma ([[0028-ai-edit]]). Kapak alanında kalıp, yazı stili, küçük boyut önizlemesi, ölçüm uyarıları ve eleştiri puanı vardır ([[0027-kapak-sayfasi]]).
+> AI paneli kurguyu da başlatır: stil, kapsam (seçili klipler ya da giriş-çıkış aralığı) ve "AI ile editle", ardından önce/sonra özeti ve geri alma ([[0028-ai-edit]]).
 
 > [!note] Güncellendi 2026-11-22
-> Kapak alanı 5 adımlı akıştır: Video (video ve an seçimi, yüz ve stil referansı), Fikir ve prompt (fikri agy ile geliştirme, düzenlenebilir öneri kartları), Üret (agy modeli seçimi, görsel modeli ve kota rozeti), Düzelt (yazı ya da kutu çizerek görsel), Master prompt ve teslim (altı platform için yazılı ve boş zemin prompt'u, dış görseli içe alma) ([[0052-kapak-is-akisi-v2]]).
 
 ## Problem
 Kurgu yalnız terminalden yapılıyor; kullanıcı videoyu görerek düzeltemiyor, kütüphaneyi ve dosyaları görsel yönetemiyor.

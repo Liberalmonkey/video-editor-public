@@ -89,7 +89,6 @@ export const KISAYOLLAR: Kisayol[] = [
   { id: "alan1", grup: "Görünüm", ad: "Kurgu çalışma alanı", tus: "alt+1", calis: alan("kurgu") },
   { id: "alan2", grup: "Görünüm", ad: "Teslim çalışma alanı", tus: "alt+2", calis: alan("teslim") },
   { id: "alan3", grup: "Görünüm", ad: "Kütüphane çalışma alanı", tus: "alt+3", calis: alan("kutuphane") },
-  { id: "alan4", grup: "Görünüm", ad: "Kapak çalışma alanı", tus: "alt+4", calis: alan("kapak") },
   { id: "yakin", grup: "Görünüm", ad: "Yakınlaş", tus: "=", calis: zoom("yakin") },
   { id: "yakin2", grup: "Görünüm", ad: "Yakınlaş (ikinci tuş)", tus: "+", calis: zoom("yakin") },
   { id: "uzak", grup: "Görünüm", ad: "Uzaklaş", tus: "-", calis: zoom("uzak") },

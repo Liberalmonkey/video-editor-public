@@ -2,29 +2,6 @@
  "_note": "Motion grafik / stok video kayıtları (overlay, arka plan, geçiş, lower-third). Kullanıcı dosyayı library/motion/<site>/<id>.<mp4|mov|webm> olarak koyar, ajan kaydeder. Alanlar: id, file, title, site, kind (overlay|background|transition|lower-third|icon|broll), alpha (true: şeffaf .mov/.webm; false: düz/yeşil perde), width, height, duration_s, loop, license, source_url, attribution. Lisans alanı boş dosya kullanılmaz. Projeye özel üretilen yeniden kullanılabilir grafikler (ör. abone ol) library/motion/custom/<id>/ altına konur (render <id>.webm şeffaf + kaynak dosya, git'te): site \"custom\", source alanı kaynak dosyanın yolu. Kilit ve her zaman kullanılan roller library/kit.json'da (ADR 0012).",
  "entries": [
   {
-   "id": "ok-ciz",
-   "file": "library/motion/custom/ok-ciz/ok-ciz.webm",
-   "title": "El çizimi ok: bir öğeyi göster",
-   "site": "custom",
-   "kind": "overlay",
-   "tags": [
-    "ok",
-    "callout",
-    "goster"
-   ],
-   "ne_zaman": "Karede bir öğeyi gösterirken: düğme, sayı, ürün.",
-   "alpha": true,
-   "width": 1080,
-   "height": 1080,
-   "duration_s": 2.0,
-   "loop": false,
-   "license": "project-made",
-   "source": "library/motion/custom/ok-ciz/ok-ciz.html",
-   "source_url": null,
-   "poster": "library/motion/custom/ok-ciz/poster.jpg",
-   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-ciz"
-  },
-  {
    "id": "daire-ciz",
    "file": "library/motion/custom/daire-ciz/daire-ciz.webm",
    "title": "El çizimi daire: bir öğeyi çevrele",
@@ -45,6 +22,7 @@
    "source": "library/motion/custom/daire-ciz/daire-ciz.html",
    "source_url": null,
    "poster": "library/motion/custom/daire-ciz/poster.jpg",
+   "onizleme": "library/motion/custom/daire-ciz/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur daire-ciz",
    "arsiv": "cizim/daire"
   },
@@ -68,6 +46,7 @@
    "source": "library/motion/custom/alt-cizgi/alt-cizgi.html",
    "source_url": null,
    "poster": "library/motion/custom/alt-cizgi/poster.jpg",
+   "onizleme": "library/motion/custom/alt-cizgi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur alt-cizgi",
    "arsiv": "cizim/alt-cizgi"
   },
@@ -92,6 +71,7 @@
    "source": "library/motion/custom/ustunu-ciz/ustunu-ciz.html",
    "source_url": null,
    "poster": "library/motion/custom/ustunu-ciz/poster.jpg",
+   "onizleme": "library/motion/custom/ustunu-ciz/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ustunu-ciz",
    "arsiv": "cizim/ustunu-ciz"
   },
@@ -116,6 +96,7 @@
    "source": "library/motion/custom/onay-tik/onay-tik.html",
    "source_url": null,
    "poster": "library/motion/custom/onay-tik/poster.jpg",
+   "onizleme": "library/motion/custom/onay-tik/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur onay-tik",
    "arsiv": "ikon/tik"
   },
@@ -140,6 +121,7 @@
    "source": "library/motion/custom/vurgu-patlama/vurgu-patlama.html",
    "source_url": null,
    "poster": "library/motion/custom/vurgu-patlama/poster.jpg",
+   "onizleme": "library/motion/custom/vurgu-patlama/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur vurgu-patlama"
   },
   {
@@ -162,6 +144,7 @@
    "source": "library/motion/custom/konfeti/konfeti.html",
    "source_url": null,
    "poster": "library/motion/custom/konfeti/poster.jpg",
+   "onizleme": "library/motion/custom/konfeti/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur konfeti",
    "arsiv": "parcacik/konfeti"
   },
@@ -186,6 +169,7 @@
    "source": "library/motion/custom/gecis-sil-dikey/gecis-sil-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-sil-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-sil-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-sil-dikey",
    "arsiv": "V1:sil"
   },
@@ -210,6 +194,7 @@
    "source": "library/motion/custom/gecis-sil-yatay/gecis-sil-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-sil-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-sil-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-sil-yatay",
    "arsiv": "V1:sil"
   },
@@ -234,6 +219,7 @@
    "source": "library/motion/custom/baslik-acilis/baslik-acilis.html",
    "source_url": null,
    "poster": "library/motion/custom/baslik-acilis/poster.jpg",
+   "onizleme": "library/motion/custom/baslik-acilis/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur baslik-acilis",
    "param": {
     "ust": {
@@ -269,6 +255,7 @@
    "source": "library/motion/custom/alinti-karti/alinti-karti.html",
    "source_url": null,
    "poster": "library/motion/custom/alinti-karti/poster.jpg",
+   "onizleme": "library/motion/custom/alinti-karti/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur alinti-karti",
    "param": {
     "metin": {
@@ -305,6 +292,7 @@
    "source": "library/motion/custom/altbant-konu/altbant-konu.html",
    "source_url": null,
    "poster": "library/motion/custom/altbant-konu/poster.jpg",
+   "onizleme": "library/motion/custom/altbant-konu/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur altbant-konu",
    "param": {
     "etiket": {
@@ -342,6 +330,7 @@
    "source": "library/motion/custom/altbant-kutu/altbant-kutu.html",
    "source_url": null,
    "poster": "library/motion/custom/altbant-kutu/poster.jpg",
+   "onizleme": "library/motion/custom/altbant-kutu/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur altbant-kutu",
    "param": {
     "ad": {
@@ -378,6 +367,7 @@
    "source": "library/motion/custom/altbant-serit/altbant-serit.html",
    "source_url": null,
    "poster": "library/motion/custom/altbant-serit/poster.jpg",
+   "onizleme": "library/motion/custom/altbant-serit/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur altbant-serit",
    "param": {
     "ad": {
@@ -414,6 +404,7 @@
    "source": "library/motion/custom/bildirim-karti/bildirim-karti.html",
    "source_url": null,
    "poster": "library/motion/custom/bildirim-karti/poster.jpg",
+   "onizleme": "library/motion/custom/bildirim-karti/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur bildirim-karti",
    "param": {
     "baslik": {
@@ -450,6 +441,7 @@
    "source": "library/motion/custom/cerceve-bant/cerceve-bant.html",
    "source_url": null,
    "poster": "library/motion/custom/cerceve-bant/poster.jpg",
+   "onizleme": "library/motion/custom/cerceve-bant/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-bant",
    "arsiv": "cerceve/bant"
   },
@@ -475,6 +467,7 @@
    "source": "library/motion/custom/cerceve-kayit/cerceve-kayit.html",
    "source_url": null,
    "poster": "library/motion/custom/cerceve-kayit/poster.jpg",
+   "onizleme": "library/motion/custom/cerceve-kayit/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-kayit"
   },
   {
@@ -499,6 +492,7 @@
    "source": "library/motion/custom/cerceve-kose/cerceve-kose.html",
    "source_url": null,
    "poster": "library/motion/custom/cerceve-kose/poster.jpg",
+   "onizleme": "library/motion/custom/cerceve-kose/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-kose"
   },
   {
@@ -523,6 +517,7 @@
    "source": "library/motion/custom/cerceve-kupur/cerceve-kupur.html",
    "source_url": null,
    "poster": "library/motion/custom/cerceve-kupur/poster.jpg",
+   "onizleme": "library/motion/custom/cerceve-kupur/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-kupur"
   },
   {
@@ -547,6 +542,7 @@
    "source": "library/motion/custom/cerceve-polaroid/cerceve-polaroid.html",
    "source_url": null,
    "poster": "library/motion/custom/cerceve-polaroid/poster.jpg",
+   "onizleme": "library/motion/custom/cerceve-polaroid/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-polaroid",
    "arsiv": "cerceve/polaroid"
   },
@@ -572,6 +568,7 @@
    "source": "library/motion/custom/cerceve-tarayici/cerceve-tarayici.html",
    "source_url": null,
    "poster": "library/motion/custom/cerceve-tarayici/poster.jpg",
+   "onizleme": "library/motion/custom/cerceve-tarayici/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-tarayici",
    "arsiv": "cerceve/tarayici"
   },
@@ -597,6 +594,7 @@
    "source": "library/motion/custom/cerceve-telefon/cerceve-telefon.html",
    "source_url": null,
    "poster": "library/motion/custom/cerceve-telefon/poster.jpg",
+   "onizleme": "library/motion/custom/cerceve-telefon/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-telefon",
    "arsiv": "cerceve/telefon"
   },
@@ -622,6 +620,7 @@
    "source": "library/motion/custom/cerceve-yirtik-kagit/cerceve-yirtik-kagit.html",
    "source_url": null,
    "poster": "library/motion/custom/cerceve-yirtik-kagit/poster.jpg",
+   "onizleme": "library/motion/custom/cerceve-yirtik-kagit/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur cerceve-yirtik-kagit",
    "arsiv": "cerceve/yirtik"
   },
@@ -646,6 +645,7 @@
    "source": "library/motion/custom/duman-pofu/duman-pofu.html",
    "source_url": null,
    "poster": "library/motion/custom/duman-pofu/poster.jpg",
+   "onizleme": "library/motion/custom/duman-pofu/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur duman-pofu"
   },
   {
@@ -671,6 +671,7 @@
    "source": "library/motion/custom/fiyat-etiketi/fiyat-etiketi.html",
    "source_url": null,
    "poster": "library/motion/custom/fiyat-etiketi/poster.jpg",
+   "onizleme": "library/motion/custom/fiyat-etiketi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur fiyat-etiketi",
    "param": {
     "eski": {
@@ -709,6 +710,7 @@
    "source": "library/motion/custom/fosforlu-kalem/fosforlu-kalem.html",
    "source_url": null,
    "poster": "library/motion/custom/fosforlu-kalem/poster.jpg",
+   "onizleme": "library/motion/custom/fosforlu-kalem/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur fosforlu-kalem",
    "arsiv": "cizim/fosforlu"
   },
@@ -735,6 +737,7 @@
    "source": "library/motion/custom/gecis-capraz-serit-dikey/gecis-capraz-serit-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-capraz-serit-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-capraz-serit-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-capraz-serit-dikey",
    "arsiv": "V1:sil"
   },
@@ -761,6 +764,7 @@
    "source": "library/motion/custom/gecis-capraz-serit-yatay/gecis-capraz-serit-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-capraz-serit-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-capraz-serit-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-capraz-serit-yatay",
    "arsiv": "V1:sil"
   },
@@ -787,6 +791,7 @@
    "source": "library/motion/custom/gecis-flas-dikey/gecis-flas-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-flas-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-flas-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-flas-dikey",
    "arsiv": "V1:isik"
   },
@@ -813,6 +818,7 @@
    "source": "library/motion/custom/gecis-flas-yatay/gecis-flas-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-flas-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-flas-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-flas-yatay",
    "arsiv": "V1:isik"
   },
@@ -839,6 +845,7 @@
    "source": "library/motion/custom/gecis-glitch-dikey/gecis-glitch-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-glitch-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-glitch-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-glitch-dikey",
    "arsiv": "V1:piksel"
   },
@@ -865,6 +872,7 @@
    "source": "library/motion/custom/gecis-glitch-yatay/gecis-glitch-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-glitch-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-glitch-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-glitch-yatay",
    "arsiv": "V1:piksel"
   },
@@ -891,6 +899,7 @@
    "source": "library/motion/custom/gecis-iris-dikey/gecis-iris-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-iris-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-iris-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-iris-dikey",
    "arsiv": "V1:iris"
   },
@@ -917,6 +926,7 @@
    "source": "library/motion/custom/gecis-iris-yatay/gecis-iris-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-iris-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-iris-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-iris-yatay",
    "arsiv": "V1:iris"
   },
@@ -943,6 +953,7 @@
    "source": "library/motion/custom/gecis-isik-sizintisi-dikey/gecis-isik-sizintisi-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-isik-sizintisi-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-isik-sizintisi-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-isik-sizintisi-dikey",
    "arsiv": "V1:isik"
   },
@@ -969,6 +980,7 @@
    "source": "library/motion/custom/gecis-isik-sizintisi-yatay/gecis-isik-sizintisi-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-isik-sizintisi-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-isik-sizintisi-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-isik-sizintisi-yatay",
    "arsiv": "V1:isik"
   },
@@ -995,6 +1007,7 @@
    "source": "library/motion/custom/gecis-kagit-yirtik-dikey/gecis-kagit-yirtik-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-kagit-yirtik-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-kagit-yirtik-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-kagit-yirtik-dikey",
    "arsiv": "V1:isik"
   },
@@ -1021,6 +1034,7 @@
    "source": "library/motion/custom/gecis-kagit-yirtik-yatay/gecis-kagit-yirtik-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-kagit-yirtik-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-kagit-yirtik-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-kagit-yirtik-yatay",
    "arsiv": "V1:isik"
   },
@@ -1047,6 +1061,7 @@
    "source": "library/motion/custom/gecis-murekkep-dikey/gecis-murekkep-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-murekkep-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-murekkep-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-murekkep-dikey",
    "arsiv": "V1:isik"
   },
@@ -1073,6 +1088,7 @@
    "source": "library/motion/custom/gecis-murekkep-yatay/gecis-murekkep-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-murekkep-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-murekkep-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-murekkep-yatay",
    "arsiv": "V1:isik"
   },
@@ -1099,6 +1115,7 @@
    "source": "library/motion/custom/gecis-panjur-dikey/gecis-panjur-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-panjur-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-panjur-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-panjur-dikey",
    "arsiv": "V1:sil"
   },
@@ -1125,6 +1142,7 @@
    "source": "library/motion/custom/gecis-panjur-yatay/gecis-panjur-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-panjur-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-panjur-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-panjur-yatay",
    "arsiv": "V1:sil"
   },
@@ -1151,6 +1169,7 @@
    "source": "library/motion/custom/gecis-perde-dikey/gecis-perde-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-perde-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-perde-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-perde-dikey",
    "arsiv": "V1:sil"
   },
@@ -1177,6 +1196,7 @@
    "source": "library/motion/custom/gecis-perde-yatay/gecis-perde-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-perde-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-perde-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-perde-yatay",
    "arsiv": "V1:sil"
   },
@@ -1203,6 +1223,7 @@
    "source": "library/motion/custom/gecis-sekil-perde-dikey/gecis-sekil-perde-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-sekil-perde-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-sekil-perde-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-sekil-perde-dikey",
    "arsiv": "V1:sil"
   },
@@ -1229,6 +1250,7 @@
    "source": "library/motion/custom/gecis-sekil-perde-yatay/gecis-sekil-perde-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-sekil-perde-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-sekil-perde-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-sekil-perde-yatay",
    "arsiv": "V1:sil"
   },
@@ -1255,6 +1277,7 @@
    "source": "library/motion/custom/gecis-yukari-it-dikey/gecis-yukari-it-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-yukari-it-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-yukari-it-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-yukari-it-dikey",
    "arsiv": "V1:kay"
   },
@@ -1281,6 +1304,7 @@
    "source": "library/motion/custom/gecis-yukari-it-yatay/gecis-yukari-it-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-yukari-it-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-yukari-it-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-yukari-it-yatay",
    "arsiv": "V1:kay"
   },
@@ -1305,6 +1329,7 @@
    "source": "library/motion/custom/geri-sayim/geri-sayim.html",
    "source_url": null,
    "poster": "library/motion/custom/geri-sayim/poster.jpg",
+   "onizleme": "library/motion/custom/geri-sayim/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur geri-sayim",
    "param": {
     "metin": {
@@ -1336,6 +1361,7 @@
    "source": "library/motion/custom/grafik-cizgi/grafik-cizgi.html",
    "source_url": null,
    "poster": "library/motion/custom/grafik-cizgi/poster.jpg",
+   "onizleme": "library/motion/custom/grafik-cizgi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur grafik-cizgi",
    "param": {
     "baslik": {
@@ -1376,6 +1402,7 @@
    "source": "library/motion/custom/grafik-cubuk/grafik-cubuk.html",
    "source_url": null,
    "poster": "library/motion/custom/grafik-cubuk/poster.jpg",
+   "onizleme": "library/motion/custom/grafik-cubuk/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur grafik-cubuk",
    "param": {
     "baslik": {
@@ -1420,6 +1447,7 @@
    "source": "library/motion/custom/grafik-halka/grafik-halka.html",
    "source_url": null,
    "poster": "library/motion/custom/grafik-halka/poster.jpg",
+   "onizleme": "library/motion/custom/grafik-halka/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur grafik-halka",
    "param": {
     "deger": {
@@ -1457,132 +1485,8 @@
    "source": "library/motion/custom/hiz-cizgileri/hiz-cizgileri.html",
    "source_url": null,
    "poster": "library/motion/custom/hiz-cizgileri/poster.jpg",
+   "onizleme": "library/motion/custom/hiz-cizgileri/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur hiz-cizgileri"
-  },
-  {
-   "id": "ikon-ampul",
-   "file": "library/motion/custom/ikon-ampul/ikon-ampul.webm",
-   "title": "Ampul: yanar, ışın çıkar",
-   "site": "custom",
-   "kind": "icon",
-   "tags": [
-    "fikir",
-    "ampul",
-    "ipucu",
-    "ders"
-   ],
-   "ne_zaman": "Bir fikir, ipucu ya da 'aklıma geldi' anı söylendiğinde.",
-   "alpha": true,
-   "width": 1080,
-   "height": 1080,
-   "duration_s": 1.6,
-   "loop": false,
-   "license": "project-made",
-   "source": "library/motion/custom/ikon-ampul/ikon-ampul.html",
-   "source_url": null,
-   "poster": "library/motion/custom/ikon-ampul/poster.jpg",
-   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-ampul",
-   "arsiv": "ikon/ampul"
-  },
-  {
-   "id": "ikon-ates",
-   "file": "library/motion/custom/ikon-ates/ikon-ates.webm",
-   "title": "Ateş: alev titreşir",
-   "site": "custom",
-   "kind": "icon",
-   "tags": [
-    "ates",
-    "alev",
-    "trend",
-    "sicak"
-   ],
-   "ne_zaman": "Çok iyi giden, popüler ya da 'yanıyor' denecek bir şey anlatıldığında.",
-   "alpha": true,
-   "width": 1080,
-   "height": 1080,
-   "duration_s": 1.6,
-   "loop": false,
-   "license": "project-made",
-   "source": "library/motion/custom/ikon-ates/ikon-ates.html",
-   "source_url": null,
-   "poster": "library/motion/custom/ikon-ates/poster.jpg",
-   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-ates",
-   "arsiv": "ikon/ates"
-  },
-  {
-   "id": "ikon-begeni",
-   "file": "library/motion/custom/ikon-begeni/ikon-begeni.webm",
-   "title": "Beğeni: başparmak yukarı kalkar",
-   "site": "custom",
-   "kind": "icon",
-   "tags": [
-    "begeni",
-    "like",
-    "onay",
-    "tepki"
-   ],
-   "ne_zaman": "Konuşmacı izleyiciden beğeni istediğinde ya da bir fikri onayladığında, cümlenin vurgulu kelimesinde.",
-   "alpha": true,
-   "width": 1080,
-   "height": 1080,
-   "duration_s": 1.6,
-   "loop": false,
-   "license": "project-made",
-   "source": "library/motion/custom/ikon-begeni/ikon-begeni.html",
-   "source_url": null,
-   "poster": "library/motion/custom/ikon-begeni/poster.jpg",
-   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-begeni",
-   "arsiv": "ikon/begeni"
-  },
-  {
-   "id": "ikon-kalp",
-   "file": "library/motion/custom/ikon-kalp/ikon-kalp.webm",
-   "title": "Kalp: dolar ve bir kez atar",
-   "site": "custom",
-   "kind": "icon",
-   "tags": [
-    "kalp",
-    "sevgi",
-    "begeni",
-    "tepki"
-   ],
-   "ne_zaman": "Sevilen bir şey, duygusal bir an ya da 'bunu çok sevdim' cümlesi söylendiğinde.",
-   "alpha": true,
-   "width": 1080,
-   "height": 1080,
-   "duration_s": 1.6,
-   "loop": false,
-   "license": "project-made",
-   "source": "library/motion/custom/ikon-kalp/ikon-kalp.html",
-   "source_url": null,
-   "poster": "library/motion/custom/ikon-kalp/poster.jpg",
-   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-kalp",
-   "arsiv": "ikon/kalp"
-  },
-  {
-   "id": "ikon-kaydet",
-   "file": "library/motion/custom/ikon-kaydet/ikon-kaydet.webm",
-   "title": "Kaydet: yer imi yukarıdan iner",
-   "site": "custom",
-   "kind": "icon",
-   "tags": [
-    "kaydet",
-    "yer-imi",
-    "sakla",
-    "etkilesim"
-   ],
-   "ne_zaman": "Konuşmacı 'bunu kaydet' dediğinde ya da sonra dönülecek değerli bir bilgi verildiğinde.",
-   "alpha": true,
-   "width": 1080,
-   "height": 1080,
-   "duration_s": 1.6,
-   "loop": false,
-   "license": "project-made",
-   "source": "library/motion/custom/ikon-kaydet/ikon-kaydet.html",
-   "source_url": null,
-   "poster": "library/motion/custom/ikon-kaydet/poster.jpg",
-   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-kaydet",
-   "arsiv": "ikon/kaydet"
   },
   {
    "id": "ikon-konum",
@@ -1606,6 +1510,7 @@
    "source": "library/motion/custom/ikon-konum/ikon-konum.html",
    "source_url": null,
    "poster": "library/motion/custom/ikon-konum/poster.jpg",
+   "onizleme": "library/motion/custom/ikon-konum/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-konum",
    "arsiv": "ikon/konum"
   },
@@ -1631,6 +1536,7 @@
    "source": "library/motion/custom/ikon-para/ikon-para.html",
    "source_url": null,
    "poster": "library/motion/custom/ikon-para/poster.jpg",
+   "onizleme": "library/motion/custom/ikon-para/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-para",
    "arsiv": "ikon/para"
   },
@@ -1656,6 +1562,7 @@
    "source": "library/motion/custom/ikon-paylas/ikon-paylas.html",
    "source_url": null,
    "poster": "library/motion/custom/ikon-paylas/poster.jpg",
+   "onizleme": "library/motion/custom/ikon-paylas/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-paylas",
    "arsiv": "ikon/paylas"
   },
@@ -1681,6 +1588,7 @@
    "source": "library/motion/custom/ikon-saat/ikon-saat.html",
    "source_url": null,
    "poster": "library/motion/custom/ikon-saat/poster.jpg",
+   "onizleme": "library/motion/custom/ikon-saat/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-saat",
    "arsiv": "ikon/saat"
   },
@@ -1706,56 +1614,8 @@
    "source": "library/motion/custom/ikon-takip/ikon-takip.html",
    "source_url": null,
    "poster": "library/motion/custom/ikon-takip/poster.jpg",
+   "onizleme": "library/motion/custom/ikon-takip/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-takip"
-  },
-  {
-   "id": "ikon-yorum",
-   "file": "library/motion/custom/ikon-yorum/ikon-yorum.webm",
-   "title": "Yorum: balonda üç nokta belirir",
-   "site": "custom",
-   "kind": "icon",
-   "tags": [
-    "yorum",
-    "soru",
-    "konusma",
-    "etkilesim"
-   ],
-   "ne_zaman": "Konuşmacı 'yorumlara yazın' dediğinde ya da izleyiciye soru sorduğunda.",
-   "alpha": true,
-   "width": 1080,
-   "height": 1080,
-   "duration_s": 1.6,
-   "loop": false,
-   "license": "project-made",
-   "source": "library/motion/custom/ikon-yorum/ikon-yorum.html",
-   "source_url": null,
-   "poster": "library/motion/custom/ikon-yorum/poster.jpg",
-   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-yorum"
-  },
-  {
-   "id": "ikon-zil",
-   "file": "library/motion/custom/ikon-zil/ikon-zil.webm",
-   "title": "Zil: sallanır, bildirim",
-   "site": "custom",
-   "kind": "icon",
-   "tags": [
-    "zil",
-    "bildirim",
-    "abone",
-    "hatirlatma"
-   ],
-   "ne_zaman": "Konuşmacı bildirimleri açmayı söylediğinde ya da bir uyarı, hatırlatma geldiğinde.",
-   "alpha": true,
-   "width": 1080,
-   "height": 1080,
-   "duration_s": 1.6,
-   "loop": false,
-   "license": "project-made",
-   "source": "library/motion/custom/ikon-zil/ikon-zil.html",
-   "source_url": null,
-   "poster": "library/motion/custom/ikon-zil/poster.jpg",
-   "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ikon-zil",
-   "arsiv": "ikon/zil"
   },
   {
    "id": "isin-donen",
@@ -1778,6 +1638,7 @@
    "source": "library/motion/custom/isin-donen/isin-donen.html",
    "source_url": null,
    "poster": "library/motion/custom/isin-donen/poster.jpg",
+   "onizleme": "library/motion/custom/isin-donen/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur isin-donen"
   },
   {
@@ -1801,6 +1662,7 @@
    "source": "library/motion/custom/kalp-atis/kalp-atis.html",
    "source_url": null,
    "poster": "library/motion/custom/kalp-atis/poster.jpg",
+   "onizleme": "library/motion/custom/kalp-atis/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kalp-atis"
   },
   {
@@ -1824,6 +1686,7 @@
    "source": "library/motion/custom/karsilastirma/karsilastirma.html",
    "source_url": null,
    "poster": "library/motion/custom/karsilastirma/poster.jpg",
+   "onizleme": "library/motion/custom/karsilastirma/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur karsilastirma",
    "param": {
     "sol_baslik": {
@@ -1867,6 +1730,7 @@
    "source": "library/motion/custom/kirmizi-cizgi/kirmizi-cizgi.html",
    "source_url": null,
    "poster": "library/motion/custom/kirmizi-cizgi/poster.jpg",
+   "onizleme": "library/motion/custom/kirmizi-cizgi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kirmizi-cizgi"
   },
   {
@@ -1891,6 +1755,7 @@
    "source": "library/motion/custom/kontrol-listesi/kontrol-listesi.html",
    "source_url": null,
    "poster": "library/motion/custom/kontrol-listesi/poster.jpg",
+   "onizleme": "library/motion/custom/kontrol-listesi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kontrol-listesi",
    "param": {
     "baslik": {
@@ -1927,6 +1792,7 @@
    "source": "library/motion/custom/kupur-baslik/kupur-baslik.html",
    "source_url": null,
    "poster": "library/motion/custom/kupur-baslik/poster.jpg",
+   "onizleme": "library/motion/custom/kupur-baslik/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kupur-baslik",
    "param": {
     "metin": {
@@ -1961,6 +1827,7 @@
    "source": "library/motion/custom/kutu-ciz/kutu-ciz.html",
    "source_url": null,
    "poster": "library/motion/custom/kutu-ciz/poster.jpg",
+   "onizleme": "library/motion/custom/kutu-ciz/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kutu-ciz",
    "arsiv": "cizim/kutu"
   },
@@ -1985,6 +1852,7 @@
    "source": "library/motion/custom/ok-asagi/ok-asagi.html",
    "source_url": null,
    "poster": "library/motion/custom/ok-asagi/poster.jpg",
+   "onizleme": "library/motion/custom/ok-asagi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-asagi",
    "arsiv": "ikon/ok-asagi"
   },
@@ -2009,6 +1877,7 @@
    "source": "library/motion/custom/ok-cift/ok-cift.html",
    "source_url": null,
    "poster": "library/motion/custom/ok-cift/poster.jpg",
+   "onizleme": "library/motion/custom/ok-cift/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-cift"
   },
   {
@@ -2032,6 +1901,7 @@
    "source": "library/motion/custom/ok-duz/ok-duz.html",
    "source_url": null,
    "poster": "library/motion/custom/ok-duz/poster.jpg",
+   "onizleme": "library/motion/custom/ok-duz/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-duz",
    "arsiv": "ikon/ok-sag"
   },
@@ -2056,6 +1926,7 @@
    "source": "library/motion/custom/ok-kivrik/ok-kivrik.html",
    "source_url": null,
    "poster": "library/motion/custom/ok-kivrik/poster.jpg",
+   "onizleme": "library/motion/custom/ok-kivrik/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ok-kivrik",
    "arsiv": "ikon/ok-kivrik"
   },
@@ -2080,6 +1951,7 @@
    "source": "library/motion/custom/parantez/parantez.html",
    "source_url": null,
    "poster": "library/motion/custom/parantez/poster.jpg",
+   "onizleme": "library/motion/custom/parantez/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur parantez",
    "arsiv": "cizim/parantez"
   },
@@ -2104,6 +1976,7 @@
    "source": "library/motion/custom/parilti/parilti.html",
    "source_url": null,
    "poster": "library/motion/custom/parilti/poster.jpg",
+   "onizleme": "library/motion/custom/parilti/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur parilti",
    "arsiv": "parcacik/parilti"
   },
@@ -2129,6 +2002,7 @@
    "source": "library/motion/custom/sayi-rozeti/sayi-rozeti.html",
    "source_url": null,
    "poster": "library/motion/custom/sayi-rozeti/poster.jpg",
+   "onizleme": "library/motion/custom/sayi-rozeti/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur sayi-rozeti",
    "param": {
     "deger": {
@@ -2174,6 +2048,7 @@
    "source": "library/motion/custom/sohbet-balonu/sohbet-balonu.html",
    "source_url": null,
    "poster": "library/motion/custom/sohbet-balonu/poster.jpg",
+   "onizleme": "library/motion/custom/sohbet-balonu/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur sohbet-balonu",
    "param": {
     "soru": {
@@ -2208,6 +2083,7 @@
    "source": "library/motion/custom/sok-dalgasi/sok-dalgasi.html",
    "source_url": null,
    "poster": "library/motion/custom/sok-dalgasi/poster.jpg",
+   "onizleme": "library/motion/custom/sok-dalgasi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur sok-dalgasi",
    "arsiv": "parcacik/sok-dalgasi"
   },
@@ -2232,6 +2108,7 @@
    "source": "library/motion/custom/soru-isareti/soru-isareti.html",
    "source_url": null,
    "poster": "library/motion/custom/soru-isareti/poster.jpg",
+   "onizleme": "library/motion/custom/soru-isareti/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur soru-isareti",
    "arsiv": "ikon/soru"
   },
@@ -2258,6 +2135,7 @@
    "source": "library/motion/custom/takip-cagri/takip-cagri.html",
    "source_url": null,
    "poster": "library/motion/custom/takip-cagri/poster.jpg",
+   "onizleme": "library/motion/custom/takip-cagri/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur takip-cagri",
    "param": {
     "ad": {
@@ -2297,6 +2175,7 @@
    "source": "library/motion/custom/titresim-cizgi/titresim-cizgi.html",
    "source_url": null,
    "poster": "library/motion/custom/titresim-cizgi/poster.jpg",
+   "onizleme": "library/motion/custom/titresim-cizgi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur titresim-cizgi"
   },
   {
@@ -2320,6 +2199,7 @@
    "source": "library/motion/custom/unlem/unlem.html",
    "source_url": null,
    "poster": "library/motion/custom/unlem/poster.jpg",
+   "onizleme": "library/motion/custom/unlem/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur unlem",
    "arsiv": "ikon/unlem"
   },
@@ -2344,6 +2224,7 @@
    "source": "library/motion/custom/yildiz-patlama/yildiz-patlama.html",
    "source_url": null,
    "poster": "library/motion/custom/yildiz-patlama/poster.jpg",
+   "onizleme": "library/motion/custom/yildiz-patlama/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur yildiz-patlama",
    "arsiv": "parcacik/yildiz-patlama"
   },
@@ -2370,6 +2251,7 @@
    "source": "library/motion/custom/zemin-blueprint/zemin-blueprint.html",
    "source_url": null,
    "poster": "library/motion/custom/zemin-blueprint/poster.jpg",
+   "onizleme": "library/motion/custom/zemin-blueprint/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-blueprint",
    "arsiv": "zemin/grid"
   },
@@ -2396,6 +2278,7 @@
    "source": "library/motion/custom/zemin-dalga/zemin-dalga.html",
    "source_url": null,
    "poster": "library/motion/custom/zemin-dalga/poster.jpg",
+   "onizleme": "library/motion/custom/zemin-dalga/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-dalga"
   },
   {
@@ -2421,6 +2304,7 @@
    "source": "library/motion/custom/zemin-grenli-gradyan/zemin-grenli-gradyan.html",
    "source_url": null,
    "poster": "library/motion/custom/zemin-grenli-gradyan/poster.jpg",
+   "onizleme": "library/motion/custom/zemin-grenli-gradyan/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-grenli-gradyan",
    "arsiv": "zemin/grenli-gradyan"
   },
@@ -2447,6 +2331,7 @@
    "source": "library/motion/custom/zemin-halftone/zemin-halftone.html",
    "source_url": null,
    "poster": "library/motion/custom/zemin-halftone/poster.jpg",
+   "onizleme": "library/motion/custom/zemin-halftone/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-halftone",
    "arsiv": "zemin/halftone"
   },
@@ -2473,6 +2358,7 @@
    "source": "library/motion/custom/zemin-kagit/zemin-kagit.html",
    "source_url": null,
    "poster": "library/motion/custom/zemin-kagit/poster.jpg",
+   "onizleme": "library/motion/custom/zemin-kagit/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-kagit",
    "arsiv": "zemin/kagit"
   },
@@ -2499,6 +2385,7 @@
    "source": "library/motion/custom/zemin-nokta-izgara/zemin-nokta-izgara.html",
    "source_url": null,
    "poster": "library/motion/custom/zemin-nokta-izgara/poster.jpg",
+   "onizleme": "library/motion/custom/zemin-nokta-izgara/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-nokta-izgara",
    "arsiv": "zemin/nokta-izgara"
   },
@@ -2525,6 +2412,7 @@
    "source": "library/motion/custom/zemin-parcacik/zemin-parcacik.html",
    "source_url": null,
    "poster": "library/motion/custom/zemin-parcacik/poster.jpg",
+   "onizleme": "library/motion/custom/zemin-parcacik/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-parcacik"
   },
   {
@@ -2550,6 +2438,7 @@
    "source": "library/motion/custom/zemin-serit/zemin-serit.html",
    "source_url": null,
    "poster": "library/motion/custom/zemin-serit/poster.jpg",
+   "onizleme": "library/motion/custom/zemin-serit/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur zemin-serit"
   },
   {
@@ -2575,6 +2464,7 @@
    "source": "library/motion/custom/gecis-crt-kapanis-dikey/gecis-crt-kapanis-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-crt-kapanis-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-crt-kapanis-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-crt-kapanis-dikey",
    "arsiv": "V1:piksel"
   },
@@ -2601,6 +2491,7 @@
    "source": "library/motion/custom/gecis-crt-kapanis-yatay/gecis-crt-kapanis-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-crt-kapanis-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-crt-kapanis-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-crt-kapanis-yatay",
    "arsiv": "V1:piksel"
   },
@@ -2627,6 +2518,7 @@
    "source": "library/motion/custom/gecis-firca-darbesi-dikey/gecis-firca-darbesi-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-firca-darbesi-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-firca-darbesi-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-firca-darbesi-dikey",
    "arsiv": "V1:isik"
   },
@@ -2653,6 +2545,7 @@
    "source": "library/motion/custom/gecis-firca-darbesi-yatay/gecis-firca-darbesi-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-firca-darbesi-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-firca-darbesi-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-firca-darbesi-yatay",
    "arsiv": "V1:isik"
   },
@@ -2679,6 +2572,7 @@
    "source": "library/motion/custom/gecis-pencere-dikey/gecis-pencere-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-pencere-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-pencere-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-pencere-dikey",
    "arsiv": "V1:iris"
   },
@@ -2705,6 +2599,7 @@
    "source": "library/motion/custom/gecis-pencere-yatay/gecis-pencere-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-pencere-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-pencere-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-pencere-yatay",
    "arsiv": "V1:iris"
   },
@@ -2731,6 +2626,7 @@
    "source": "library/motion/custom/gecis-piksel-cozunme-dikey/gecis-piksel-cozunme-dikey.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-piksel-cozunme-dikey/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-piksel-cozunme-dikey/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-piksel-cozunme-dikey",
    "arsiv": "V1:piksel"
   },
@@ -2757,6 +2653,7 @@
    "source": "library/motion/custom/gecis-piksel-cozunme-yatay/gecis-piksel-cozunme-yatay.html",
    "source_url": null,
    "poster": "library/motion/custom/gecis-piksel-cozunme-yatay/poster.jpg",
+   "onizleme": "library/motion/custom/gecis-piksel-cozunme-yatay/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur gecis-piksel-cozunme-yatay",
    "arsiv": "V1:piksel"
   },
@@ -2786,6 +2683,7 @@
    "source": "library/motion/custom/ai-kenarlik/ai-kenarlik.html",
    "source_url": null,
    "poster": "library/motion/custom/ai-kenarlik/poster.jpg",
+   "onizleme": "library/motion/custom/ai-kenarlik/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ai-kenarlik",
    "param": {
     "etiket": {
@@ -2820,6 +2718,7 @@
    "source": "library/motion/custom/ajan-adimlari/ajan-adimlari.html",
    "source_url": null,
    "poster": "library/motion/custom/ajan-adimlari/poster.jpg",
+   "onizleme": "library/motion/custom/ajan-adimlari/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ajan-adimlari",
    "param": {
     "adim1": {
@@ -2866,6 +2765,7 @@
    "source": "library/motion/custom/ayar-cubugu/ayar-cubugu.html",
    "source_url": null,
    "poster": "library/motion/custom/ayar-cubugu/poster.jpg",
+   "onizleme": "library/motion/custom/ayar-cubugu/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur ayar-cubugu",
    "param": {
     "etiket": {
@@ -2908,6 +2808,7 @@
    "source": "library/motion/custom/isik-demeti/isik-demeti.html",
    "source_url": null,
    "poster": "library/motion/custom/isik-demeti/poster.jpg",
+   "onizleme": "library/motion/custom/isik-demeti/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur isik-demeti",
    "param": {
     "sol": {
@@ -2946,6 +2847,7 @@
    "source": "library/motion/custom/kart-yelpaze/kart-yelpaze.html",
    "source_url": null,
    "poster": "library/motion/custom/kart-yelpaze/poster.jpg",
+   "onizleme": "library/motion/custom/kart-yelpaze/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kart-yelpaze",
    "param": {
     "kart1": {
@@ -2988,6 +2890,7 @@
    "source": "library/motion/custom/kelime-taklasi/kelime-taklasi.html",
    "source_url": null,
    "poster": "library/motion/custom/kelime-taklasi/poster.jpg",
+   "onizleme": "library/motion/custom/kelime-taklasi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kelime-taklasi",
    "param": {
     "cumle_basi": {
@@ -3033,6 +2936,7 @@
    "source": "library/motion/custom/kenar-isiltisi/kenar-isiltisi.html",
    "source_url": null,
    "poster": "library/motion/custom/kenar-isiltisi/poster.jpg",
+   "onizleme": "library/motion/custom/kenar-isiltisi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur kenar-isiltisi",
    "param": {
     "baslik": {
@@ -3070,6 +2974,7 @@
    "source": "library/motion/custom/komut-paleti/komut-paleti.html",
    "source_url": null,
    "poster": "library/motion/custom/komut-paleti/poster.jpg",
+   "onizleme": "library/motion/custom/komut-paleti/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur komut-paleti",
    "param": {
     "arama": {
@@ -3116,6 +3021,7 @@
    "source": "library/motion/custom/odometre-sayac/odometre-sayac.html",
    "source_url": null,
    "poster": "library/motion/custom/odometre-sayac/poster.jpg",
+   "onizleme": "library/motion/custom/odometre-sayac/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur odometre-sayac",
    "param": {
     "hedef": {
@@ -3163,6 +3069,7 @@
    "source": "library/motion/custom/secim-seridi/secim-seridi.html",
    "source_url": null,
    "poster": "library/motion/custom/secim-seridi/poster.jpg",
+   "onizleme": "library/motion/custom/secim-seridi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur secim-seridi",
    "param": {
     "metin": {
@@ -3201,6 +3108,7 @@
    "source": "library/motion/custom/sosyal-kanit/sosyal-kanit.html",
    "source_url": null,
    "poster": "library/motion/custom/sosyal-kanit/poster.jpg",
+   "onizleme": "library/motion/custom/sosyal-kanit/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur sosyal-kanit",
    "param": {
     "sayi": {
@@ -3244,6 +3152,7 @@
    "source": "library/motion/custom/terminal-akisi/terminal-akisi.html",
    "source_url": null,
    "poster": "library/motion/custom/terminal-akisi/poster.jpg",
+   "onizleme": "library/motion/custom/terminal-akisi/onizleme.mp4",
    "attribution": "proje yapımı (ADR 0036); yeniden üret: vedit motion kur terminal-akisi",
    "param": {
     "baslik": {

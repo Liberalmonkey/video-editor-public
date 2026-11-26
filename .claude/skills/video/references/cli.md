@@ -26,7 +26,7 @@
 | `build` | timeline → HyperFrames (+ bölümler) + lint | comp/index.html, comp/chapters/* |
 | `render preview\|final [--parallel 2]` | Taslak/final render; bölümler önbellekli | renders/preview.mp4, final.mp4 |
 | `qa [--video X]` | Otomatik kontroller + kontak sayfası | qa/report.json, qa/sheet.jpg |
-| `export [--variants 4x5 16x9]` | Varyant render, SRT, YouTube bölümleri, kapaklar, atıf listesi (credits.txt); teslim dosyalarını `Projeler/outputs/<stüdyo>/<proje>/` klasörüne koyar | work/renders/ + Projeler/outputs/ |
+| `export [--variants 4x5 16x9]` | Varyant render, SRT, YouTube bölümleri, atıf listesi (credits.txt); teslim dosyalarını `Projeler/outputs/<stüdyo>/<proje>/` klasörüne koyar | work/renders/ + Projeler/outputs/ |
 | `reference <url…> [--images …] (--project P \| --studio S) [--minutes 5]` | Referans tempo/kontak digest'i | analysis/reference/ ya da Projeler/inputs/_referanslar/S/analysis/ |
 | `sheet <video> [--start s --dur d --grid 4x4]` · `still <video> <t>` | Herhangi bir aralığın kontak sayfası / tek kare | — |
 

@@ -12,7 +12,7 @@ import json
 import re
 from pathlib import Path
 
-from . import kurgu, motion, native_motion, paths, stil, tema_token
+from . import hf_grafik, kurgu, motion, native_motion, paths, stil, tema_token
 
 YENI_NATIVE = {
     "tipografi/kinetik-baslik",
@@ -26,6 +26,8 @@ YENI_NATIVE = {
 KOK = paths.LIBRARY / "stiller"
 HEX = re.compile(r"#[0-9A-Fa-f]{6}")
 TEMPO = {"yavas": "yavaş", "orta": "orta", "hizli": "hızlı"}
+# Hareket kişiliği (ADR 0063, LottieFiles motion-design): süre, eğri ve aşma ailesi; motion-design references/yonetmen-katmani.md.
+KISILIK = ("oyuncu", "premium", "kurumsal", "enerjik")
 RENKLER = ("vurgu", "ikincil", "zemin", "yazi", "soluk")
 
 
@@ -67,7 +69,7 @@ def dogrula() -> list[str]:
     d = yukle()
     h: list[str] = []
     eski_kimlikler = motion.kimlikler()
-    kimlikler = set(eski_kimlikler) | set(native_motion.kayitlar()) | YENI_NATIVE
+    kimlikler = set(eski_kimlikler) | set(native_motion.kayitlar()) | set(hf_grafik.adlar()) | YENI_NATIVE
     gecisler = {re.sub(r"^gecis-|-(dikey|yatay)$", "", k) for k in eski_kimlikler if k.startswith("gecis-")} | set(kurgu.ORTA_GECIS)
     try:
         hazirlar = set(json.loads((paths.ROOT / "studio" / "remotion" / "hazirEfekt.json").read_text(encoding="utf-8")))
@@ -84,6 +86,8 @@ def dogrula() -> list[str]:
             h.append(f"{k}: bilinmeyen kategori {e.get('kategori')}")
         if e.get("tempo") not in TEMPO:
             h.append(f"{k}: tempo yavas|orta|hizli olmalı")
+        if e.get("motion_kisilik") not in KISILIK:
+            h.append(f"{k}: motion_kisilik {'|'.join(KISILIK)} olmalı (ADR 0063)")
         if e.get("motion_tema"):
             h.append(f"{k}: motion_tema alanı kalktı (ADR 0043); kartın kendi paleti ve token bloğu olmalı")
         if not e.get("palet"):
