@@ -1,4 +1,4 @@
-' Video Studyo: terminal penceresi gostermeden studio.bat calistirir.
+' cat-cut (Video Studyo): terminal penceresi gostermeden studio.bat calistirir.
 ' Cikti %TEMP%\vedit-studio-log.txt dosyasina yazilir; pencere kapaninca sunucu da kapanir.
 Set sh = CreateObject("WScript.Shell")
 d = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)

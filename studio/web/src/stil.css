@@ -35,7 +35,6 @@ label { color: var(--y2); }
 /* Üst şerit */
 .uygulama { display: flex; flex-direction: column; height: 100%; }
 .ust { display: flex; align-items: center; gap: 12px; height: 36px; padding: 0 10px; background: var(--z1); border-bottom: 1px solid #000; flex: none; }
-.ust .marka { font-family: var(--baslik); font-weight: 700; font-size: 15px; letter-spacing: 0; }
 .ust .proje-adi { color: var(--y2); }
 .ust .proje-adi b { color: var(--y1); font-weight: 550; }
 .bosluk { flex: 1; min-width: 0; }
@@ -256,7 +255,6 @@ dialog p { margin: 0 0 12px; color: var(--y2); white-space: pre-wrap; }
 .tani dt { color: var(--y3); } .tani dd { margin: 0; overflow-wrap: anywhere; }
 
 /* AI paneli ve rozeti (ADR 0026) */
-.ust .marka { display: inline-flex; align-items: center; gap: 7px; }
 .ajan-rozet { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border: 1px solid var(--cizgi2); border-radius: 12px; background: var(--z2); color: var(--y2); font-size: 12px; cursor: pointer; max-width: 380px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .ajan-rozet:hover { color: var(--y1); border-color: var(--vurgu); }
 .ajan-rozet > i { width: 7px; height: 7px; border-radius: 50%; background: var(--iyi); flex: none; }

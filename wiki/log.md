@@ -111,3 +111,6 @@ Arşiv: [[log.part1]] (2026-10-20 - 2026-11-03), [[log.part2]] (2026-11-03 - 202
 ## [2026-11-26] code | HyperFrames canlı gömme düzeltmesi ve 46 şablonun dikey düzeni
 - Kök neden: 42 şablon kökü `document.getElementById("root")` ile arıyordu; canlı gömmede null ya da yabancı kök dönüyordu (pilot doruğu boştu). Bileşenin kök kuralı sarmalı ezip yüksekliği sıfırlıyordu. 46 şablon 16:9 tanımlıydı, 9:16'da okunmuyordu.
 - `hf_grafik.kok_sorgusu_cevir` + `paketle.ts`, kaplama kuralı, `hf_grafik.uret(sekans=)`, `hf_grafik.ayni_yon` (yönü uymayan şablon canlı değil sekans boyutunda WebM: `kurgu.motion_bagla`, `derle.ts`), `scripts/hf_dikey_kontak.py`, 9:16 katalogda `yalniz_yatay` süzgeci ve `HF_YALNIZ_YATAY` uyarısı, dikey kural kapısı testi. 46 şablonun dikey düzenini beş agy ajanı (Hydrogen, Neon) yazdı, Claude kontak sayfalarıyla denetledi. Sayfa: [[hf-canli-gomme-ve-dikey-duzen]].
+
+## [2026-11-27] code | Uygulama adı cat-cut, kedi logosu
+- Pencere başlığı, masaüstü kısayolu (`cat-cut.lnk`) ve README adı `cat-cut`. Logo agy ile üretilen siyah-beyaz yargılayan kedi (`work/gorsel/logo/kedi-2.jpg`); saydam `studio/web/public/logo.png` ve çok boyutlu `studio/logo.ico`, koyu zemin için beyaz dış kontur. Üst çubuktaki tekrar eden marka alanı kaldırıldı. Sayfa: [[0021-video-studyo-nle]].

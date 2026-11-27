@@ -6,6 +6,6 @@
     "hf": "hyperframes"
   },
   "devDependencies": {
-    "hyperframes": "0.9.84"
+    "hyperframes": "0.9.102"
   }
 }

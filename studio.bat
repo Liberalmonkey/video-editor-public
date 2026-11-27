@@ -1,5 +1,5 @@
 @echo off
-rem Video Studyo: yerel kurgu uygulamasi (ADR 0021, hizli acilis ADR 0050)
+rem cat-cut (Video Studyo): yerel kurgu uygulamasi (ADR 0021, hizli acilis ADR 0050)
 cd /d "%~dp0"
 set "PYTHONPATH=%~dp0src;%PYTHONPATH%"
 if not exist ".venv\Scripts\python.exe" (

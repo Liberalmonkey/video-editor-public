@@ -216,7 +216,6 @@ const App: React.FC = () => {
   return (
     <div className="uygulama">
       <header className="ust">
-        <span className="marka"><img src="/logo.svg" alt="" width={20} height={20} />Video Stüdyo</span>
         <span className="proje-adi">{aktif ? <>{aktif.studyo} / <b>{aktif.ad}</b></> : "Proje seçilmedi"}</span>
         <span className="bosluk" />
         {!baglanti && <span className="rozet hata" role="alert">Sunucu bağlantısı yok. Düzenlemeler bağlantı dönünce kaydedilir.</span>}

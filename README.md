@@ -1,4 +1,4 @@
-# AI Video Editor
+# cat-cut: AI Video Editor
 
 Claude Code içinde çalışan AI video stüdyosu: **YouTube animasyon** (10–15 dk), **UGC** (ürün/satış), **Instagram Reels**. Edit ana oturumda yapılır; senaryo ve taze göz için alt ajanlar (writer, director, render-qc) var; ölçüm, kesim, render ve QA `vedit` CLI ile token harcamadan yapılır. Proje bilgisi `wiki/` (LLM Wiki, Obsidian vault), kod yapısı graphify grafiğinde.
 
