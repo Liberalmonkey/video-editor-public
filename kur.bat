@@ -60,7 +60,7 @@ call node_modules\.bin\hyperframes browser ensure >nul
 
 echo [8/8] Masaustu kisayolu
 rem KUR_KISAYOL_YOK: test kurulumlari gercek kisayolu ezmesin
-if not defined KUR_KISAYOL_YOK powershell -NoProfile -Command "$s=(New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('Desktop')+'\cat-cut.lnk'); $s.TargetPath=$env:WINDIR+'\System32\wscript.exe'; $s.Arguments='\"%~dp0studio.vbs\"'; $s.WorkingDirectory='%~dp0'; $s.IconLocation='%~dp0studio\logo.ico,0'; $s.Save()"
+if not defined KUR_KISAYOL_YOK powershell -NoProfile -Command "$s=(New-Object -ComObject WScript.Shell).CreateShortcut([Environment]::GetFolderPath('Desktop')+'\cat-cut.lnk'); $s.TargetPath=$env:WINDIR+'\System32\wscript.exe'; $s.Arguments='\"%~dp0studio.vbs\"'; $s.WorkingDirectory='%~dp0'; $s.IconLocation='%~dp0studio\cat-cut.ico,0'; $s.Save()"
 
 echo.
 echo Kurulum tamam. cat-cut: masaustundeki kisayol ya da studio.vbs. Terminal hatti: bu klasorde "claude".

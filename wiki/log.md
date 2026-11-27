@@ -114,3 +114,4 @@ Arşiv: [[log.part1]] (2026-10-20 - 2026-11-03), [[log.part2]] (2026-11-03 - 202
 
 ## [2026-11-27] code | Uygulama adı cat-cut, kedi logosu
 - Pencere başlığı, masaüstü kısayolu (`cat-cut.lnk`) ve README adı `cat-cut`. Logo agy ile üretilen siyah-beyaz yargılayan kedi (`work/gorsel/logo/kedi-2.jpg`); saydam `studio/web/public/logo.png` ve çok boyutlu `studio/logo.ico`, koyu zemin için beyaz dış kontur. Üst çubuktaki tekrar eden marka alanı kaldırıldı. Sayfa: [[0021-video-studyo-nle]].
+- Kısayol ikonu `studio/cat-cut.ico` adına taşındı: Windows ikon önbelleği aynı yoldaki (`studio/logo.ico`) eski ikonu göstermeye devam ediyordu.

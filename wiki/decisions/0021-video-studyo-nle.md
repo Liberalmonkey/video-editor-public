@@ -116,4 +116,4 @@ Uygulama `studio.vbs` ya da masaüstü kısayoluyla terminal penceresi gösterme
 
 ## Ad ve logo (2026-11-27)
 
-Uygulamanın adı `cat-cut` oldu: pencere başlığı, masaüstü kısayolu (`cat-cut.lnk`, `kur.bat`) ve README. Logo siyah-beyaz, yargılayan bakışlı bir kedi kafasıdır; pencere ikonu `studio/web/public/logo.png`, kısayol ikonu `studio/logo.ico`. Pencerenin başlık çubuğu zaten logo ve adı gösterdiği için üst çubuktaki tekrar eden marka alanı kaldırıldı. Repo adları ve tarihî "Video Stüdyo" anmaları değişmedi.
+Uygulamanın adı `cat-cut` oldu: pencere başlığı, masaüstü kısayolu (`cat-cut.lnk`, `kur.bat`) ve README. Logo siyah-beyaz, yargılayan bakışlı bir kedi kafasıdır; pencere ikonu `studio/web/public/logo.png`, kısayol ikonu `studio/cat-cut.ico` (yeni ad: Windows ikon önbelleği aynı yoldaki eski ikonu gösteriyordu). Pencerenin başlık çubuğu zaten logo ve adı gösterdiği için üst çubuktaki tekrar eden marka alanı kaldırıldı. Repo adları ve tarihî "Video Stüdyo" anmaları değişmedi.
