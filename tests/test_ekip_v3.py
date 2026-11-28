@@ -414,3 +414,75 @@ def test_render_kurtar_yapisal_esler_konusma_sesini_korur(monkeypatch):
     k2 = _k()
     k2.klipler.append(k2.klipler[0].model_copy(update={"id": "a1", "iz": "A1", "tur": "ses"}))
     assert ekip_v3.render_kurtar(None, k2, ["a1: kaynak yok"], ekip_v3.Atama.uc(), {"dusen": []}) == ["a1: kaynak yok"]
+
+
+def _bos_v1():
+    k = _k()
+    return k.model_copy(update={"klipler": [], "kaynaklar": {"inputs_1_mp4": k.kaynaklar["a"].model_copy(update={"yol": "inputs:1.mp4"}),
+                                                              "inputs_2_mp4": k.kaynaklar["a"].model_copy(update={"yol": "inputs:2.mp4"})}})
+
+
+def test_bassiz_v1_klipleri_ardisik_dizilir_ve_kaynak_eslenir():
+    # WHY: ornek-proje 2026-11-27. E1 `bas` yazmadı, kaynağı "1" dedi; bütün V1 düşüyordu.
+    dusen: list[str] = []
+    k = ekip_v3.yama_uygula(_bos_v1(), "E1", Yama(ekle=[
+        {"id": "k1", "iz": "V1", "tur": "video", "kaynak": "1", "giris": 0.1, "sure": 4},
+        {"id": "k2", "iz": "V1", "tur": "video", "kaynak": "2", "giris": 0.2, "sure": 3}]), dusen)
+    v1 = sorted((c for c in k.klipler if c.iz == "V1"), key=lambda c: c.bas)
+    assert [(c.id, c.bas, c.kaynak) for c in v1] == [("k1", 0, "inputs_1_mp4"), ("k2", 4, "inputs_2_mp4")]
+    assert dusen == []
+
+
+def test_baslangic_takma_adi_bas_olur():
+    k = ekip_v3.yama_uygula(_bos_v1(), "E1", Yama(ekle=[
+        {"id": "k1", "iz": "V1", "tur": "video", "kaynak": "inputs_1_mp4", "baslangic": 2.5, "sure": 4}]))
+    assert next(c for c in k.klipler if c.id == "k1").bas == 2.5
+
+
+def test_bos_goruntu_brifi_kaynak_kimliklerini_verir():
+    b = ekip_v3.bos_goruntu_brifi(_bos_v1())
+    assert "inputs_1_mp4" in b and '"bas": 0' in b
+    assert not ekip_v3._gorunen_var(_bos_v1()) and ekip_v3._gorunen_var(_k())
+
+
+def test_on_uretim_kapandiktan_sonra_ekle_coker_degil(tmp_path):
+    # WHY: ornek-proje 2026-11-27. G6 düzeltme yaması kapanmış havuza iş açıp RuntimeError ile akışı düşürüyordu.
+    o = ekip_v3.OnUretim(None, _k())
+    assert o.bekle() == 0
+    o.ekle(Yama(ekle=[{"id": "g", "iz": "V2", "tur": "motion", "bas": 1, "hf": {"ad": "x"}}]))
+    assert o.isler == {}
+
+
+def test_hf_kok_tek_tirnak_kabul_edilir():
+    # WHY: ornek-proje 2026-11-27. G6 E2 kompozisyonları tek tırnakla yazdı; ölçü "data-width yok" diye düşürüyordu.
+    from vedit import hf_grafik
+    html = "<div id='root' data-composition-id='main' data-width='1080' data-height='1920' data-duration='3.35'></div>"
+    o = hf_grafik.olcu_metin(html)
+    assert (o["w"], o["h"], o["sure"]) == (1080, 1920, 3.35)
+
+
+def test_bagla_yalniz_bozuk_grafigi_cikarir(monkeypatch, tmp_path):
+    # WHY: ornek-proje 2026-11-27. Tek grafiğin render hatası bütün HyperFrames kliplerini siliyordu.
+    from types import SimpleNamespace
+    from vedit import hf_grafik, kurgu
+    k = _k()
+    k.klipler += [k.klipler[0].model_copy(update={"id": i, "iz": "V2", "tur": "motion", "kaynak": None, "hf": {"ad": i}, "sure": 1})
+                  for i in ("iyi", "bozuk")]
+    cagri = {"n": 0}
+
+    def bagla(p, kk, **_):
+        cagri["n"] += 1
+        if any(c.id == "bozuk" for c in kk.klipler):
+            raise RuntimeError("render başarısız")
+
+    def uret(ad, *a, **kw):
+        if ad == "bozuk":
+            raise RuntimeError("data-no-timeline")
+        return tmp_path / f"{ad}.webm", {}
+
+    monkeypatch.setattr(kurgu, "motion_bagla", bagla)
+    monkeypatch.setattr(kurgu, "etkin_tema", lambda p, t: None)
+    monkeypatch.setattr(hf_grafik, "uret", uret)
+    monkeypatch.setattr(hf_grafik, "bul", lambda ad, work=None: tmp_path)
+    ekip_v3._bagla(SimpleNamespace(work=tmp_path), k)
+    assert [c.id for c in k.klipler if c.tur == "motion"] == ["iyi"]

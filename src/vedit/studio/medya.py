@@ -6,6 +6,7 @@ import hashlib
 import os
 import re
 import subprocess
+import uuid
 from pathlib import Path
 from urllib.parse import quote
 
@@ -127,9 +128,12 @@ async def yukle(studyo: str, ad: str, dosya: str, request: Request):
 @router.delete("/api/dosya/{studyo}/{ad}/{bolge}")
 def dosya_sil(studyo: str, ad: str, bolge: str, yol: str):
     p = ortak.proje(studyo, ad)
-    if yol.startswith("work/"):
+    hedef = ortak.kok_ici(bolge_kok(p, bolge), yol)
+    work_kok = p.work.resolve()
+    # WHY: metin bazlı startswith("work/") kontrolü Windows'ta büyük/küçük harf, './', '\\' veya '..' ile aşılıyordu.
+    if hedef == work_kok or work_kok in hedef.parents:
         raise HTTPException(403, "work/ arayüzden silinmez")
-    return {"mesaj": ortak.sil(ortak.kok_ici(bolge_kok(p, bolge), yol))}
+    return {"mesaj": ortak.sil(hedef)}
 
 
 @router.post("/api/klasor-ac/{studyo}/{ad}/{bolge}")
@@ -154,8 +158,19 @@ def kucuk(studyo: str, ad: str, bolge: str, yol: str):
     hedef = p.work / "kucuk" / f"{anahtar}.jpg"
     if not hedef.exists():
         hedef.parent.mkdir(parents=True, exist_ok=True)
+        gecici = hedef.with_name(f".{hedef.stem}.{uuid.uuid4().hex[:8]}.tmp.jpg")
         try:
-            ff.still(f, hedef, min(1.0, _sure(f, st) or 0) if tur_bul(f.name) == "video" else 0, width=320)
+            ff.still(f, gecici, min(1.0, _sure(f, st) or 0) if tur_bul(f.name) == "video" else 0, width=320)
+            if not gecici.is_file():
+                # WHY: ff.still sıfır kare üretip 0 ile dönerse FileResponse(hedef) 500 atmamalı.
+                raise HTTPException(415, "Küçük resim üretilemedi")
+            os.replace(gecici, hedef)
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(415, "Küçük resim üretilemedi") from e
+        finally:
+            gecici.unlink(missing_ok=True)
+    if not hedef.is_file():
+        raise HTTPException(415, "Küçük resim üretilemedi")
     return FileResponse(hedef, headers={"Cache-Control": "max-age=86400"})

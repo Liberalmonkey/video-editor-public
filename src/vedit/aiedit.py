@@ -342,33 +342,68 @@ def _animasyon(k: Kurgu) -> bool:
     return not any(c.tur == "video" for c in k.klipler)
 
 
+def girdi_kimligi(ad: str) -> str:
+    """Girdi dosyasının kurgudaki kaynak kimliği (ör. `1.mp4` → `inputs_1_mp4`)."""
+    return re.sub(r"\W", "_", "inputs:" + ad)
+
+
+def _girdisiz(k: Kurgu) -> bool:
+    """Kurguda girdiden gelen görüntü ya da konuşma klibi yok (yeni ya da Stüdyo'da boş açılmış kurgu)."""
+    return not any(c.tur == "video" or (c.olay or {}).get("konusma") for c in k.klipler) \
+        and not any(kay.yol.startswith("inputs:") for kay in k.kaynaklar.values())
+
+
+def _girdileri_tohumla(p: hizli.Proje, k: Kurgu) -> bool:
+    """Girdi medyasını kaynak ve ardışık klip olarak kurguya ekler. Bir şey eklendiyse True."""
+    medya = _medya(p)
+    videolar = [x for x in medya if x.suffix.lower() in hizli.VIDEO]
+    # Video yoksa seslendirme konuşma klibi olur: altyazı ve zamanlama ondan gelir, görüntüyü ajan kurar.
+    sesler = [] if videolar else medya
+    if not medya:
+        return False
+    hedef_iz = "A1" if sesler else "V1"
+    if not any(i.id == hedef_iz for i in k.izler):
+        k.izler.append(KurguIz(id="A1", tur="ses", ad="Konuşma") if sesler else KurguIz(id="V1", tur="video", ad="Ana"))
+    imlec = 0.0
+    for v_dosya in videolar or sesler:
+        kid = girdi_kimligi(v_dosya.name)
+        info = ff.probe(v_dosya)
+        v = info.get("video") or {}
+        sure = float(info.get("duration") or 0.0)
+        k.kaynaklar[kid] = KurguKaynak(
+            yol=f"inputs:{v_dosya.name}", sure=sure, w=v.get("width"), h=v.get("height"), ses=bool(info.get("audio"))
+        )
+        if sure > 0:
+            k.klipler.append(Klip(
+                id=uuid.uuid4().hex[:10], bas=round(imlec, 3), sure=sure, kaynak=kid,
+                **({"iz": "A1", "tur": "ses", "olay": {"konusma": True}} if sesler else {"iz": "V1", "tur": "video"})
+            ))
+            imlec += sure
+    return True
+
+
+def girdi_denetimi(p: hizli.Proje, k: Kurgu) -> None:
+    """Ajan çağrısından önce: girdideki video kurguda kaynak değilse token harcamadan dur; kelimesiz kaynağı uyar."""
+    videolar = [x for x in _medya(p) if x.suffix.lower() in hizli.VIDEO]
+    alinan = {kay.yol.removeprefix("inputs:") for kay in k.kaynaklar.values() if kay.yol.startswith("inputs:")}
+    if videolar and not alinan:
+        raise SystemExit("Girdideki videolar kurguya alınamadı (kurguda inputs: kaynağı yok). "
+                         f"{paths.rel(kurgu.yol(p.work))} dosyasını kontrol edin ya da silip yeniden deneyin.")
+    if (p.work / "analysis" / "transcript.json").exists():
+        eksik = [kid for kid, kay in k.kaynaklar.items() if kay.yol.startswith("inputs:") and kay.ses and not k.kelimeler.get(kid)]
+        if eksik:
+            print(f"  Uyarı: kelimesi olmayan girdi kaynağı: {', '.join(eksik)} (altyazı ve çapa bu kaynakta çalışmaz).", flush=True)
+
+
 def _kurgu_hazirla(p: hizli.Proje) -> Kurgu:
     f = kurgu.yol(p.work)
     vardi = f.exists()
     k = kurgu.oku(p.work) if vardi else kurgu.bos(p.studyo)
-    if not vardi and p.girdi.exists():
-        medya = _medya(p)
-        videolar = [x for x in medya if x.suffix.lower() in hizli.VIDEO]
-        # Video yoksa seslendirme konuşma klibi olur: altyazı ve zamanlama ondan gelir, görüntüyü ajan kurar.
-        sesler = [] if videolar else medya
-        if sesler:
-            k.izler.append(KurguIz(id="A1", tur="ses", ad="Konuşma"))
-        imlec = 0.0
-        for v_dosya in videolar or sesler:
-            kid = re.sub(r"\W", "_", "inputs:" + v_dosya.name)
-            yol = f"inputs:{v_dosya.name}"
-            info = ff.probe(v_dosya)
-            v = info.get("video") or {}
-            sure = float(info.get("duration") or 0.0)
-            k.kaynaklar[kid] = KurguKaynak(
-                yol=yol, sure=sure, w=v.get("width"), h=v.get("height"), ses=bool(info.get("audio"))
-            )
-            if sure > 0:
-                k.klipler.append(Klip(
-                    id=uuid.uuid4().hex[:10], bas=round(imlec, 3), sure=sure, kaynak=kid,
-                    **({"iz": "A1", "tur": "ses", "olay": {"konusma": True}} if sesler else {"iz": "V1", "tur": "video"})
-                ))
-                imlec += sure
+    # WHY: ornek-proje 2026-11-27. Stüdyo kurguyu girdiler gelmeden boş yazmıştı; tohumlama yalnız dosya yokken
+    # çalıştığı için videolar hiç alınmadı ve swarm 4 dakika sonra G3'te "görüntü klibi yok" ile düştü.
+    tohum = p.girdi.exists() and _girdisiz(k) and _girdileri_tohumla(p, k)
+    if tohum and vardi:
+        print("  Kurguda girdi yoktu: girdi medyası kurguya alındı.", flush=True)
     degisti = False
     for kid, kay in k.kaynaklar.items():
         if not k.kelimeler.get(kid):
@@ -376,7 +411,7 @@ def _kurgu_hazirla(p: hizli.Proje) -> Kurgu:
             if kel:
                 k.kelimeler[kid] = [Kelime.model_validate(w) for w in kel]
                 degisti = True
-    if not vardi:
+    if not vardi or tohum:
         return kurgu.yaz(p.work, k)
     from .ekip_v3 import iz_cakisma_coz  # döngüsel içe aktarma: ekip_v3 bu modülü kullanır
     if iz_cakisma_coz(k)[0]:
@@ -641,6 +676,7 @@ def calistir(
     if not _hazir_mi(p):
         hizli.hazirla(p)
     k = _kurgu_hazirla(p)
+    girdi_denetimi(p, k)
     istek = _istek_yaz(p, k, stil_adi=stil, notu=notu, motion_seviye=motion_seviye, aralik=aralik)
     kurgu_dosya = kurgu.yol(p.work)
     once = kurgu_dosya.read_text(encoding="utf-8")

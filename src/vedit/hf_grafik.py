@@ -26,7 +26,10 @@ KUTUPHANE = paths.MOTION_DIR / "hf"
 GSAP = paths.LIBRARY / "vendor" / "gsap.min.js"
 # three.js çekirdeği (window.HFUC, ADR 0063): `studio` içinde `npm run uc` üretir.
 UC = paths.LIBRARY / "vendor" / "uc.js"
-_KOK_OZ = re.compile(r'data-(width|height|duration)\s*=\s*"([\d.]+)"')
+# WHY: ornek-proje 2026-11-27. Ajan kökü tek tırnakla yazdı (`data-width='1080'`); yalnız çift tırnak arandığı için
+# G6 düzeltmesinin bütün kompozisyonları "data-width yok" diye atıldı. HTML'de iki tırnak da geçerli.
+_KOK_OZ = re.compile(r"""data-(width|height|duration)\s*=\s*["']([\d.]+)["']""")
+_TIRNAK = r"""(?:"[^"]*"|'[^']*')"""  # çift ya da tek tırnaklı öznitelik değeri
 ATLA = {"renders", ".thumbnails", "node_modules", ".hyperframes"}
 
 
@@ -205,6 +208,25 @@ def kok_sorgusu_cevir(js: str, kok: str) -> str:
     return ANA_PARAM.sub(f'window.__HF_PARAM["{kok}"]', js)
 
 
+_TL_ANAHTAR = re.compile(r"""window\.__timelines\[\s*["']([^"']+)["']\s*\]""")
+_KOK_KIMLIK = re.compile(r"""data-composition-id\s*=\s*["']([^"']+)["']""")
+
+
+def timeline_esle(metin: str, kok: str) -> str:
+    """Tek kayıtlı timeline anahtarını kök kimliğine eşler (SOZLESME 5. madde: `__timelines["<kök kimlik>"]`).
+
+    WHY: ornek-proje 2026-11-27. Ajan kökü `gosterge-yak`, timeline'ı `main` adıyla yazdı; HyperFrames kökle eşleşen
+    timeline bulamayınca render "data-no-timeline" hatasıyla düştü ve grafik videodan sessizce çıktı. `main` her zaman
+    köke eşlenir (eski kural); başka tek anahtar da eşlenir; birden çok farklı anahtar (alt kompozisyonlar) korunur."""
+    anahtarlar = set(_TL_ANAHTAR.findall(metin))
+    if kok in anahtarlar or not anahtarlar:
+        return metin
+    hedef = "main" if "main" in anahtarlar else (next(iter(anahtarlar)) if len(anahtarlar) == 1 else None)
+    if hedef is None:
+        return metin
+    return _TL_ANAHTAR.sub(lambda m: f'window.__timelines["{kok}"]' if m.group(1) == hedef else m.group(0), metin)
+
+
 def _sablon_sar(ham: str, kok: str, w: int, h: int) -> str:
     """index.html → <template> alt kompozisyon dönüşümü (paketle.ts grafikKopyasi ile aynı kural)."""
     if "<template" in ham and "__KOK__" in ham:
@@ -226,10 +248,10 @@ def _sablon_sar(ham: str, kok: str, w: int, h: int) -> str:
         return ""
 
     govde = re.sub(r"<script([^>]*)>([\s\S]*?)</script>", _betik_al, govde, flags=re.I).strip()
-    govde = re.sub(r'\bid\s*=\s*"root"', f'id="{kok}"', govde, count=1)
-    govde = re.sub(r'\bdata-composition-id\s*=\s*"[^"]*"', f'data-composition-id="{kok}"', govde, count=1)
-    govde = re.sub(r'\bdata-width\s*=\s*"[^"]*"', f'data-width="{w}"', govde, count=1)
-    govde = re.sub(r'\bdata-height\s*=\s*"[^"]*"', f'data-height="{h}"', govde, count=1)
+    govde = re.sub(r"""\bid\s*=\s*["']root["']""", f'id="{kok}"', govde, count=1)
+    govde = re.sub(r"\bdata-composition-id\s*=\s*" + _TIRNAK, f'data-composition-id="{kok}"', govde, count=1)
+    govde = re.sub(r"\bdata-width\s*=\s*" + _TIRNAK, f'data-width="{w}"', govde, count=1)
+    govde = re.sub(r"\bdata-height\s*=\s*" + _TIRNAK, f'data-height="{h}"', govde, count=1)
     vars_m = re.search(r"""data-composition-variables\s*=\s*(?:'([^']*)'|"([^"]*)")""", ham)
     vars_oz = ""
     if vars_m:
@@ -238,7 +260,7 @@ def _sablon_sar(ham: str, kok: str, w: int, h: int) -> str:
     if vars_oz and "data-composition-variables" not in govde:
         govde = govde.replace(f'id="{kok}"', f'id="{kok}"{vars_oz}', 1)
     birlesik_js = "\n".join(betikler)
-    birlesik_js = re.sub(r'window\.__timelines\[\s*["\']main["\']\s*\]', f'window.__timelines["{kok}"]', birlesik_js)
+    birlesik_js = timeline_esle(birlesik_js, kok)
     birlesik_js = kok_sorgusu_cevir(birlesik_js, kok)
     sarmal_js = (
         "(() => {\n"
@@ -331,6 +353,16 @@ def _hazirla(klasor: Path, hedef: Path, tema: str | Path | None) -> None:
             shutil.copy2(GSAP, hedef / "gsap.min.js")
     if not (hedef / "uc.js").exists() and "uc.js" in (hedef / "index.html").read_text(encoding="utf-8") and UC.is_file():
         shutil.copy2(UC, hedef / "uc.js")
+    idx = hedef / "index.html"
+    html = idx.read_text(encoding="utf-8")
+    yeni = timeline_esle(html, m.group(1)) if (m := _KOK_KIMLIK.search(html)) else html
+    # WHY: ornek-proje 2026-11-27. Ajan `gsap.` kullanıp betik etiketini yazmadı; canlı gömmede sayfa GSAP'ı taşıdığı için
+    # çalışıyor, tek başına render'da `gsap` null kalıp timeline hiç kaydolmuyordu.
+    if re.search(r"\bgsap\.", yeni) and "gsap.min.js" not in yeni and GSAP.is_file():
+        shutil.copy2(GSAP, hedef / "gsap.min.js")
+        yeni = re.sub(r"<script\b", '<script src="gsap.min.js"></script><script', yeni, count=1, flags=re.I)
+    if yeni != html:
+        idx.write_text(yeni, encoding="utf-8")
     fonts = hedef / "fonts"
     fonts.mkdir(exist_ok=True)
     for f in _font_dosyalari():
@@ -340,8 +372,8 @@ def _hazirla(klasor: Path, hedef: Path, tema: str | Path | None) -> None:
 
 def boyut_ez(html: str, w: int, h: int) -> str:
     """Kök öğenin `data-width`/`data-height` değerini sekans boyutuna çevirir (ilk eşleşme kök öğedir)."""
-    html = re.sub(r'\bdata-width\s*=\s*"[^"]*"', f'data-width="{w}"', html, count=1)
-    return re.sub(r'\bdata-height\s*=\s*"[^"]*"', f'data-height="{h}"', html, count=1)
+    html = re.sub(r"\bdata-width\s*=\s*" + _TIRNAK, f'data-width="{w}"', html, count=1)
+    return re.sub(r"\bdata-height\s*=\s*" + _TIRNAK, f'data-height="{h}"', html, count=1)
 
 
 def uret(ad: str, param: dict | None, tema: str | Path | None, work: Path, klasor: Path,

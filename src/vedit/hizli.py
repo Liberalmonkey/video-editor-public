@@ -12,6 +12,7 @@ import json
 
 import os
 import re
+import shutil
 import subprocess
 import time
 from dataclasses import dataclass
@@ -284,8 +285,15 @@ def _public_hazirla(p: Proje) -> None:
     fontlar.mkdir(parents=True, exist_ok=True)
     # WHY: bkz. wiki/decisions/0043-stile-bagli-tema-tokenlari.md. Stilin fontu (piksel, el yazısı...) render'da da bulunsun.
     for f in paths.FONTS_DIR.glob("*.ttf"):
-        if not (fontlar / f.name).exists():
-            (fontlar / f.name).hardlink_to(f)
+        hedef = fontlar / f.name
+        if not hedef.exists():
+            # WHY: farklı sürücüde hardlink EXDEV verir, eşzamanlı isteklerde ise FileExistsError oluşur.
+            try:
+                hedef.hardlink_to(f)
+            except FileExistsError:
+                pass
+            except OSError:
+                shutil.copy2(f, hedef)
 
 
 def _props(p: Proje, mod: str = "final") -> Path:
@@ -680,13 +688,15 @@ def denetim(video: Path, *, olaylar: Path | None = None, metin: Path | None = No
     if metin:
         k = kesimqa.calistir(video, kesimqa.metinden(metin), dil=dil)
         kesimqa.yaz(k, qa / "kesimqa.json")
-    yuk = -15.0 <= L["I"] <= -13.0 and L["TP"] <= -1.0
+    # WHY: ses akışı olmayan videolarda ff.loudness {} döner; KeyError ile denetim çökmesin.
+    yuk = (-15.0 <= L["I"] <= -13.0 and L["TP"] <= -1.0) if "I" in L and "TP" in L else None
     (qa / "denetim.json").write_text(json.dumps({
         "video": video.name, "format": {"w": v["width"], "h": v["height"], "fps": v["fps"], "sure": info["duration"]},
         "loudness": L, "ses_tamam": yuk, "kesim": {"benzerlik": k["benzerlik"], "eksik": len(k["eksik"]), "fazla": len(k["fazla"])} if k else None,
     }, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"| Format | {v['width']}x{v['height']}@{v['fps']:g} · {info['duration']:.1f}s |")
-    print(f"| Ses | {L['I']:.1f} LUFS / {L['TP']:.1f} dBTP / LRA {L['LRA']:.1f} · {'tamam' if yuk else 'EŞİK DIŞI'} |")
+    ses_satiri = f"{L['I']:.1f} LUFS / {L['TP']:.1f} dBTP / LRA {L.get('LRA', 0.0):.1f} · {'tamam' if yuk else 'EŞİK DIŞI'}" if yuk is not None else "ses akışı yok"
+    print(f"| Ses | {ses_satiri} |")
     if k:
         print(f"| Kesim | benzerlik {k['benzerlik']} · eksik {len(k['eksik'])} · fazla {len(k['fazla'])} |")
     print(f"| Slop | {len(s['bulgular'])} şüphe: " + ", ".join(sorted({f"{b['seviye']} {b['kod']}" for b in s['bulgular']})) + " |")

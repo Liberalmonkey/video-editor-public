@@ -6,8 +6,13 @@ export interface Serit { n: number; k: number; img: HTMLImageElement }
 
 const tepeler = new Map<string, Tepe | null>();
 const seritler = new Map<string, Serit | null>();
-let degisti = () => {};
-export const degisinceHaberVer = (f: () => void) => { degisti = f; };
+const bos = () => {};
+let degisti = bos;
+// WHY: Timeline unmount olunca eski dinleyici kaldırılmazsa bellek sızıntısı ve boş çağrı olur.
+export const degisinceHaberVer = (f: () => void) => {
+  degisti = f;
+  return () => { if (degisti === f) degisti = bos; };
+};
 export const temizle = () => { tepeler.clear(); seritler.clear(); };
 
 // Geçici hata ya da henüz hazır olmayan dosya: anahtar silinir, sonraki çizimde yeniden istenir. Bekleme istek fırtınasını önler.
@@ -29,6 +34,8 @@ export const seritAl = (anahtar: string, yol: string): Serit | null => {
       if (!v?.n) return;
       const img = new Image();
       img.onload = () => { seritler.set(yol, { n: v.n, k: v.k, img }); degisti(); };
+      // WHY: kırık şerit görselinde onerror yoksa önbellek kalıcı null kalıp yeniden deneme yapılmaz.
+      img.onerror = () => sonraDene(seritler, yol);
       img.src = v.url;
     }).catch(() => sonraDene(seritler, yol));
   }

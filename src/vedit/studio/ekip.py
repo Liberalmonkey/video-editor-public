@@ -9,17 +9,19 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 
 from fastapi import APIRouter, HTTPException
 from pydantic import ValidationError
 
 from .. import ekip as ekip_mod
-from .. import motorlar
+from .. import kurgu, motorlar
 from ..ekip_sema import EN_COK, SEVIYE, SLOT_DESEN, EkipAyar
 from . import ortak
 
 router = APIRouter()
 AD = re.compile(r"[a-z0-9][a-z0-9-]{0,39}")
+_kilit = threading.RLock()
 
 
 def _global() -> dict:
@@ -28,7 +30,9 @@ def _global() -> dict:
 
 
 def _yaz_global(d: dict) -> None:
-    ekip_mod.GLOBAL.write_text(json.dumps(d, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    # WHY: eşzamanlı ön ayar yazımları yarım JSON bırakmasın; geçici dosya + os.replace ile atomik yazılır.
+    with _kilit:
+        kurgu._atomik(ekip_mod.GLOBAL, json.dumps(d, ensure_ascii=False, indent=1) + "\n")
 
 
 def dogrula(ayar: dict) -> EkipAyar:
@@ -66,23 +70,27 @@ def onayar_yaz(ad: str, govde: dict, varsayilan: bool = False):
     if not AD.fullmatch(ad):
         raise HTTPException(400, "Ön ayar adı küçük harf, rakam, tire")
     a = dogrula({**govde, "ad": ad})
-    g = _global()
-    g.setdefault("onayarlar", {})[ad] = a.model_dump()
-    if varsayilan or not g.get("varsayilan"):
-        g["varsayilan"] = ad
-    _yaz_global(g)
+    # WHY: eşzamanlı oku-değiştir-yaz istekleri birbirinin ön ayarını ezmesin.
+    with _kilit:
+        g = _global()
+        g.setdefault("onayarlar", {})[ad] = a.model_dump()
+        if varsayilan or not g.get("varsayilan"):
+            g["varsayilan"] = ad
+        _yaz_global(g)
     return {"varsayilan": g["varsayilan"], "onayarlar": list(g["onayarlar"])}
 
 
 @router.delete("/api/ekip/onayar/{ad}")
 def onayar_sil(ad: str):
-    g = _global()
-    if ad not in g.get("onayarlar", {}):
-        raise HTTPException(404, "Ön ayar yok")
-    del g["onayarlar"][ad]
-    if g.get("varsayilan") == ad:
-        g["varsayilan"] = next(iter(g["onayarlar"]), None)
-    _yaz_global(g)
+    # WHY: eşzamanlı silme/yazma istekleri global ekip.json üzerinde yarışmasın.
+    with _kilit:
+        g = _global()
+        if ad not in g.get("onayarlar", {}):
+            raise HTTPException(404, "Ön ayar yok")
+        del g["onayarlar"][ad]
+        if g.get("varsayilan") == ad:
+            g["varsayilan"] = next(iter(g["onayarlar"]), None)
+        _yaz_global(g)
     return {"varsayilan": g["varsayilan"], "onayarlar": list(g["onayarlar"])}
 
 
@@ -102,8 +110,9 @@ def proje_yaz(studyo: str, ad: str, govde: dict):
     p = ortak.proje(studyo, ad)
     a = dogrula(govde)
     f = p.work / "edit" / "ekip.json"
-    f.parent.mkdir(parents=True, exist_ok=True)
-    f.write_text(a.model_dump_json(indent=1), encoding="utf-8")
+    # WHY: proje ekip.json yazımları eşzamanlı isteklerde bozulmasın ve yarım dosya bırakmasın.
+    with _kilit:
+        kurgu._atomik(f, a.model_dump_json(indent=1))
     return {"tamam": True}
 
 
@@ -132,4 +141,10 @@ def cikti(studyo: str, ad: str, slot: str, son: int = 400):
     f = adaylar[-1]
     satirlar = f.read_text(encoding="utf-8", errors="replace").splitlines()[-max(1, min(son, 2000)):]
     meta = f.with_name(f"{slot}.meta.json")
-    return {"asama": f.parent.name, "satirlar": satirlar, "meta": json.loads(meta.read_text(encoding="utf-8")) if meta.is_file() else None}
+    meta_veri = None
+    if meta.is_file():
+        try:
+            meta_veri = json.loads(meta.read_text(encoding="utf-8"))
+        except (OSError, ValueError):  # WHY: meta.json yazılırken okunur ya da bozuksa çıktı yoklaması 500 vermemeli
+            meta_veri = None
+    return {"asama": f.parent.name, "satirlar": satirlar, "meta": meta_veri}

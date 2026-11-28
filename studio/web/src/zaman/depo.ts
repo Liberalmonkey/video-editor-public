@@ -80,6 +80,9 @@ const BEKLEME = 800;
 const BIRLESTIRME = 700;
 let zamanlayici: ReturnType<typeof setTimeout> | undefined;
 let izleyici: EventSource | null = null;
+// WHY: tek uçuş kilidi ve kirli bayrağı; eşzamanlı PUT 409 çakışmasını ve kayıt sırasında/proje geçişinde veri kaybını önler.
+let kayitSozu: Promise<void> | null = null;
+let kirli = false;
 
 const yolu = (anahtar: string) => `/api/kurgu/${anahtar}`;
 
@@ -89,6 +92,7 @@ export const useKurgu = create<KurguDepo>((set, get) => ({
 
   ac: (anahtar, v) => {
     clearTimeout(zamanlayici);
+    kirli = false;
     izleyici?.close();
     izleyici = null;
     set({ anahtar, kurgu: v?.kurgu ?? null, medya: v?.medya ?? {}, tema: v?.tema ?? null, bolgeler: v?.bolgeler ?? null, etag: v?.etag ?? "", kayit: "kayitli", cakisma: false, geri: [], ileri: [], secim: [], zaman: 0, giris: null, cikis: null, oynuyor: false, hiz: 1, solo: [], bulgular: [] });
@@ -99,7 +103,8 @@ export const useKurgu = create<KurguDepo>((set, get) => ({
   tazele: (v) => {
     const d = get();
     if (v.etag === d.etag || d.kayit === "kaydediliyor") { set({ medya: v.medya, tema: v.tema ?? d.tema, bolgeler: v.bolgeler ?? d.bolgeler }); return; }
-    if (d.kayit === "bekliyor") { set({ cakisma: true, medya: v.medya, tema: v.tema ?? d.tema, bolgeler: v.bolgeler ?? d.bolgeler }); return; }
+    // WHY: kayıt hatası da kaydedilmemiş yerel değişiklik taşır; tazele sessizce ezmek yerine çakışma diyaloğu açsın.
+    if (d.kayit === "bekliyor" || d.kayit === "hata") { set({ cakisma: true, medya: v.medya, tema: v.tema ?? d.tema, bolgeler: v.bolgeler ?? d.bolgeler }); return; }
     set({ kurgu: v.kurgu, medya: v.medya, tema: v.tema ?? null, bolgeler: v.bolgeler ?? null, etag: v.etag, geri: [], ileri: [], secim: d.secim.filter((id) => v.kurgu.klipler.some((c) => c.id === id)) });
     useDepo.getState().bildir("Kurgu terminalden güncellendi");
   },
@@ -115,46 +120,70 @@ export const useKurgu = create<KurguDepo>((set, get) => ({
     const adimlar = birlestir && son?.anahtar === birlestir && simdi - son.zaman < BIRLESTIRME
       ? [...geri.slice(0, -1), { ...son, yama: [...son.yama, ...yama], ters: [...ters, ...son.ters], zaman: simdi }]
       : [...geri, { ad, yama, ters, anahtar: birlestir, zaman: simdi }].slice(-GECMIS);
-    set({ kurgu: yeni, geri: adimlar, ileri: [], kayit: "bekliyor" });
-    planla();
+    kirli = true;
+    // WHY: kayıt sürerken durumu "bekliyor"a çevirme; paralel PUT ve sahte 409 çakışmasını önler, kayıt bitince bekleyen değişiklik yazılır.
+    const kaydediliyor = get().kayit === "kaydediliyor";
+    set({ kurgu: yeni, geri: adimlar, ileri: [], kayit: kaydediliyor ? "kaydediliyor" : "bekliyor" });
+    if (!kaydediliyor) planla();
   },
   geriAl: () => {
     const { geri, ileri, kurgu } = get();
     const a = geri[geri.length - 1];
     if (!a || !kurgu) return;
-    set({ kurgu: applyPatches(kurgu, a.ters) as KurguProps, geri: geri.slice(0, -1), ileri: [...ileri, a], kayit: "bekliyor" });
-    planla();
+    kirli = true;
+    // WHY: kayıt sürerken geri alma durumu "bekliyor"a çevirip paralel PUT başlatmasın.
+    const kaydediliyor = get().kayit === "kaydediliyor";
+    set({ kurgu: applyPatches(kurgu, a.ters) as KurguProps, geri: geri.slice(0, -1), ileri: [...ileri, a], kayit: kaydediliyor ? "kaydediliyor" : "bekliyor" });
+    if (!kaydediliyor) planla();
   },
   yinele: () => {
     const { geri, ileri, kurgu } = get();
     const a = ileri[ileri.length - 1];
     if (!a || !kurgu) return;
-    set({ kurgu: applyPatches(kurgu, a.yama) as KurguProps, ileri: ileri.slice(0, -1), geri: [...geri, a], kayit: "bekliyor" });
-    planla();
+    kirli = true;
+    // WHY: kayıt sürerken yineleme durumu "bekliyor"a çevirip paralel PUT başlatmasın.
+    const kaydediliyor = get().kayit === "kaydediliyor";
+    set({ kurgu: applyPatches(kurgu, a.yama) as KurguProps, ileri: ileri.slice(0, -1), geri: [...geri, a], kayit: kaydediliyor ? "kaydediliyor" : "bekliyor" });
+    if (!kaydediliyor) planla();
   },
 
   kaydet: async () => {
     clearTimeout(zamanlayici);
-    const { anahtar, kurgu, etag, kayit } = get();
-    if (!anahtar || !kurgu || (kayit !== "bekliyor" && kayit !== "hata")) return;
+    // WHY: tek uçuş kilidi; kayıt sürerken çağrılan kaydet() bitmesini bekler, sonra güncel kurguyu yeni etag ile yeniden yazar.
+    const bekledi = Boolean(kayitSozu);
+    while (kayitSozu) await kayitSozu;
+    clearTimeout(zamanlayici);
+    const { anahtar, kurgu, etag, kayit, cakisma } = get();
+    if (!anahtar || !kurgu || cakisma) return;
+    if (bekledi ? (!kirli && kayit !== "bekliyor") : (!kirli && kayit !== "bekliyor" && kayit !== "hata")) return;
+    kirli = false;
     set({ kayit: "kaydediliyor" });
-    try {
-      const r = await istek(yolu(anahtar), { method: "PUT", headers: { "Content-Type": "application/json", "If-Match": etag }, body: JSON.stringify(kurgu) });
-      if (get().anahtar !== anahtar) return;
-      // Kayıt sürerken yeni düzenleme geldiyse o da yazılsın.
-      const degisti = get().kurgu !== kurgu;
-      set({ etag: r.etag, kayit: degisti ? "bekliyor" : "kayitli" });
-      if (degisti) planla();
-    } catch (e) {
-      if (e instanceof ApiHata && e.durum === 409) set({ cakisma: true, kayit: "bekliyor" });
-      else { set({ kayit: "hata" }); useDepo.getState().hata(e); }
-    }
+    let is!: Promise<void>;
+    is = (async () => {
+      try {
+        const r = await istek(yolu(anahtar), { method: "PUT", headers: { "Content-Type": "application/json", "If-Match": etag }, body: JSON.stringify(kurgu) });
+        if (get().anahtar !== anahtar) return;
+        // Kayıt sürerken yeni düzenleme geldiyse o da yazılsın.
+        const degisti = kirli || get().kurgu !== kurgu;
+        set({ etag: r.etag, kayit: degisti ? "bekliyor" : "kayitli" });
+        if (degisti) planla();
+      } catch (e) {
+        if (get().anahtar !== anahtar) return;
+        if (e instanceof ApiHata && e.durum === 409) set({ cakisma: true, kayit: "bekliyor" });
+        else { set({ kayit: "hata" }); useDepo.getState().hata(e); }
+      } finally {
+        if (kayitSozu === is) kayitSozu = null;
+      }
+    })();
+    kayitSozu = is;
+    await is;
   },
   diskiAl: async () => {
     const { anahtar } = get();
     if (!anahtar) return;
     try {
       const v = await istek(yolu(anahtar));
+      kirli = false;
       set({ kurgu: v.kurgu, medya: v.medya, etag: v.etag, geri: [], ileri: [], secim: [], kayit: "kayitli", cakisma: false });
     } catch (e) { useDepo.getState().hata(e); }
   },
@@ -201,16 +230,20 @@ export const useKurgu = create<KurguDepo>((set, get) => ({
     try {
       const var_ = Object.entries(kurgu.kaynaklar).find(([, k]) => k.yol === o.yol);
       const b = var_ ? null : await istek(`/api/kaynak/${anahtar}`, { method: "POST", json: { yol: o.yol } });
-      const sure0 = var_ ? var_[1].sure : b.sure;
+      // WHY: kaynak sorgusu sürerken proje değiştiyse medya/klip yeni projeye yazılmasın; id güncel kurgudan tek seferde üretilsin.
+      const guncel = get().kurgu;
+      if (get().anahtar !== anahtar || !guncel) return;
+      const mevcut = var_ ?? Object.entries(guncel.kaynaklar).find(([, k]) => k.yol === o.yol);
+      const sure0 = mevcut ? mevcut[1].sure : b.sure;
       const giris = aralik ? aralik[0] : 0;
       const sure = aralik ? aralik[1] - aralik[0] : o.tur === "gorsel" ? 5 : sure0;
       if (!(sure > 0)) throw new Error(`${o.ad}: süre okunamadı`);
-      if (b) set({ medya: { ...get().medya, [yeniKaynakId(kurgu, o)]: b.url } });
+      const id = mevcut ? mevcut[0] : yeniKaynakId(guncel, o);
+      if (b) set({ medya: { ...get().medya, [id]: b.url } });
       let yeniId = "";
       let oran: K.Oran | null = null;
       get().duzenle(`${o.ad} ekle`, (d) => {
-        const id = var_ ? var_[0] : yeniKaynakId(d, o);
-        if (b) {
+        if (b && !d.kaynaklar[id]) {
           d.kaynaklar[id] = { yol: o.yol, sure: b.sure, w: b.w, h: b.h, ses: b.ses };
           if (b.kelimeler.length) (d.kelimeler ??= {})[id] = b.kelimeler;
         }
@@ -244,14 +277,22 @@ function izle(anahtar: string) {
     const d = useKurgu.getState();
     // Kendi kaydımız dönerken gelen olay yok sayılır; kayıt yanıtı etag'i zaten günceller.
     if (d.anahtar !== anahtar || d.kayit === "kaydediliyor" || m.data === d.etag) return;
-    try { useKurgu.getState().tazele(await istek(yolu(anahtar))); } catch (e) { useDepo.getState().hata(e); }
+    try {
+      const v = await istek(yolu(anahtar));
+      // WHY: await sürerken proje değiştiyse eski projenin SSE yanıtı yeni projeyi ezmesin.
+      if (useKurgu.getState().anahtar !== anahtar) return;
+      useKurgu.getState().tazele(v);
+    } catch (e) {
+      if (useKurgu.getState().anahtar === anahtar) useDepo.getState().hata(e);
+    }
   };
 }
 
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", (e) => {
     const k = useKurgu.getState().kayit;
-    if (k === "bekliyor" || k === "kaydediliyor") { useKurgu.getState().kaydet(); e.preventDefault(); }
+    // WHY: kayıt hatasında da yerel değişiklik kaydedilmemiştir; sekme kapanmadan uyar.
+    if (k === "bekliyor" || k === "kaydediliyor" || k === "hata") { useKurgu.getState().kaydet(); e.preventDefault(); }
   });
 }
 

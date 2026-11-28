@@ -380,6 +380,46 @@ def _motion_ice_al(a):
         raise SystemExit(1)
 
 
+def cmd_guncelle(a):
+    """Uygulama güncellemesi (ADR 0065): origin kontrolü, güvenli birleştirme ve geri alma."""
+    # WHY: bkz. wiki/decisions/0065-uygulama-guncelleme.md. Stüdyo ve terminal aynı güvenli akışı kullanır.
+    from . import guncelle
+    try:
+        if a.geri_al:
+            d = guncelle.geri_al(a.geri_al)
+            son = d.get("son_sonuc") or {}
+            print(f"Geri alındı: {son.get('ozet', d.get('mevcut', ''))}")
+            return
+        if a.uygula:
+            d = guncelle.uygula()
+            son = d.get("son_sonuc") or {}
+            print(f"{son.get('ozet', 'Güncellendi')} [{son.get('durum', 'basarili')}]")
+            if son.get("korunan"):
+                print("Korunan dosyalar: " + ", ".join(son["korunan"]))
+            if son.get("rapor"):
+                print(f"Rapor: {son['rapor']}")
+            if son.get("durum") == "hata":
+                raise SystemExit(1)
+            return
+        d = guncelle.kontrol()
+    except RuntimeError as e:
+        print(f"Hata: {e}", file=sys.stderr)
+        raise SystemExit(1) from e
+
+    if not d.get("destek"):
+        print("Hata: Git deposu değil veya git bulunamadı.", file=sys.stderr)
+        raise SystemExit(1)
+    if d.get("hata"):
+        print(f"Hata: {d['hata']}", file=sys.stderr)
+        raise SystemExit(1)
+    if d.get("geride", 0) > 0:
+        print(f"Güncelleme var: {d['geride']} commit geride ({d.get('mevcut')} → {d.get('uzak')})")
+        for c in d.get("yeni", [])[:10]:
+            print(f"  - {c['kisa']} {c['baslik']} ({c['tarih']})")
+    else:
+        print(f"Güncel ({d.get('dal')} · {d.get('mevcut')})")
+
+
 def cmd_hf_guncelle(a):
     """HyperFrames güncellemesi (ADR 0051): kontrol, aday + duman testi + sabitleme, geri alma."""
     from . import hf_guncel
@@ -1072,6 +1112,10 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--minutes", type=float, default=5.0)
     sp = P("blocks", cmd_blocks, "blok kataloğu (LLM için kompakt)", project_arg=False)
     sp.add_argument("--tag")
+    sp = P("guncelle", cmd_guncelle, "Uygulamayı GitHub origin üzerinden kontrol et, güncelle ya da geri al (ADR 0065)", project_arg=False)
+    sp.add_argument("--kontrol", action="store_true", help="origin'i kontrol et ve yeni commit varsa bildir")
+    sp.add_argument("--uygula", action="store_true", help="yeni commitleri kullanıcı verisini koruyarak al")
+    sp.add_argument("--geri-al", metavar="TS", help="belirtilen zaman damgası (YYYYMMDD-HHMMSS) öncesine geri dön")
     sp = P("hf-guncelle", cmd_hf_guncelle, "HyperFrames'i repodan güncelle: aday kurulum + duman testi, geçerse sabitle (ADR 0051)", project_arg=False)
     sp.add_argument("--kontrol", action="store_true", help="yalnız yeni sürüm var mı bak")
     sp.add_argument("--duman", action="store_true", help="duman paketini mevcut sürümle koş")

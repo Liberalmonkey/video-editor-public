@@ -21,8 +21,12 @@ QUALITY = {"preview": ("draft", 1), "final": ("delivery", 1)}
 def _render_one(comp_dir: Path, out: Path, quality: str, fps: int) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_suffix(".tmp.mp4")
-    hf.render(comp_dir, tmp, quality=quality, fps=fps, workers=1)
-    tmp.replace(out)
+    # WHY: render hatasında yarım kalan .tmp.mp4 dosyası diskte sızıntı bırakmasın.
+    try:
+        hf.render(comp_dir, tmp, quality=quality, fps=fps, workers=1)
+        tmp.replace(out)
+    finally:
+        tmp.unlink(missing_ok=True)
     return out
 
 

@@ -137,14 +137,16 @@ const HfMonitor: React.FC<{ girdi: KurguProps & { medya?: Record<string, string>
       kap.current.appendChild(p);
       el.current = p;
       const zaman = (t: number) => useKurgu.setState({ zaman: Math.round(t * fps) / fps });
-      p.addEventListener("timeupdate", (e: CustomEvent) => zaman(e.detail.currentTime));
+      // WHY: detail veya currentTime eksik gelirse TypeError / NaN zaman oluşmasın.
+      p.addEventListener("timeupdate", (e: CustomEvent) => { if (typeof e.detail?.currentTime === "number") zaman(e.detail.currentTime); });
       p.addEventListener("play", () => useKurgu.setState({ oynuyor: true }));
       p.addEventListener("pause", () => useKurgu.setState({ oynuyor: false }));
       p.addEventListener("ended", () => useKurgu.setState({ oynuyor: false }));
       p.addEventListener("ready", () => { p.currentTime = useKurgu.getState().zaman; setHata(null); });
       p.addEventListener("playbackerror", (e: CustomEvent) => setHata(String(e.detail?.message ?? e.detail ?? "oynatma hatası")));
       p.addEventListener("runtimeprotocolerror", (e: CustomEvent) => setHata(String(e.detail?.message ?? "çalışma zamanı hatası")));
-      oyuncuBagla({ seekTo: (k) => { p.currentTime = k / fps; }, play: () => p.play(), pause: () => p.pause() });
+      // WHY: reddedilen oynatma sözü yakalanmazsa unhandled rejection oluşur.
+      oyuncuBagla({ seekTo: (k) => { p.currentTime = k / fps; }, play: () => { Promise.resolve(p.play()).catch(() => {}); }, pause: () => p.pause() });
       setDerle((n) => n + 1);
     }).catch((e) => setHata(String(e.message ?? e)));
     return () => { iptal = true; oyuncuBagla(null); el.current?.remove(); el.current = null; };
@@ -201,7 +203,11 @@ export const ProgramMonitor: React.FC = () => {
   const hfMi = secim?.motor === "hf" && !!veri;
 
   // Test köprüsü: ölçüm betikleri kullanır.
-  useEffect(() => { (window as any).__studio = { player: player.current, depo: useKurgu }; });
+  // WHY: bağımlılık dizisi olmadan her render'da çalışır ve unmount'ta detached PlayerRef referansını sızdırır.
+  useEffect(() => {
+    (window as any).__studio = { player: oyuncu, depo: useKurgu };
+    return () => { delete (window as any).__studio; };
+  }, [oyuncu]);
 
   useEffect(() => {
     const p = oyuncu;

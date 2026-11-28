@@ -9,8 +9,11 @@ import json
 import os
 import subprocess
 import threading
+import uuid
 from pathlib import Path
 from urllib.parse import quote
+
+from fastapi import HTTPException
 
 
 from ..tembel import Tembel
@@ -47,12 +50,23 @@ def peak(p: hizli.Proje, f: Path) -> Path:
         return hedef
     hedef.parent.mkdir(parents=True, exist_ok=True)
     with _sinir:
-        r = subprocess.run(["ffmpeg", "-v", "error", "-i", str(f), "-vn", "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"], capture_output=True)
+        try:
+            r = subprocess.run(
+                ["ffmpeg", "-v", "error", "-i", str(f), "-vn", "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"],
+                capture_output=True,
+                timeout=300,
+            )
+        except subprocess.TimeoutExpired as e:  # WHY: askıda kalan ffmpeg sunucu iş parçacığını kalıcı tüketmesin
+            raise HTTPException(415, "Dalga formu zaman aşımına uğradı") from e
     # WHY: sesi olmayan dosya hata değil, boş dalga formudur.
     veri = peaks(np.frombuffer(r.stdout, dtype=np.int16)) if r.returncode == 0 else []
-    gecici = hedef.with_suffix(".tmp")
-    gecici.write_text(json.dumps({"hz": HZ, "tepe": veri}), encoding="utf-8")
-    os.replace(gecici, hedef)
+    # WHY: eşzamanlı isteklerde sabit .tmp adı çakışmasın ve hata anında diskte artık kalmasın.
+    gecici = hedef.with_name(f".{hedef.name}.{uuid.uuid4().hex[:8]}.tmp")
+    try:
+        gecici.write_text(json.dumps({"hz": HZ, "tepe": veri}), encoding="utf-8")
+        os.replace(gecici, hedef)
+    finally:
+        gecici.unlink(missing_ok=True)
     return hedef
 
 
@@ -60,15 +74,28 @@ def serit(p: hizli.Proje, f: Path) -> dict:
     """Yatay kare şeridi. Kısa videoda saniyede bir, uzunda en çok 240 kare."""
     if f.suffix.lower() not in hizli.VIDEO:
         return {"n": 0}
-    sure = ff.probe_ob(f).get("duration") or 0
+    try:
+        sure = ff.probe_ob(f).get("duration") or 0
+    except Exception as e:  # WHY: bozuk medya probe hatasında 500 yerine 415 dönmeli
+        raise HTTPException(415, "Film şeridi üretilemedi") from e
     k = max(1.0, sure / SERIT_EN_COK)
     n = max(1, int(sure / k))
     ad = f"{_anahtar(f)}.serit.jpg"
     hedef = p.work / "proxy" / ad
     if not hedef.exists():
         hedef.parent.mkdir(parents=True, exist_ok=True)
-        gecici = hedef.with_name(f".{hedef.stem}.tmp.jpg")
-        with _sinir:
-            ff.ffmpeg("-i", str(f), "-vf", f"fps=1/{k:.3f},scale=-2:{SERIT_YUKSEKLIK},tile={n}x1", "-frames:v", "1", "-q:v", "6", str(gecici))
-        os.replace(gecici, hedef)
+        # WHY: eşzamanlı isteklerde benzersiz geçici ad kullanılsın ve hata durumunda artık dosya temizlensin.
+        gecici = hedef.with_name(f".{hedef.stem}.{uuid.uuid4().hex[:8]}.tmp.jpg")
+        try:
+            with _sinir:
+                ff.ffmpeg("-i", str(f), "-vf", f"fps=1/{k:.3f},scale=-2:{SERIT_YUKSEKLIK},tile={n}x1", "-frames:v", "1", "-q:v", "6", str(gecici))
+            if not gecici.is_file():
+                raise HTTPException(415, "Film şeridi üretilemedi")
+            os.replace(gecici, hedef)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(415, "Film şeridi üretilemedi") from e
+        finally:
+            gecici.unlink(missing_ok=True)
     return {"n": n, "k": k, "url": f"/dosya/{p.studyo}/{p.ad}/proxy/{quote(ad)}"}

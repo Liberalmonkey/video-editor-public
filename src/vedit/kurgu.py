@@ -211,7 +211,7 @@ def hazirla(p, *, mod: str = "final") -> Path:
         hedef = p.work / "public" / "fonts" / Path(stil.dosya).name
         if not hedef.exists():
             hedef.parent.mkdir(parents=True, exist_ok=True)
-            hedef.hardlink_to(dosya(p, f"library:fonts/{Path(stil.dosya).name}"))
+            _bagla(hedef, dosya(p, f"library:fonts/{Path(stil.dosya).name}"))
     render = k.model_dump()
     render.pop("rev")  # WHY: rev değişimi tek başına görüntü render'ı tetiklemesin (ham_imzasi)
     render.pop("kelimeler")
@@ -283,13 +283,24 @@ def dosya(p, y: str) -> Path:
     return hedef
 
 
+def _bagla(hedef: Path, kaynak: Path) -> None:
+    """Sabit bağ kurar; sürücüler arası OSError'da kopyaya düşer, yarışta FileExistsError yutar."""
+    # WHY: farklı sürücüde hardlink_to OSError (WinError 17) fırlatır, eşzamanlı istekte FileExistsError yarışır.
+    try:
+        hedef.hardlink_to(kaynak)
+    except FileExistsError:
+        return
+    except OSError:
+        shutil.copy2(kaynak, hedef)
+
+
 def shot_bagla(p, f: Path) -> dict:
     """Sahne görseli: dosyayı work/public/shot altına bağlar (sahne staticFile ile okur). Stüdyo API'si ve hazirla kullanır."""
     hedef = p.work / "public" / "shot" / f.name
     hedef.parent.mkdir(parents=True, exist_ok=True)
     if not (hedef.exists() and hedef.samefile(f)):
         hedef.unlink(missing_ok=True)
-        hedef.hardlink_to(f)
+        _bagla(hedef, f)
     v = ff.probe(f).get("video") or {}
     return {"img": f"shot/{f.name}", "iw": v.get("width"), "ih": v.get("height")}
 
@@ -600,7 +611,7 @@ def _public_bagla(p, ad: str, y: str, *, mod: str = "final") -> tuple[str, Path,
         kaynak = sdr
     if not (hedef.exists() and hedef.stat().st_size == kaynak.stat().st_size and hedef.samefile(kaynak)):
         hedef.unlink(missing_ok=True)
-        hedef.hardlink_to(kaynak)
+        _bagla(hedef, kaynak)
     return hedef.name, kaynak, proxy
 
 

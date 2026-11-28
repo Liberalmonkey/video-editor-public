@@ -61,7 +61,9 @@ export const ProjePaneli: React.FC = () => {
     try {
       const r = await istek(`/api/projeler/${p.studyo}/${p.ad}`, { method: "DELETE" });
       bildir(r.mesaj);
-      if (aktif === p) await projeAc(null);
+      // WHY: projeleriAl() yeni nesne ürettiğinden referans eşitliği yerine studyo+ad karşılaştırılır; silinen aktif proje açık kalmasın.
+      const guncelAktif = useDepo.getState().aktif;
+      if (guncelAktif?.studyo === p.studyo && guncelAktif.ad === p.ad) await projeAc(null);
       await projeleriAl();
     } catch (e) { hata(e); }
   };

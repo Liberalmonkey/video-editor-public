@@ -16,6 +16,18 @@ const LISTELI = new Set<Sekme>(["sfx", "muzik", "motion", "pano", "font"]);
 // Saf: test edilir (KutuphanePaneli.test.ts). Listesi olmayan sekme null, eksik anahtar boş liste.
 export const sekmeKayitlari = (veri: Record<string, any> | null, k: Sekme): any[] | null =>
   LISTELI.has(k) ? (Array.isArray(veri?.[k]) ? veri![k] : []) : null;
+// WHY: 409 yanıtı düz metin veya eksik alanlı JSON gelirse korumasız JSON.parse/dizi erişimi yakalanmamış hata atmasın.
+export const cakismaMetni = (mesaj: string): string => {
+  try {
+    const d = JSON.parse(mesaj);
+    const yuva = Array.isArray(d?.yuva) ? d.yuva : [];
+    const projeler = Array.isArray(d?.projeler) ? d.projeler : [];
+    const parca = [yuva.length && `Kit yuvası: ${yuva.join(", ")}`, projeler.length && `Kullanan projeler: ${projeler.join(", ")}`].filter(Boolean).join("\n");
+    return parca || mesaj;
+  } catch {
+    return mesaj;
+  }
+};
 const SEKMELER: [Sekme, string][] = [["galeri", "Galeri"], ["sfx", "SFX"], ["muzik", "Müzik"], ["motion", "Motion"], ["pano", "Pano"], ["grafik", "Grafik"], ["font", "Font"], ["kit", "Kit"]];
 const KABUL: Partial<Record<Sekme, string>> = { sfx: "audio/*", muzik: "audio/*", motion: ".mp4,.mov,.webm,.mkv,.json,.lottie,.gif,.apng,.png,.svg", font: ".ttf,.otf,.woff2" };
 const ALAN: Partial<Record<Sekme, [string, string, boolean?][]>> = {
@@ -151,8 +163,7 @@ export const KutuphanePaneli: React.FC = () => {
       if (er instanceof ApiHata && er.durum === 423) {
         if (await onayla({ baslik: "Kilitli varlık", onay: "Kilidi kaldır ve sil", tehlike: true, metin: `${e.id}\n\nBu varlık kit.json'da kilitli (ADR 0012). Kilidi kaldırılır, atandığı yuvalar boşalır, sonra silinir.` })) return sil(e, zorla, tur, true);
       } else if (er instanceof ApiHata && er.durum === 409) {
-        const d = JSON.parse(er.message);
-        const metin = [d.yuva.length && `Kit yuvası: ${d.yuva.join(", ")}`, d.projeler.length && `Kullanan projeler: ${d.projeler.join(", ")}`].filter(Boolean).join("\n");
+        const metin = cakismaMetni(er.message);
         if (await onayla({ baslik: "Bu varlık kullanımda", onay: "Yine de sil", tehlike: true, metin: `${e.id}\n\n${metin}\n\nSilinirse bu projeler render'da dosyayı bulamaz.` })) return sil(e, true, tur, kilitAc);
       } else hata(er);
     }
@@ -251,6 +262,16 @@ export const KutuphanePaneli: React.FC = () => {
 
 const FontOrnek: React.FC<{ ad: string; url: string }> = ({ ad, url }) => {
   const aile = `onizleme-${ad}`;
-  useEffect(() => { new FontFace(aile, `url(${url})`, { weight: "100 900" }).load().then((f) => document.fonts.add(f)).catch(() => {}); }, [url]);
+  useEffect(() => {
+    // WHY: unmount veya font değişiminde FontFace silinmezse document.fonts birikerek bellek sızdırır.
+    let iptal = false;
+    let yuklu: FontFace | null = null;
+    new FontFace(aile, `url(${url})`, { weight: "100 900" }).load().then((f) => {
+      if (iptal) return;
+      yuklu = f;
+      document.fonts.add(f);
+    }).catch(() => {});
+    return () => { iptal = true; if (yuklu) document.fonts.delete(yuklu); };
+  }, [aile, url]);
   return <span style={{ fontFamily: `"${aile}"` }}>Şğİıöç Hızlı kurgu 0123</span>;
 };

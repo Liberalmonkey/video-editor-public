@@ -21,13 +21,15 @@ const j = (yon: 1 | -1) => () => {
     // WHY: tarayıcı video öğesi geri oynatmaz; J kaynakta bir saniye geri atlar.
     if (yon < 0) { v.currentTime = Math.max(0, v.currentTime - 1); return; }
     v.playbackRate = !v.paused && v.playbackRate < 4 ? v.playbackRate * 2 : 1;
-    v.play();
+    // WHY: otomatik oynatma engeli veya hazır olmayan medyada play() reddi yakalanmamış rejection üretmesin.
+    v.play()?.catch(() => {});
     return;
   }
   shuttle(yon);
 };
 const k = () => { const v = kaynakVideo(); if (kaynaktaMi() && v) v.pause(); else durdur(); };
-const bosluk = () => { const v = kaynakVideo(); if (kaynaktaMi() && v) { if (v.paused) v.play(); else v.pause(); } else degistir(); };
+// WHY: play() promise reddi yakalanmazsa konsolda unhandled rejection oluşur.
+const bosluk = () => { const v = kaynakVideo(); if (kaynaktaMi() && v) { if (v.paused) v.play()?.catch(() => {}); else v.pause(); } else degistir(); };
 const kare = (n: number) => () => {
   const v = kaynakVideo();
   if (kaynaktaMi() && v) { v.pause(); v.currentTime = Math.max(0, v.currentTime + n / (useKurgu.getState().kurgu?.sekans.fps ?? 30)); } else kareGit(n);

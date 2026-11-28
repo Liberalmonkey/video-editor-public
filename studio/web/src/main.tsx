@@ -11,6 +11,7 @@ import { AltyaziPaneli } from "./paneller/AltyaziPaneli";
 import { DosyaPaneli } from "./paneller/DosyaPaneli";
 import { MikserPaneli } from "./paneller/MikserPaneli";
 import { EfektPaneli } from "./paneller/EfektPaneli";
+import { GuncellemeDugmesi } from "./paneller/GuncellemeDugmesi";
 import { IslerPaneli } from "./paneller/IslerPaneli";
 import { KaynakMonitor, ProgramMonitor } from "./paneller/Monitorler";
 import { ProjePaneli } from "./paneller/ProjePaneli";
@@ -153,6 +154,8 @@ const App: React.FC = () => {
   const aktif = useDepo((d) => d.aktif);
   const baglanti = useDepo((d) => d.baglanti);
   const api = useRef<DockviewApi | null>(null);
+  // WHY: onDidLayoutChange aboneliğini saklayıp unmount'ta ve yeniden bağlanmada temizleyerek dinleyici sızıntısını önler.
+  const layoutDinleyici = useRef<{ dispose: () => void } | null>(null);
   const [kisayol, setKisayol] = useState(false);
   const [alan, setAlan] = useState(() => { try { const k = localStorage.getItem("studio.alan") ?? "kurgu"; return k in ALANLAR ? k : "kurgu"; } catch { return "kurgu"; } });
   const alanRef = useRef(alan);
@@ -195,7 +198,7 @@ const App: React.FC = () => {
     const panelOne = (e: Event) => api.current?.getPanel((e as CustomEvent).detail)?.api.setActive();
     window.addEventListener("studio-alan", alanTusu);
     window.addEventListener("studio-panel", panelOne);
-    return () => { a(); b(); window.removeEventListener("studio-alan", alanTusu); window.removeEventListener("studio-panel", panelOne); };
+    return () => { a(); b(); layoutDinleyici.current?.dispose(); layoutDinleyici.current = null; window.removeEventListener("studio-alan", alanTusu); window.removeEventListener("studio-panel", panelOne); };
   }, []);
 
   // AI panelini öne getirir; bu alanda yoksa Kurgu alanına geçer.
@@ -207,7 +210,9 @@ const App: React.FC = () => {
   const hazir = (e: DockviewReadyEvent) => {
     api.current = e.api;
     yukle(alanRef.current);
-    e.api.onDidLayoutChange(() => {
+    // WHY: önceki veya unmount olmuş Dockview layout aboneliği sızmasın.
+    layoutDinleyici.current?.dispose();
+    layoutDinleyici.current = e.api.onDidLayoutChange(() => {
       if (yukleniyor.current) return;
       try { localStorage.setItem(alanAnahtari(alanRef.current), JSON.stringify(e.api.toJSON())); } catch { /* kota */ }
     });
@@ -223,6 +228,7 @@ const App: React.FC = () => {
           {Object.entries(ALANLAR).map(([k, v], i) => <button key={k} type="button" className="sekme" aria-current={alan === k ? "page" : undefined} data-secili={alan === k} title={`${v.ad} (Alt+${i + 1})`} onClick={() => gec(k)}>{v.ad}</button>)}
         </nav>
         <span className="bosluk" />
+        <GuncellemeDugmesi />
         <HfRozeti />
         <AjanRozeti ac={ajanAc} />
         <IkonDugme ad="Klavye kısayolları" onClick={() => setKisayol(true)}><Keyboard size={15} /></IkonDugme>
@@ -239,4 +245,5 @@ const App: React.FC = () => {
   );
 };
 
-createRoot(document.getElementById("kok")!).render(<App />);
+// WHY: üst çubuk rozetleri, diyaloglar ve Dockview kabuğu da hata sınırında kalsın; tek render hatası tüm uygulamayı düşürmesin.
+createRoot(document.getElementById("kok")!).render(<PanelKoruma ad="Uygulama"><App /></PanelKoruma>);

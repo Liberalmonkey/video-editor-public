@@ -83,6 +83,7 @@ studios/*/styles/*/.disa/
 
 # HyperFrames sürüm adayları, duman testi ve motor karşılaştırma çıktıları (ADR 0051): kod yeniden üretir, makineye özel yol taşır
 /work/hf-aday/
+/work/guncelleme/
 /work/hf-motion/
 /work/hf-native/
 # Oturum devir notları: yerel

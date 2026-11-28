@@ -8,6 +8,12 @@ import { slotSirasi, sn, tokenEtiketi, type EkipDurum, type SlotDurumAdi } from 
 
 const DURUM_ADI: Record<SlotDurumAdi, string> = { bekliyor: "bekliyor", calisiyor: "çalışıyor", bitti: "bitti", hata: "hata", yedek: "yedekte", atlandi: "atlandı" };
 
+// WHY: eksik alanlı durum JSON'ında Object.entries(durum.slotlar) veya durum.acik.P0 erişimi paneli çökertmesin.
+export const gecerliEkipDurum = (d: any): d is EkipDurum =>
+  !!d && !d.yok && Array.isArray(d.kapilar)
+  && !!d.slotlar && typeof d.slotlar === "object" && !Array.isArray(d.slotlar)
+  && !!d.acik && typeof d.acik === "object";
+
 export const EkipIlerleme: React.FC<{ yol: string; calisanId?: number }> = ({ yol, calisanId }) => {
   const [durum, setDurum] = useState<EkipDurum | null>(null);
   const [secili, setSecili] = useState<string | null>(null);
@@ -16,7 +22,7 @@ export const EkipIlerleme: React.FC<{ yol: string; calisanId?: number }> = ({ yo
   useEffect(() => {
     let iptal = false;
     // Eski (v2) koşunun durum dosyasında kapı listesi yok: gösterilmez.
-    const oku = () => istek(`${yol}/durum`).then((d) => { if (!iptal) setDurum(d.yok || !Array.isArray(d.kapilar) ? null : d); }).catch(() => {});
+    const oku = () => istek(`${yol}/durum`).then((d) => { if (!iptal) setDurum(gecerliEkipDurum(d) ? d : null); }).catch(() => {});
     oku();
     if (!calisanId) return () => { iptal = true; };
     const dur = yokla(oku, 1500);

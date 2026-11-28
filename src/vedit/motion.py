@@ -109,7 +109,8 @@ def param_hatalari(m: dict, param: dict) -> list[str]:
 
 
 def _ff(*a: str) -> None:
-    r = subprocess.run(["ffmpeg", "-v", "error", "-y", *a], capture_output=True, text=True)
+    # WHY: Türkçe Windows varsayılan cp1254 kodlamasında ffmpeg UTF-8 çıktısı UnicodeDecodeError vermesin.
+    r = subprocess.run(["ffmpeg", "-v", "error", "-y", *a], capture_output=True, text=True, encoding="utf-8", errors="replace")
     if r.returncode != 0:
         raise SystemExit(f"ffmpeg başarısız: {r.stderr.strip()[-300:]}")
 
@@ -230,9 +231,18 @@ def olc(hedefler: list[str] | None = None) -> list[tuple[str, list[str]]]:
         if not f.is_file():
             cikti.append((k, ["webm yok: vedit motion kur " + k]))
             continue
+        # WHY: cp1254 kodlamasında UnicodeDecodeError ve bozuk/akışsız ffprobe çıktısında KeyError/IndexError önlenir.
         r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height:stream_tags=alpha_mode",
-                            "-of", "json", str(f)], capture_output=True, text=True)
-        st = json.loads(r.stdout)["streams"][0]
+                            "-of", "json", str(f)], capture_output=True, text=True, encoding="utf-8", errors="replace")
+        if r.returncode != 0:
+            raise RuntimeError(f"ffprobe başarısız ({k}): {(r.stderr or r.stdout).strip()[-300:]}")
+        try:
+            streams = json.loads(r.stdout or "{}").get("streams") or []
+        except ValueError as e:
+            raise RuntimeError(f"ffprobe çıktısı okunamadı ({k}): {e}") from e
+        if not streams:
+            raise RuntimeError(f"Video akışı bulunamadı ({k})")
+        st = streams[0]
         if st.get("tags", {}).get("alpha_mode") != "1":
             kusur.append("alfa kanalı yok")
         if (st["width"], st["height"]) != (m["w"], m["h"]):
@@ -240,7 +250,9 @@ def olc(hedefler: list[str] | None = None) -> list[tuple[str, list[str]]]:
         # Kare başına alfa en büyük ve en küçük değeri (0-255); libvpx çözücü olmadan alfa okunmaz.
         r = subprocess.run(["ffmpeg", "-v", "error", "-c:v", "libvpx-vp9", "-i", str(f), "-vf",
                             "alphaextract,signalstats,metadata=print:key=lavfi.signalstats.YMAX:file=-,metadata=print:key=lavfi.signalstats.YMIN:file=-",
-                            "-f", "null", "-"], capture_output=True, text=True)
+                            "-f", "null", "-"], capture_output=True, text=True, encoding="utf-8", errors="replace")
+        if r.returncode != 0:
+            raise RuntimeError(f"ffmpeg alfa ölçümü başarısız ({k}): {(r.stderr or r.stdout).strip()[-300:]}")
         enb = [float(x.split("=")[1]) for x in r.stdout.splitlines() if "YMAX=" in x]
         enk = [float(x.split("=")[1]) for x in r.stdout.splitlines() if "YMIN=" in x]
         beklenen = round(m["sure"] * 30)

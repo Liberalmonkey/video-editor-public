@@ -217,7 +217,8 @@ const FontYukle: React.FC<{ ad: string; dosya: string; p: KurguProps }> = ({ ad,
   const [h] = useState(() => delayRender(`font ${ad}`));
   useEffect(() => {
     const url = p.onizleme ? `/lib/fonts/${encodeURIComponent(dosya)}` : staticFile(`fonts/${dosya}`);
-    new FontFace(ad, `url(${url})`, { weight: "100 900" }).load().then((f) => document.fonts.add(f)).finally(() => continueRender(h));
+    // WHY: eksik veya bozuk font dosyasında load() reddi yakalanmazsa unhandled rejection üretir.
+    new FontFace(ad, `url(${url})`, { weight: "100 900" }).load().then((f) => document.fonts.add(f)).catch(() => {}).finally(() => continueRender(h));
   }, [h]);
   return null;
 };

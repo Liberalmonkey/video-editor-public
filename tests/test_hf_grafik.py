@@ -114,3 +114,16 @@ def test_alfa_etiketi_buyuk_harfle_de_taninir():
     assert ff._alfa_mi({"tags": {"ALPHA_MODE": "1"}, "pix_fmt": "yuv420p"})
     assert ff._alfa_mi({"tags": {"alpha_mode": "1"}, "pix_fmt": "yuv420p"})
     assert not ff._alfa_mi({"tags": {}, "pix_fmt": "yuv420p"})
+
+
+def test_timeline_anahtari_koke_eslenir():
+    # WHY: ornek-proje 2026-11-27. Kök `gosterge-yak`, timeline `main`: render "data-no-timeline" ile düşüyordu.
+    from vedit import hf_grafik
+    js = "window.__timelines=window.__timelines||{};window.__timelines['main']=tl;"
+    assert 'window.__timelines["gosterge-yak"]=tl' in hf_grafik.timeline_esle(js, "gosterge-yak")
+    tek = "window.__timelines['baska']=tl;"
+    assert 'window.__timelines["k"]' in hf_grafik.timeline_esle(tek, "k")
+    iki = "window.__timelines['a']=x;window.__timelines['b']=y;"
+    assert hf_grafik.timeline_esle(iki, "k") == iki
+    dogru = 'window.__timelines["k"]=tl;'
+    assert hf_grafik.timeline_esle(dogru, "k") == dogru

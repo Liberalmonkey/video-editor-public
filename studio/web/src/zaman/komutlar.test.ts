@@ -509,3 +509,20 @@ describe("değişmez", () => {
     }
   });
 });
+
+describe("stabilite: geçersiz iz referansı (bulgu 12)", () => {
+  it("olmayan iz kimliği taşıyan klipte komutlar çökmez", () => {
+    const k = temel();
+    k.klipler = [klip(k, "bozuk", "YOK", 2, 6)];
+    expect(() => produce(k, (d) => {
+      K.tasi(d, ["bozuk"], 1, 1);
+      K.kirp(d, "bozuk", "son", -1);
+      K.kazancYaz(d, "bozuk", -3);
+      K.hizAyarla(d, "bozuk", 2);
+      K.sesiAyir(d, ["bozuk"]);
+      expect(K.klipEkle(d, { tur: "video", iz: "YOK", bas: 0, sure: 1 })).toBeNull();
+      expect(K.izSil(d, "YOK")).toBe(false);
+      K.sil(d, ["bozuk"]);
+    })).not.toThrow();
+  });
+});

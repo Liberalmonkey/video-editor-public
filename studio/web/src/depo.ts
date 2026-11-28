@@ -50,6 +50,9 @@ interface Depo {
 }
 
 let sayac = 0;
+// WHY: artan istek sayaçları; hızlı proje geçişi ve paralel kurguAl() çağrılarında geç dönen eski yanıtın yeni durumu ezmesini önler.
+let projeAcNo = 0;
+let kurguAlNo = 0;
 const panoBekleyen = new Map<number, { oge: KaynakOge; t: number; anahtar: string | null }>();
 // Motorun varsayılan modeli listede varsa o, yoksa listenin ilki.
 export const varsayilanModel = (m: MotorDurum) =>
@@ -72,7 +75,11 @@ export const useDepo = create<Depo>((set, get) => ({
     } catch (e) { get().hata(e); }
   },
   projeAc: async (p) => {
+    // WHY: artan sayaç; hızlı proje geçişinde önceki kaydet() tamamlanınca yeni seçimi ezmesin.
+    const no = ++projeAcNo;
     await useKurgu.getState().kaydet(); // WHY: geçiş bekleyen düzenlemeyi kaybetmesin
+    if (no !== projeAcNo) return;
+    kurguAlNo++; // WHY: önceki projeden uçuşta kalan kurguAl() yanıtı yeni projeye yazılmasın.
     useKurgu.getState().ac(null, null);
     set({ aktif: p, goruntu: null, kurguDurum: p ? "yukleniyor" : "yok", surum: get().surum + 1 });
     try { localStorage.setItem("studio.aktif", p ? `${p.studyo}/${p.ad}` : ""); } catch { /* özel pencere */ }
@@ -81,14 +88,17 @@ export const useDepo = create<Depo>((set, get) => ({
   kurguAl: async () => {
     const p = get().aktif;
     if (!p) return;
+    // WHY: artan sayaç; aynı projede paralel kurguAl() çağrılarından geç dönen eski yanıt yeni kurguyu ezmesin.
+    const no = ++kurguAlNo;
     (window as any).remotion_staticBase = `/pub/${p.studyo}/${p.ad}`;
     try {
       const v = await istek(`/api/kurgu/${p.studyo}/${p.ad}`);
-      if (get().aktif !== p) return;
+      if (no !== kurguAlNo || get().aktif?.studyo !== p.studyo || get().aktif?.ad !== p.ad) return;
       const k = useKurgu.getState(), anahtar = `${p.studyo}/${p.ad}`;
       if (k.anahtar === anahtar) k.tazele(v); else k.ac(anahtar, v);
       set({ kurguDurum: "hazir" });
     } catch (e) {
+      if (no !== kurguAlNo) return;
       if (e instanceof ApiHata && e.durum === 404) { useKurgu.getState().ac(null, null); set({ kurguDurum: "bos" }); }
       else { set({ kurguDurum: "bos" }); get().hata(e); }
     }
@@ -172,30 +182,36 @@ export const useDepo = create<Depo>((set, get) => ({
 export const isAkisiBaglan = () => {
   const es = new EventSource("/api/isler/akis");
   es.onopen = () => {
-    if (!useDepo.getState().baglanti) { useDepo.setState({ baglanti: true }); useKurgu.getState().kaydet(); }
+    // WHY: yeniden bağlantıda kayıt reddedilirse yakalanmamış promise hatası kalmasın.
+    if (!useDepo.getState().baglanti) { useDepo.setState({ baglanti: true }); useKurgu.getState().kaydet().catch(useDepo.getState().hata); }
   };
   es.onerror = () => useDepo.setState({ baglanti: false });
   es.onmessage = (m) => {
-    const v = JSON.parse(m.data);
-    const d = useDepo.getState();
-    const onceki = d.isler.find((x) => x.id === v.id);
-    useDepo.setState({
-      isler: [...d.isler.filter((x) => x.id !== v.id), v].sort((a, b) => b.id - a.id),
-      gunlukler: v.yeni.length ? { ...d.gunlukler, [v.id]: [...(d.gunlukler[v.id] ?? []), ...v.yeni] } : d.gunlukler,
-    });
-    if (onceki && onceki.durum !== v.durum && ["bitti", "hata", "iptal"].includes(v.durum)) {
-      const pano = panoBekleyen.get(v.id);
-      if (pano) {
-        panoBekleyen.delete(v.id);
-        // WHY: pano hazırlanırken başka proje açıldıysa klip onun kurgusuna eklenmez.
-        if (v.durum === "bitti" && useKurgu.getState().anahtar === pano.anahtar) useKurgu.getState().kaynaktanEkle(pano.oge, pano.t, null, false);
-        else if (v.durum === "bitti") d.bildir(`${pano.oge.ad} hazır ama proje değiştiği için eklenmedi. Kütüphaneden yeniden ekle.`, true);
+    // WHY: kesilen veya şeması eksik SSE olayı işleyiciyi çökertip bitiş yenilemesini durdurmasın.
+    try {
+      const v = JSON.parse(m.data);
+      if (!v || typeof v !== "object" || v.id == null) return;
+      const d = useDepo.getState();
+      const onceki = d.isler.find((x) => x.id === v.id);
+      const yeni = Array.isArray(v?.yeni) ? v.yeni : [];
+      useDepo.setState({
+        isler: [...d.isler.filter((x) => x.id !== v.id), v].sort((a, b) => b.id - a.id),
+        gunlukler: yeni.length ? { ...d.gunlukler, [v.id]: [...(d.gunlukler[v.id] ?? []), ...yeni] } : d.gunlukler,
+      });
+      if (onceki && onceki.durum !== v.durum && ["bitti", "hata", "iptal"].includes(v.durum)) {
+        const pano = panoBekleyen.get(v.id);
+        if (pano) {
+          panoBekleyen.delete(v.id);
+          // WHY: pano hazırlanırken başka proje açıldıysa klip onun kurgusuna eklenmez.
+          if (v.durum === "bitti" && useKurgu.getState().anahtar === pano.anahtar) useKurgu.getState().kaynaktanEkle(pano.oge, pano.t, null, false).catch(useDepo.getState().hata);
+          else if (v.durum === "bitti") d.bildir(`${pano.oge.ad} hazır ama proje değiştiği için eklenmedi. Kütüphaneden yeniden ekle.`, true);
+        }
+        d.bildir(v.durum === "bitti" ? `Bitti: ${v.baslik}` : v.durum === "iptal" ? `İptal edildi: ${v.baslik}` : `Hata: ${v.baslik}. Günlüğe bak.`, v.durum === "hata");
+        d.tazele();
+        d.projeleriAl().catch(useDepo.getState().hata);
+        d.kurguAl().catch(useDepo.getState().hata);
       }
-      d.bildir(v.durum === "bitti" ? `Bitti: ${v.baslik}` : v.durum === "iptal" ? `İptal edildi: ${v.baslik}` : `Hata: ${v.baslik}. Günlüğe bak.`, v.durum === "hata");
-      d.tazele();
-      d.projeleriAl();
-      d.kurguAl();
-    }
+    } catch { /* bozuk ya da kesik SSE olayı */ }
   };
   return () => es.close();
 };

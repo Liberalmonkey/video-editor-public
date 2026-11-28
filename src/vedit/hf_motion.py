@@ -141,9 +141,11 @@ def _pikselle(webm: Path, n: int) -> None:
     """pano.pikselle karşılığı: n kat küçült (alan ortalaması), alfayı 128'de eşikle, en yakın komşuyla büyüt."""
     gecici = webm.with_name(f".{webm.stem}.piksel.webm")
     from .pano import kodlayici
+    # WHY: Türkçe Windows varsayılan cp1254 kodlamasında ffmpeg UTF-8 çıktısı UnicodeDecodeError vermesin.
     r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-c:v", "libvpx-vp9", "-i", str(webm), "-vf",
                         f"format=rgba,scale=iw/{n}:ih/{n}:flags=area,lut=a='if(gte(val\\,128)\\,255\\,0)',"
-                        f"scale=iw*{n}:ih*{n}:flags=neighbor", *kodlayici(gecici), str(gecici)], capture_output=True, text=True)
+                        f"scale=iw*{n}:ih*{n}:flags=neighbor", *kodlayici(gecici), str(gecici)],
+                       capture_output=True, text=True, encoding="utf-8", errors="replace")
     if r.returncode:
         gecici.unlink(missing_ok=True)
         raise RuntimeError(f"piksel işlemi başarısız: {r.stderr[-300:]}")

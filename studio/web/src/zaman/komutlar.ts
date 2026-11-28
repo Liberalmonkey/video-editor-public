@@ -11,7 +11,8 @@ export const kareYuvarla = (t: number, fps: number) => Math.round(t * fps) / fps
 const bit = (c: Pick<Klip, "bas" | "sure">) => c.bas + c.sure;
 const izKlipleri = (k: K, iz: string) => k.klipler.filter((c) => c.iz === iz).sort((a, b) => a.bas - b.bas);
 const bul = (k: K, id: string) => k.klipler.find((c) => c.id === id);
-const izBul = (k: K, id: string) => k.izler.find((i) => i.id === id) as Iz;
+// WHY: geçersiz iz referansında `as Iz` undefined değerini gizleyip komutlarda TypeError atmasın.
+const izBul = (k: K, id: string): Iz | undefined => k.izler.find((i) => i.id === id);
 const kilitsiz = (k: K) => k.izler.filter((i) => !i.kilit).map((i) => i.id);
 
 // Kaynağın izin verdiği uç; süresiz kaynakta (görsel, sahne, metin) sınır yok.
@@ -62,7 +63,7 @@ const kfSonuKes = (c: Klip, d: number) => {
 
 // Bağlı eşler: aynı yer ve süre. Biri kırpılınca diğeri de kırpılır, yoksa A/V senkronu sessizce kayar.
 // Alt ile tek başına taşınan klip artık eş değildir; bağı sürer, kırpımı ayrılır.
-const esler = (k: K, c: Klip) => (c.bag ? k.klipler.filter((x) => x.id !== c.id && x.bag === c.bag && !izBul(k, x.iz).kilit && Math.abs(x.bas - c.bas) < 1e-3 && Math.abs(x.sure - c.sure) < 1e-3) : []);
+const esler = (k: K, c: Klip) => (c.bag ? k.klipler.filter((x) => x.id !== c.id && x.bag === c.bag && !izBul(k, x.iz)?.kilit && Math.abs(x.bas - c.bas) < 1e-3 && Math.abs(x.sure - c.sure) < 1e-3) : []);
 
 // t anında böl; sağ parçayı döner. Aynı t'de bölünen eşlerin sağ parçaları aynı yeni bağı alır: ortağı bilmek gerekmez.
 export const bol = (k: K, c: Klip, t: number): Klip | null => {
@@ -92,8 +93,8 @@ export const bol = (k: K, c: Klip, t: number): Klip | null => {
 // Razor. Sahne bölünmez: animasyonu baştan başlar, kullanıcı kırpar.
 export const kes = (k: K, id: string, t: number) => {
   const c = bul(k, id);
-  if (!c || c.tur === "sahne" || izBul(k, c.iz).kilit) return null;
-  const ortaklar = c.bag ? k.klipler.filter((x) => x.id !== c.id && x.bag === c.bag && x.tur !== "sahne" && !izBul(k, x.iz).kilit) : [];
+  if (!c || c.tur === "sahne" || izBul(k, c.iz)?.kilit) return null;
+  const ortaklar = c.bag ? k.klipler.filter((x) => x.id !== c.id && x.bag === c.bag && x.tur !== "sahne" && !izBul(k, x.iz)?.kilit) : [];
   const sag = bol(k, c, t);
   for (const x of ortaklar) bol(k, x, t);
   return sag;
@@ -106,7 +107,7 @@ export const kafadaKes = (k: K, t: number, secili: string[]) => {
 };
 
 export const sil = (k: K, idler: string[]) => {
-  k.klipler = k.klipler.filter((c) => !idler.includes(c.id) || izBul(k, c.iz).kilit);
+  k.klipler = k.klipler.filter((c) => !idler.includes(c.id) || !!izBul(k, c.iz)?.kilit);
 };
 
 // Sabit içerik uzar ve kısalır, kesilmez: müzik, sahne, metin, görsel.
@@ -138,7 +139,7 @@ export const aralikSil = (k: K, a: number, b: number, izler = kilitsiz(k), haric
 
 // Ripple sil: seçili kliplerin süreleri kilitsiz izlerden çıkar. Sondan başa: öndeki kaydırma arkadakini bozmaz.
 export const rippleSil = (k: K, idler: string[]) => {
-  const secili = k.klipler.filter((c) => idler.includes(c.id) && !izBul(k, c.iz).kilit);
+  const secili = k.klipler.filter((c) => idler.includes(c.id) && !izBul(k, c.iz)?.kilit);
   const araliklar = secili.map((c) => [c.bas, bit(c)] as [number, number]).sort((x, y) => x[0] - y[0]);
   const birlesik: [number, number][] = [];
   for (const [a, b] of araliklar) {
@@ -188,12 +189,14 @@ export const bagla = (k: K, idler: string[]) => {
 
 // Taşıma. dIz: aynı türdeki izler arasında satır farkı. insert: hedefte yer açar, overwrite: üzerine yazar.
 export const tasi = (k: K, idler: string[], dt: number, dIz: number, insert = false) => {
-  const secili = k.klipler.filter((c) => idler.includes(c.id) && !izBul(k, c.iz).kilit);
+  const secili = k.klipler.filter((c) => idler.includes(c.id) && !izBul(k, c.iz)?.kilit);
   if (!secili.length) return;
   const enKucuk = Math.min(...secili.map((c) => c.bas));
   const d = Math.max(dt, -enKucuk);
   const izHedef = (c: Klip) => {
-    const ayni = k.izler.filter((i) => i.tur === izBul(k, c.iz).tur);
+    const iz = izBul(k, c.iz);
+    if (!iz) return c.iz;
+    const ayni = k.izler.filter((i) => i.tur === iz.tur);
     const hedef = ayni[ayni.findIndex((i) => i.id === c.iz) + dIz];
     return hedef && !hedef.kilit ? hedef.id : c.iz;
   };
@@ -244,7 +247,7 @@ const enKucukPay = (l: number[], dt: number) => l.reduce((a, b) => (Math.abs(b) 
 // Normal kırpma.
 export const kirp = (k: K, id: string, kenar: "bas" | "son", dt: number) => {
   const c = bul(k, id);
-  if (!c || izBul(k, c.iz).kilit) return;
+  if (!c || izBul(k, c.iz)?.kilit) return;
   const ortak = [c, ...esler(k, c)];
   const d = enKucukPay(ortak.map((x) => kirpPayi(k, x, kenar, dt)), dt);
   for (const x of ortak) kirpUygula(x, kenar, d);
@@ -254,7 +257,7 @@ export const kirp = (k: K, id: string, kenar: "bas" | "son", dt: number) => {
 // yalnız kaydırmak, uzun klibin altına bir sonrakini sokardı.
 export const rippleKirp = (k: K, id: string, kenar: "bas" | "son", dt: number) => {
   const c = bul(k, id);
-  if (!c || izBul(k, c.iz).kilit) return;
+  if (!c || izBul(k, c.iz)?.kilit) return;
   // Eşler aralık işlemine girmez: sile sile bölünüp bağını yitirirdi, doğrudan aynı kırpımı alır.
   const ortak = [c, ...esler(k, c)];
   const haric = ortak.map((x) => x.id);
@@ -276,7 +279,7 @@ export const rippleKirp = (k: K, id: string, kenar: "bas" | "son", dt: number) =
 // Rolling: iki bitişik klibin ortak kesimi kayar, toplam süre değişmez.
 export const rolling = (k: K, solId: string, sagId: string, dt: number) => {
   const a = bul(k, solId), b = bul(k, sagId);
-  if (!a || !b || izBul(k, a.iz).kilit) return;
+  if (!a || !b || izBul(k, a.iz)?.kilit) return;
   const ust = Math.min(sonSinir(k, a) - a.sure, b.sure - kare(k));
   const pay = b.kaynak && kaynakSuresi(k, b) !== Infinity ? b.giris / b.hiz : Infinity;
   const ea = esler(k, a), eb = esler(k, b);
@@ -289,7 +292,7 @@ export const rolling = (k: K, solId: string, sagId: string, dt: number) => {
 // Slip: yer ve süre sabit, kaynakta pencere kayar.
 export const slip = (k: K, id: string, dt: number) => {
   const c = bul(k, id);
-  if (!c || !c.kaynak || izBul(k, c.iz).kilit) return;
+  if (!c || !c.kaynak || izBul(k, c.iz)?.kilit) return;
   const ust = Math.max(0, kaynakSuresi(k, c) - c.sure * c.hiz);
   const yeni = Math.min(Math.max(0, c.giris + dt * c.hiz), ust === Infinity ? c.giris + dt * c.hiz : ust);
   // Aynı kaynaktaki eş de kayar: görüntü ve ses aynı kaynak anında kalır.
@@ -301,7 +304,7 @@ export const slip = (k: K, id: string, dt: number) => {
 // shortcut: bağlı eşi olan klip kaymaz, önce Ctrl+L ile çözülür; iki izde birlikte slide gerekirse burada genişletilir.
 export const slide = (k: K, id: string, dt: number) => {
   const c = bul(k, id);
-  if (!c || izBul(k, c.iz).kilit || esler(k, c).length) return;
+  if (!c || izBul(k, c.iz)?.kilit || esler(k, c).length) return;
   const { once, sonra } = komsu(k, c);
   const bitisikOnce = once && Math.abs(bit(once) - c.bas) < EPS ? once : undefined;
   const bitisikSonra = sonra && Math.abs(bit(c) - sonra.bas) < EPS ? sonra : undefined;
@@ -341,7 +344,8 @@ export const klipYap = (k: K, y: YeniKlip): Klip => ({
 });
 
 export const klipEkle = (k: K, y: YeniKlip, insert = false) => {
-  if (izBul(k, y.iz).kilit) return null;
+  const iz = izBul(k, y.iz);
+  if (!iz || iz.kilit) return null;
   if (insert) aralikAc(k, y.bas, y.sure);
   uzerineYaz(k, y.iz, y.bas, y.bas + y.sure); // insert'te sürekli içerik açılmaz, burada yer açılır
   const c = klipYap(k, y);
@@ -379,15 +383,16 @@ const ayrilabilir = (k: K, c: Klip) => c.tur === "video" && !c.ses_kapali && !!c
 // Görüntü ve sesi ayırır. Ses, aynı kaynak aralığıyla bağlı klip olur; iz kazancı klibe geçer ki seviye sıçramasın.
 // shortcut: önceki klibin çapraz geçiş kuyruğu ayrık sese geçmez, yalnız giriş fade'i taşınır; duyulursa kuyruk da ses klibine eklenir.
 export const sesiAyir = (k: K, idler: string[]) => {
-  const secili = k.klipler.filter((c) => idler.includes(c.id) && ayrilabilir(k, c) && !izBul(k, c.iz).kilit).sort((a, b) => a.bas - b.bas);
+  const secili = k.klipler.filter((c) => idler.includes(c.id) && ayrilabilir(k, c) && !izBul(k, c.iz)?.kilit).sort((a, b) => a.bas - b.bas);
   const yeni: string[] = [];
   let hizli = 0;
   for (const c of secili) {
     if (c.hiz !== 1) { hizli++; continue; } // shortcut: ffmpeg miksinde atempo yok, hızlı klip ayrılmaz; gerekirse olaysesi'ne eklenir
     const grup = c.bag ?? yeniId(k, "b");
     const gg = c.gecis_giris && c.gecis_giris.tur !== "kaydir" ? c.gecis_giris.sure : 0;
+    const izKazanc = izBul(k, c.iz)?.gain_db ?? 0;
     const s = klipYap(k, { tur: "ses", iz: konusmaIzi(k, c.bas, bit(c)), bas: c.bas, sure: c.sure, kaynak: c.kaynak, giris: c.giris, olay: { konusma: true },
-      ses: { ...c.ses, gain_db: c.ses.gain_db + izBul(k, c.iz).gain_db, fade_in: Math.max(c.ses.fade_in, gg), kf: (c.ses.kf ?? []).map((f) => ({ ...f, v: f.v + izBul(k, c.iz).gain_db })) } });
+      ses: { ...c.ses, gain_db: c.ses.gain_db + izKazanc, fade_in: Math.max(c.ses.fade_in, gg), kf: (c.ses.kf ?? []).map((f) => ({ ...f, v: f.v + izKazanc })) } });
     s.bag = grup;
     c.bag = grup;
     c.ses_kapali = true;
@@ -419,7 +424,8 @@ export const stemEkle = (k: K, id: string, stemler: { ad: string; id: string; yo
   for (const s of stemler) {
     k.kaynaklar[s.id] = { yol: s.yol, sure: s.sure, ses: true };
     const iz = izEkle(k, "ses");
-    Object.assign(izBul(k, iz), { ad: s.ad, sessiz: true });
+    const yeniIz = izBul(k, iz);
+    if (yeniIz) Object.assign(yeniIz, { ad: s.ad, sessiz: true });
     klipEkle(k, { tur: "ses", iz, bas: c.bas, sure: c.sure, kaynak: s.id, giris: c.giris, olay: { muzik: true } });
   }
   return stemler.length;
@@ -433,7 +439,8 @@ export const sesiBirlestir = (k: K, idler: string[]) => {
     const v = k.klipler.find((c) => c.ses_kapali && c.kaynak === s.kaynak && c.bag === s.bag && Math.abs(c.bas - s.bas) < 1e-3 && Math.abs(c.sure - s.sure) < 1e-3 && Math.abs(c.giris - s.giris) < 1e-3);
     if (!v) { kayik++; continue; }
     v.ses_kapali = false;
-    v.ses = { ...s.ses, gain_db: s.ses.gain_db - izBul(k, v.iz).gain_db, kf: (s.ses.kf ?? []).map((f) => ({ ...f, v: f.v - izBul(k, v.iz).gain_db })) };
+    const vIzKazanc = izBul(k, v.iz)?.gain_db ?? 0;
+    v.ses = { ...s.ses, gain_db: s.ses.gain_db - vIzKazanc, kf: (s.ses.kf ?? []).map((f) => ({ ...f, v: f.v - vIzKazanc })) };
     k.klipler = k.klipler.filter((c) => c.id !== s.id);
     if (!k.klipler.some((c) => c.id !== v.id && c.bag === v.bag)) v.bag = null;
     birlesen++;
@@ -442,8 +449,9 @@ export const sesiBirlestir = (k: K, idler: string[]) => {
 };
 
 export const izSil = (k: K, id: string) => {
-  if (k.klipler.some((c) => c.iz === id)) return false;
-  if (k.izler.filter((i) => i.tur === izBul(k, id).tur).length <= 1) return false;
+  const iz = izBul(k, id);
+  if (!iz || k.klipler.some((c) => c.iz === id)) return false;
+  if (k.izler.filter((i) => i.tur === iz.tur).length <= 1) return false;
   k.izler = k.izler.filter((i) => i.id !== id);
   return true;
 };
@@ -500,7 +508,7 @@ export const kfEgri = (k: K, id: string, a: KfAlan, t: number, ease: KF["ease"])
 export const hizAyarla = (k: K, id: string, hiz: number) => {
   const c = bul(k, id);
   // WHY: render'da ayrık ses ffmpeg miksidir, hız uygulanmaz; görüntü tek başına hızlanırsa senkron gider.
-  if (!c || izBul(k, c.iz).kilit || (c.ses_kapali && esler(k, c).some((x) => x.olay?.konusma))) return;
+  if (!c || izBul(k, c.iz)?.kilit || (c.ses_kapali && esler(k, c).some((x) => x.olay?.konusma))) return;
   const h = Math.min(8, Math.max(0.1, hiz));
   const { sonra } = komsu(k, c);
   const hedef = (c.sure * c.hiz) / h;
@@ -575,7 +583,7 @@ export const kazancAni = (c: Klip, t: number) => (c.ses.kf?.length ? kfDeger(c.s
 // t verilir ve kazanç animasyonluysa o anda keyframe yazar; yoksa tüm eğriyi birlikte kaydırır.
 export const kazancYaz = (k: K, id: string, db: number, t?: number) => {
   const c = bul(k, id);
-  if (!c || izBul(k, c.iz).kilit) return;
+  if (!c || izBul(k, c.iz)?.kilit) return;
   const v = dbSinir(db);
   if (!c.ses.kf?.length || t === undefined) {
     if (c.ses.kf?.length) { const d = v - c.ses.gain_db; c.ses.kf = c.ses.kf.map((f) => ({ ...f, v: dbSinir(f.v + d) })); }
@@ -589,14 +597,14 @@ export const kazancYaz = (k: K, id: string, db: number, t?: number) => {
 // Kazanç animasyonu aç/kapat. Kapatınca o anki değer sabit kalır.
 export const sesKfAnim = (k: K, id: string, t: number) => {
   const c = bul(k, id);
-  if (!c || izBul(k, c.iz).kilit) return;
+  if (!c || izBul(k, c.iz)?.kilit) return;
   if (c.ses.kf?.length) { c.ses.gain_db = dbSinir(kazancAni(c, t)); c.ses.kf = []; }
   else c.ses.kf = [{ t: Math.max(0, Math.min(c.sure, t)), v: c.ses.gain_db, ease: "dogrusal" }];
 };
 // t'ye `tol` kadar yakın keyframe varsa siler, yoksa o andaki değerle ekler. Son keyframe silinince değer sabit kalır.
 export const sesKfDegistir = (k: K, id: string, t: number, tol: number) => {
   const c = bul(k, id);
-  if (!c || izBul(k, c.iz).kilit) return;
+  if (!c || izBul(k, c.iz)?.kilit) return;
   const l = c.ses.kf ?? [];
   const i = l.findIndex((f) => Math.abs(f.t - t) <= tol);
   if (i >= 0) {

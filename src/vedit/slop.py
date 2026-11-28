@@ -268,19 +268,34 @@ def kareleri_oku(video: Path) -> tuple[np.ndarray, np.ndarray]:
     p = subprocess.Popen(["ffmpeg", "-v", "error", "-i", str(video), "-an", "-vf", f"fps={OLCUM_FPS},scale={W}:{H}",
                           "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
     fark, ornek, onceki, i = [], [], None, 0
-    while True:
-        ham = p.stdout.read(W * H * 3)
-        if len(ham) < W * H * 3:
-            break
-        kare = np.frombuffer(ham, np.uint8).reshape(H, W, 3)
-        gri = kare.mean(-1)
-        if onceki is not None:
-            fark.append(float(np.abs(gri - onceki).mean()))
-        onceki = gri
-        if i % OLCUM_FPS == 0:
-            ornek.append(kare)
-        i += 1
-    p.wait()
+    # WHY: okuma hatası veya erken çıkışta stdout borusu ve ffmpeg süreci sızmasın.
+    try:
+        while True:
+            ham = p.stdout.read(W * H * 3)
+            if len(ham) < W * H * 3:
+                break
+            kare = np.frombuffer(ham, np.uint8).reshape(H, W, 3)
+            gri = kare.mean(-1)
+            if onceki is not None:
+                fark.append(float(np.abs(gri - onceki).mean()))
+            onceki = gri
+            if i % OLCUM_FPS == 0:
+                ornek.append(kare)
+            i += 1
+        p.wait()
+    finally:
+        if p.stdout and not getattr(p.stdout, "closed", False):
+            try:
+                p.stdout.close()
+            except OSError:
+                pass
+        if p.poll() is None:
+            p.terminate()
+            try:
+                p.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                p.kill()
+                p.wait(timeout=5)
     return np.array(fark), np.array(ornek) if ornek else np.empty((0, H, W, 3), np.uint8)
 
 

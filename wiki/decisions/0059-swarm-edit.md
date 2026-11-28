@@ -77,6 +77,7 @@ Swarm koşuları üç eski açığı gösterdi. Üçü de koşuyu G2 ya da G3'te
 - `--orkestrator` ve paneldeki orkestratör seçicisi `ezme["O"]`'yu temizler.
 - Panel: tavan sayısı yazılırken sıkıştırılmaz (odak kaybında), çalışırken bütün swarm seçicileri kilitlidir, tavan dışındaki eski ezmeler görünür kalır, hazırlık denetimi yedek motoru da sayar; sunucu hızlıda orkestratörü denetlemez.
 - id'siz `ekle`/`guncelle` öğesi `yama_hatalari`'nda yamayı düşürmez.
+- Görüntüsüz kurgu (2026-11-27, ornek-proje): `_kurgu_hazirla` girdisi olmayan var olan kurguyu da tohumlar; `girdi_denetimi` ajan çağrısından önce girdideki videonun kurguya alındığını doğrular. `yama_uygula` içindeki `_v1_onar` `baslangic`/`start`/`t` takma adını `bas`'a çevirir, girdi kökünü (`"1"`) kaynak kimliğine eşler, `bas`sız V1 kliplerini ardışık dizer. G2 sonrası birleşme görüntüsüz kalırsa kurgu editörü şemalı brifle (`bos_goruntu_brifi`) bir kez düzeltir; yine boşsa düşen öğelerle durur. Boş V1'de E1 paketi aynı brifi taşır.
 
 ## İlgili kod
 - `src/vedit/suru.py`: `model_listesi`, `varsayilan_boy`, `plan_dogrula`, `ezme`, `plan_bolumu`, `orkestrator_ayristir`
@@ -84,4 +85,4 @@ Swarm koşuları üç eski açığı gösterdi. Üçü de koşuyu G2 ya da G3'te
 - `src/vedit/ekip_sema.py`: `EN_COK`, `EkipAyar.en_cok`, `tavan()`, `Gorev`/`KkGorev` motor alanları
 - `src/vedit/schemas.py`: `Klip._gecis_kisa`; `src/vedit/ekip.py`: `Durum.daralt`; `src/vedit/cli.py`: `cmd_ai_edit`
 - `src/vedit/studio/ekip.py`, `studio/isler.py`; `studio/web/src/paneller/ai/SuruSecici.tsx`, `EditSekmesi.tsx`, `EkipIlerleme.tsx`, `EkipAyarlari.tsx`, `seviye.ts`
-- Testler: `tests/test_ekip.py` (`test_suru_*`, `test_cli_suru_bayraklari_ve_eski_cagri`), `tests/test_ekip_v3.py` (`test_idsiz_oge_duser_cokertmez`, `test_render_kurtar_*`, `test_gecis_kisa_yazimi_kabul_edilir`), `seviye.test.ts`
+- Testler: `tests/test_ekip.py` (`test_suru_*`, `test_cli_suru_bayraklari_ve_eski_cagri`), `tests/test_ekip_v3.py` (`test_idsiz_oge_duser_cokertmez`, `test_bassiz_v1_klipleri_ardisik_dizilir_ve_kaynak_eslenir`, `test_render_kurtar_*`, `test_gecis_kisa_yazimi_kabul_edilir`), `seviye.test.ts`

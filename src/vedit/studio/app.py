@@ -9,8 +9,10 @@ from __future__ import annotations
 import asyncio
 import functools
 import json
+import os
 import re
 import secrets
+import subprocess
 import threading
 from datetime import datetime
 from pathlib import Path
@@ -155,12 +157,15 @@ def teslim_ozeti(p: hizli.Proje) -> dict:
     son = max(p.cikti.glob("*.mp4"), key=lambda f: f.stat().st_mtime, default=None) if p.cikti.exists() else None
     olcum = None
     if son:
-        v, s = teslim._akislar(son)
-        olcum = {"dosya": son.name, "w": int(v["width"]), "h": int(v["height"]), "kodek": v.get("codec_name"), "profil": v.get("profile"),
-                 "fps": f"{teslim.eval_kesir(v.get('avg_frame_rate')):g}", "mbps": round(int(v.get("bit_rate") or v["_toplam_bit"]) / 1e6, 1),
-                 "pix_fmt": v.get("pix_fmt"), "renk": f"{v.get('color_space')} / {v.get('color_range')}",
-                 "ses": f"{s.get('codec_name')} {round(int(s.get('bit_rate') or 0) / 1000)} kbps {s.get('sample_rate')} Hz" if s else None,
-                 "mb": round(son.stat().st_size / 1e6, 1)}
+        try:
+            v, s = teslim._akislar(son)
+            olcum = {"dosya": son.name, "w": int(v["width"]), "h": int(v["height"]), "kodek": v.get("codec_name"), "profil": v.get("profile"),
+                     "fps": f"{teslim.eval_kesir(v.get('avg_frame_rate')):g}", "mbps": round(int(v.get("bit_rate") or v["_toplam_bit"]) / 1e6, 1),
+                     "pix_fmt": v.get("pix_fmt"), "renk": f"{v.get('color_space')} / {v.get('color_range')}",
+                     "ses": f"{s.get('codec_name')} {round(int(s.get('bit_rate') or 0) / 1000)} kbps {s.get('sample_rate')} Hz" if s else None,
+                     "mb": round(son.stat().st_size / 1e6, 1)}
+        except Exception:  # WHY: bozuk veya yarım kalmış teslim dosyası Teslim panelini 500 ile çökertmemeli
+            olcum = None
     # WHY: bkz. wiki/decisions/0060-proxy-master-conform.md. Proxy durumu ve son teslimin sadakat/conform raporu.
     vekiller = []
     for f in sorted(x for x in p.girdi.iterdir() if x.is_file() and x.suffix.lower() in hizli.VIDEO) if p.girdi.exists() else []:
@@ -204,6 +209,10 @@ class SablonIstek(BaseModel):
     tema: str | None = None
     w: int = 1080
     h: int = 1920
+
+
+class GeriAlIstek(BaseModel):
+    ts: str
 
 
 def _kaynak(p: hizli.Proje, yol: str) -> Path:
@@ -299,6 +308,58 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
         from .. import hf_guncel
         return hf_guncel.durum_oku() | {"mevcut": hf_guncel.hf.surum()}
 
+    # WHY: bkz. wiki/decisions/0065-uygulama-guncelleme.md. Stüdyo başlığındaki Güncelle düğmesi bu beş rotayı kullanır.
+    @app.get("/api/guncelleme/durum")
+    def guncelleme_durum():
+        from .. import guncelle
+        return guncelle.durum_oku()
+
+    @app.post("/api/guncelleme/kontrol")
+    def guncelleme_kontrol():
+        from .. import guncelle
+        return guncelle.kontrol()
+
+    @app.post("/api/guncelleme/uygula")
+    def guncelleme_uygula():
+        from .. import guncelle, hf_guncel
+        d = guncelle.durum_oku()
+        if d.get("calisiyor"):
+            raise HTTPException(409, "Güncelleme zaten sürüyor")
+        if hf_guncel.KILIT.exists():
+            raise HTTPException(409, "HyperFrames güncellemesi sürüyor")
+        mesgul = guncelle._mesgul(taze=True)
+        if mesgul:
+            raise HTTPException(409, f"Çalışan iş var: {', '.join(mesgul[:3])}")
+        if not d.get("destek"):
+            raise HTTPException(409, "Git deposu bulunamadı")
+        if (d.get("geride") or 0) <= 0:
+            raise HTTPException(409, "Alınacak yeni güncelleme yok")
+        is_ = isler._k().ekle("guncelle", "Uygulama güncellemesi", ["guncelle", "--uygula"])
+        return {"is": is_.id}
+
+    @app.post("/api/guncelleme/geri-al")
+    def guncelleme_geri_al(istek: GeriAlIstek):
+        from .. import guncelle
+        try:
+            return guncelle.geri_al(istek.ts)
+        except (RuntimeError, ValueError) as e:
+            raise HTTPException(409, str(e)) from e
+
+    @app.post("/api/guncelleme/yeniden-baslat")
+    def guncelleme_yeniden_baslat():
+        def _baslat_ve_cik() -> None:
+            vbs = paths.ROOT / "studio.vbs"
+            flags = getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+            try:
+                subprocess.Popen(["wscript", str(vbs)], cwd=paths.ROOT, creationflags=flags)
+            except OSError as e:  # WHY: yeni Stüdyo açılamadıysa eskisi açık kalsın, kullanıcı elle başlatır
+                print(f"Yeniden başlatma başarısız: {e}", flush=True)
+                return
+            os._exit(0)
+
+        threading.Timer(2.0, _baslat_ve_cik).start()
+        return {"ok": True}
+
     @app.get("/api/kurgu/{studyo}/{ad}")
     def kurgu_oku(studyo: str, ad: str):
         p = proje(studyo, ad)
@@ -310,7 +371,11 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
             raise HTTPException(422, f"kurgu.json geçersiz: {e}") from e
         hizli._public_hazirla(p)
         _onizleme_temasi(p, k)
-        return {"kurgu": k.model_dump(), "medya": medya_eslemesi(p, k), "etag": kurgu.etag(p.work), "tema": kurgu.tema_tokeni(p, k),
+        try:
+            medya_haritasi = medya_eslemesi(p, k)
+        except ValueError as e:  # WHY: kurgu.json içindeki kök dışı veya geçersiz kaynak yolu 500 yerine 422 vermeli
+            raise HTTPException(422, f"kurgu.json kaynak yolu geçersiz: {e}") from e
+        return {"kurgu": k.model_dump(), "medya": medya_haritasi, "etag": kurgu.etag(p.work), "tema": kurgu.tema_tokeni(p, k),
                 "bolgeler": kurgu.yuz_bolgeleri(p, k)}
 
     @app.put("/api/kurgu/{studyo}/{ad}")
@@ -549,7 +614,12 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
         if kurgu.yol(p.work).exists():
             raise HTTPException(409, "Kurgu zaten var")
         try:
-            kurgu.yaz(p.work, kurgu.eski_projeden(p) if (p.work / "edit" / "props.json").exists() else kurgu.bos(p.studyo))
+            if (p.work / "edit" / "props.json").exists():
+                kurgu.yaz(p.work, kurgu.eski_projeden(p))
+            else:
+                # WHY: boş kurgu girdileri sonradan kaçırıyordu (ornek-proje 2026-11-27); girdi varsa klip olarak alınır.
+                from .. import aiedit
+                aiedit._kurgu_hazirla(p)
         except SystemExit as e:  # WHY: hat hataları SystemExit atar; sunucuyu düşürmemeli
             raise HTTPException(422, str(e)) from e
         return {"tamam": True}
@@ -568,15 +638,23 @@ def create_app(token: str, *, izinli_hostlar: set[str] | None = None) -> FastAPI
         if kok not in koks:
             raise HTTPException(404, "Kök yok")
         if kok == "stil":
-            if ".." in Path(ic.replace("\\", "/")).parts:
+            norm = ic.replace("\\", "/")
+            if ".." in Path(norm).parts or norm.startswith("/"):
                 raise HTTPException(404, "Dosya yok")
-            try:
-                hedef = kurgu.dosya(p, f"stil:{ic}")
+            parcalar = [x for x in norm.split("/") if x and x != "."]
+            adaylar = [ic]
+            # WHY: geriye dönük '<studyo>/styles/<stil>/<alt>' yolu da desteklenir; geçersiz stil yolu genel kok_ici'ye düşmez.
+            if len(parcalar) >= 4 and parcalar[1] == "styles":
+                adaylar.append("/".join([parcalar[0], *parcalar[2:]]))
+            for aday in adaylar:
+                try:
+                    hedef = kurgu.dosya(p, f"stil:{aday}")
+                except ValueError:
+                    continue
                 if hedef.is_file():
                     rel = hedef.relative_to(paths.STUDIOS.resolve()).as_posix()
                     return FileResponse(kok_ici(koks[kok], rel), headers=GUVENLI)
-            except ValueError:
-                pass
+            raise HTTPException(404, "Dosya yok")
         return FileResponse(kok_ici(koks[kok], ic), headers=GUVENLI)
 
     # Remotion staticFile: window.remotion_staticBase = /pub/<stüdyo>/<ad>

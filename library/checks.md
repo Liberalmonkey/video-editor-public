@@ -10,7 +10,7 @@ Kullanıcının her düzeltmesi ve kalite kontrolün genelleşmiş bulgusu burad
 - YAPMA: stil açıkça istemedikçe altyazıya kutu, pop, gölge ya da solgun kelime koyma. [K0003 P0] (global)
 
 ## Kadraj
-- YAP: konuşmacı kadrajdaysa kamera alanını boş bırak; okunur hiçbir şey oraya girmesin. [K0004 P1 ×3] (global)
+- YAP: konuşmacı kadrajdaysa kamera alanını boş bırak; okunur hiçbir şey oraya girmesin. [K0004 P1 ×4] (global)
 - YAP: stüdyonun güvenli alanı dışına okunur öğe koyma. [K0005 P1 ×2] (global)
 - YAP: okunur yazı 1080p'de en az 28 px. Sığmıyorsa küçültme, kelime kes. [K0006 P1 ×3] (global)
 - YAPMA: gerçek görüntüyü oranını bozarak kırpma. [K0007 P1] (global)
@@ -40,7 +40,7 @@ Kullanıcının her düzeltmesi ve kalite kontrolün genelleşmiş bulgusu burad
 - YAPMA: klip başına `metin_stil.renk/vurgu/arka` yazma; renk, font, köşe ve hareket seçili stilin token'ından gelir. [K0023 P0] (global; kapı: `kurgu-denetle` STIL_DISI_RENK, `tests/test_sabit_renk.py`; instagram/1)
 - YAPMA: V2 grafiğini bağlı olduğu V1 klibinin kesim sınırından sonraki sahneye taşırma. [K0026 P0 ×6] (global; instagram/1)
 - YAPMA: konuşan kafa planları arasında yüzleri üst üste bindiren ışık veya erime geçişi kullanma; düz kesim yap. [K0028 P1 ×4] (global; instagram/1)
-- YAP: karşılaştırmalı veya çok adımlı kısa videolarda her kademeyi seçili stilin token'ıyla üretilmiş, anahtar kelimeye çapalı kısa bir V2 grafik öğesiyle görsel olarak ayır. [K0037 P1 ×2] (global; instagram/1)
+- YAP: karşılaştırmalı veya çok adımlı kısa videolarda her kademeyi seçili stilin token'ıyla üretilmiş, anahtar kelimeye çapalı kısa bir V2 grafik öğesiyle görsel olarak ayır. [K0037 P1 ×5] (global; instagram/1)
 - YAPMA: videodaki tüm V2 grafiklerini art arda yalnız ikon ailesinden kurma; en geç üçüncü öğede seçili stilin tipografisini gösteren farklı bir bileşen ailesiyle görsel çeşitlilik sağla. [K0045 P1] (global; instagram/1)
 - YAPMA: konuşmacının doğrudan kameraya konuştuğu planda yüzü bulanıklaştıran odak_karart efektiyle tam genişlikli orta kartı aynı anda kullanma. [K0048 P1] (global; instagram/1)
 - YAP: kullanıcı yumuşak geçiş istediğinde stil token'ının gecis listesinden kırbaç ve zoom kırbaç yerine sil ya da panjur seç. [K0050 P1 ×2] (global; instagram/reel-video)
@@ -48,14 +48,14 @@ Kullanıcının her düzeltmesi ve kalite kontrolün genelleşmiş bulgusu burad
 
 ## Hareket
 - YAPMA: sahneyi boş açma. İlk karede gerçek bir şey ekranda olsun. [K0011 P1] (global)
-- YAP: öğe kendi kelimesinde girsin. Kelimeden önce değil, en geç 2 sn sonra. [K0012 P1 ×5] (global)
+- YAP: öğe kendi kelimesinde girsin. Kelimeden önce değil, en geç 2 sn sonra. [K0012 P1 ×6] (global)
 - YAPMA: konuşma sürerken ekran 5 sn'den uzun durağan kalmasın. [K0013 P1 ×6] (global)
 
 ## Ses
 - YAPMA: geçiş ve sayaç sesinde `synth-*` örneklerini kullanma; kütüphaneden gerçek kayıt seç (mixkit, kenney, remotion). Sentetikler "pırt" gibi duyuluyor. [K0015 P1] (global; 01-php2shell)
 - YAPMA: slop ölçümündeki `OLAY_TEK_TUR` bulgusunu sayma; tek geçiş ailesi `usta-editor` kuralıdır, çeşitlilik eksikliği değil. [K0016 P1] (global; 08-claude-code-5-skill)
 - YAP: girdide müzik yoksa atlamadan önce `library/music/manifest.json` ve klasörüne bak, uygun parçayı kullan. [K0020 P1 ×2] (global; instagram-reels-video)
-- YAPMA: hazır zoom efektinin otomatik sesini aynı 0.4 saniye içindeki başka bir rol sesinin üstüne bindirme. [K0049 P1 ×4] (global; instagram/reel-video)
+- YAPMA: hazır zoom efektinin otomatik sesini aynı 0.4 saniye içindeki başka bir rol sesinin üstüne bindirme. [K0049 P1 ×7] (global; instagram/reel-video)
 - YAP: slayt ve kart giriş sesini bağlı grafiğin ilk görünür karesine ±1 kare içinde koy; grafiği olmayan kelimeye slayt sesi bağlama. [K0053 P2 ×2] (global; instagram/reel-video)
 - YAPMA: müzik klibinin ses keyframe zamanlarını (ses.kf.t) klibin güncel bitiş süresinin (sure) ötesinde bırakma; bitiş fade-out keyframe'lerini son V1 bitişine hizala. [K0062 P2] (global; instagram/arvelior-swarm)
 
@@ -77,7 +77,7 @@ Kullanıcının her düzeltmesi ve kalite kontrolün genelleşmiş bulgusu burad
 - YAPMA: müzik klibinin süresini son V1 klibinin bitişinden uzun bırakıp video sonunda siyah ekran üretme. [K0035 P0 ×2] (global; instagram/1)
 - YAPMA: V1 kesimlerinde stil token'ının gecis listesinde olmayan geçiş türlerini kullanma. [K0027 P1 ×3] (global; instagram/1)
 - YAP: son V1 klibini son kelimenin bitiminden en çok 0.15 saniye sonra kes ve V1 bitişiyle sekans sonu arasında boş ekran bırakma. [K0040 P1 ×2] (global; instagram/1)
-- YAPMA: konuşmacının başı kadrajın üst sınırına yakınsa kafayı üst kenardan kesecek 1.05 üstü punch veya zoom_in efekti uygulama. [K0042 P1 ×8] (global; instagram/1)
+- YAPMA: konuşmacının başı kadrajın üst sınırına yakınsa kafayı üst kenardan kesecek 1.05 üstü punch veya zoom_in efekti uygulama. [K0042 P1 ×11] (global; instagram/1)
 - YAPMA: aynı konuşmacının ardışık konuşan kafa planları arasında yüzü bölen dikey veya yatay sil geçişi koyma; düz kesim yap. [K0056 P1 ×3] (global; instagram/arvelior)
 
 ## Genel

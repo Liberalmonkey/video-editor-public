@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sekmeKayitlari } from "./KutuphanePaneli";
+import { cakismaMetni, sekmeKayitlari } from "./KutuphanePaneli";
 
 // /api/kutuphane yalnız sfx, muzik, motion, pano, font, kit, temalar döner. Galeri ve grafik kendi verisini getirir.
 const veri = { sfx: [{ id: "a" }], muzik: [], motion: [{ id: "m" }], pano: [], font: [], kit: {}, temalar: [] };
@@ -14,5 +14,13 @@ describe("kütüphane sekme kayıtları", () => {
     expect(sekmeKayitlari(veri, "sfx")).toHaveLength(1);
     expect(sekmeKayitlari({ sfx: [] }, "motion")).toEqual([]);
     expect(sekmeKayitlari(null, "sfx")).toEqual([]);
+  });
+});
+
+describe("409 çakışma metni (bulgu 13)", () => {
+  it("geçerli JSON, eksik alan ve düz metinde çökmez", () => {
+    expect(cakismaMetni(JSON.stringify({ yuva: ["gecis"], projeler: ["p1", "p2"] }))).toBe("Kit yuvası: gecis\nKullanan projeler: p1, p2");
+    expect(cakismaMetni(JSON.stringify({ yuva: ["gecis"] }))).toBe("Kit yuvası: gecis");
+    expect(cakismaMetni("Düz metin 409 yanıtı")).toBe("Düz metin 409 yanıtı");
   });
 });

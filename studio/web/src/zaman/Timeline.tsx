@@ -39,7 +39,8 @@ const IzBaslik: React.FC<{ id: string }> = ({ id }) => {
   const iz = useKurgu((d) => d.kurgu?.izler.find((i) => i.id === id));
   const duzenle = useKurgu((d) => d.duzenle);
   if (!iz) return null;
-  const degis = (a: "kilit" | "sessiz" | "gizli") => duzenle(`${id} ${a}`, (d) => { const i = d.izler.find((x) => x.id === id)!; i[a] = !i[a]; });
+  // WHY: iz silinmişse find() undefined döner; ! iddiası çalışma zamanında çökmesin.
+  const degis = (a: "kilit" | "sessiz" | "gizli") => duzenle(`${id} ${a}`, (d) => { const i = d.izler.find((x) => x.id === id); if (i) i[a] = !i[a]; });
   const sil = () => {
     let sonuc = false;
     duzenle(`${id} izini sil`, (d) => { sonuc = K.izSil(d, id); });
@@ -136,7 +137,8 @@ export const Timeline: React.FC = () => {
       if (basliklar.current) basliklar.current.style.transform = `translateY(${-sc.scrollTop}px)`;
     };
     dongu();
-    degisinceHaberVer(iste);
+    // WHY: unmount'ta gorselOnbellek aboneliği kaldırılmazsa eski bileşenin dinleyicisi sızar.
+    const onbellekCoz = degisinceHaberVer(iste);
     const izle = useKurgu.subscribe((s, o) => {
       if (s.kurgu !== o.kurgu || s.secim !== o.secim || s.zaman !== o.zaman || s.giris !== o.giris || s.cikis !== o.cikis || s.bulgular !== o.bulgular || s.medya !== o.medya) iste();
       // Oynarken kafa görünümden çıkarsa sayfa kayar.
@@ -145,7 +147,7 @@ export const Timeline: React.FC = () => {
         if (x > sc.scrollLeft + sc.clientWidth - 30 || x < sc.scrollLeft) sc.scrollLeft = Math.max(0, x - 40);
       }
     });
-    return () => { dur = true; izle(); };
+    return () => { dur = true; onbellekCoz(); izle(); };
   }, [iste]);
 
   useEffect(() => { temizle(); iste(); }, [anahtar, iste]);
@@ -240,7 +242,9 @@ export const Timeline: React.FC = () => {
   // İmleç ses çizgisine ±4 px yakınsa çizgi tutulur; klip kenarı önceliklidir.
   const cizgiBul = (k: KurguProps, c: Klip, kenar: "bas" | "son" | null, x: number, y: number) => {
     if (kenar) return null;
-    const iz = k.izler.find((i) => i.id === c.iz)!;
+    // WHY: bozuk iz referansında find() undefined dönüp Timeline'ı çökertmesin.
+    const iz = k.izler.find((i) => i.id === c.iz);
+    if (!iz) return null;
     const b = sesBandi(k, c, satirUst(k, c.iz), izYuksekligi(iz));
     return b && !iz.kilit && Math.abs(y - kazancY(K.kazancAni(c, x / pxRef.current - c.bas), b)) <= 4 ? b : null;
   };
@@ -309,7 +313,11 @@ export const Timeline: React.FC = () => {
       // Animasyonlu kazançta sürükleme tıklanan anda keyframe yazar; değilse tüm çizgiyi taşır.
       if (cizgi) { sur.current = { tur: "kazanc", id: c.id, ...cizgi, kf: !!c.ses.kf?.length, bas: x / pxRef.current - c.bas }; return; }
       if (kenar) { sur.current = { tur: "kirp", id: c.id, kenar, x0: x, u: kenar === "bas" ? c.bas : c.bas + c.sure }; return; }
-      if (secim.includes(c.id)) sur.current = { tur: "tasi", lider: c, idler: secim, x0: x, y0: y, insert: false, satir0: k.izler.findIndex((i) => i.id === c.iz), hareket: false };
+      if (secim.includes(c.id)) {
+        const satir0 = k.izler.findIndex((i) => i.id === c.iz);
+        // WHY: geçersiz iz referansında satir0 -1 olursa sürükleme komutHesapla içinde çöker.
+        if (satir0 >= 0) sur.current = { tur: "tasi", lider: c, idler: secim, x0: x, y0: y, insert: false, satir0, hareket: false };
+      }
       return;
     }
     if (d.arac === "ripple" && kenar) { sur.current = { tur: "rippleKirp", id: c.id, kenar, x0: x, u: kenar === "bas" ? c.bas : c.bas + c.sure }; return; }
@@ -327,7 +335,8 @@ export const Timeline: React.FC = () => {
   const komutHesapla = (s: Surukleme, e: { clientX: number; clientY: number; ctrlKey: boolean }): ((d: KurguProps) => void) | null => {
     const { x, y } = konum(e);
     const u = pxRef.current;
-    const k = useKurgu.getState().kurgu!;
+    const k = useKurgu.getState().kurgu;
+    if (!k) return null;
     if (s.tur === "tasi") {
       let dt = (x - s.x0) / u;
       const t = s.lider.bas + dt, son = t + s.lider.sure;
@@ -341,9 +350,12 @@ export const Timeline: React.FC = () => {
       else dt = kareyeYuvarla(s.lider.bas + dt) - s.lider.bas;
       // Satır farkı aynı türdeki izler arasında sayılır.
       const hedef = satirBul(k, y);
-      const izTur = k.izler[s.satir0].tur;
+      // WHY: satir0 -1 veya sürükleme sırasında iz silindiyse k.izler[satir0] undefined olur.
+      const kaynakIz = k.izler[s.satir0];
+      if (!kaynakIz) return null;
+      const izTur = kaynakIz.tur;
       const ayni = k.izler.filter((i) => i.tur === izTur);
-      const dIz = hedef && hedef.tur === izTur ? ayni.findIndex((i) => i.id === hedef.id) - ayni.findIndex((i) => i.id === k.izler[s.satir0].id) : 0;
+      const dIz = hedef && hedef.tur === izTur ? ayni.findIndex((i) => i.id === hedef.id) - ayni.findIndex((i) => i.id === kaynakIz.id) : 0;
       const ins = e.ctrlKey;
       return (f) => K.tasi(f, s.idler, dt, dIz, ins);
     }

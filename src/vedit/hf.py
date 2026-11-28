@@ -19,10 +19,10 @@ def surum() -> str:
         return "latest"
 
 
-def _bin() -> list[str]:
+def _bin(kok: Path | None = None) -> list[str]:
     # WHY: güncelleme adayı ayrı klasörde denenir (VEDIT_HF_KOK); sabit kurulum bozulmaz.
-    kok = Path(os.environ["VEDIT_HF_KOK"]) if os.environ.get("VEDIT_HF_KOK") else paths.ROOT
-    local = kok / "node_modules" / ".bin" / ("hyperframes.cmd" if os.name == "nt" else "hyperframes")
+    kok_yol = Path(kok) if kok else (Path(os.environ["VEDIT_HF_KOK"]) if os.environ.get("VEDIT_HF_KOK") else paths.ROOT)
+    local = kok_yol / "node_modules" / ".bin" / ("hyperframes.cmd" if os.name == "nt" else "hyperframes")
     if local.exists():
         return [str(local)]
     npx = shutil.which("npx") or "npx"
@@ -30,22 +30,26 @@ def _bin() -> list[str]:
 
 
 def run(args: list[str], *, cwd: Path | None = None, check: bool = True,
-        env: dict | None = None) -> subprocess.CompletedProcess:
+        env: dict | None = None, kok: Path | None = None) -> subprocess.CompletedProcess:
     # WHY: bkz. wiki/decisions/0040-ikinci-repo-dalgasi.md. 0.9.x init skill'leri genel ~/.claude/skills altına kurar ve
     # kullanım telemetrisi gönderir; ikisi de kapalı. CLI'yi doğrudan çağırırken de aynı değişkenler verilmeli.
     e = {**os.environ, "HYPERFRAMES_SKIP_SKILLS": "1", "HYPERFRAMES_NO_TELEMETRY": "1", "DO_NOT_TRACK": "1",
          "HYPERFRAMES_NO_UPDATE_CHECK": "1", "NO_COLOR": "1",
          # WHY: 0.9.7x render'ı hesap başına tek render kilidi alır; render.py bölümleri paralel render eder (ADR 0050).
          "HYPERFRAMES_RENDER_LOCK": "off", **(env or {})}
-    proc = subprocess.run([*_bin(), *args], cwd=cwd, capture_output=True, text=True, encoding="utf-8",
+    # WHY: aday kökü os.environ yerine yalnız bu alt çağrıya iletilir; eşzamanlı Stüdyo işleri sabit kurulumda kalır.
+    hf_kok = Path(kok) if kok else (Path(e["VEDIT_HF_KOK"]) if e.get("VEDIT_HF_KOK") else None)
+    if kok is not None:
+        e["VEDIT_HF_KOK"] = str(kok)
+    proc = subprocess.run([*_bin(hf_kok), *args], cwd=cwd, capture_output=True, text=True, encoding="utf-8",
                           errors="replace", env=e)
     if check and proc.returncode != 0:
         raise RuntimeError(f"hyperframes {' '.join(args[:3])} başarısız:\n{(proc.stdout + proc.stderr)[-2500:]}")
     return proc
 
 
-def lint(comp_dir: Path) -> dict:
-    proc = run(["lint", str(comp_dir), "--json"], check=False)
+def lint(comp_dir: Path, *, kok: Path | None = None) -> dict:
+    proc = run(["lint", str(comp_dir), "--json"], check=False, kok=kok)
     try:
         start = proc.stdout.index("{")
         return json.loads(proc.stdout[start:])
@@ -55,7 +59,8 @@ def lint(comp_dir: Path) -> dict:
 
 def render(comp_dir: Path, out: Path, *, quality: str = "draft", fps: int | None = None, workers: int = 1,
            crf: int | None = None, video_frame_format: str | None = None,
-           aralik: tuple[float, float] | None = None, chroma: str | None = None) -> subprocess.CompletedProcess:
+           aralik: tuple[float, float] | None = None, chroma: str | None = None,
+           kok: Path | None = None) -> subprocess.CompletedProcess:
     out, comp_dir = Path(out).resolve(), Path(comp_dir).resolve()  # HyperFrames comp_dir içinde çalışır; göreli yol oraya düşerdi
     args = ["render", str(comp_dir), "-o", str(out), "-q", quality, "-w", str(workers) if workers else "auto", "--quiet"]
     if aralik:  # yalnız SDR MP4 ve tam sayı fps (HyperFrames 0.9.7x)
@@ -68,11 +73,11 @@ def render(comp_dir: Path, out: Path, *, quality: str = "draft", fps: int | None
         args += ["--video-frame-format", video_frame_format]
     if chroma:  # "444": kayıpsız PNG yakalama + yuv444p (ADR 0060 master ara render)
         args += ["--chroma-subsampling", chroma]
-    return run(args, cwd=comp_dir)
+    return run(args, cwd=comp_dir, kok=kok)
 
 
 def render_saydam(comp_dir: Path, out: Path, *, degiskenler: dict | None = None, fps: int | None = None,
-                  quality: str = "delivery") -> Path:
+                  quality: str = "delivery", kok: Path | None = None) -> Path:
     """HyperFrames kompozisyonunu saydam webm'e render eder; motion bindirmesi ve proje grafiği bu yoldan gelir.
 
     WHY: bkz. wiki/decisions/0050-hyperframes-birincil-motor.md. Kök saydam olmalı (`background: none`). Bazı Windows
@@ -89,7 +94,7 @@ def render_saydam(comp_dir: Path, out: Path, *, degiskenler: dict | None = None,
     if degiskenler:
         args += ["--variables", json.dumps(degiskenler, ensure_ascii=False), "--strict-variables"]
     try:
-        run(args, cwd=comp_dir)
+        run(args, cwd=comp_dir, kok=kok)
         if not (ff.probe(gecici).get("video") or {}).get("alfa"):
             raise RuntimeError(f"HyperFrames webm alfasız çıktı: {out.name}. Kökte opak zemin var mı bak; yoksa --format mov dene.")
         os.replace(gecici, out)

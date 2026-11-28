@@ -257,80 +257,108 @@ class Kuyruk:
         self.exe = exe
         self.isler: list[Is] = []
         self._q: queue.Queue[Is] = queue.Queue()
+        self._kilit = threading.Lock()
         threading.Thread(target=self._dongu, daemon=True).start()
 
     def ekle(self, komut: str, baslik: str, args: list[str], **ek) -> Is:
         is_ = Is(next(_sayac), komut, baslik, args, **ek)
-        self.isler.append(is_)
-        self.isler[:] = self.isler[-50:]
+        with self._kilit:
+            self.isler.append(is_)
+            self.isler[:] = self.isler[-50:]
         self._q.put(is_)
         return is_
 
     def bul(self, iid: int) -> Is:
-        for i in self.isler:
+        with self._kilit:
+            isler_kopya = list(self.isler)
+        for i in isler_kopya:
             if i.id == iid:
                 return i
         raise HTTPException(404, "İş yok")
 
     def iptal(self, is_: Is) -> None:
-        is_.iptal = True
-        if is_.durum == "sirada":
-            is_.durum = "iptal"
-        elif is_.surec and is_.surec.poll() is None:
+        with self._kilit:
+            is_.iptal = True
+            if is_.durum == "sirada":
+                is_.durum = "iptal"
+                return
+            surec = is_.surec
+        if surec and surec.poll() is None:
             # WHY: Remotion ve ffmpeg alt süreç açar; yalnız kökü öldürmek Chrome ve ffmpeg'i arkada bırakır.
             if os.name == "nt":
-                subprocess.run(["taskkill", "/T", "/F", "/PID", str(is_.surec.pid)], capture_output=True)
+                subprocess.run(["taskkill", "/T", "/F", "/PID", str(surec.pid)], capture_output=True)
             else:
-                is_.surec.kill()
+                surec.kill()
 
     def _dongu(self) -> None:
         while True:
             is_ = self._q.get()
-            if is_.durum == "iptal":
-                continue
+            with self._kilit:
+                if is_.durum == "iptal" or is_.iptal:
+                    is_.durum = "iptal"
+                    continue
             from .. import hf_guncel
             while hf_guncel.kilitli() and not is_.iptal:  # WHY: HyperFrames kökü değişirken render başlamasın (ADR 0051)
                 time.sleep(2)
-            if is_.iptal:
-                is_.durum = "iptal"
-                continue
-            is_.durum, is_.baslangic = "calisiyor", time.time()
+            with self._kilit:
+                # WHY: iptal ile _dongu arasındaki 'sirada'->'calisiyor' geçişi kilitsizdi; iptal edilmiş iş Popen başlatmasın.
+                if is_.iptal or is_.durum == "iptal":
+                    is_.durum = "iptal"
+                    continue
+                is_.durum, is_.baslangic = "calisiyor", time.time()
             try:
                 self._calistir(is_)
             except Exception as e:  # WHY: tek işin hatası kuyruğu öldürmemeli
                 is_.satirlar.append(f"Hata: {e}")
-                is_.durum = "hata"
+                with self._kilit:
+                    is_.durum = "hata"
             is_.bitis = time.time()
 
     def _calistir(self, is_: Is) -> None:
         ortam = {**os.environ, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8", "NO_COLOR": "1"}
-        s = subprocess.Popen([is_.exe or str(self.exe), *is_.args], cwd=paths.ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             stdin=subprocess.DEVNULL, env=ortam, text=True, encoding="utf-8", errors="replace")
-        is_.surec = s
-        for satir in s.stdout:
-            satir = satir.rstrip()
-            is_.satirlar.extend(x[:2000] for x in (is_.cevir(is_, satir) if is_.cevir else [satir]))
-        is_.kod = s.wait()
-        is_.durum = "iptal" if is_.iptal else "bitti" if is_.kod == 0 else "hata"
+        with self._kilit:
+            # WHY: calisiyor geçişi ile Popen arasındaki küçük aralıkta iptal geldiyse alt süreç açılmasın.
+            if is_.iptal:
+                is_.durum = "iptal"
+                return
+            s = subprocess.Popen([is_.exe or str(self.exe), *is_.args], cwd=paths.ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                 stdin=subprocess.DEVNULL, env=ortam, text=True, encoding="utf-8", errors="replace")
+            is_.surec = s
+        try:
+            for satir in s.stdout:
+                satir = satir.rstrip()
+                is_.satirlar.extend(x[:2000] for x in (is_.cevir(is_, satir) if is_.cevir else [satir]))
+            is_.kod = s.wait()
+        finally:
+            # WHY: okuma kırılırsa stdout pipe tanıtıcısı açık kalıp süreç kaynağını sızdırmasın.
+            if s.stdout is not None and hasattr(s.stdout, "close"):
+                s.stdout.close()
+        with self._kilit:
+            is_.durum = "iptal" if is_.iptal else "bitti" if is_.kod == 0 else "hata"
 
 
+_baslat_kilit = threading.Lock()
 kuyruk: Kuyruk | None = None
 ajan: Kuyruk | None = None
 
 
 def _k() -> Kuyruk:
     global kuyruk
-    if kuyruk is None:
-        kuyruk = Kuyruk()
-    return kuyruk
+    # WHY: eşzamanlı ilk istekte iki Kuyruk ve iki işçi thread'i oluşmasın.
+    with _baslat_kilit:
+        if kuyruk is None:
+            kuyruk = Kuyruk()
+        return kuyruk
 
 
 def ajan_kuyrugu() -> Kuyruk:
     """Ajan işleri ayrı işçide: ağ işidir, render kuyruğunu bekletmez. WHY: bkz. wiki/decisions/0026-arayuzde-ajan.md"""
     global ajan
-    if ajan is None:
-        ajan = Kuyruk()
-    return ajan
+    # WHY: eşzamanlı ilk ajan isteğinde iki ajan kuyruğu oluşmasın.
+    with _baslat_kilit:
+        if ajan is None:
+            ajan = Kuyruk()
+        return ajan
 
 
 def _hepsi() -> list[Is]:
@@ -373,7 +401,7 @@ def gunluk(iid: int):
 @router.post("/api/isler/{iid}/iptal")
 def iptal(iid: int):
     is_ = _bul(iid)
-    _k().iptal(is_)
+    (ajan if ajan and is_ in ajan.isler else _k()).iptal(is_)
     return is_.ozet()
 
 

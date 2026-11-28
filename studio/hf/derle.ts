@@ -60,20 +60,56 @@ export interface CizKlip {
 const kac = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const sn = (n: number) => String(Math.round(n * 1000) / 1000);
 
+type GrafikOlcu = { w: number; h: number };
+type DestekSecenek = { onRender?: boolean | Record<string, string>; grafikler?: Record<string, GrafikOlcu> };
+type KlipYol =
+  | { yol: "canliHf" | "medya" | "native" | "gorsel" | "metinGrafik" | "metin" | "onRender" | "tamSahne" | "bolunmusSahne" | "ses" | "atla" }
+  | { yol: "yok"; neden: string };
+
+// WHY: desteklenmeyenler() ve derle() aynı kararı vermezse HF'de çizilemeyen klip destekli sayılıp sessizce kaybolur.
+const klipYolu = (
+  k: Klip,
+  sekans: { w: number; h: number },
+  native: Record<string, unknown> = {},
+  secenek: DestekSecenek = {},
+): KlipYol => {
+  if (k.tur === "ses") return { yol: "ses" };
+  if (k.tur === "motion") {
+    if (k.bilesen) return native[k.bilesen.ad] ? { yol: "native" } : { yol: "yok", neden: `native:${k.bilesen.ad}` };
+    const gy = k.hf?.ad ? secenek.grafikler?.[k.hf.ad] : undefined;
+    // Canlı gömme yalnız özel tema yoksa ve kompozisyon sekansla aynı yöndeyse; aksi halde WebM kaynağı (k.kaynak) gerekir.
+    if (k.hf?.ad && gy && !k.hf.tema && (gy.w >= gy.h) === (sekans.w >= sekans.h)) return { yol: "canliHf" };
+    return k.kaynak ? { yol: "medya" } : { yol: "yok", neden: "motion:kaynaksız" };
+  }
+  if (k.tur === "video") return k.kaynak ? { yol: "medya" } : { yol: "yok", neden: "video:kaynaksız" };
+  if (k.tur === "gorsel") return k.kaynak ? { yol: "gorsel" } : { yol: "yok", neden: "gorsel:kaynaksız" };
+  if (k.tur === "metin") return k.metin_stil?.tip ? { yol: "metinGrafik" } : { yol: "metin" };
+  if (k.tur === "sahne") {
+    // Metin grafikleri ve sahneler React adasında (ada.tsx). Fizik ve karakter yalnız render'da, ön render ile (önizleme Remotion).
+    if (k.sahne?.kind === "fizik" || k.sahne?.kind === "karakter") {
+      const hazir = typeof secenek.onRender === "boolean" ? secenek.onRender : !!secenek.onRender?.[k.id];
+      return hazir ? { yol: "onRender" } : { yol: "yok", neden: `sahne:${k.sahne.kind}` };
+    }
+    if (k.sahne?.layout === "split") return { yol: "bolunmusSahne" };
+    if (k.sahne?.layout === "full" && k.sahne.kind) return { yol: "tamSahne" };
+    // WHY: yerleşimi split/full olmayan sahneyi Remotion da çizmez (Kurgu.tsx); desteklenmeyen saymak yalnız motoru boşuna değiştirir.
+    return { yol: "atla" };
+  }
+  return { yol: "yok", neden: `tur:${String(k.tur)}` };
+};
+
 // Taşınan özellikler dışında kalanlar. Her Faz 1 adımı buradan bir maddeyi siler (ADR 0051).
 export const desteklenmeyenler = (
   p: KurguProps,
   native: Record<string, unknown> = {},
-  secenek: { onRender?: boolean; grafikler?: Record<string, unknown> } = {},
+  secenek: DestekSecenek = {},
 ): string[] => {
   const d = new Set<string>();
   const izler = new Map(p.izler.map((i) => [i.id, i]));
   for (const k of p.klipler) {
     if (izler.get(k.iz)?.gizli) continue;
-    // Metin grafikleri ve sahneler React adasında (ada.tsx). Fizik ve karakter yalnız render'da, ön render ile (önizleme Remotion).
-    if (k.tur === "sahne" && (k.sahne?.kind === "fizik" || k.sahne?.kind === "karakter") && !secenek.onRender) d.add(`sahne:${k.sahne.kind}`);
-    if (k.tur === "motion" && k.bilesen && !native[k.bilesen.ad]) d.add(`native:${k.bilesen.ad}`);
-    if (k.tur === "motion" && !k.bilesen && !k.kaynak && !(k.hf?.ad && secenek.grafikler?.[k.hf.ad])) d.add("motion:kaynaksız");
+    const sonuc = klipYolu(k, p.sekans, native, secenek);
+    if (sonuc.yol === "yok") d.add(sonuc.neden);
   }
   return [...d].sort();
 };
@@ -168,7 +204,7 @@ export const derle = (p: KurguProps, o: DerleOrtam): DerleSonuc => {
   // Düzen ilerlemesi (layoutP): 4-düzen (ADR 0062) + bölünmüş sahneler.
   const sahneler = p.klipler.filter((c) => c.tur === "sahne").sort((a, b) => a.bas - b.bas)
     .map((c) => ({ layout: c.sahne?.layout ?? null, duzen: c.sahne?.duzen ?? null, start: c.bas }));
-  for (const k of p.klipler.filter((c) => c.tur === "sahne" && c.sahne?.layout === "split" && !izler.get(c.iz)?.gizli).sort((a, b) => a.bas - b.bas)) {
+  for (const k of p.klipler.filter((c) => !izler.get(c.iz)?.gizli && klipYolu(c, p.sekans, o.native, o).yol === "bolunmusSahne").sort((a, b) => a.bas - b.bas)) {
     const sonra = sahneler.find((x) => x.start >= k.bas + k.sure - 0.001);
     const sure = Math.max(1, kare(k.sure)) + (sonra?.layout === "full" ? 10 : 0);
     if (pen && (k.bas + sure / fps <= pen[0] || k.bas >= pen[1])) continue;
@@ -191,64 +227,68 @@ export const derle = (p: KurguProps, o: DerleOrtam): DerleSonuc => {
       let ic = "";
       // Canlı gömme yalnız kompozisyon sekansla aynı yöndeyse; 16:9 şablon 9:16 sekansta sekans boyutunda WebM'iyle gelir
       // (hf_grafik.ayni_yon ile aynı kural). WHY: bkz. wiki/specs/hf-canli-gomme-ve-dikey-duzen.md.
-      const gy = k.hf?.ad ? o.grafikler?.[k.hf.ad] : undefined;
-      if (k.tur === "motion" && !k.bilesen && k.hf?.ad && gy && !k.hf.tema && (gy.w >= gy.h) === (w >= h)) {
+      const yol = klipYolu(k, p.sekans, o.native, o).yol;
+      if (yol === "canliHf") {
         // Canlı HF grafik kompozisyonu (ADR 0051 Faz 1 Adım 6 / ADR 0062): çevrimdışı WebM olmadan doğrudan alt kompozisyon.
         const kok = `g-${k.id.replace(/[^A-Za-z0-9_-]/g, "_")}`;
-        const gk = gy;
-        const sz = kes(kare(k.bas) / fps, Math.max(1, kare(k.sure)) / fps, 0, 1, pen)!;
-        hfParamlar[kok] = { ...gk.varsayilan, ...(k.hf.param ?? {}) };
-        const src = o.grafikUrl ? o.grafikUrl(kok, k.hf.ad) : `hf/g/${kok}.html`;
-        grafikBaglamalar.push({ kok, ad: k.hf.ad, src });
+        const gk = o.grafikler![k.hf!.ad];
+        // WHY: pencereli derlemede klip pencereye yalnız geçiş ön payı/kuyruğuyla değiyorsa sz null olur; çökme ve bozuk bağlama önlenir.
+        const sz = kes(kare(k.bas) / fps, Math.max(1, kare(k.sure)) / fps, 0, 1, pen);
+        if (!sz) return;
+        hfParamlar[kok] = { ...gk.varsayilan, ...(k.hf!.param ?? {}) };
+        const src = o.grafikUrl ? o.grafikUrl(kok, k.hf!.ad) : `hf/g/${kok}.html`;
+        grafikBaglamalar.push({ kok, ad: k.hf!.ad, src });
         const pay = sz.bas > 0 ? 0.01 / fps : 0;
         ic = `<div id="${kok}" data-composition-id="${kok}" data-composition-src="${kac(src)}" data-start="${+(sz.bas - pay).toFixed(6)}" data-duration="${+(sz.sure + pay).toFixed(6)}"`
           + ` data-track-index="${serit - 1 + (i % 2)}" data-width="${w}" data-height="${h}"`
           + ` data-variable-values="${kac(JSON.stringify(hfParamlar[kok]))}" style="position:absolute;inset:0"></div>`;
-      } else if ((k.tur === "video" || (k.tur === "motion" && !k.bilesen)) && k.kaynak) {
+      } else if (yol === "medya") {
         const sessiz = iz.sessiz || k.tur === "motion" || !!k.ses_kapali;
-        const medya = `id="m-${k.id}" class="clip" src="${kac(o.medyaUrl(k.kaynak))}" ${ortak}`
+        const medya = `id="m-${k.id}" class="clip" src="${kac(o.medyaUrl(k.kaynak!))}" ${ortak}`
           + ` data-media-start="${sn(z.medya)}"` + (k.hiz !== 1 ? ` data-playback-rate="${sn(k.hiz)}"` : "")
           + ` ${sesNitelik(k, iz, kuyruk, sessiz, { fps, on, kayma: pen ? Math.max(0, pen[0] - (k.bas - on)) : 0 })} playsinline`;
         // Konuşmacı paneli bölünmüş sahnede iner (dikey) ya da sağa çekilir (yatay); video panelden bağımsız tam kare boyutunda.
         ic = k.konusmaci
           ? `<div class="kz-panel" id="p-${k.id}"><div class="kz-odak" id="o-${k.id}"><video ${medya} style="position:absolute;left:0;top:0;width:${w}px;height:${h}px;object-fit:cover;transform-origin:${yatay ? "50% 50%" : "50% 0%"}"></video></div></div>`
           : `<video ${medya} style="width:100%;height:100%;object-fit:contain"></video>`;
-      } else if (k.tur === "motion" && k.bilesen && o.native?.[k.bilesen.ad]) {
+      } else if (yol === "native") {
         // Native bileşen HyperFrames sahnesidir: alt kompozisyon, kendi saati host'un data-start'ında 0'dan başlar.
         const kok = `n-${k.id.replace(/[^A-Za-z0-9_-]/g, "_")}`;
-        const nk = o.native[k.bilesen.ad];
+        const nk = o.native![k.bilesen!.ad];
         // Remotion Sequence from = round(bas·fps): host da kare ızgarasında başlar, yoksa sahne saati yarım kare kayar.
-        const sz = kes(kare(k.bas) / fps, Math.max(1, kare(k.sure)) / fps, 0, 1, pen)!;
+        // WHY: pencereli derlemede klip pencereye yalnız geçiş ön payı/kuyruğuyla değiyorsa sz null olur; çökme ve bozuk bağlama önlenir.
+        const sz = kes(kare(k.bas) / fps, Math.max(1, kare(k.sure)) / fps, 0, 1, pen);
+        if (!sz) return;
         yerler[kok] = nativeYer(k, nk);
-        const src = o.sahneUrl ? o.sahneUrl(kok, k.bilesen.ad) : `hf/n/${kok}.html`;
-        baglamalar.push({ kok, ad: k.bilesen.ad, src });
+        const src = o.sahneUrl ? o.sahneUrl(kok, k.bilesen!.ad) : `hf/n/${kok}.html`;
+        baglamalar.push({ kok, ad: k.bilesen!.ad, src });
         // data-start ms'ye yuvarlanınca (50/30 → 1.667) HyperFrames sahneyi bir kare geç açıyordu: başlangıç kare sınırının
         // 0,01 kare önüne, tam hassasiyetle yazılır; sahne karesi round(t·fps) olduğundan ilk kare yine 0'dır.
         const pay = sz.bas > 0 ? 0.01 / fps : 0;
         ic = `<div id="${kok}" data-composition-id="${kok}" data-composition-src="${kac(src)}" data-start="${+(sz.bas - pay).toFixed(6)}" data-duration="${+(sz.sure + pay).toFixed(6)}"`
           + ` data-track-index="${serit - 1 + (i % 2)}" data-width="${w}" data-height="${h}"`
           + ` data-variable-values="${kac(JSON.stringify(yerler[kok].param))}" style="position:absolute;inset:0"></div>`;
-      } else if (k.tur === "gorsel" && k.kaynak) {
-        ic = `<img id="m-${k.id}" class="clip" src="${kac(o.medyaUrl(k.kaynak))}" ${ortak} alt="" style="width:100%;height:100%;object-fit:contain">`;
+      } else if (yol === "gorsel") {
+        ic = `<img id="m-${k.id}" class="clip" src="${kac(o.medyaUrl(k.kaynak!))}" ${ortak} alt="" style="width:100%;height:100%;object-fit:contain">`;
         // Kurgu.tsx: görselin vurgu izi aynı Sequence içinde (kare görsel klibinin başından).
         if (k.metin_stil?.tip === "vurgu") ic += ada({ id: k.id, tur: "vurgu", bas: kare(k.bas - on), sure: Math.max(1, kare(k.sure + on) + kare(kuyruk)),
-          klip: k, kaynak: p.kaynaklar[k.kaynak] ?? null });
-      } else if (k.tur === "metin" && k.metin_stil?.tip) {
+          klip: k, kaynak: p.kaynaklar[k.kaynak!] ?? null });
+      } else if (yol === "metinGrafik") {
         ic = ada({ id: k.id, tur: "metin", bas: kare(k.bas), sure: Math.max(1, kare(k.sure) + kare(kuyruk)), klip: k });
-      } else if (k.tur === "sahne" && (k.sahne?.kind === "fizik" || k.sahne?.kind === "karakter") && o.onRender?.[k.id]) {
+      } else if (yol === "onRender") {
         // Ön render: Kurgu.tsx'teki Donusum dahil çizildi; burada dönüşüm uygulanmaz (ham).
-        ic = `<video id="m-${k.id}" class="clip" src="${kac(o.onRender[k.id])}" ${ortak} data-media-start="${sn(z.medya)}" muted playsinline`
+        ic = `<video id="m-${k.id}" class="clip" src="${kac(o.onRender![k.id])}" ${ortak} data-media-start="${sn(z.medya)}" muted playsinline`
           + ` style="width:100%;height:100%;object-fit:contain"></video>`;
-      } else if (k.tur === "sahne" && k.sahne?.layout === "full" && k.sahne.kind && k.sahne.kind !== "fizik" && k.sahne.kind !== "karakter") {
-        const baslik = k.sahne.kind === "hook" || k.sahne.kind === "cta";
+      } else if (yol === "tamSahne") {
+        const baslik = k.sahne!.kind === "hook" || k.sahne!.kind === "cta";
         ic = ada({ id: k.id, tur: baslik ? "baslik" : "tam", bas: kare(k.bas), sure: Math.max(1, kare(k.sure)), sahne: { ...k.sahne, start: k.bas, end: k.bas + k.sure } });
-      } else if (k.tur === "metin") {
+      } else if (yol === "metin") {
         const m = k.metin_stil ?? {};
         const boyut = m.boyut ?? 96;
         ic = `<div id="m-${k.id}" class="clip kz-metin" ${ortak} style="font-size:${boyut}px;-webkit-text-stroke:${sn(boyut * 0.05)}px var(--kontur-renk, #000)`
           + (m.font ? `;font-family:'${kac(m.font)}'` : "") + (m.renk ? `;color:${kac(m.renk)}` : "") + `">${kac(k.metin ?? "")}</div>`;
       } else {
-        return; // desteklenmeyen tür: çizilmez, motor seçimi Remotion'a düşer
+        return; // bölünmüş sahne ayrı çizildi; desteklenmeyen tür desteklenmeyenler() ile Remotion'a düşer
       }
       const karisim = (p.tema as { karisim?: Record<string, string> } | undefined)?.karisim?.[k.kaynak ?? ""] === "screen" ? ";mix-blend-mode:screen" : "";
       // Sarma sırası Kurgu.tsx ile aynı: çıkış geçişi dışta, giriş geçişi içte, dönüşüm en içte; ışık katmanları kardeş.
@@ -329,5 +369,6 @@ ${adalar.length && o.adaUrl ? `<script src="${kac(o.adaUrl)}"></script>` : ""}
 </body>
 </html>
 `;
-  return { html, desteklenmeyen: desteklenmeyenler(p, o.native, { onRender: !!o.onRender, grafikler: o.grafikler }), bitis, baglamalar, grafikBaglamalar };
+  // WHY: onRender boolean değil harita olarak geçirilmeli ki yalnızca eşlemesi olmayan fizik/karakter sahnesi desteklenmeyen listesine düşsün.
+  return { html, desteklenmeyen: desteklenmeyenler(p, o.native, { onRender: o.onRender, grafikler: o.grafikler }), bitis, baglamalar, grafikBaglamalar };
 };

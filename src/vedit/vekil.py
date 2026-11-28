@@ -97,6 +97,7 @@ def uret(work: Path, kaynak: Path, katman: str = "onizleme", *, fps: float | Non
         if anahtar in _suren:
             return None
         _suren.add(anahtar)
+    gecici: Path | None = None
     try:
         info = ff.probe(kaynak)
         v = info["video"]
@@ -117,12 +118,14 @@ def uret(work: Path, kaynak: Path, katman: str = "onizleme", *, fps: float | Non
         elif r.returncode:
             raise RuntimeError(f"Proxy üretilemedi: {kaynak.name}\n{(r.stderr or '')[-800:]}")
         if not esles(kaynak, gecici, info):
-            gecici.unlink(missing_ok=True)
             raise RuntimeError(f"Proxy süresi kaynakla eşleşmedi: {kaynak.name}")
         gecici.replace(hedef)
         _kayit_yaz(work, kaynak, hedef, katman, info)
         return hedef
     finally:
+        # WHY: ff.ffmpeg veya süre uyuşmazlığı hatasında work/proxy altında .tmp.mp4 kalmasın.
+        if gecici is not None:
+            gecici.unlink(missing_ok=True)
         with _kilit:
             _suren.discard(anahtar)
 

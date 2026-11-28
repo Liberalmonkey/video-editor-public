@@ -28,6 +28,27 @@ DEGISTIR = [(f"{MARKA_AD_BUYUK} Sistem".encode(), b"skill-kutuphanesi"), (MARKA_
             (MARKA_AD_BUYUK.encode(), "Örnek Marka".encode()), (MARKA_AD.encode(), b"ornek-marka"),
             (b"github.com/Liberalmonkey/video-editor-public.git", b"github.com/Liberalmonkey/video-editor-public.git")]
 MARKA = re.compile(MARKA_AD.encode(), re.I)  # değiştirmeden kaçan iz (ör. başka harf düzeni) bulgu sayılır
+
+
+def _proje_adlari() -> list[str]:
+    """Kullanıcının yerel video projelerinin adları (`Projeler/{inputs,outputs}/<stüdyo>/<proje>`).
+
+    WHY: kod yorumları ve wiki log'u hata ayıklanan projeyi adıyla anar (ör. 2026-11-27 düzeltmeleri). Proje adları
+    kullanıcının işidir, herkese açık kopyaya girmemeli. Ad listesi repoda tutulmaz: yereldeki klasörlerden okunur.
+    `_` ile başlayan klasörler (referans, varlık) proje değildir; 4 karakterden kısa adlar yanlış eşleşme riski taşır.
+    """
+    adlar = set()
+    for bolge in ("inputs", "outputs"):
+        for studyo in (KOK / "Projeler" / bolge).glob("*"):
+            if studyo.is_dir() and not studyo.name.startswith("_"):
+                adlar |= {p.name for p in studyo.iterdir() if p.is_dir() and not p.name.startswith("_") and len(p.name) >= 4}
+    return sorted(adlar, key=len, reverse=True)
+
+
+PROJELER = _proje_adlari()
+# Proje adı örnek adla değişir; büyük harfli biçimi (ör. başlıkta) de yakalanır.
+DEGISTIR += [(a.encode(), b"ornek-proje") for a in PROJELER] + [(a.upper().encode(), b"ORNEK-PROJE") for a in PROJELER]
+PROJE_IZI = re.compile(b"|".join(re.escape(a.encode()) for a in PROJELER), re.I) if PROJELER else None
 GIZLI = re.compile(rb"sk-ant-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{35}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{40,}"
                    rb"|-----BEGIN [A-Z ]*PRIVATE KEY|xox[bp]-[0-9A-Za-z-]{20,}")
 KISISEL = re.compile(rb"[A-Za-z]:[\\/]+Users[\\/]+[A-Za-z0-9._-]+|/home/[a-z][a-z0-9._-]+/|[A-Za-z0-9._%+-]+@(gmail|hotmail|outlook|yahoo)\.com", re.I)
@@ -93,6 +114,8 @@ def main() -> int:
             bulgu.append(f"gizli anahtar: {yol}: {m.group(0)[:12].decode(errors='replace')}…")
         if MARKA.search(veri) or MARKA.search(yol.encode()):
             bulgu.append(f"marka izi: {yol}")
+        if PROJE_IZI and (PROJE_IZI.search(veri) or PROJE_IZI.search(yol.encode())):
+            bulgu.append(f"proje adı izi: {yol}")
         if not yol.startswith(KISISEL_HARIC) and (m := KISISEL.search(veri)):
             bulgu.append(f"kişisel iz: {yol}: {m.group(0).decode(errors='replace')}")
     print(f"{n} dosya -> {hedef}")

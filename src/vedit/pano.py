@@ -119,20 +119,35 @@ def render(html: Path, out: Path, *, sure: float, w: int = 1920, h: int = 1080, 
     adim, piksel = y["adim_fps"], y["piksel"]
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "image2pipe", "-c:v", "png", "-framerate", str(fps),
                             "-i", "-", *kodlayici(out), str(out)], stdin=subprocess.PIPE)
-    with sync_playwright() as p:
-        b, pg = ac(p, html, w, h, css, param)
-        if saydam:
-            pg.add_style_tag(content=SAYDAM_CSS)
-        for i in range(kare):
-            # son_tam: son kare tam süre anında alınır; çıkışı süre sonunda biten motion klibi yarı saydam karede kalmasın (ADR 0036)
-            t = sure if son_tam and i == kare - 1 else i / fps
-            pg.evaluate(SEEK, math.floor(t * adim + 1e-6) / adim if adim and not (son_tam and i == kare - 1) else t)
-            png = pg.screenshot(type="png", omit_background=saydam)
-            enc.stdin.write(pikselle(png, piksel) if piksel > 1 else png)
-        b.close()
-    enc.stdin.close()
-    if enc.wait() != 0:
-        raise SystemExit("ffmpeg pano kodlaması başarısız")
+    # WHY: Playwright ya da write hatasında stdin borusu ve ffmpeg süreci açık kalmasın.
+    try:
+        with sync_playwright() as p:
+            b, pg = ac(p, html, w, h, css, param)
+            if saydam:
+                pg.add_style_tag(content=SAYDAM_CSS)
+            for i in range(kare):
+                # son_tam: son kare tam süre anında alınır; çıkışı süre sonunda biten motion klibi yarı saydam karede kalmasın (ADR 0036)
+                t = sure if son_tam and i == kare - 1 else i / fps
+                pg.evaluate(SEEK, math.floor(t * adim + 1e-6) / adim if adim and not (son_tam and i == kare - 1) else t)
+                png = pg.screenshot(type="png", omit_background=saydam)
+                enc.stdin.write(pikselle(png, piksel) if piksel > 1 else png)
+            b.close()
+        enc.stdin.close()
+        if enc.wait() != 0:
+            raise SystemExit("ffmpeg pano kodlaması başarısız")
+    finally:
+        if enc.stdin and not getattr(enc.stdin, "closed", False):
+            try:
+                enc.stdin.close()
+            except OSError:
+                pass
+        if enc.poll() is None:
+            enc.terminate()
+            try:
+                enc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                enc.kill()
+                enc.wait(timeout=5)
     return kare
 
 

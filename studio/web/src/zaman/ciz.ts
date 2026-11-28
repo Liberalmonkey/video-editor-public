@@ -53,8 +53,11 @@ const seritCiz = (g: CanvasRenderingContext2D, d: CizimDurumu, c: Klip, x: numbe
   if (!yol) return;
   const s = seritAl(d.anahtar, yol);
   if (!s) return;
+  // WHY: bozuk şerit görselinde veya s.n<=0 / tw<=0 / NaN iken for döngüsü sonsuza girip tarayıcıyı kilitler.
+  if (!(s.n > 0) || !(s.k > 0)) return;
   const fw = s.img.naturalWidth / s.n, fh = s.img.naturalHeight;
   const tw = (fw / fh) * h;
+  if (!(tw > 0) || !Number.isFinite(tw)) return;
   const solKirp = Math.max(0, -x), sagUc = Math.min(d.w, x + w);
   // Kareler klip başına hizalı: kaydırırken titremez.
   for (let i = Math.floor(solKirp / tw); x + i * tw < sagUc; i++) {

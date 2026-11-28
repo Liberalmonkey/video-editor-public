@@ -58,7 +58,7 @@
    "kaynak": "kullanici",
    "kanit": [],
    "durum": "aktif",
-   "tekrar": 3,
+   "tekrar": 4,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -178,7 +178,7 @@
    "kaynak": "kullanici",
    "kanit": [],
    "durum": "aktif",
-   "tekrar": 5,
+   "tekrar": 6,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -691,7 +691,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 2,
+   "tekrar": 5,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -801,7 +801,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 8,
+   "tekrar": 11,
    "olusturma": "2026-11-20",
    "guncelleme": "2026-11-20"
   },
@@ -955,7 +955,7 @@
     }
    ],
    "durum": "aktif",
-   "tekrar": 4,
+   "tekrar": 7,
    "olusturma": "2026-11-23",
    "guncelleme": "2026-11-23"
   },

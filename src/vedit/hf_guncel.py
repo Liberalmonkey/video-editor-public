@@ -195,54 +195,45 @@ def _fark(a: Path, b: Path) -> float:
 
 def duman(kok: Path | None = None, *, cikti: Path | None = None) -> list[dict]:
     """Duman paketini `kok` altındaki HyperFrames ile koşar (None: sabit kurulum). Her kompozisyon için sonuç."""
-    eski = os.environ.get("VEDIT_HF_KOK")
-    if kok:
-        os.environ["VEDIT_HF_KOK"] = str(kok)
     cikti = cikti or ADAY / "duman"
     sonuclar = []
-    try:
-        for d in sorted(p for p in DUMAN.iterdir() if (p / "index.html").is_file()):
-            s = {"ad": d.name, "gecti": False, "sorun": []}
-            kopya = cikti / d.name
-            try:
-                hf_grafik._hazirla(d, kopya, "varsayilan")
-                if d.name == "video-gsap":
-                    _ornek_video(kopya / "klip.mp4")
-                lint = hf.lint(kopya)
-                if lint.get("errorCount") or lint.get("errors"):
-                    s["sorun"].append(f"lint: {lint.get('errorCount') or lint.get('errors')} hata")
-                olcu = hf_grafik.olcu(d)
-                saydam = "background: none" in (d / "index.html").read_text(encoding="utf-8")
-                video = cikti / f"{d.name}.{'webm' if saydam else 'mp4'}"
-                if saydam:
-                    hf.render_saydam(kopya, video, degiskenler={"baslik": "Duman"})
-                else:
-                    hf.render(kopya, video, quality="draft")
-                b = ff.probe(video)
-                v = b.get("video") or {}
-                if (v.get("width"), v.get("height")) != (olcu["w"], olcu["h"]):
-                    s["sorun"].append(f"boyut {v.get('width')}x{v.get('height')}, beklenen {olcu['w']}x{olcu['h']}")
-                if abs(b["duration"] - olcu["sure"]) > 0.15:
-                    s["sorun"].append(f"süre {b['duration']}, beklenen {olcu['sure']}")
-                kare, altin = cikti / f"{d.name}.png", d / "altin.png"
-                _kare(video, 1.0, kare)
-                if altin.exists():
-                    s["fark"] = round(_fark(kare, altin), 2)
-                    if s["fark"] > FARK_ESIGI:
-                        s["sorun"].append(f"altın kareden fark {s['fark']} > {FARK_ESIGI}")
-                elif not s["sorun"]:
-                    shutil.copy2(kare, altin)  # ilk geçen sürüm altını yazar
-                    s["altin_yazildi"] = True
-            except Exception as e:  # WHY: bir kompozisyonun çökmesi raporda görünsün, paket sürsün
-                s["sorun"].append(f"{type(e).__name__}: {str(e)[-300:]}")
-            s["gecti"] = not s["sorun"]
-            sonuclar.append(s)
-    finally:
-        if kok:
-            if eski is None:
-                os.environ.pop("VEDIT_HF_KOK", None)
+    # WHY: aday kökü os.environ yerine yalnız duman alt çağrılarına iletilir; eşzamanlı Stüdyo işleri sabit kurulumu korur.
+    for d in sorted(p for p in DUMAN.iterdir() if (p / "index.html").is_file()):
+        s = {"ad": d.name, "gecti": False, "sorun": []}
+        kopya = cikti / d.name
+        try:
+            hf_grafik._hazirla(d, kopya, "varsayilan")
+            if d.name == "video-gsap":
+                _ornek_video(kopya / "klip.mp4")
+            lint = hf.lint(kopya, kok=kok)
+            if lint.get("errorCount") or lint.get("errors"):
+                s["sorun"].append(f"lint: {lint.get('errorCount') or lint.get('errors')} hata")
+            olcu = hf_grafik.olcu(d)
+            saydam = "background: none" in (d / "index.html").read_text(encoding="utf-8")
+            video = cikti / f"{d.name}.{'webm' if saydam else 'mp4'}"
+            if saydam:
+                hf.render_saydam(kopya, video, degiskenler={"baslik": "Duman"}, kok=kok)
             else:
-                os.environ["VEDIT_HF_KOK"] = eski
+                hf.render(kopya, video, quality="draft", kok=kok)
+            b = ff.probe(video)
+            v = b.get("video") or {}
+            if (v.get("width"), v.get("height")) != (olcu["w"], olcu["h"]):
+                s["sorun"].append(f"boyut {v.get('width')}x{v.get('height')}, beklenen {olcu['w']}x{olcu['h']}")
+            if abs(b["duration"] - olcu["sure"]) > 0.15:
+                s["sorun"].append(f"süre {b['duration']}, beklenen {olcu['sure']}")
+            kare, altin = cikti / f"{d.name}.png", d / "altin.png"
+            _kare(video, 1.0, kare)
+            if altin.exists():
+                s["fark"] = round(_fark(kare, altin), 2)
+                if s["fark"] > FARK_ESIGI:
+                    s["sorun"].append(f"altın kareden fark {s['fark']} > {FARK_ESIGI}")
+            elif not s["sorun"]:
+                shutil.copy2(kare, altin)  # ilk geçen sürüm altını yazar
+                s["altin_yazildi"] = True
+        except Exception as e:  # WHY: bir kompozisyonun çökmesi raporda görünsün, paket sürsün
+            s["sorun"].append(f"{type(e).__name__}: {str(e)[-300:]}")
+        s["gecti"] = not s["sorun"]
+        sonuclar.append(s)
     return sonuclar
 
 

@@ -267,6 +267,60 @@ def _kurgu_dict(k: Kurgu, y: Yama, ekle: list[dict], gun: dict[str, dict], kayna
     return d
 
 
+BAS_TAKMA = ("baslangic", "start", "t")
+
+
+def _gorunen_var(k: Kurgu) -> bool:
+    """`kurgu.py` render kapısıyla aynı ölçüt: gizli olmayan görüntü izinde ses dışı klip var mı."""
+    ses = {i.id for i in k.izler if i.tur == "ses" or i.gizli}
+    return any(c.iz not in ses and c.tur != "ses" for c in k.klipler)
+
+
+def bos_goruntu_brifi(k: Kurgu) -> str:
+    """Kurgu editörüne V1 klip şeması ve kurgudaki kaynak kimlikleri."""
+    kay = [kid for kid, v in k.kaynaklar.items() if v.yol.startswith("inputs:")] or list(k.kaynaklar)
+    ornek = {"id": "k1", "iz": "V1", "tur": "video", "kaynak": kay[0] if kay else "<kaynak id>", "bas": 0, "giris": 0.1, "sure": 7.7}
+    return ("V1 görüntü klibi yok: yaman birleşince kurguda hiç görüntü kalmıyor. Her V1 klibi şu alanlarla `ekle`'ye yazılır: "
+            f"{json.dumps(ornek, ensure_ascii=False)}. `bas` sekans saniyesi (zorunlu), `giris` kaynak içi başlangıç, "
+            f"`kaynak` yalnız şu kimliklerden biri: {', '.join(kay[:20]) or 'yok'}.")
+
+
+def _v1_onar(k: Kurgu, y: Yama, ekle: list[dict], rol: str) -> None:
+    """Ajanın eklediği klipte bilinen yazım kaymalarını onarır; öğe şemadan düşmesin.
+
+    - `bas` yerine `baslangic`/`start`/`t` yazılmışsa `bas` olur (ses olayının `t`si klip alanı değilse dokunulmaz).
+    - Kaynak kimliği girdi dosyasının kökü ise (`"1"`) kurgudaki girdi kaynağına (`inputs_1_mp4`) eşlenir.
+    - `bas`sız V1 video klipleri yamadaki sırayla ardışık dizilir."""
+    # WHY: ornek-proje 2026-11-27. E1 V1 kliplerini `bas`sız ve kaynak "1".."7" ile yazdı; hepsi şemadan düştü, kurgu boş kaldı.
+    notlar: list[str] = []
+    kokler = {Path(kay.yol.removeprefix("inputs:")).stem: kid for kid, kay in k.kaynaklar.items() if kay.yol.startswith("inputs:")}
+    for c in ekle:
+        if "bas" not in c:
+            for a in BAS_TAKMA:
+                if isinstance(c.get(a), (int, float)) and not (a == "t" and c.get("olay")):
+                    c["bas"] = c.pop(a)
+                    notlar.append(f"{c['id']}.{a}→bas")
+                    break
+        kay = c.get("kaynak")
+        if isinstance(kay, str) and kay not in k.kaynaklar and kay not in y.kaynaklar and kay in kokler:
+            c["kaynak"] = kokler[kay]
+            notlar.append(f"{c['id']}.kaynak {kay}→{kokler[kay]}")
+    v1 = [c for c in ekle if c.get("iz") == "V1" and c.get("tur", "video") == "video"]
+    if any("bas" not in c for c in v1):
+        sil = set(y.sil)
+        imlec = max((x.bas + x.sure for x in k.klipler if x.iz == "V1" and x.id not in sil
+                     and x.id not in {c.get("id") for c in ekle}), default=0.0)
+        for c in v1:
+            if "bas" not in c and isinstance(c.get("sure"), (int, float)):
+                c["bas"] = round(imlec, 3)
+                notlar.append(f"{c['id']}.bas türetildi")
+            if isinstance(c.get("bas"), (int, float)) and isinstance(c.get("sure"), (int, float)):
+                imlec = max(imlec, c["bas"] + c["sure"])
+    if notlar:
+        # Onarım ihlal değildir (dusen kural kapısında düzeltme ister); yalnız günlüğe yazılır.
+        print(f"  {rol} yaması onarıldı: {', '.join(notlar[:8])}{' …' if len(notlar) > 8 else ''}", flush=True)
+
+
 def yama_uygula(k: Kurgu, rol: str, y: Yama, dusen: list[str] | None = None, atama: Atama | None = None) -> Kurgu:
     """Sahiplik denetimli uygulama; sahiplik hatası SystemExit (yama birleşmez).
     Şema hatasında ya da aralık dışında yalnız o öğeler düşer, gerisi birleşir; düşenler `dusen` listesine yazılır."""
@@ -286,6 +340,7 @@ def yama_uygula(k: Kurgu, rol: str, y: Yama, dusen: list[str] | None = None, ata
     idsiz += [g for g in y.guncelle if not isinstance(g, dict) or not g.get("id")]
     if idsiz and dusen is not None:
         dusen += [f"{rol}:id'siz öğe ({str(c.get('tur') if isinstance(c, dict) else c)[:20]})" for c in idsiz]
+    _v1_onar(k, y, ekle, rol)
     for c in ekle:
         if "bas" not in c and c.get("capa"):
             if (b := _capa_bas(k, c)) is not None:
@@ -1117,6 +1172,8 @@ def paket(p, k: Kurgu, rol: str, soz: dict, kok: Path, atama: Atama | None = Non
             + "\n- Yaratıcı yetki: match cut, hız rampası (`hiz`), J/L cut, pattern interrupt ve sessizlik sonrası vuruş araçlarını içerik ve brif gerektirdikçe kullan; zaman dilimin başına en az bir bilinçli yaratıcı karar ver ve bunu raporda ve `oz_denetim` içinde gerekçelendir.",
             aiedit._hazir_katalogu(),
         ]
+        if not any(c.iz == "V1" for c in k.klipler):
+            sabit += ["## V1 boş", bos_goruntu_brifi(k)]
     kendi = [c.model_dump(exclude_defaults=True) for c in k.klipler if atama.sahip(k, c) == rol]
     degisken = ["## Kullanıcı isteği", _istek_metni(istek),
                 *yaratici.ekip_bolumu(yaratici.gecerli(p.work, istek)),  # ADR 0064: G0.5 brif bütün editörlere
@@ -1625,6 +1682,7 @@ class OnUretim:
 
     def __init__(self, p, k: Kurgu, es: int = 2):
         self.p, self.k, self.havuz, self.isler, self.kilit = p, k, ThreadPoolExecutor(max_workers=es), {}, threading.Lock()
+        self.kapali = False
 
     def _uret(self, alan: str, d: dict) -> None:
         from . import hf_grafik, motion
@@ -1643,6 +1701,10 @@ class OnUretim:
                     continue
                 anahtar = (alan, json.dumps(d, sort_keys=True, ensure_ascii=False))
                 with self.kilit:
+                    # WHY: ornek-proje 2026-11-27. G3 `bekle` havuzu kapatır; G6 düzeltme yaması gelince submit
+                    # RuntimeError ile bütün akışı düşürüyordu. Kapandıktan sonra bağlama (`_bagla`) kendisi üretir.
+                    if self.kapali:
+                        return
                     if anahtar not in self.isler:
                         self.isler[anahtar] = self.havuz.submit(self._uret, alan, dict(d))
 
@@ -1655,6 +1717,8 @@ class OnUretim:
                 n += 1
             except Exception:  # noqa: BLE001 - ön üretim en iyi çaba
                 pass
+        with self.kilit:
+            self.kapali = True
         self.havuz.shutdown(wait=False)
         return n
 
@@ -1677,7 +1741,25 @@ def _bagla(p, k: Kurgu) -> None:
     k.klipler = kalan
     try:
         kurgu.motion_bagla(p, k)
-    except (ValueError, RuntimeError) as e:  # ikinci deneme de düşerse bağlanmayan hf klipleri çıkar
+        return
+    except (ValueError, RuntimeError) as e:
+        print(f"  ! motion bağlanamadı: {str(e)[:200]}")
+    # WHY: ornek-proje 2026-11-27. Tek grafiğin render hatası (gosterge-yak) bütün HyperFrames kliplerini siliyordu;
+    # videodan 7 grafik birden düştü. Her klip tek tek denenir, yalnız render edilemeyen çıkar.
+    hedef = p.work / "public" / "motion"
+    bozuk: set[str] = set()
+    for c in k.klipler:
+        if c.tur == "motion" and c.hf and not c.kaynak:
+            try:
+                hf_grafik.uret(c.hf.get("ad") or "", c.hf.get("param"), kurgu.etkin_tema(p, c.hf.get("tema") or k.motion_tema),
+                               p.work, hedef, sekans=(k.sekans.w, k.sekans.h))
+            except (ValueError, RuntimeError) as e:
+                bozuk.add(c.id)
+                print(f"  ! {c.id} ({c.hf.get('ad')}): render edilemedi, klip çıkarıldı: {str(e)[:160]}")
+    k.klipler = [c for c in k.klipler if c.id not in bozuk]
+    try:
+        kurgu.motion_bagla(p, k)
+    except (ValueError, RuntimeError) as e:  # yine düşerse son çare: bağlanmayan hf klipleri çıkar
         print(f"  ! motion bağlanamadı: {str(e)[:200]}")
         k.klipler = [c for c in k.klipler if not (c.tur == "motion" and c.hf and not c.kaynak)]
 
@@ -1752,6 +1834,7 @@ def _akis(p, ayar: EkipAyar, kok: Path, durum, *, notu: str | None, final: bool,
     if ayar.stil:
         ekip._stil_sec(p, ayar.stil)
     k = aiedit._kurgu_hazirla(p)
+    aiedit.girdi_denetimi(p, k)
     once = k
     olcum: dict[str, dict] = {}
     kapilar: dict[str, str] = {}
@@ -1927,6 +2010,20 @@ def _akis_govde(p, ayar: EkipAyar, kok: Path, durum, *, notu, final, tekrar_dene
          + (f"düzeltilen: {', '.join(gelen)}; " if gelen else "")
          + (f"düzeltmesi gelmedi (ilk yama kaldı): {', '.join(dusen_duzeltme)}; " if dusen_duzeltme else "")
          + (f"kalan ihlal: {', '.join(sorted(ihlal, key=_no))}" if ihlal else "temiz"))
+
+    # WHY: ornek-proje 2026-11-27. Bütün V1 klipleri düşünce akış G3'te "görüntü klibi yok" ile ölüyordu. Birleşme görüntüsüz
+    # kalacaksa kurgu editörüne şemalı brifle bir kez düzeltme gider; yine boşsa düşen öğelerle açık mesaj.
+    if not _gorunen_var(birlestir(k.model_copy(deep=True), yamalar, Atama(list(atama.gorevler.values())))[0]):
+        sahip = next((g.slot for g in atama.gorevler.values() if "kurgu" in g.katmanlar), None)
+        if sahip:
+            print(f"  Birleşen kurguda görüntü klibi yok: {sahip} bir kez düzeltiyor.", flush=True)
+            _, y = editor(sahip, kok / "kapi", kisitlar=[bos_goruntu_brifi(k), *ihlal.get(sahip, [])], onceki=yamalar.get(sahip))
+            if y is not None:
+                yamalar[sahip] = y
+        deneme, br0 = birlestir(k.model_copy(deep=True), yamalar, Atama(list(atama.gorevler.values())))
+        if not _gorunen_var(deneme):
+            raise SystemExit("Birleşen kurguda görüntü klibi yok; düşen öğeler: "
+                             + (", ".join(br0["dusen"][:12]) or "yok") + "; reddedilen: " + (", ".join(br0["red"]) or "yok"))
 
     # G3 deterministik birleştirme + tek render
     kapi("G3", "acik")

@@ -17,7 +17,7 @@ from types import SimpleNamespace
 
 from pydantic import ValidationError
 
-from . import ff, hizli, kurgu, kurgu_kalite, motorlar, paths, stil, tema_token
+from . import ajan_cagri, ff, hizli, kurgu, kurgu_kalite, motorlar, paths, stil, tema_token
 from .ekip_sema import Bulgu, EkipAyar, KontrolCikti, Slot
 from .schemas import Kurgu
 
@@ -180,7 +180,15 @@ def ajan(slot: Slot, istem: str, mod: str, kayit: Path, *, yedek: bool = False, 
                 except OSError:
                     pass
             threading.Thread(target=besle, daemon=True).start()  # büyük istemde stdout borusu dolarken kilitlenmesin
-        zaman = threading.Timer(AJAN_SURE, s.kill)
+        zaman_asimi = False
+
+        def _zaman_doldu() -> None:
+            nonlocal zaman_asimi
+            zaman_asimi = True
+            ajan_cagri.agac_oldur(s)
+
+        # WHY: zaman aşımı/iptalde Windows'ta süreç ağacı taskkill ile kesilir ve stdout kapatılarak takılma önlenir.
+        zaman = threading.Timer(AJAN_SURE, _zaman_doldu)
         zaman.start()
         try:
             for satir in s.stdout:
@@ -194,8 +202,21 @@ def ajan(slot: Slot, istem: str, mod: str, kayit: Path, *, yedek: bool = False, 
             kod = s.wait()
         finally:
             zaman.cancel()
+            if s.poll() is None:
+                ajan_cagri.agac_oldur(s)
+                try:
+                    s.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pass
+            if s.stdout:
+                try:
+                    s.stdout.close()
+                except OSError:
+                    pass
     son, kul = _metin_ve_kullanim(ham)
     hata = next((x for x in okunur if x.startswith("Hata:")), None)
+    if zaman_asimi and not hata:
+        hata = f"Zaman aşımı ({AJAN_SURE} sn)"
     meta.update(sure=round(time.time() - meta["baslangic"], 1), kod=kod, token=kul or None, oturum=is_.oturum, hata=hata)
     return kod == 0 and not hata, son or "\n".join(okunur), meta
 

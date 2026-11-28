@@ -222,3 +222,46 @@ describe("geçişler", () => {
     expect(gecisStil({ tur: "iris", sure: 0.6 }, 1, "entering", 1080, 1920, renk).clipPath).toMatch(/^path\("M /);
   });
 });
+
+describe("stabilite: desteklenmeyenler uyumu ve pencere null koruması", () => {
+  const grafikler = {
+    dikey: { w: 1080, h: 1920, sure: 2, varsayilan: { metin: "a" } },
+    yatay: { w: 1920, h: 1080, sure: 2, varsayilan: { metin: "b" } },
+  };
+  const meta = { ad: "ikon/tik", tur: "ikon", etiketler: [], ne_zaman: "", sure: { min: 1, varsayilan: 1.3, max: 1.6 }, giris_sn: 0.35, cikis_sn: 0.2,
+    hero: false, en_boy: ["9:16"], yer: ["ust"], boyut: { w: 0.26, h: 0.26 }, en_kucuk_px: 180 } as any;
+  const native = { "ikon/tik": { meta, varsayilan: { renk: "olumlu" } } };
+
+  it("bulgu 3: özel temalı veya ters yönlü kaynaksız HF klibi desteklenmeyen listesine girer", () => {
+    const ayniYon = klip({ id: "g1", tur: "motion", kaynak: null, hf: { ad: "dikey" } });
+    const ozelTema = klip({ id: "g2", tur: "motion", kaynak: null, hf: { ad: "dikey", tema: "koyu" } });
+    const tersYon = klip({ id: "g3", tur: "motion", kaynak: null, hf: { ad: "yatay" } });
+    const webmliTersYon = klip({ id: "g4", tur: "motion", kaynak: "s1", hf: { ad: "yatay" } });
+    expect(desteklenmeyenler(kurgu([ayniYon]), {}, { grafikler })).toEqual([]);
+    expect(desteklenmeyenler(kurgu([ozelTema]), {}, { grafikler })).toEqual(["motion:kaynaksız"]);
+    expect(desteklenmeyenler(kurgu([tersYon]), {}, { grafikler })).toEqual(["motion:kaynaksız"]);
+    expect(desteklenmeyenler(kurgu([webmliTersYon]), {}, { grafikler })).toEqual([]);
+    const r = derle(kurgu([tersYon]), { ...ortam, grafikler });
+    expect(r.desteklenmeyen).toEqual(["motion:kaynaksız"]);
+    expect(r.grafikBaglamalar).toEqual([]);
+  });
+
+  it("bulgu 3: onRender haritasında kimliği eksik fizik sahnesi desteklenmeyen sayılır; geçersiz layoutlu sahne iki motorda da çizilmediği için motoru değiştirmez", () => {
+    const fz = klip({ id: "fz1", tur: "sahne", kaynak: "s1", sahne: { kind: "fizik", layout: "full" } as any });
+    const gecersiz = klip({ id: "s1", tur: "sahne", kaynak: null, sahne: { kind: "stat", layout: "diger" } as any });
+    const r = derle(kurgu([fz, gecersiz]), { ...ortam, onRender: { baska: "hf/onrender/baska.webm" } });
+    expect(r.desteklenmeyen).toEqual(["sahne:fizik"]);
+  });
+
+  it("bulgu 4: pencereye yalnız geçiş kuyruğuyla değen canlı HF ve native kliplerde çökmez", () => {
+    const g = klip({ id: "g1", tur: "motion", kaynak: null, bas: 0, sure: 2, hf: { ad: "dikey" } });
+    const n = klip({ id: "n1", tur: "motion", kaynak: null, bas: 0, sure: 2, bilesen: { ad: "ikon/tik" } });
+    const sonra = klip({ id: "v2", tur: "video", kaynak: "s1", bas: 2, sure: 2, gecis_giris: { tur: "capraz", sure: 0.6 } });
+    const rg = derle(kurgu([g, sonra]), { ...ortam, grafikler, pencere: [2.1, 3.5] });
+    expect(rg.grafikBaglamalar).toEqual([]);
+    expect(rg.html).not.toContain('id="g-g1"');
+    const rn = derle(kurgu([n, sonra]), { ...ortam, cekirdekUrl: "hf/native/cekirdek.js", native, pencere: [2.1, 3.5] });
+    expect(rn.baglamalar).toEqual([]);
+    expect(rn.html).not.toContain('id="n-n1"');
+  });
+});

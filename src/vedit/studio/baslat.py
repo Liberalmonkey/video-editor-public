@@ -113,6 +113,11 @@ def _motorlari_isit() -> None:
         motorlar.durum()
     except Exception:  # WHY: ısıtma başarısızsa panel ilk istekte yeniden dener
         pass
+    try:  # Uygulama güncellemesi: 30 dakikada bir origin kontrolü (ADR 0065); hf döngüsü bloklamasın diye ayrı thread
+        from .. import guncelle
+        threading.Thread(target=guncelle.arka_plan, daemon=True).start()
+    except Exception as e:
+        print(f"Uygulama güncelleme zamanlayıcısı durdu: {e}", flush=True)
     try:  # HyperFrames güncellemesi: haftada bir (Cuma 13:00), iş varken ertelenir; sonsuz döngü (ADR 0051)
         from .. import hf_guncel
         hf_guncel.arka_plan()

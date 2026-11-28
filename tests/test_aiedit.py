@@ -179,3 +179,28 @@ def test_aralik_disina_yeni_klip_eklenemez(proje, monkeypatch):
     monkeypatch.setattr(ajan_cagri, "calistir", ekle(4.0))
     aiedit.calistir(proje, aralik=(3.0, 6.0))
     assert [c.id for c in kurgu.oku(proje.work).klipler][-1] == "yeni"
+
+
+def test_bos_kurgu_sonradan_gelen_girdiyi_alir(proje):
+    # WHY: ornek-proje 2026-11-27. Stüdyo boş kurgu yazmıştı; girdiler sonradan gelince edit görüntüsüz kaldı.
+    kurgu.yaz(proje.work, kurgu.bos(proje.studyo))
+    hizli.hazirla(proje)
+    k = aiedit._kurgu_hazirla(proje)
+    v1 = [c for c in k.klipler if c.iz == "V1"]
+    assert [c.kaynak for c in v1] == ["inputs_1_mp4"] and v1[0].tur == "video"
+    assert len(k.kelimeler["inputs_1_mp4"]) == 2
+    assert kurgu.oku(proje.work).rev == k.rev
+    aiedit.girdi_denetimi(proje, k)  # sağlıklı kurgu durmaz
+
+
+def test_girdisi_olan_kurgu_yeniden_tohumlanmaz(proje):
+    hizli.hazirla(proje)
+    ilk = aiedit._kurgu_hazirla(proje)
+    ikinci = aiedit._kurgu_hazirla(proje)
+    assert [c.id for c in ikinci.klipler] == [c.id for c in ilk.klipler]
+
+
+def test_girdi_denetimi_videosuz_kurguda_durur(proje):
+    k = kurgu.bos(proje.studyo)
+    with pytest.raises(SystemExit, match="kurguya alınamadı"):
+        aiedit.girdi_denetimi(proje, k)

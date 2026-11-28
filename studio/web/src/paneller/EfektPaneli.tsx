@@ -51,11 +51,16 @@ const AlanSatiri: React.FC<{ c: Klip; alan: K.KfAlan; ad: string; varsayilan: nu
   const onceki = [...l].reverse().find((f) => f.t < t - yarim);
   const sonraki = l.find((f) => f.t > t + yarim);
   const cizgi = useRef<HTMLDivElement>(null);
+  const surukleTemizle = useRef<(() => void) | null>(null);
+  // WHY: sürükleme sürerken klip/proje değişir veya bileşen unmount olursa window dinleyicileri sızmasın.
+  useEffect(() => () => { surukleTemizle.current?.(); }, []);
   const yaz = (x: number) => duzenle(`${ad}`, (d) => K.degerYaz(d, c.id, alan, t, x), `${c.id}.${alan}`);
 
   const surukle = (f: KF, e: React.PointerEvent) => {
     e.preventDefault();
-    const r = cizgi.current!.getBoundingClientRect();
+    surukleTemizle.current?.();
+    const r = cizgi.current?.getBoundingClientRect();
+    if (!r || !(r.width > 0)) return;
     let son = f.t;
     const hareket = (m: PointerEvent) => {
       const yeni = Math.max(0, Math.min(1, (m.clientX - r.left) / r.width)) * c.sure;
@@ -64,9 +69,16 @@ const AlanSatiri: React.FC<{ c: Klip; alan: K.KfAlan; ad: string; varsayilan: nu
       duzenle("Keyframe taşı", (d) => K.kfTasi(d, c.id, alan, son, kare), `${c.id}.${alan}.kf`);
       son = kare;
     };
-    const birak = () => { window.removeEventListener("pointermove", hareket); window.removeEventListener("pointerup", birak); };
+    const birak = () => {
+      window.removeEventListener("pointermove", hareket);
+      window.removeEventListener("pointerup", birak);
+      window.removeEventListener("pointercancel", birak);
+      if (surukleTemizle.current === birak) surukleTemizle.current = null;
+    };
+    surukleTemizle.current = birak;
     window.addEventListener("pointermove", hareket);
     window.addEventListener("pointerup", birak);
+    window.addEventListener("pointercancel", birak);
   };
 
   return (
@@ -120,14 +132,17 @@ const SesKazanc: React.FC<{ c: Klip }> = ({ c }) => {
 };
 
 // Yüz takibiyle kareyi doldurur: sunucu hesaplar, sonuç geri alınabilir düzenleme olarak yazılır.
-const reframeYap = async (id: string) => {
+export const reframeYap = async (id: string) => {
   const { anahtar, kaydet, duzenle } = useKurgu.getState();
   const { bildir, hata } = useDepo.getState();
   if (!anahtar) return;
   bildir("Yüz aranıyor");
   try {
     await kaydet();
+    // WHY: kayıt veya reframe isteği sürerken başka projeye geçilirse eski sonuç yeni kurguya yazılmasın.
+    if (useKurgu.getState().anahtar !== anahtar) return;
     const r = await istek(`/api/reframe/${anahtar}`, { method: "POST", json: { klip: id } });
+    if (useKurgu.getState().anahtar !== anahtar) return;
     duzenle("Otomatik reframe", (d) => {
       const x = d.klipler.find((q) => q.id === id);
       if (!x) return;
@@ -135,7 +150,9 @@ const reframeYap = async (id: string) => {
       x.donus.anim = [...new Set([...x.donus.anim.filter((a) => a !== "x" && a !== "olcek"), ...r.anim])] as any;
     });
     bildir(r.yuz_orani > 0 ? `Reframe: karelerin %${Math.round(r.yuz_orani * 100)}'inde yüz bulundu` : "Yüz bulunamadı; kare ortalandı ve dolduruldu", r.yuz_orani === 0);
-  } catch (e) { hata(e); }
+  } catch (e) {
+    if (useKurgu.getState().anahtar === anahtar) hata(e);
+  }
 };
 
 // WHY: bkz. wiki/decisions/0033-hazir-efektler.md. Hazır efekt kayıt olarak durur; alanlar hazirEfekt.json'dan, sınırlar onun min/max'ı.
